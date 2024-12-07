@@ -1,6 +1,7 @@
-import { jsonb, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { usersToProjects } from "@/db/schema/users-to-projects";
+import { users } from "@/db/schema/users";
 
 export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -8,6 +9,11 @@ export const projects = pgTable("projects", {
   description: text("description").notNull(),
   mainImage: text("mainImage").notNull().default("/project-default.png"),
   images: jsonb("images").$type<string[]>().notNull().default([]),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => users.id, { onDelete: "no action", onUpdate: "cascade" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
 
 export const projectsRelations = relations(projects, ({ many }) => ({

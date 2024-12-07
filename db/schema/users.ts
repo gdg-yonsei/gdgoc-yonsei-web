@@ -3,6 +3,14 @@ import { relations } from "drizzle-orm";
 import { usersToParts } from "@/db/schema/users-to-parts";
 import { usersToProjects } from "@/db/schema/users-to-projects";
 
+/**
+ * @desc 사용자 권한 및 역할
+ * @member GDGoC 멤버
+ * @core 각 파트장
+ * @lead Organizer
+ * @alumnus 알럼나이
+ * @unverified 가입 후 기본 상태 (일반 멤버로 전환 필요)
+ */
 export const roleEnum = pgEnum("role", [
   "member",
   "core",
