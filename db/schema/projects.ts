@@ -2,6 +2,7 @@ import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { usersToProjects } from "@/db/schema/users-to-projects";
 import { users } from "@/db/schema/users";
+import { projectsToTags } from "@/db/schema/projects-to-tags";
 
 export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -18,4 +19,5 @@ export const projects = pgTable("projects", {
 
 export const projectsRelations = relations(projects, ({ many }) => ({
   usersToParts: many(usersToProjects),
+  projectsToTags: many(projectsToTags),
 }));
