@@ -10,5 +10,5 @@ export const generations = pgTable("generations", {
 });
 
 export const generationsRelations = relations(generations, ({ many }) => ({
-  posts: many(parts),
+  parts: many(parts),
 }));

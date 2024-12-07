@@ -19,11 +19,11 @@ export const projectsToTags = pgTable(
 );
 
 export const projectsToTagsRelations = relations(projectsToTags, ({ one }) => ({
-  group: one(tags, {
+  tag: one(tags, {
     fields: [projectsToTags.tagId],
     references: [tags.id],
   }),
-  user: one(projects, {
+  project: one(projects, {
     fields: [projectsToTags.projectId],
     references: [projects.id],
   }),

@@ -5,7 +5,7 @@ import { usersToProjects } from "@/db/schema/users-to-projects";
 
 /**
  * @desc 사용자 권한 및 역할
- * @member GDGoC 멤버
+ * @member "GDGoC 멤버"
  * @core 각 파트장
  * @lead Organizer
  * @alumnus 알럼나이
@@ -39,5 +39,5 @@ export const users = pgTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
   usersToParts: many(usersToParts),
-  usersToPartsRelations: many(usersToProjects),
+  usersToProjects: many(usersToProjects),
 }));

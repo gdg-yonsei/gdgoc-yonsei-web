@@ -19,7 +19,7 @@ export const usersToParts = pgTable(
 );
 
 export const usersToPartsRelations = relations(usersToParts, ({ one }) => ({
-  group: one(parts, {
+  part: one(parts, {
     fields: [usersToParts.partId],
     references: [parts.id],
   }),

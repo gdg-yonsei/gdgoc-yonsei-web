@@ -15,12 +15,14 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
+    "@heroicons/react": "^2.2.0",
     "drizzle-orm": "^0.37.0",
     "next": "15.0.4",
     "next-auth": "^5.0.0-beta.25",
     "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-loader-spinner": "^6.1.6",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
