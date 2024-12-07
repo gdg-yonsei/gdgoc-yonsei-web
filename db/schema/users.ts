@@ -34,6 +34,7 @@ export const users = pgTable("user", {
   githubId: text("githubId"),
   instagramId: text("instagramId"),
   linkedInId: text("linkedinId"),
+  registeredAt: timestamp("registeredAt").defaultNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
