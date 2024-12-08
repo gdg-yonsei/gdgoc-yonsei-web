@@ -2,6 +2,6 @@
 
 import { signIn } from "@/auth";
 
-export async function signInWithGithub() {
-  await signIn("github");
+export async function signInAction(provider: string) {
+  await signIn(provider);
 }

@@ -2,13 +2,10 @@
 
 import { useActionState } from "react";
 import { TailSpin } from "react-loader-spinner";
-import { signInAction } from "@/app/components/auth/sign-in-button/actions";
+import signOutAction from "@/app/components/auth/sign-out-button/actions";
 
-export default function SignInWithGithubButton() {
-  const [, submitAction, isPending] = useActionState(
-    () => signInAction("github"),
-    null,
-  );
+export function SignOutButton() {
+  const [, submitAction, isPending] = useActionState(signOutAction, null);
 
   return (
     <form action={submitAction}>
@@ -16,7 +13,7 @@ export default function SignInWithGithubButton() {
         type="submit"
         disabled={isPending}
         className={
-          "flex gap-2 items-center p-2 px-4 rounded-full bg-neutral-900 text-white"
+          "flex gap-2 items-center bg-neutral-900 text-white p-2 px-4 rounded-full"
         }
       >
         <TailSpin
@@ -25,8 +22,9 @@ export default function SignInWithGithubButton() {
           radius="1"
           width={20}
           height={20}
+          wrapperStyle={{}}
         />
-        Sign In with Github
+        Sign Out
       </button>
     </form>
   );
