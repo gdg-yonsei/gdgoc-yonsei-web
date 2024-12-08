@@ -12,6 +12,7 @@ const googleSans = localFont({
   src: "./fonts/google-sans.woff2",
   display: "swap",
   variable: "--font-sans",
+  weight: "100 900",
 });
 
 export default function RootLayout({
