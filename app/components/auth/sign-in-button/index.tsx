@@ -1,6 +1,6 @@
 "use client";
 
-import { signInAction } from "@/app/components/auth/sign-in-button/actions";
+import signInAction from "@/app/components/auth/sign-in-button/actions";
 import { useFormStatus } from "react-dom";
 import { TailSpin } from "react-loader-spinner";
 
