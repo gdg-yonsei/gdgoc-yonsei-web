@@ -7,13 +7,7 @@ import { TailSpin } from "react-loader-spinner";
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className={
-        "flex gap-2 items-center p-2 px-4 rounded-full bg-neutral-900 text-white transition-all"
-      }
-    >
+    <button type="submit" disabled={pending} className={"button-black w-full"}>
       <TailSpin
         visible={pending}
         color="#ffffff"
@@ -28,7 +22,7 @@ function SubmitButton() {
 
 export default function SignInWithGithubButton() {
   return (
-    <form action={() => signInAction("github")}>
+    <form action={() => signInAction("github")} className={"w-1/3 flex"}>
       <SubmitButton />
     </form>
   );
