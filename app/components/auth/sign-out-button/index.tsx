@@ -13,7 +13,7 @@ export function SignOutButton() {
         type="submit"
         disabled={isPending}
         className={
-          "flex gap-2 items-center bg-neutral-900 text-white p-2 px-4 rounded-full"
+          "flex gap-2 items-center bg-neutral-900 text-white p-2 px-4 rounded-full transition-all"
         }
       >
         <TailSpin

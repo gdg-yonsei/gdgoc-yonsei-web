@@ -2691,6 +2691,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"framer-motion@npm:^12.0.0-alpha.2":
+  version: 12.0.0-alpha.2
+  resolution: "framer-motion@npm:12.0.0-alpha.2"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^19.0.0-rc.1
+    react-dom: ^19.0.0-rc.1
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/6e60f75b4ee8b8d7c347796602f335233b8604793a16dfc4a1b9403ae348603104fa794f3ded84e3b074b07d3bd0ee2c5ac29d197038ad9b5f81a05bf1b49406
+  languageName: node
+  linkType: hard
+
 "fs-minipass@npm:^3.0.0":
   version: 3.0.3
   resolution: "fs-minipass@npm:3.0.3"
@@ -2759,6 +2779,7 @@ __metadata:
     drizzle-orm: "npm:^0.37.0"
     eslint: "npm:^9.16.0"
     eslint-config-next: "npm:15.0.4"
+    motion: "npm:12.0.0-alpha.2"
     next: "npm:15.0.4"
     next-auth: "npm:^5.0.0-beta.25"
     postcss: "npm:^8.4.49"
@@ -3628,6 +3649,27 @@ __metadata:
   bin:
     mkdirp: dist/cjs/src/bin.js
   checksum: 10c0/9f2b975e9246351f5e3a40dcfac99fcd0baa31fbfab615fe059fb11e51f10e4803c63de1f384c54d656e4db31d000e4767e9ef076a22e12a641357602e31d57d
+  languageName: node
+  linkType: hard
+
+"motion@npm:12.0.0-alpha.2":
+  version: 12.0.0-alpha.2
+  resolution: "motion@npm:12.0.0-alpha.2"
+  dependencies:
+    framer-motion: "npm:^12.0.0-alpha.2"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^19.0.0-rc.1
+    react-dom: ^19.0.0-rc.1
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/b24587550d58dec40c809870f074de54a90d4805d9ef52096f0e3c892f6a92ad72c8f530569379ca4480b9bb8beeccf36b316a6d0e566447082366df79733faf
   languageName: node
   linkType: hard
 

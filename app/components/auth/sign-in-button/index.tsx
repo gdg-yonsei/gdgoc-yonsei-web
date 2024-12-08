@@ -16,7 +16,7 @@ export default function SignInWithGithubButton() {
         type="submit"
         disabled={isPending}
         className={
-          "flex gap-2 items-center p-2 px-4 rounded-full bg-neutral-900 text-white"
+          "flex gap-2 items-center p-2 px-4 rounded-full bg-neutral-900 text-white transition-all"
         }
       >
         <TailSpin

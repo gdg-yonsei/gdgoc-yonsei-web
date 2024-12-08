@@ -17,6 +17,7 @@
     "@auth/drizzle-adapter": "^1.7.4",
     "@heroicons/react": "^2.2.0",
     "drizzle-orm": "^0.37.0",
+    "motion": "12.0.0-alpha.2",
     "next": "15.0.4",
     "next-auth": "^5.0.0-beta.25",
     "postgres": "^3.4.5",
