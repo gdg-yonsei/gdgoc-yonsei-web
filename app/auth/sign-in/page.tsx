@@ -10,7 +10,7 @@ export default function SignInPage() {
     >
       <div
         className={
-          "p-8 rounded-2xl flex gap-2 items-center justify-around w-full max-w-3xl bg-white shadow-xl h-1/2 relative"
+          "p-4 md:p-8 rounded-xl md:rounded-2xl flex flex-col md:flex-row gap-4 items-center md:justify-around justify-center w-full max-w-3xl bg-white shadow-xl h-1/2 relative"
         }
       >
         <Image
@@ -18,10 +18,14 @@ export default function SignInPage() {
           alt={"GDGoC Yonsei Logo"}
           width={222}
           height={31}
-          className={"absolute top-8 left-8"}
+          className={"md:absolute top-8 left-8 mr-auto"}
         />
-        <div className={"flex gap-4 flex-col w-2/3"}>
-          <div className={"flex flex-col gap-1 items-start text-4xl font-bold"}>
+        <div className={"flex gap-4 flex-col md:w-2/3 w-full"}>
+          <div
+            className={
+              "flex flex-col gap-1 items-start text-2xl md:text-4xl font-bold"
+            }
+          >
             <h1>GDGoC Yonsei</h1>
             <h1>Management System</h1>
           </div>

@@ -22,7 +22,10 @@ function SubmitButton() {
 
 export default function SignInWithGithubButton() {
   return (
-    <form action={() => signInAction("github")} className={"w-1/3 flex"}>
+    <form
+      action={() => signInAction("github")}
+      className={"md:w-1/3 w-full flex"}
+    >
       <SubmitButton />
     </form>
   );
