@@ -1,32 +1,25 @@
 "use client";
 
 import signInAction from "@/app/components/auth/sign-in-button/actions";
-import { useFormStatus } from "react-dom";
-import { TailSpin } from "react-loader-spinner";
+import React, { ReactNode } from "react";
+import SubmitButton from "@/app/components/auth/submit-button";
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+export default function SignInButton({
+  provider,
+  children,
+}: {
+  provider: string;
+  children: ReactNode;
+}) {
   return (
-    <button type="submit" disabled={pending} className={"button-black w-full"}>
-      <TailSpin
-        visible={pending}
-        color="#ffffff"
-        radius="1"
-        width={20}
-        height={20}
-      />
-      Sign In with Github
-    </button>
-  );
-}
-
-export default function SignInWithGithubButton() {
-  return (
-    <form
-      action={() => signInAction("github")}
-      className={"md:w-1/3 w-full flex"}
-    >
-      <SubmitButton />
+    <form action={() => signInAction(provider)} className={"flex"}>
+      <SubmitButton
+        className={"button-black"}
+        provider={provider}
+        loadingColor={"#ffffff"}
+      >
+        {children}
+      </SubmitButton>
     </form>
   );
 }
