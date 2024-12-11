@@ -8,13 +8,11 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className={"button-black"}>
-      <TailSpin
-        visible={pending}
-        color="#ffffff"
-        radius="1"
-        width={20}
-        height={20}
-      />
+      {pending ? (
+        <TailSpin color="#ffffff" radius="1" width={24} height={24} />
+      ) : (
+        ""
+      )}
       <p>Sign Out</p>
     </button>
   );

@@ -1,6 +1,5 @@
 import GDGoCYonseiLogo from "@/app/components/gdgoc-yonsei-logo";
-import SignInButton from "@/app/components/auth/sign-in-button";
-import PasskeySignInButton from "@/app/components/auth/passkey-sign-in-button";
+import SignInOptions from "@/app/components/auth/sign-in-options";
 
 export default function SignInPage() {
   return (
@@ -26,10 +25,7 @@ export default function SignInPage() {
               <h1>Management System</h1>
             </div>
           </div>
-          <div className={"w-full md:w-1/3 flex flex-col gap-2"}>
-            <SignInButton provider={"github"}>Sign In with Github</SignInButton>
-            <PasskeySignInButton />
-          </div>
+          <SignInOptions />
         </div>
         <p className={"text-xs"}>
           To log in using a passkey, you must first sign in with GitHub and then

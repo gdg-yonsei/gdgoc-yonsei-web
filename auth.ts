@@ -17,4 +17,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   }),
   providers: [GitHub, Passkey],
   experimental: { enableWebAuthn: true },
+  pages: {
+    signIn: "/auth/sign-in",
+  },
+  debug: false,
+  logger: { warn() {} },
 });
