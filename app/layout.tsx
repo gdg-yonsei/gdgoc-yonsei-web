@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import localFont from "next/font/local";
 
 export const metadata: Metadata = {
-  title: "GDGoC Yonsei University",
+  title: "GDGoC Yonsei",
   description: "Google Developer Group on Campus Yonsei University",
 };
 
