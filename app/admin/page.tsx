@@ -2,6 +2,7 @@ import { SignOutButton } from "@/app/components/auth/sign-out-button";
 import RegisterPasskeyButton from "@/app/components/auth/register-passkey-button";
 import { Suspense } from "react";
 import UserProfile from "@/app/admin/user-profile";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function AdminPage() {
   return (
@@ -15,6 +16,7 @@ export default function AdminPage() {
         <SignOutButton />
         <RegisterPasskeyButton />
       </div>
+      <LoadingSpinner />
       <Suspense
         fallback={
           <p className={"p-2 rounded-lg bg-white shadow-xl"}>Loading...</p>
