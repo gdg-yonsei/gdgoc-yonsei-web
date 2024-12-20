@@ -3,13 +3,14 @@
 import { signIn } from "next-auth/webauthn";
 import { useState } from "react";
 import { KeyIcon } from "@heroicons/react/24/outline";
-import { useIsAuthenticating } from "@/lib/stores/is-authenticating";
 import LoadingSpinner from "@/app/components/loading-spinner";
+import { useAtom } from "jotai";
+import { isAuthenticatingState } from "@/lib/atoms";
 
 export default function Passkey() {
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuthenticating, setIsAuthenticating } = useIsAuthenticating(
-    (state) => state,
+  const [isAuthenticating, setIsAuthenticating] = useAtom(
+    isAuthenticatingState,
   );
 
   function offLoadingState() {

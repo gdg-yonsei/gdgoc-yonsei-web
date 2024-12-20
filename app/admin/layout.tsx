@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import Header from "@/app/admin/header";
+import JotaiProvider from "@/app/components/jotai-provider";
 
 export const metadata: Metadata = {
   title: "GYMS",
@@ -18,5 +20,10 @@ export default async function AdminLayout({
   if (!session?.user?.id) {
     return redirect("/auth/sign-in");
   }
-  return <>{children}</>;
+  return (
+    <>
+      <Header />
+      <JotaiProvider>{children}</JotaiProvider>
+    </>
+  );
 }

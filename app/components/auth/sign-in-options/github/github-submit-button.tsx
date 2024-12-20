@@ -2,13 +2,14 @@
 
 import { useFormStatus } from "react-dom";
 import Github from "@/public/logo/github.svg";
-import { useIsAuthenticating } from "@/lib/stores/is-authenticating";
 import LoadingSpinner from "@/app/components/loading-spinner";
+import { useAtom } from "jotai";
+import { isAuthenticatingState } from "@/lib/atoms";
 
 export default function GithubSubmitButton() {
   const { pending } = useFormStatus();
-  const { isAuthenticating, setIsAuthenticating } = useIsAuthenticating(
-    (state) => state,
+  const [isAuthenticating, setIsAuthenticating] = useAtom(
+    isAuthenticatingState,
   );
 
   return (
