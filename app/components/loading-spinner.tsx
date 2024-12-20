@@ -1,24 +1,18 @@
 "use client";
 
-import { motion } from "motion/react";
-
-export default function LoadingSpinner() {
-  const spinnerStyle = {
-    border: "5px solid #f3f3f3",
-    borderTop: "5px solid #3498db",
-    borderRadius: "50%",
-  };
-
+/**
+ * Loading Spinner
+ *
+ * Default CSS: size-10 border-4 border-t-sky-500 border-neutral-300/50
+ * @param className
+ * @constructor
+ */
+export default function LoadingSpinner({
+  className = "size-10 border-4 border-t-sky-500 border-neutral-300/50",
+}: {
+  className?: string;
+}) {
   return (
-    <motion.div
-      style={spinnerStyle}
-      animate={{ rotate: 360 }}
-      className={"size-8"}
-      transition={{
-        repeat: Infinity,
-        duration: 1,
-        ease: "linear",
-      }}
-    />
+    <div className={`${className} border-solid rounded-full animate-spin`} />
   );
 }

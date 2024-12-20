@@ -2,9 +2,9 @@
 
 import { signIn } from "next-auth/webauthn";
 import { useState } from "react";
-import { TailSpin } from "react-loader-spinner";
 import { KeyIcon } from "@heroicons/react/24/outline";
 import { useIsAuthenticating } from "@/lib/stores/is-authenticating";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function Passkey() {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +29,9 @@ export default function Passkey() {
       disabled={isLoading || isAuthenticating}
     >
       {isLoading ? (
-        <TailSpin color="#000000" radius="1" width={24} height={24} />
+        <LoadingSpinner
+          className={"size-6 border-2 border-t-black border-neutral-300"}
+        />
       ) : (
         <KeyIcon className={"size-6"} />
       )}

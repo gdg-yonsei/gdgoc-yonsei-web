@@ -2,8 +2,8 @@
 
 import { useFormStatus } from "react-dom";
 import Github from "@/public/logo/github.svg";
-import { TailSpin } from "react-loader-spinner";
 import { useIsAuthenticating } from "@/lib/stores/is-authenticating";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function GithubSubmitButton() {
   const { pending } = useFormStatus();
@@ -22,7 +22,9 @@ export default function GithubSubmitButton() {
       }}
     >
       {pending ? (
-        <TailSpin color="#ffffff" radius="1" width={24} height={24} />
+        <LoadingSpinner
+          className={"size-6 border-2 border-t-white border-neutral-700"}
+        />
       ) : (
         <Github className={"size-6"} />
       )}
