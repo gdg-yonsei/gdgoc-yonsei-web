@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import Header from "@/app/admin/header";
 import JotaiProvider from "@/app/components/jotai-provider";
+import Sidebar from "@/app/admin/sidebar";
 
 export const metadata: Metadata = {
   title: "GYMS",
@@ -23,7 +24,10 @@ export default async function AdminLayout({
   return (
     <>
       <Header />
-      <JotaiProvider>{children}</JotaiProvider>
+      <JotaiProvider>
+        <Sidebar />
+        {children}
+      </JotaiProvider>
     </>
   );
 }

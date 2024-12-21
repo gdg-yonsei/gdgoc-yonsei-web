@@ -4,6 +4,24 @@ import Link from "next/link";
 import { useAtom } from "jotai";
 import { menuBarState } from "@/lib/atoms";
 import { motion } from "motion/react";
+import { ReactNode } from "react";
+import { navigationList } from "@/app/admin/navigation-list";
+
+function MenuBarNavigator({
+  href,
+  children,
+  onClick,
+}: {
+  href: string;
+  children: ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <Link href={href} className={"text-xl font-semibold"} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
 
 export default function MenuBar() {
   const [isOpen, setIsOpen] = useAtom(menuBarState);
@@ -15,20 +33,15 @@ export default function MenuBar() {
       >
         {isOpen && (
           <div className={"w-full flex flex-col gap-4 p-4 max-w-4xl"}>
-            <Link
-              href={"/admin"}
-              className={"text-xl font-semibold hover:underline"}
-              onClick={() => setIsOpen(false)}
-            >
-              Admin Home
-            </Link>
-            <Link
-              href={"/admin/members"}
-              className={"text-xl font-semibold hover:underline"}
-              onClick={() => setIsOpen(false)}
-            >
-              Members
-            </Link>
+            {navigationList.map((item, i) => (
+              <MenuBarNavigator
+                key={i}
+                href={item.path}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.name}
+              </MenuBarNavigator>
+            ))}
           </div>
         )}
       </div>

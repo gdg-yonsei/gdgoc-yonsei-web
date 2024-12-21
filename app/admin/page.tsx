@@ -1,7 +1,5 @@
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
 import RegisterPasskeyButton from "@/app/components/auth/register-passkey-button";
-import { Suspense } from "react";
-import UserProfile from "@/app/admin/user-profile";
 import AdminDefaultLayout from "@/app/components/admin-default-layout";
 
 export default function AdminPage() {
@@ -12,14 +10,6 @@ export default function AdminPage() {
         <SignOutButton />
         <RegisterPasskeyButton />
       </div>
-
-      <Suspense
-        fallback={
-          <p className={"p-2 rounded-lg bg-white shadow-xl"}>Loading...</p>
-        }
-      >
-        <UserProfile />
-      </Suspense>
     </AdminDefaultLayout>
   );
 }
