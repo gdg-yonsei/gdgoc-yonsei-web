@@ -6,6 +6,7 @@ import { menuBarState } from "@/lib/atoms";
 import { motion } from "motion/react";
 import { ReactNode } from "react";
 import { navigationList } from "@/app/admin/navigation-list";
+import UserAuthControlPanelClient from "@/app/components/admin/user-auth-control-panel-client";
 
 function MenuBarNavigator({
   href,
@@ -42,6 +43,7 @@ export default function MenuBar() {
                 {item.name}
               </MenuBarNavigator>
             ))}
+            <UserAuthControlPanelClient />
           </div>
         )}
       </div>

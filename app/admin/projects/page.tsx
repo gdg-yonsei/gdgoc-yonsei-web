@@ -1,9 +1,10 @@
-import AdminDefaultLayout from "@/app/components/admin-default-layout";
+import AdminDefaultLayout from "@/app/components/admin/admin-default-layout";
+import PageTitle from "@/app/components/admin/page-title";
 
 export default function ProjectsPage() {
   return (
     <AdminDefaultLayout className={"p-4"}>
-      <div>Projects Page</div>
+      <PageTitle>Projects</PageTitle>
     </AdminDefaultLayout>
   );
 }

@@ -2,9 +2,10 @@ import { ReactNode } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import Header from "@/app/admin/header";
+import Header from "@/app/components/admin/header";
 import JotaiProvider from "@/app/components/jotai-provider";
-import Sidebar from "@/app/admin/sidebar";
+import Sidebar from "@/app/components/admin/sidebar";
+import AuthProvider from "@/app/components/auth/auth-provider";
 
 export const metadata: Metadata = {
   title: "GYMS",
@@ -22,12 +23,12 @@ export default async function AdminLayout({
     return redirect("/auth/sign-in");
   }
   return (
-    <>
+    <AuthProvider>
       <Header />
       <JotaiProvider>
         <Sidebar />
         {children}
       </JotaiProvider>
-    </>
+    </AuthProvider>
   );
 }

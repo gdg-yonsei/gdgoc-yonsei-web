@@ -1,6 +1,6 @@
 import Link from "next/link";
-import ToggleMenubarButton from "@/app/admin/toggle-menubar-button";
-import MenuBar from "@/app/admin/menu-bar";
+import ToggleMenubarButton from "@/app/components/admin/toggle-menubar-button";
+import MenuBar from "@/app/components/admin/menu-bar";
 import GDGoCLogo from "@/public/logo/gdg.svg";
 
 export default function Header() {
