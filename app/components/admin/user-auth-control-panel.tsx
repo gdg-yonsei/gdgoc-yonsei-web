@@ -1,12 +1,16 @@
 import { Suspense } from "react";
 import { auth } from "@/auth";
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
+import * as motion from "motion/react-client";
 
 async function UserProfile() {
   const session = await auth();
-
   return (
-    <div className={"w-full p-4 rounded-xl bg-white ring-2 ring-neutral-300"}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={"w-full p-4 rounded-xl bg-white ring-2 ring-neutral-300"}
+    >
       <div className={"flex flex-col gap-1 pb-2 break-all text-sm"}>
         <div className={"text-lg"}>{session?.user?.name}</div>
         <div>{session?.user?.email}</div>
@@ -17,7 +21,7 @@ async function UserProfile() {
         }
         spinnerClassName={"size-4 border-2 border-t-white border-neutral-700"}
       />
-    </div>
+    </motion.div>
   );
 }
 
