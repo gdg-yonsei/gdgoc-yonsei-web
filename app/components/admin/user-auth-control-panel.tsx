@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { auth } from "@/auth";
 import { SignOutButton } from "@/app/components/auth/sign-out-button";
+import waitTime from "@/lib/wait-time";
 
 async function UserProfile() {
   const session = await auth();
+  await waitTime(5000);
 
   return (
     <div className={"w-full p-4 rounded-xl bg-white ring-2 ring-neutral-300"}>
@@ -23,7 +25,15 @@ async function UserProfile() {
 
 export default async function UserAuthControlPanel() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div
+          className={
+            "w-full p-4 rounded-xl bg-neutral-300 animate-pulse ring-2 ring-neutral-300 h-[120px]"
+          }
+        />
+      }
+    >
       <UserProfile />
     </Suspense>
   );
