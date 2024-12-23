@@ -81,12 +81,8 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -94,10 +90,7 @@
       "compositePrimaryKeys": {
         "account_provider_providerAccountId_pk": {
           "name": "account_provider_providerAccountId_pk",
-          "columns": [
-            "provider",
-            "providerAccountId"
-          ]
+          "columns": ["provider", "providerAccountId"]
         }
       },
       "uniqueConstraints": {},
@@ -164,12 +157,8 @@
           "name": "authenticator_userId_user_id_fk",
           "tableFrom": "authenticator",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -177,19 +166,14 @@
       "compositePrimaryKeys": {
         "authenticator_userId_credentialID_pk": {
           "name": "authenticator_userId_credentialID_pk",
-          "columns": [
-            "userId",
-            "credentialID"
-          ]
+          "columns": ["userId", "credentialID"]
         }
       },
       "uniqueConstraints": {
         "authenticator_credentialID_unique": {
           "name": "authenticator_credentialID_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "credentialID"
-          ]
+          "columns": ["credentialID"]
         }
       },
       "policies": {},
@@ -268,12 +252,8 @@
           "name": "parts_generationId_generations_id_fk",
           "tableFrom": "parts",
           "tableTo": "generations",
-          "columnsFrom": [
-            "generationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["generationId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "cascade"
         }
@@ -359,12 +339,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -398,12 +374,8 @@
           "name": "users_to_parts_user_id_user_id_fk",
           "tableFrom": "users_to_parts",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -411,12 +383,8 @@
           "name": "users_to_parts_part_id_parts_id_fk",
           "tableFrom": "users_to_parts",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -424,10 +392,7 @@
       "compositePrimaryKeys": {
         "users_to_parts_user_id_part_id_pk": {
           "name": "users_to_parts_user_id_part_id_pk",
-          "columns": [
-            "user_id",
-            "part_id"
-          ]
+          "columns": ["user_id", "part_id"]
         }
       },
       "uniqueConstraints": {},
@@ -458,12 +423,8 @@
           "name": "users_to_projects_user_id_user_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -471,12 +432,8 @@
           "name": "users_to_projects_project_id_projects_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -484,10 +441,7 @@
       "compositePrimaryKeys": {
         "users_to_projects_user_id_project_id_pk": {
           "name": "users_to_projects_user_id_project_id_pk",
-          "columns": [
-            "user_id",
-            "project_id"
-          ]
+          "columns": ["user_id", "project_id"]
         }
       },
       "uniqueConstraints": {},
@@ -582,9 +536,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -619,10 +571,7 @@
       "compositePrimaryKeys": {
         "verificationToken_identifier_token_pk": {
           "name": "verificationToken_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {},
@@ -635,13 +584,7 @@
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "member",
-        "core",
-        "lead",
-        "alumnus",
-        "unverified"
-      ]
+      "values": ["member", "core", "lead", "alumnus", "unverified"]
     }
   },
   "schemas": {},

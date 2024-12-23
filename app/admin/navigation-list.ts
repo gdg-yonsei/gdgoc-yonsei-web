@@ -1,22 +1,22 @@
 export const navigationList = [
   {
-    name: "Home",
-    path: "/admin",
+    name: 'Home',
+    path: '/admin',
   },
   {
-    name: "Members",
-    path: "/admin/members",
+    name: 'Members',
+    path: '/admin/members',
   },
   {
-    name: "Sessions",
-    path: "/admin/sessions",
+    name: 'Sessions',
+    path: '/admin/sessions',
   },
   {
-    name: "Projects",
-    path: "/admin/projects",
+    name: 'Projects',
+    path: '/admin/projects',
   },
   {
-    name: "Profile",
-    path: "/admin/profile",
+    name: 'Profile',
+    path: '/admin/profile',
   },
-];
+]

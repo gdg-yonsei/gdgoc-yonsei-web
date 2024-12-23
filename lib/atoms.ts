@@ -1,5 +1,5 @@
-import { atom } from "jotai";
+import { atom } from 'jotai'
 
-export const isAuthenticatingState = atom(false);
+export const isAuthenticatingState = atom(false)
 
-export const menuBarState = atom(false);
+export const menuBarState = atom(false)

@@ -1,16 +1,16 @@
-import { ReactNode } from "react";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { ReactNode } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
 export default async function AuthLayout({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }) {
-  const session = await auth();
+  const session = await auth()
   if (session) {
-    return redirect("/admin");
+    return redirect('/admin')
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }

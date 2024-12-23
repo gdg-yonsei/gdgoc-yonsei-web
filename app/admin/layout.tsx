@@ -1,26 +1,26 @@
-import { ReactNode } from "react";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { Metadata } from "next";
-import Header from "@/app/components/admin/header";
-import JotaiProvider from "@/app/components/jotai-provider";
-import Sidebar from "@/app/components/admin/sidebar";
-import AuthProvider from "@/app/components/auth/auth-provider";
+import { ReactNode } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { Metadata } from 'next'
+import Header from '@/app/components/admin/header'
+import JotaiProvider from '@/app/components/jotai-provider'
+import Sidebar from '@/app/components/admin/sidebar'
+import AuthProvider from '@/app/components/auth/auth-provider'
 
 export const metadata: Metadata = {
-  title: "GYMS",
+  title: 'GYMS',
   description:
-    "Google Developer Group on Campus Yonsei University Management System",
-};
+    'Google Developer Group on Campus Yonsei University Management System',
+}
 
 export default async function AdminLayout({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }) {
-  const session = await auth();
+  const session = await auth()
   if (!session?.user?.id) {
-    return redirect("/auth/sign-in");
+    return redirect('/auth/sign-in')
   }
   return (
     <AuthProvider>
@@ -30,5 +30,5 @@ export default async function AdminLayout({
         {children}
       </JotaiProvider>
     </AuthProvider>
-  );
+  )
 }

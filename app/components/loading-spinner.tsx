@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 /**
  * Loading Spinner
@@ -8,11 +8,11 @@
  * @constructor
  */
 export default function LoadingSpinner({
-  className = "size-10 border-4 border-t-sky-500 border-neutral-300/50",
+  className = 'size-10 border-4 border-t-sky-500 border-neutral-300/50',
 }: {
-  className?: string;
+  className?: string
 }) {
   return (
     <div className={`${className} border-solid rounded-full animate-spin`} />
-  );
+  )
 }

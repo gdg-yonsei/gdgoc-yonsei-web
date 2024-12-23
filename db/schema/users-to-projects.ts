@@ -1,22 +1,22 @@
-import { users } from "@/db/schema/users";
-import { projects } from "@/db/schema/projects";
-import { pgTable, primaryKey, text, uuid } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { users } from '@/db/schema/users'
+import { projects } from '@/db/schema/projects'
+import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
 export const usersToProjects = pgTable(
-  "users_to_projects",
+  'users_to_projects',
   {
-    userId: text("user_id")
+    userId: text('user_id')
       .notNull()
       .references(() => users.id),
-    projectId: uuid("project_id")
+    projectId: uuid('project_id')
       .notNull()
       .references(() => projects.id),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.projectId] }),
-  }),
-);
+  })
+)
 
 export const usersToProjectsRelations = relations(
   usersToProjects,
@@ -29,5 +29,5 @@ export const usersToProjectsRelations = relations(
       fields: [usersToProjects.userId],
       references: [users.id],
     }),
-  }),
-);
+  })
+)
