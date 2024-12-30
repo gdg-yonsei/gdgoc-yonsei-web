@@ -1,6 +1,6 @@
 import BackToPageButton from '@/app/components/back-to-page-button'
 
-export default function Forbidden() {
+export default function Unauthorized() {
   return (
     <div
       className={
@@ -12,10 +12,8 @@ export default function Forbidden() {
           'p-8 rounded-xl bg-white flex flex-col gap-2 w-full max-w-xl'
         }
       >
-        <h2 className={'text-2xl font-bold lg:text-4xl'}>403 Forbidden</h2>
-        <p>
-          You cannot access data with your current user account permissions.
-        </p>
+        <h2 className={'text-2xl font-bold lg:text-4xl'}>401 Unauthorized</h2>
+        <p>You are not authorized to access this resource.</p>
         <BackToPageButton />
       </div>
     </div>

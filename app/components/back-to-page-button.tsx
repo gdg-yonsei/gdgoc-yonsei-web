@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 
-export default function ForbiddenBackToPageButton() {
+export default function BackToPageButton() {
   const router = useRouter()
   return (
     <button
