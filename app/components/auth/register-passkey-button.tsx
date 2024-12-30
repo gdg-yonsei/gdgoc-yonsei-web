@@ -2,6 +2,10 @@
 
 import { signIn } from 'next-auth/webauthn'
 
+/**
+ * Passkey 등록 버튼
+ * @constructor
+ */
 export default function RegisterPasskeyButton() {
   return (
     <button

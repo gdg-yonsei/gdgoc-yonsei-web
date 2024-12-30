@@ -4,6 +4,12 @@ import signOutAction from '@/app/components/auth/sign-out-button/actions'
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 
+/**
+ * 로그아웃 form submit 버튼
+ * @param className
+ * @param spinnerClassName
+ * @constructor
+ */
 function SubmitButton({
   className,
   spinnerClassName,
@@ -34,6 +40,12 @@ function SubmitButton({
   )
 }
 
+/**
+ * 로그가웃 버튼
+ * @param className
+ * @param spinnerClassName
+ * @constructor
+ */
 export function SignOutButton({
   className,
   spinnerClassName,

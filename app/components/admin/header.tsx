@@ -3,6 +3,10 @@ import ToggleMenubarButton from '@/app/components/admin/toggle-menubar-button'
 import MenuBar from '@/app/components/admin/menu-bar'
 import GDGoCLogo from '@/public/logo/gdg.svg'
 
+/**
+ * 모바일 화면에서 보이는 관리자 페이지 헤더
+ * @constructor
+ */
 export default function Header() {
   return (
     <div className={'w-full fixed top-0 left-0 flex flex-col z-10 lg:hidden'}>

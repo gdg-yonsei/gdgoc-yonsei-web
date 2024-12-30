@@ -3,6 +3,12 @@ import { ReactNode } from 'react'
 import { navigationList } from '@/app/admin/navigation-list'
 import GDGoCLogo from '@/public/logo/gdg-lg.svg'
 
+/**
+ * 사이드 바 네비게이션 컴포넌트
+ * @param href - 이동할 경로
+ * @param children - 내용
+ * @constructor
+ */
 function SidebarNavigator({
   href,
   children,
@@ -22,6 +28,10 @@ function SidebarNavigator({
   )
 }
 
+/**
+ * 관리자 페이지 사이드 바 (데스크탑에서만 활성화)
+ * @constructor
+ */
 export default function Sidebar() {
   return (
     <div

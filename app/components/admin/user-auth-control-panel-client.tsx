@@ -1,6 +1,10 @@
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import { useSession } from 'next-auth/react'
 
+/**
+ * 사용자 정보 패널 (CSR 전용)
+ * @constructor
+ */
 export default function UserAuthControlPanelClient() {
   const { data: session } = useSession()
 

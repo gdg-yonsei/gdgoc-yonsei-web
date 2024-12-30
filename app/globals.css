@@ -9,4 +9,7 @@
   .button-white {
     @apply flex gap-2 items-center w-full  justify-center bg-neutral-50 text-black p-2 px-4 rounded-full transition-all disabled:bg-neutral-200 ring-2 disabled:hover:ring-offset-0 ring-neutral-900 hover:md:ring-offset-2;
   }
+  .admin-title {
+    @apply text-3xl font-bold
+  }
 }

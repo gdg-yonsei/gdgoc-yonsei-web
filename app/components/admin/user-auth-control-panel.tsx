@@ -3,6 +3,10 @@ import { auth } from '@/auth'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import * as motion from 'motion/react-client'
 
+/**
+ * 사용자 정보 표시 패널
+ * @constructor
+ */
 async function UserProfile() {
   const session = await auth()
   return (
@@ -25,6 +29,10 @@ async function UserProfile() {
   )
 }
 
+/**
+ * 사용자 정보 패널 (SSR 전용)
+ * @constructor
+ */
 export default async function UserAuthControlPanel() {
   return (
     <Suspense

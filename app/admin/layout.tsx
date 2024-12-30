@@ -18,10 +18,12 @@ export default async function AdminLayout({
 }: {
   children: ReactNode
 }) {
+  /** 사용자가 로그인 되어 있는지 확인 */
   const session = await auth()
   if (!session?.user?.id) {
     return redirect('/auth/sign-in')
   }
+
   return (
     <AuthProvider>
       <Header />

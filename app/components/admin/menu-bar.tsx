@@ -8,6 +8,13 @@ import { ReactNode } from 'react'
 import { navigationList } from '@/app/admin/navigation-list'
 import UserAuthControlPanelClient from '@/app/components/admin/user-auth-control-panel-client'
 
+/**
+ * 모바일 화면 상단 바에서 보이는 네비게이터
+ * @param href
+ * @param children
+ * @param onClick
+ * @constructor
+ */
 function MenuBarNavigator({
   href,
   children,
@@ -24,6 +31,10 @@ function MenuBarNavigator({
   )
 }
 
+/**
+ * 모바일 화면에서 보이는 상단 바 안의 메뉴 바
+ * @constructor
+ */
 export default function MenuBar() {
   const [isOpen, setIsOpen] = useAtom(menuBarState)
 

@@ -1,6 +1,10 @@
 import GDGoCYonseiLogo from '@/app/components/gdgoc-yonsei-logo'
-import SignInOptions from '@/app/components/auth/sign-in-options'
+import SignInOptions from '@/app/auth/sign-in/sign-in-options'
 
+/**
+ * Sing In Page
+ * @constructor
+ */
 export default function SignInPage() {
   return (
     <div

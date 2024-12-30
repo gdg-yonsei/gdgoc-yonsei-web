@@ -1,3 +1,6 @@
+/**
+ * 사이드 바 및 상단 바에서 표시할 관리자 페이지 목록
+ */
 export const navigationList = [
   {
     name: 'Home',

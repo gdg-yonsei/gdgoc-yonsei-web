@@ -1,5 +1,9 @@
 import { auth } from '@/auth'
 
+/**
+ * 사용자 정보 표시 패널
+ * @constructor
+ */
 export default async function UserProfile() {
   const session = await auth()
 

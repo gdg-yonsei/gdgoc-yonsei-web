@@ -7,6 +7,10 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isAuthenticatingState } from '@/lib/atoms'
 
+/**
+ * Passkey 로그인 버튼
+ * @constructor
+ */
 export default function Passkey() {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useAtom(isAuthenticatingState)
