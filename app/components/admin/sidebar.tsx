@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import { navigationList } from '@/app/admin/navigation-list'
 import GDGoCLogo from '@/public/logo/gdg-lg.svg'
 import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
+import { NavigationItem } from '@/app/admin/navigation-list'
 
 /**
  * 사이드 바 내비게이터
@@ -33,7 +33,11 @@ function SidebarNavigator({
  * 데스크탑 화면에서 보이는 사이드 바
  * @constructor
  */
-export default function Sidebar() {
+export default function Sidebar({
+  navigations,
+}: {
+  navigations: NavigationItem[]
+}) {
   return (
     <div
       className={
@@ -47,7 +51,7 @@ export default function Sidebar() {
       </div>
       {/*관리자 페이지 내비게이터 리스트*/}
       <div className={'w-full flex flex-col gap-4 pt-4'}>
-        {navigationList.map((item, i) => (
+        {navigations.map((item, i) => (
           <SidebarNavigator href={item.path} key={i}>
             {item.name}
           </SidebarNavigator>

@@ -1,11 +1,13 @@
 import { ReactNode } from 'react'
 import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import Header from '@/app/components/admin/header'
 import JotaiProvider from '@/app/components/jotai-provider'
 import Sidebar from '@/app/components/admin/sidebar'
 import AuthProvider from '@/app/components/auth/auth-provider'
+import getUserRole from '@/lib/admin/get-user-role'
+import navigationList from '@/app/admin/navigation-list'
+import { forbidden } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'GYMS',
@@ -20,15 +22,17 @@ export default async function AdminLayout({
 }) {
   /** 사용자가 로그인 되어 있는지 확인 */
   const session = await auth()
-  if (!session?.user?.id) {
-    return redirect('/auth/sign-in')
+  if ((await getUserRole(session?.user?.id)) === 'unverified') {
+    forbidden()
   }
+
+  const navigations = await navigationList(session?.user?.id)
 
   return (
     <AuthProvider>
-      <Header />
+      <Header navigations={navigations} />
       <JotaiProvider>
-        <Sidebar />
+        <Sidebar navigations={navigations} />
         {children}
       </JotaiProvider>
     </AuthProvider>

@@ -5,7 +5,7 @@ import { useAtom } from 'jotai'
 import { menuBarState } from '@/lib/atoms'
 import { motion } from 'motion/react'
 import { ReactNode } from 'react'
-import { navigationList } from '@/app/admin/navigation-list'
+import { NavigationItem } from '@/app/admin/navigation-list'
 import UserAuthControlPanelClient from '@/app/components/admin/user-auth-control-panel-client'
 
 /**
@@ -35,7 +35,11 @@ function MenuBarNavigator({
  * 모바일 화면에서 보이는 상단 바 안의 메뉴 바
  * @constructor
  */
-export default function MenuBar() {
+export default function MenuBar({
+  navigations,
+}: {
+  navigations: NavigationItem[]
+}) {
   const [isOpen, setIsOpen] = useAtom(menuBarState)
 
   return (
@@ -45,7 +49,7 @@ export default function MenuBar() {
       >
         {isOpen && (
           <div className={'w-full flex flex-col gap-4 p-4 max-w-4xl'}>
-            {navigationList.map((item, i) => (
+            {navigations.map((item, i) => (
               <MenuBarNavigator
                 key={i}
                 href={item.path}
