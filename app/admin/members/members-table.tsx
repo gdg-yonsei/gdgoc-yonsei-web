@@ -24,6 +24,9 @@ export default async function MembersTable() {
             width={100}
             height={100}
             className={'rounded-t-lg w-full'}
+            priority={false}
+            placeholder={'blur'}
+            blurDataURL={'/default-user-profile.png'}
           />
           <div className={'p-2'}>
             <div className={'text-lg font-semibold'}>
@@ -32,8 +35,8 @@ export default async function MembersTable() {
             <div className={'flex items-center gap-2 text-sm'}>
               {member.generation && <div>{member.generation}기</div>}
               <div>{member.role.toUpperCase()}</div>
+              <div>{member.part}</div>
             </div>
-            <div>{member.part}</div>
           </div>
         </Link>
       ))}
