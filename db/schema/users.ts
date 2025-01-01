@@ -1,7 +1,8 @@
-import { integer, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { usersToProjects } from '@/db/schema/users-to-projects'
+import { usersToGenerations } from '@/db/schema/users-to-generations'
 
 /**
  * @desc 사용자 권한 및 역할
@@ -12,11 +13,11 @@ import { usersToProjects } from '@/db/schema/users-to-projects'
  * @unverified 가입 후 기본 상태 (일반 멤버로 전환 필요)
  */
 export const roleEnum = pgEnum('role', [
-  'member',
-  'core',
-  'lead',
-  'alumnus',
-  'unverified',
+  'MEMBER',
+  'CORE',
+  'LEAD',
+  'ALUMNUS',
+  'UNVERIFIED',
 ])
 
 export const users = pgTable('user', {
@@ -27,17 +28,20 @@ export const users = pgTable('user', {
   email: text('email').unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
-  generation: integer('generation').notNull().default(0),
   firstName: text('firstName'),
   lastName: text('lastName'),
-  role: roleEnum('role').notNull().default('unverified'),
+  role: roleEnum('role').notNull().default('UNVERIFIED'),
   githubId: text('githubId'),
   instagramId: text('instagramId'),
   linkedInId: text('linkedinId'),
   registeredAt: timestamp('registeredAt').defaultNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  isForeigner: boolean('isForeigner').default(false).notNull(),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
-  usersToParts: many(usersToParts),
-  usersToProjects: many(usersToProjects),
+  parts: many(usersToParts),
+  projects: many(usersToProjects),
+  usersToGenerations: many(usersToGenerations),
 }))

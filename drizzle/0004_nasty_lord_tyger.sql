@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "registeredAt" timestamp DEFAULT now() NOT NULL;

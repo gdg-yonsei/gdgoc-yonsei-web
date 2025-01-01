@@ -9,7 +9,7 @@ import { eq } from 'drizzle-orm'
  */
 export default async function getUserRole(userId: string | undefined) {
   if (!userId) {
-    return 'unverified'
+    return 'UNVERIFIED'
   }
   return (
     await db

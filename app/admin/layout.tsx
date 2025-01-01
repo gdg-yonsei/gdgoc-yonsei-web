@@ -25,7 +25,7 @@ export default async function AdminLayout({
   if (!session) {
     redirect('/auth/sign-in')
   }
-  if ((await getUserRole(session?.user?.id)) === 'unverified') {
+  if ((await getUserRole(session?.user?.id)) === 'UNVERIFIED') {
     forbidden()
   }
 

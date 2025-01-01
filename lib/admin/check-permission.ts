@@ -1,4 +1,4 @@
-type Role = 'member' | 'core' | 'lead' | 'alumnus' | 'unverified'
+type Role = 'MEMBER' | 'CORE' | 'LEAD' | 'ALUMNUS' | 'UNVERIFIED'
 
 interface Permission {
   [action: string]: {
@@ -18,7 +18,7 @@ export default function checkPermission(
   [role in Role]: Permission
 } {
   return {
-    member: {
+    MEMBER: {
       get: {
         adminPage: true,
         membersPage: false,
@@ -42,7 +42,7 @@ export default function checkPermission(
         sessions: false,
       },
     },
-    core: {
+    CORE: {
       get: {
         adminPage: true,
         membersPage: true,
@@ -66,7 +66,7 @@ export default function checkPermission(
         sessions: true,
       },
     },
-    lead: {
+    LEAD: {
       get: {
         adminPage: true,
         membersPage: true,
@@ -90,7 +90,7 @@ export default function checkPermission(
         sessions: true,
       },
     },
-    alumnus: {
+    ALUMNUS: {
       get: {
         adminPage: true,
         membersPage: false,
@@ -114,7 +114,7 @@ export default function checkPermission(
         sessions: false,
       },
     },
-    unverified: {
+    UNVERIFIED: {
       get: {
         adminPage: false,
         membersPage: false,
