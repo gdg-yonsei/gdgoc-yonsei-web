@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1735739507513,
+      "tag": "0000_legal_nightmare",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1735739703810,
+      "tag": "0001_moaning_lady_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1735739987399,
+      "tag": "0002_demonic_doctor_spectrum",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1735742214532,
+      "tag": "0003_tough_black_panther",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1735742289311,
+      "tag": "0004_light_tyger_tiger",
+      "breakpoints": true
+    }
+  ]
+}
