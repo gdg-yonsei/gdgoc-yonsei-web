@@ -5,6 +5,8 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
+import handlePermission from '@/lib/admin/handle-permission'
+import { auth } from '@/auth'
 
 export default async function MemberPage({
   params,
@@ -14,6 +16,13 @@ export default async function MemberPage({
   const { memberId } = await params
 
   const memberData = await getMember(memberId)
+  const session = await auth()
+  const canEdit = await handlePermission(
+    session?.user?.id,
+    'put',
+    'members',
+    memberId
+  )
 
   return (
     <AdminDefaultLayout>
@@ -30,16 +39,18 @@ export default async function MemberPage({
             memberData.isForeigner
           )}
         </div>
-        <Link
-          href={`/admin/members/${memberId}/edit`}
-          className={
-            'p-1 rounded-lg px-3 hover:px-4 bg-neutral-900 text-white hover:bg-neutral-800 transition-all'
-          }
-        >
-          Edit
-        </Link>
+        {canEdit && (
+          <Link
+            href={`/admin/members/${memberId}/edit`}
+            className={
+              'p-1 rounded-lg px-3 hover:px-4 bg-neutral-900 text-white hover:bg-neutral-800 transition-all'
+            }
+          >
+            Edit
+          </Link>
+        )}
       </div>
-      <div className={'w-full py-2 grid grid-cols-4 gap-2'}>
+      <div className={'w-full py-2 member-data-grid gap-2'}>
         <div className={'row-span-2 flex items-center justify-center'}>
           <Image
             src={

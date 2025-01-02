@@ -3,7 +3,7 @@
 import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { redirect } from 'next/navigation'
+import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
@@ -13,7 +13,7 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
   ) {
-    return
+    return forbidden()
   }
 
   const name = formData.get('name') as string | null
@@ -39,7 +39,7 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
       linkedInId,
       major,
       studentId: studentId ? Number(studentId) : null,
-      telephone,
+      telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
     })
     .where(eq(users.id, memberId))
 

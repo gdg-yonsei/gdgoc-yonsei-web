@@ -19,9 +19,12 @@
     @apply text-sm font-semibold text-neutral-600
   }
   .member-data-context {
-    @apply text-lg font-bold
+    @apply text-lg font-bold break-all
   }
   .member-data-input {
     @apply w-full p-2 rounded-lg px-3 bg-white focus:outline-none focus:ring-2 ring-sky-500 text-lg font-semibold
+  }
+  .member-data-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
   }
 }

@@ -5,6 +5,9 @@ import { getMember } from '@/lib/fetcher/get-member'
 import formatUserName from '@/lib/format-user-name'
 import Form from 'next/form'
 import { updateMemberAction } from '@/app/admin/members/[memberId]/edit/actions'
+import handlePermission from '@/lib/admin/handle-permission'
+import { auth } from '@/auth'
+import { forbidden } from 'next/navigation'
 
 function MemberDataInput({
   defaultValue,
@@ -37,6 +40,12 @@ export default async function EditMemberPage({
 }) {
   const { memberId } = await params
   const memberData = await getMember(memberId)
+  const session = await auth()
+  if (
+    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
+  ) {
+    return forbidden()
+  }
   const updateMemberActionWithMemberId = updateMemberAction.bind(null, memberId)
 
   return (
@@ -57,7 +66,7 @@ export default async function EditMemberPage({
 
       <Form
         action={updateMemberActionWithMemberId}
-        className={'w-full grid grid-cols-4 gap-4'}
+        className={'w-full gap-4 member-data-grid'}
       >
         <MemberDataInput
           defaultValue={memberData.name}
@@ -107,12 +116,12 @@ export default async function EditMemberPage({
         <MemberDataInput
           defaultValue={memberData.telephone}
           name={'telephone'}
-          placeholder={'Telephone'}
+          placeholder={'Telephone (only numbers)'}
         />
         <button
           type={'submit'}
           className={
-            'bg-neutral-950 text-white p-2 px-4 rounded-xl hover:bg-neutral-800 transition-all text-lg col-span-2'
+            'bg-neutral-950 text-white p-2 px-4 rounded-xl hover:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
           }
         >
           Submit

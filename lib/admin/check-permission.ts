@@ -56,7 +56,7 @@ export default function checkPermission(
         sessions: true,
       },
       put: {
-        members: false,
+        members: true,
         projects: true,
         sessions: true,
       },
