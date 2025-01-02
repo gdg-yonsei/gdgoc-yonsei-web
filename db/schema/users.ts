@@ -1,8 +1,14 @@
-import { boolean, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { usersToProjects } from '@/db/schema/users-to-projects'
-import { usersToGenerations } from '@/db/schema/users-to-generations'
 
 /**
  * @desc 사용자 권한 및 역할
@@ -38,10 +44,12 @@ export const users = pgTable('user', {
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
   isForeigner: boolean('isForeigner').default(false).notNull(),
+  major: text('major'),
+  studentId: integer('studentId'),
+  telephone: text('telephone'),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
   usersToParts: many(usersToParts),
   usersToProjects: many(usersToProjects),
-  usersToGenerations: many(usersToGenerations),
 }))

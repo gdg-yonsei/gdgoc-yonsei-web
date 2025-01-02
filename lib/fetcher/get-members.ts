@@ -1,10 +1,10 @@
+import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { desc, eq, ne } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
-import { usersToGenerations } from '@/db/schema/users-to-generations'
 import { generations } from '@/db/schema/generations'
 
 export const preload = () => {
@@ -29,11 +29,7 @@ export const getMembers = unstable_cache(
       .where(ne(users.role, 'UNVERIFIED'))
       .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
       .leftJoin(parts, eq(parts.id, usersToParts.partId))
-      .leftJoin(usersToGenerations, eq(usersToGenerations.userId, users.id))
-      .leftJoin(
-        generations,
-        eq(generations.id, usersToGenerations.generationId)
-      )
+      .leftJoin(generations, eq(generations.id, parts.generationsId))
       .orderBy(desc(users.updatedAt))
   },
   [],

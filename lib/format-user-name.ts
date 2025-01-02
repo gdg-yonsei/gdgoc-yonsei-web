@@ -6,9 +6,9 @@ export default function formatUserName(
 ) {
   if (firstName && lastName) {
     if (isForeigner) {
-      return `${lastName} ${firstName}`
+      return `${firstName} ${lastName}`
     }
-    return `${firstName} ${lastName}`
+    return `${lastName} ${firstName}`
   }
   if (name) {
     return name

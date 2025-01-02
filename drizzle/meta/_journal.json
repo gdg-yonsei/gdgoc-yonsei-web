@@ -36,6 +36,20 @@
       "when": 1735742289311,
       "tag": "0004_light_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1735792761850,
+      "tag": "0005_spicy_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735795200430,
+      "tag": "0006_illegal_nomad",
+      "breakpoints": true
     }
   ]
 }

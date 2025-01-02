@@ -1,10 +1,10 @@
+import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
-import { usersToGenerations } from '@/db/schema/users-to-generations'
 import { generations } from '@/db/schema/generations'
 
 export const preload = (userId: string) => {
@@ -24,7 +24,6 @@ export const getMember = unstable_cache(
           role: users.role,
           image: users.image,
           part: parts.name,
-          generation: generations.name,
           email: users.email,
           githubId: users.githubId,
           instagramId: users.instagramId,
@@ -32,16 +31,16 @@ export const getMember = unstable_cache(
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
           isForeigner: users.isForeigner,
+          generation: generations.name,
+          major: users.major,
+          studentId: users.studentId,
+          telephone: users.telephone,
         })
         .from(users)
         .where(eq(users.id, userId))
         .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
         .leftJoin(parts, eq(parts.id, usersToParts.partId))
-        .leftJoin(usersToGenerations, eq(usersToGenerations.userId, users.id))
-        .leftJoin(
-          generations,
-          eq(generations.id, usersToGenerations.generationId)
-        )
+        .leftJoin(generations, eq(generations.id, parts.generationsId))
         .limit(1)
     )[0]
   },
