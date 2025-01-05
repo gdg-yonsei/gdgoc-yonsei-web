@@ -8,7 +8,6 @@ import { userProfileImageState } from '@/lib/atoms'
 export default function ImageUpload({ image }: { image: string | null }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [imgFile, setImgFile] = useAtom(userProfileImageState)
-  setImgFile(image)
 
   const saveImgFile = () => {
     const file = inputRef?.current?.files?.[0] as File
@@ -29,7 +28,7 @@ export default function ImageUpload({ image }: { image: string | null }) {
         onChange={saveImgFile}
       />
       <UserProfileImage
-        src={imgFile}
+        src={imgFile ? imgFile : image}
         alt={'User Profile Image'}
         width={160}
         height={160}
@@ -38,6 +37,7 @@ export default function ImageUpload({ image }: { image: string | null }) {
       <button
         onClick={() => inputRef.current?.click()}
         className={'p-2 px-4 rounded-xl bg-neutral-800 text-white'}
+        type={'button'}
       >
         Upload Profile Image
       </button>
