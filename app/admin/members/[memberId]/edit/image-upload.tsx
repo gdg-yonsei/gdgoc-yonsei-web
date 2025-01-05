@@ -1,11 +1,14 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import UserProfileImage from '@/app/components/user-profile-image'
+import { useAtom } from 'jotai'
+import { userProfileImageState } from '@/lib/atoms'
 
 export default function ImageUpload({ image }: { image: string | null }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [imgFile, setImgFile] = useState(image)
+  const [imgFile, setImgFile] = useAtom(userProfileImageState)
+  setImgFile(image)
 
   const saveImgFile = () => {
     const file = inputRef?.current?.files?.[0] as File

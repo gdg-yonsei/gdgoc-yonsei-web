@@ -9,6 +9,7 @@ import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import ImageUpload from '@/app/admin/members/[memberId]/edit/image-upload'
+import SubmitButton from '@/app/admin/members/[memberId]/edit/submit-button'
 
 function MemberDataInput({
   defaultValue,
@@ -120,14 +121,7 @@ export default async function EditMemberPage({
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
           />
-          <button
-            type={'submit'}
-            className={
-              'bg-neutral-950 text-white p-2 px-4 rounded-xl hover:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
-            }
-          >
-            Submit
-          </button>
+          <SubmitButton />
         </Form>
       </div>
     </AdminDefaultLayout>
