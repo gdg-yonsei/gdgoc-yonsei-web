@@ -1,7 +1,7 @@
 import { getMembers } from '@/lib/fetcher/get-members'
-import Image from 'next/image'
 import Link from 'next/link'
 import formatUserName from '@/lib/format-user-name'
+import UserProfileImage from '@/app/components/user-profile-image'
 
 export default async function MembersTable() {
   const membersData = await getMembers()
@@ -18,15 +18,12 @@ export default async function MembersTable() {
           key={member.id}
           className={'bg-white rounded-lg'}
         >
-          <Image
-            src={member.image ? member.image : '/default-user-profile.png'}
-            alt={'User Profile Image'}
+          <UserProfileImage
+            src={member.image}
+            alt={`${member.name} Profile Image`}
             width={100}
             height={100}
             className={'rounded-t-lg w-full'}
-            priority={false}
-            placeholder={'blur'}
-            blurDataURL={'/default-user-profile.png'}
           />
           <div className={'p-2'}>
             <div className={'text-lg font-semibold'}>

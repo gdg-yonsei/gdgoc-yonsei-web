@@ -3,10 +3,10 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import formatUserName from '@/lib/format-user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import Image from 'next/image'
 import Link from 'next/link'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
+import UserProfileImage from '@/app/components/user-profile-image'
 
 export default async function MemberPage({
   params,
@@ -52,14 +52,12 @@ export default async function MemberPage({
       </div>
       <div className={'w-full py-2 member-data-grid gap-2'}>
         <div className={'row-span-2 flex items-center justify-center'}>
-          <Image
-            src={
-              memberData.image ? memberData.image : '/default-user-profile.png'
-            }
+          <UserProfileImage
+            src={memberData.image}
             alt={'User Profile Image'}
-            width={200}
-            height={200}
-            className={'rounded-xl'}
+            width={160}
+            height={160}
+            className={'size-40 rounded-xl'}
           />
         </div>
         <div className={'member-data-box'}>

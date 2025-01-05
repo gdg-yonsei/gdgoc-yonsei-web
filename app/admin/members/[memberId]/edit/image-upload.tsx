@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import Image from 'next/image'
+import UserProfileImage from '@/app/components/user-profile-image'
 
 export default function ImageUpload({ image }: { image: string | null }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -25,12 +25,12 @@ export default function ImageUpload({ image }: { image: string | null }) {
         ref={inputRef}
         onChange={saveImgFile}
       />
-      <Image
-        src={imgFile ? imgFile : '/default-user-profile.png'}
+      <UserProfileImage
+        src={imgFile}
+        alt={'User Profile Image'}
         width={160}
         height={160}
-        alt={'Profile Image'}
-        className={'object-cover size-40 rounded-xl'}
+        className={'size-40 rounded-xl'}
       />
       <button
         onClick={() => inputRef.current?.click()}
