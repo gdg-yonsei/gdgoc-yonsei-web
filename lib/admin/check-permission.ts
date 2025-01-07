@@ -28,16 +28,19 @@ export default function checkPermission(
       },
       post: {
         members: false,
+        membersRole: false,
         projects: true,
         sessions: false,
       },
       put: {
         members: false,
+        membersRole: false,
         projects: userId === dataOwnerId,
         sessions: false,
       },
       delete: {
         members: false,
+        membersRole: false,
         projects: userId === dataOwnerId,
         sessions: false,
       },
@@ -52,16 +55,19 @@ export default function checkPermission(
       },
       post: {
         members: true,
+        membersRole: false,
         projects: true,
         sessions: true,
       },
       put: {
         members: true,
+        membersRole: false,
         projects: true,
         sessions: true,
       },
       delete: {
         members: false,
+        membersRole: false,
         projects: true,
         sessions: true,
       },
@@ -76,16 +82,19 @@ export default function checkPermission(
       },
       post: {
         members: true,
+        membersRole: true,
         projects: true,
         sessions: true,
       },
       put: {
         members: true,
+        membersRole: true,
         projects: true,
         sessions: true,
       },
       delete: {
         members: true,
+        membersRole: true,
         projects: true,
         sessions: true,
       },
@@ -100,16 +109,19 @@ export default function checkPermission(
       },
       post: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },
       put: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },
       delete: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },
@@ -124,16 +136,19 @@ export default function checkPermission(
       },
       post: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },
       put: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },
       delete: {
         members: false,
+        membersRole: false,
         projects: false,
         sessions: false,
       },

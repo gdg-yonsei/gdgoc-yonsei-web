@@ -1,6 +1,4 @@
-import Image from 'next/image'
-
-export default function UserProfileImage({
+export default function UserProfileImagePreview({
   src,
   alt,
   width,
@@ -14,10 +12,11 @@ export default function UserProfileImage({
   className: string
 }) {
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
       src={
         src
-          ? src.includes('http')
+          ? src.includes('http') || src.includes('data:image')
             ? src
             : `https://image.gdgyonsei.moveto.kr/${src}`
           : '/default-user-profile.png'
@@ -26,8 +25,6 @@ export default function UserProfileImage({
       width={width}
       height={height}
       className={`${className} object-cover`}
-      placeholder={'blur'}
-      blurDataURL={'/default-user-profile.png'}
     />
   )
 }

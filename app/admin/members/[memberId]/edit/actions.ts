@@ -26,6 +26,13 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
   const major = formData.get('major') as string | null
   const studentId = formData.get('studentId') as string | null
   const telephone = formData.get('telephone') as string | null
+  const role = formData.get('role') as
+    | 'MEMBER'
+    | 'CORE'
+    | 'LEAD'
+    | 'ALUMNUS'
+    | null
+  console.log(role)
 
   await db
     .update(users)
@@ -40,6 +47,10 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
       major,
       studentId: studentId ? Number(studentId) : null,
       telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
+      ...((await handlePermission(session?.user?.id, 'put', 'membersRole')) &&
+      role
+        ? { role: role }
+        : {}),
     })
     .where(eq(users.id, memberId))
 

@@ -2,9 +2,12 @@
 
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
+import { useAtom } from 'jotai'
+import { isLoadingState } from '@/lib/atoms'
 
 export default function SubmitButton() {
   const { pending } = useFormStatus()
+  const [isLoading] = useAtom(isLoadingState)
 
   return (
     <button
@@ -12,7 +15,7 @@ export default function SubmitButton() {
       className={
         'bg-neutral-950 text-white p-2 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
       }
-      disabled={pending}
+      disabled={pending || isLoading}
     >
       {pending ? (
         <LoadingSpinner

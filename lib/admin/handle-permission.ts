@@ -14,6 +14,7 @@ export default async function handlePermission(
   action: 'get' | 'post' | 'put' | 'delete',
   resource:
     | 'members'
+    | 'membersRole'
     | 'projects'
     | 'sessions'
     | 'membersPage'

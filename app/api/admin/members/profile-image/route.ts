@@ -6,19 +6,21 @@ import { NextResponse } from 'next/server'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 
+export interface PostBody {
+  memberId: string
+  fileName: string
+  type: string
+}
+
 export async function POST(request: Request) {
   const session = await auth()
   if (!(await handlePermission(session?.user?.id, 'post', 'members'))) {
     return NextResponse.error()
   }
 
-  const res = (await request.json()) as {
-    memberId: string
-    fileName: string
-    type: string
-  }
+  const res = (await request.json()) as PostBody
 
-  const fileName = `/users/${res.memberId}/${crypto.randomUUID()}/${res.fileName.split('.').pop()}`
+  const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${res.fileName.split('.').pop()}`
 
   const uploadUrl = await getSignedUrl(
     r2Client,

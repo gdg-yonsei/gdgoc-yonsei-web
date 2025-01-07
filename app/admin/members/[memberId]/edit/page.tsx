@@ -10,6 +10,7 @@ import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import ImageUpload from '@/app/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/admin/members/[memberId]/edit/submit-button'
+import MemberRoleManager from '@/app/admin/members/[memberId]/edit/member-role-manager'
 
 function MemberDataInput({
   defaultValue,
@@ -66,7 +67,7 @@ export default async function EditMemberPage({
         )}
       </div>
       <div className={'flex flex-col gap-4'}>
-        <ImageUpload image={memberData.image} />
+        <ImageUpload image={memberData.image} memberId={memberData.id} />
         <Form
           action={updateMemberActionWithMemberId}
           className={'w-full gap-4 member-data-grid'}
@@ -121,6 +122,11 @@ export default async function EditMemberPage({
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
           />
+          {(await handlePermission(
+            session?.user?.id,
+            'put',
+            'membersRole'
+          )) && <MemberRoleManager userRole={memberData.role} />}
           <SubmitButton />
         </Form>
       </div>
