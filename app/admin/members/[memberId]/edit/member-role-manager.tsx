@@ -25,7 +25,7 @@ function RoleButton({
 export default function MemberRoleManager({ userRole }: { userRole: string }) {
   const [role, setRole] = useState<string>(userRole)
   return (
-    <div className={'flex flex-col col-span-2'}>
+    <div className={'flex flex-col col-span-1 sm:col-span-2'}>
       <p className={'text-sm font-semibold text-neutral-700 px-1'}>Role</p>
       <input
         name={'role'}

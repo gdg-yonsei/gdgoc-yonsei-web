@@ -69,7 +69,9 @@ export default function ImageUpload({
   }
 
   return (
-    <div className={'flex gap-2 items-center justify-start'}>
+    <div
+      className={'flex flex-col sm:flex-row gap-2 items-center justify-start'}
+    >
       <input
         hidden={true}
         type="file"
