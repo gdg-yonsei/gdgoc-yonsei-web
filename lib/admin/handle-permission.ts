@@ -21,7 +21,8 @@ export default async function handlePermission(
     | 'profilePage'
     | 'projectsPage'
     | 'sessionsPage'
-    | 'adminPage',
+    | 'adminPage'
+    | 'generationsPage',
   dataOwnerId?: string
 ): Promise<boolean> {
   // 사용자 ID가 없으면 권한이 없다고 판단

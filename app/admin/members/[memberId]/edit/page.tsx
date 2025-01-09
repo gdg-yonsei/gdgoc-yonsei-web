@@ -42,13 +42,16 @@ export default async function EditMemberPage({
   params: Promise<{ memberId: string }>
 }) {
   const { memberId } = await params
-  const memberData = await getMember(memberId)
+  // 사용자 로그인 정보 확인
   const session = await auth()
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
   ) {
     return forbidden()
   }
+  // Member 정보 가져오기
+  const memberData = await getMember(memberId)
+  // Member 정보 업데이트 Action
   const updateMemberActionWithMemberId = updateMemberAction.bind(null, memberId)
 
   return (

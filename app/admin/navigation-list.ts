@@ -22,6 +22,11 @@ export default async function navigationList(userId: string | undefined) {
       dataResource: 'adminPage',
     },
     {
+      name: 'Generations',
+      path: '/admin/generations',
+      dataResource: 'generationsPage',
+    },
+    {
       name: 'Members',
       path: '/admin/members',
       dataResource: 'membersPage',
