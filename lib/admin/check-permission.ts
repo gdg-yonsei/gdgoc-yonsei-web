@@ -26,6 +26,7 @@ export default function checkPermission(
         projectsPage: true,
         sessionsPage: true,
         generationsPage: false,
+        partsPage: false,
       },
       post: {
         members: false,
@@ -57,6 +58,7 @@ export default function checkPermission(
         projectsPage: true,
         sessionsPage: true,
         generationsPage: false,
+        partsPage: true,
       },
       post: {
         members: true,
@@ -88,6 +90,7 @@ export default function checkPermission(
         projectsPage: true,
         sessionsPage: true,
         generationsPage: true,
+        partsPage: true,
       },
       post: {
         members: true,
@@ -119,6 +122,7 @@ export default function checkPermission(
         projectsPage: true,
         sessionsPage: true,
         generationsPage: false,
+        partsPage: false,
       },
       post: {
         members: false,
@@ -150,6 +154,7 @@ export default function checkPermission(
         projectsPage: false,
         sessionsPage: false,
         generationsPage: false,
+        partsPage: false,
       },
       post: {
         members: false,

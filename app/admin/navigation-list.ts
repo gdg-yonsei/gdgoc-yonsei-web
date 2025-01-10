@@ -1,10 +1,11 @@
 import getUserRole from '@/lib/admin/get-user-role'
 import checkPermission from '@/lib/admin/check-permission'
+import { ResourceType } from '@/lib/admin/handle-permission'
 
 export interface NavigationItem {
   name: string
   path: string
-  dataResource: string
+  dataResource: ResourceType
 }
 
 /**
@@ -25,6 +26,11 @@ export default async function navigationList(userId: string | undefined) {
       name: 'Generations',
       path: '/admin/generations',
       dataResource: 'generationsPage',
+    },
+    {
+      name: 'Parts',
+      path: '/admin/parts',
+      dataResource: 'partsPage',
     },
     {
       name: 'Members',

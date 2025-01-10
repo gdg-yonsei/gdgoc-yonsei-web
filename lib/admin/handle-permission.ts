@@ -9,12 +9,14 @@ export type ResourceType =
   | 'projects'
   | 'sessions'
   | 'generations'
+  | 'parts'
   | 'membersPage'
   | 'profilePage'
   | 'projectsPage'
   | 'sessionsPage'
   | 'adminPage'
   | 'generationsPage'
+  | 'partsPage'
 
 /**
  * 사용자 권한 확인 함수
