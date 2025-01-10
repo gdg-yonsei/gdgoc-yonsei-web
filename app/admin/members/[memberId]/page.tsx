@@ -3,10 +3,9 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import formatUserName from '@/lib/format-user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import Link from 'next/link'
-import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
+import DataEditLink from '@/app/components/admin/data-edit-link'
 
 export default async function MemberPage({
   params,
@@ -17,12 +16,6 @@ export default async function MemberPage({
 
   const memberData = await getMember(memberId)
   const session = await auth()
-  const canEdit = await handlePermission(
-    session?.user?.id,
-    'put',
-    'members',
-    memberId
-  )
 
   return (
     <AdminDefaultLayout>
@@ -39,16 +32,13 @@ export default async function MemberPage({
             memberData.isForeigner
           )}
         </div>
-        {canEdit && (
-          <Link
-            href={`/admin/members/${memberId}/edit`}
-            className={
-              'p-1 rounded-lg px-3 hover:px-4 bg-neutral-900 text-white hover:bg-neutral-800 transition-all'
-            }
-          >
-            Edit
-          </Link>
-        )}
+
+        <DataEditLink
+          session={session}
+          dataId={memberId}
+          dataType={'members'}
+          href={`/admin/members/${memberId}/edit`}
+        />
       </div>
       <div className={'w-full py-2 member-data-grid gap-2'}>
         <div className={'row-span-2 flex items-center justify-center'}>

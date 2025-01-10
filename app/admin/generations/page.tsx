@@ -6,7 +6,13 @@ export default function GenerationsPage() {
   return (
     <AdminDefaultLayout>
       <div className={'admin-title'}>Generations</div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div
+            className={'w-full h-28 rounded-xl bg-neutral-200 animate-pulse'}
+          />
+        }
+      >
         <GenerationsTable />
       </Suspense>
     </AdminDefaultLayout>

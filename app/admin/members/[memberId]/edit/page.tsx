@@ -9,32 +9,9 @@ import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import ImageUpload from '@/app/admin/members/[memberId]/edit/image-upload'
-import SubmitButton from '@/app/admin/members/[memberId]/edit/submit-button'
+import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/admin/members/[memberId]/edit/member-role-manager'
-
-function MemberDataInput({
-  defaultValue,
-  name,
-  placeholder,
-}: {
-  defaultValue: string | number | undefined | null
-  name: string
-  placeholder: string
-}) {
-  return (
-    <div className={'flex flex-col'}>
-      <p className={'text-sm font-semibold text-neutral-700 px-1'}>
-        {placeholder}
-      </p>
-      <input
-        className={'member-data-input'}
-        defaultValue={defaultValue ? defaultValue : ''}
-        name={name}
-        placeholder={placeholder}
-      />
-    </div>
-  )
-}
+import DataInput from '@/app/components/admin/data-input'
 
 export default async function EditMemberPage({
   params,
@@ -75,52 +52,52 @@ export default async function EditMemberPage({
           action={updateMemberActionWithMemberId}
           className={'w-full gap-4 member-data-grid'}
         >
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.name}
             name={'name'}
             placeholder={'Github Name'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'First Name'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Last Name'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.githubId}
             name={'githubId'}
             placeholder={'Github ID'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.instagramId}
             name={'instagramId'}
             placeholder={'Instagram ID'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In ID'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'Major'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
           />
-          <MemberDataInput
+          <DataInput
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}

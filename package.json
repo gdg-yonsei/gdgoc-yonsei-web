@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
-    "@aws-sdk/client-s3": "^3.723.0",
-    "@aws-sdk/s3-request-presigner": "^3.723.0",
+    "@aws-sdk/client-s3": "^3.726.0",
+    "@aws-sdk/s3-request-presigner": "^3.726.0",
     "@heroicons/react": "^2.2.0",
     "@simplewebauthn/browser": "9.0.1",
     "@simplewebauthn/server": "9.0.3",
@@ -29,7 +29,8 @@
     "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
