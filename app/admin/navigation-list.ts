@@ -5,7 +5,7 @@ import { ResourceType } from '@/lib/admin/handle-permission'
 export interface NavigationItem {
   name: string
   path: string
-  dataResource: ResourceType
+  dataResource: ResourceType | string
 }
 
 /**
