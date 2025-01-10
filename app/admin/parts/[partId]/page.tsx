@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
 import { getPart } from '@/lib/fetcher/get-part'
+import formatUserName from '@/lib/format-user-name'
 
 export default async function PartPage({
   params,
@@ -33,7 +34,29 @@ export default async function PartPage({
           href={`/admin/parts/${partId}/edit`}
         />
       </div>
-      <div className={'member-data-grid'}></div>
+      <div className={'member-data-grid'}>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Description</div>
+          <div className={'member-data-context'}>{partData.description}</div>
+        </div>
+        <div className={'col-span-4'}>
+          <div className={'member-data-title'}>Members</div>
+          <div className={'member-data-grid'}>
+            {partData.usersToParts.map((user) => (
+              <div key={user.user.id} className={'member-data-box'}>
+                <div className={'member-data-context'}>
+                  {formatUserName(
+                    user.user.name,
+                    user.user.firstName,
+                    user.user.lastName,
+                    user.user.isForeigner
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </AdminDefaultLayout>
   )
 }
