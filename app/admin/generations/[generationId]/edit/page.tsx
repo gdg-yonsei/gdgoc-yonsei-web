@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { updateGenerationAction } from '@/app/admin/generations/[generationId]/edit/actions'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
-import DataForm from '@/app/admin/generations/[generationId]/edit/data-form'
+import DataForm from '@/app/components/data-form'
 
 export default async function EditGenerationPage({
   params,

@@ -6,38 +6,34 @@ import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
-import { generations } from '@/db/schema/generations'
 import { z } from 'zod'
+import { parts } from '@/db/schema/parts'
 
-const generationValidation = z.object({
+const partValidation = z.object({
   name: z.string({ message: 'Name is required' }).nonempty('Name is required'),
-  startDate: z.string().date('Invalid Start Date Format'),
-  endDate: z.string().date('Invalid End Date Format').nullable(),
+  description: z.string().nullable(),
+  generationId: z
+    .number({ message: 'Invalid Generation' })
+    .gte(1, { message: 'Invalid Generation' }),
 })
 
-export async function updateGenerationAction(
-  generationId: string,
+export async function updatePartAction(
+  partId: string,
   prevState: { error: string },
   formData: FormData
 ) {
   const session = await auth()
-  if (
-    !(await handlePermission(
-      session?.user?.id,
-      'put',
-      'generations',
-      generationId
-    ))
-  ) {
+  if (!(await handlePermission(session?.user?.id, 'put', 'parts', partId))) {
     return forbidden()
   }
 
   const name = formData.get('name') as string | null
-  const startDate = formData.get('startDate') as string | null
-  const endDate = formData.get('endDate') as string | null
+  const description = formData.get('description') as string | null
+  const generationId = Number(formData.get('generationId') as string | null)
+  console.log(generationId)
 
   try {
-    generationValidation.parse({ name, startDate, endDate })
+    partValidation.parse({ name, description, generationId })
   } catch (err) {
     if (err instanceof z.ZodError) {
       console.log(err.issues)
@@ -47,19 +43,19 @@ export async function updateGenerationAction(
 
   try {
     await db
-      .update(generations)
+      .update(parts)
       .set({
         name: name!,
-        startDate: startDate!,
-        endDate: endDate ? endDate : null,
+        description: description,
+        generationsId: generationId,
       })
-      .where(eq(generations.id, Number(generationId)))
+      .where(eq(parts.id, Number(partId)))
 
-    revalidateTag('generations')
+    revalidateTag('parts')
   } catch (e) {
     console.error(e)
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/generations/${generationId}`)
+  redirect(`/admin/parts/${partId}`)
 }

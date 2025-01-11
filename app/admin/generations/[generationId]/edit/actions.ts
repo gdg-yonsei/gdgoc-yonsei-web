@@ -56,6 +56,7 @@ export async function updateGenerationAction(
       .where(eq(generations.id, Number(generationId)))
 
     revalidateTag('generations')
+    revalidateTag('parts')
   } catch (e) {
     console.error(e)
     return { error: 'DB Update Error' }

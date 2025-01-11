@@ -1,57 +1,62 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getGeneration } from '@/lib/fetcher/get-generation'
 import { notFound } from 'next/navigation'
-import { updateGenerationAction } from '@/app/admin/generations/[generationId]/edit/actions'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
-import DataForm from '@/app/admin/generations/[generationId]/edit/data-form'
+import { getPart } from '@/lib/fetcher/get-part'
+import { updatePartAction } from '@/app/admin/parts/[partId]/edit/actions'
+import DataTextarea from '@/app/components/admin/data-textarea'
+import DataForm from '@/app/components/data-form'
+import { getGenerations } from '@/lib/fetcher/get-generations'
+import DataSelectInput from '@/app/components/admin/data-select-input'
 
 export default async function EditGenerationPage({
   params,
 }: {
-  params: Promise<{ generationId: string }>
+  params: Promise<{ partId: string }>
 }) {
-  const { generationId } = await params
-  const generationData = await getGeneration(Number(generationId))
+  const { partId } = await params
+  const partData = await getPart(Number(partId))
 
-  if (!generationData) {
+  if (!partData) {
     notFound()
   }
 
-  const updateGenerationActionWithGenerationId = updateGenerationAction.bind(
-    null,
-    generationId
-  )
+  const updatePartsActionWithPartId = updatePartAction.bind(null, partId)
+
+  const generations = await getGenerations()
+  const generationList = generations.map((generation) => ({
+    name: generation.name,
+    value: String(generation.id),
+  }))
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={`/admin/generations/${generationId}`}>
+      <AdminNavigationButton href={`/admin/parts/${partId}`}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Generation: {generationData.name}</p>
+        <p className={'text-lg'}>{partData.name}</p>
       </AdminNavigationButton>
-      <div className={'admin-title py-4'}>
-        Edit Generation: {generationData.name}
-      </div>
+      <div className={'admin-title py-4'}>Edit {partData.name}</div>
       <DataForm
-        action={updateGenerationActionWithGenerationId}
+        action={updatePartsActionWithPartId}
         className={'w-full gap-4 member-data-grid'}
       >
         <DataInput
-          defaultValue={generationData.name}
+          defaultValue={partData.name}
           name={'name'}
-          placeholder={'Generation Name'}
+          placeholder={'Name'}
         />
-        <DataInput
-          defaultValue={generationData.startDate}
-          name={'startDate'}
-          placeholder={'Start Date'}
+        <DataTextarea
+          defaultValue={partData.description}
+          name={'description'}
+          placeholder={'Description'}
         />
-        <DataInput
-          defaultValue={generationData.endDate}
-          name={'endDate'}
-          placeholder={'End Date'}
+        <DataSelectInput
+          title={'Generation'}
+          data={generationList}
+          name={'generationId'}
+          defaultValue={String(partData.generationsId)}
         />
         <SubmitButton />
       </DataForm>

@@ -34,6 +34,7 @@ export default function checkPermission(
         generations: false,
         projects: true,
         sessions: false,
+        parts: false,
       },
       put: {
         members: false,
@@ -41,6 +42,7 @@ export default function checkPermission(
         generations: false,
         projects: userId === dataOwnerId,
         sessions: false,
+        parts: false,
       },
       delete: {
         members: false,
@@ -48,6 +50,7 @@ export default function checkPermission(
         generations: false,
         projects: userId === dataOwnerId,
         sessions: false,
+        parts: false,
       },
     },
     CORE: {
@@ -98,6 +101,7 @@ export default function checkPermission(
         generations: true,
         projects: true,
         sessions: true,
+        parts: true,
       },
       put: {
         members: true,
@@ -105,6 +109,7 @@ export default function checkPermission(
         generations: true,
         projects: true,
         sessions: true,
+        parts: true,
       },
       delete: {
         members: true,
@@ -112,6 +117,7 @@ export default function checkPermission(
         generations: true,
         projects: true,
         sessions: true,
+        parts: true,
       },
     },
     ALUMNUS: {
@@ -130,6 +136,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
       put: {
         members: false,
@@ -137,6 +144,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
       delete: {
         members: false,
@@ -144,6 +152,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
     },
     UNVERIFIED: {
@@ -162,6 +171,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
       put: {
         members: false,
@@ -169,6 +179,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
       delete: {
         members: false,
@@ -176,6 +187,7 @@ export default function checkPermission(
         generations: false,
         projects: false,
         sessions: false,
+        parts: false,
       },
     },
   }
