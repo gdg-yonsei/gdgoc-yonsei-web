@@ -39,16 +39,19 @@ export default async function EditGenerationPage({
         className={'w-full gap-4 member-data-grid'}
       >
         <DataInput
+          title={'Generation Name'}
           defaultValue={generationData.name}
           name={'name'}
           placeholder={'Generation Name'}
         />
         <DataInput
+          title={'Start Date'}
           defaultValue={generationData.startDate}
           name={'startDate'}
           placeholder={'Start Date'}
         />
         <DataInput
+          title={'End Date'}
           defaultValue={generationData.endDate}
           name={'endDate'}
           placeholder={'End Date'}

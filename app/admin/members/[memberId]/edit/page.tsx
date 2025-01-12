@@ -53,51 +53,61 @@ export default async function EditMemberPage({
           className={'w-full gap-4 member-data-grid'}
         >
           <DataInput
+            title={'Github Name'}
             defaultValue={memberData.name}
             name={'name'}
             placeholder={'Github Name'}
           />
           <DataInput
+            title={'First Name'}
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'First Name'}
           />
           <DataInput
+            title={'Last Name'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Last Name'}
           />
           <DataInput
+            title={'E-Mail'}
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
           />
           <DataInput
+            title={'Github ID'}
             defaultValue={memberData.githubId}
             name={'githubId'}
             placeholder={'Github ID'}
           />
           <DataInput
+            title={'Instagram ID'}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
             placeholder={'Instagram ID'}
           />
           <DataInput
+            title={'Linked In ID'}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In ID'}
           />
           <DataInput
+            title={'Major'}
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'Major'}
           />
           <DataInput
+            title={'Student ID'}
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
           />
           <DataInput
+            title={'Telephone'}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}

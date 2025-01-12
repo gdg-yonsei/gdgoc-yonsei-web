@@ -7,13 +7,8 @@ import { eq } from 'drizzle-orm'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import { generations } from '@/db/schema/generations'
+import { generationValidation } from '@/lib/validations/generation'
 import { z } from 'zod'
-
-const generationValidation = z.object({
-  name: z.string({ message: 'Name is required' }).nonempty('Name is required'),
-  startDate: z.string().date('Invalid Start Date Format'),
-  endDate: z.string().date('Invalid End Date Format').nullable(),
-})
 
 export async function updateGenerationAction(
   generationId: string,
