@@ -10,6 +10,9 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import DataForm from '@/app/components/data-form'
 import { getGenerations } from '@/lib/fetcher/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import { getMembers } from '@/lib/fetcher/get-members'
+import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
+import formatUserName from '@/lib/format-user-name'
 
 export default async function EditGenerationPage({
   params,
@@ -18,6 +21,9 @@ export default async function EditGenerationPage({
 }) {
   const { partId } = await params
   const partData = await getPart(Number(partId))
+  const membersIdList = partData
+    ? partData.usersToParts.map((user) => user.user.id)
+    : []
 
   if (!partData) {
     notFound()
@@ -30,6 +36,8 @@ export default async function EditGenerationPage({
     name: generation.name,
     value: String(generation.id),
   }))
+
+  const membersData = await getMembers()
 
   return (
     <AdminDefaultLayout>
@@ -57,6 +65,19 @@ export default async function EditGenerationPage({
           data={generationList}
           name={'generationId'}
           defaultValue={String(partData.generationsId)}
+        />
+        <DataSelectMultipleInput
+          data={membersData.map((member) => ({
+            name: formatUserName(
+              member.name,
+              member.firstName,
+              member.lastName
+            ),
+            value: member.id,
+          }))}
+          name={'membersList'}
+          title={'Members'}
+          defaultValue={membersIdList}
         />
         <SubmitButton />
       </DataForm>

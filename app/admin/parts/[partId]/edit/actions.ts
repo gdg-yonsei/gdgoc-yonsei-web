@@ -8,6 +8,7 @@ import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import { z } from 'zod'
 import { parts } from '@/db/schema/parts'
+import { usersToParts } from '@/db/schema/users-to-parts'
 
 const partValidation = z.object({
   name: z.string({ message: 'Name is required' }).nonempty('Name is required'),
@@ -15,6 +16,7 @@ const partValidation = z.object({
   generationId: z
     .number({ message: 'Invalid Generation' })
     .gte(1, { message: 'Invalid Generation' }),
+  membersList: z.array(z.string()),
 })
 
 export async function updatePartAction(
@@ -30,10 +32,12 @@ export async function updatePartAction(
   const name = formData.get('name') as string | null
   const description = formData.get('description') as string | null
   const generationId = Number(formData.get('generationId') as string | null)
-  console.log(generationId)
+  const membersList = JSON.parse(
+    formData.get('membersList') as string
+  ) as string[]
 
   try {
-    partValidation.parse({ name, description, generationId })
+    partValidation.parse({ name, description, generationId, membersList })
   } catch (err) {
     if (err instanceof z.ZodError) {
       console.log(err.issues)
@@ -50,6 +54,15 @@ export async function updatePartAction(
         generationsId: generationId,
       })
       .where(eq(parts.id, Number(partId)))
+    await db.delete(usersToParts).where(eq(usersToParts.partId, Number(partId)))
+    if (membersList.length > 0) {
+      await db.insert(usersToParts).values(
+        membersList.map((memberId) => ({
+          userId: memberId,
+          partId: Number(partId),
+        }))
+      )
+    }
 
     revalidateTag('parts')
   } catch (e) {
