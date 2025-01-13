@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { revalidateTag } from 'next/cache'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
+import getPartFormData from '@/lib/admin/get-part-form-data'
 
 export async function createPartAction(
   prev: { error: string },
@@ -19,12 +20,8 @@ export async function createPartAction(
     return forbidden()
   }
 
-  const name = formData.get('name') as string | null
-  const description = formData.get('description') as string | null
-  const generationId = Number(formData.get('generationId') as string | null)
-  const membersList = JSON.parse(
-    formData.get('membersList') as string
-  ) as string[]
+  const { name, description, generationId, membersList } =
+    getPartFormData(formData)
 
   try {
     partValidation.parse({ name, description, generationId, membersList })

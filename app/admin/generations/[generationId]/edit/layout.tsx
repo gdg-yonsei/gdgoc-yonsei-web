@@ -9,6 +9,7 @@ export default async function EditGenerationLayout({
   children: ReactNode
 }) {
   const session = await auth()
+  // 사용자가 generation 을 수정할 권한이 있는지 확인
   if (!(await handlePermission(session?.user?.id, 'put', 'generations'))) {
     forbidden()
   }

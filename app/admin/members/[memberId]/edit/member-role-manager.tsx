@@ -2,6 +2,13 @@
 
 import { Dispatch, SetStateAction, useState } from 'react'
 
+/**
+ * Role 변경 버튼 컴포넌트
+ * @param role
+ * @param value
+ * @param setRole
+ * @constructor
+ */
 function RoleButton({
   role,
   value,
@@ -22,8 +29,15 @@ function RoleButton({
   )
 }
 
+/**
+ * 멤버 Role 을 관리하는 컴포넌트
+ * @param userRole - 기존 사용자 Role
+ * @constructor
+ */
 export default function MemberRoleManager({ userRole }: { userRole: string }) {
+  // 사용자 Role 상태
   const [role, setRole] = useState<string>(userRole)
+
   return (
     <div className={'flex flex-col col-span-1 sm:col-span-2'}>
       <p className={'text-sm font-semibold text-neutral-700 px-1'}>Role</p>

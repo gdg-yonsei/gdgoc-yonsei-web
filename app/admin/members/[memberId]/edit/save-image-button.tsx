@@ -2,6 +2,13 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import { motion } from 'motion/react'
 
+/**
+ * 이미지 저장 버튼
+ * @param isLoading - 로딩 상태
+ * @param imgFile - 이미지 경로 URL
+ * @param onClick - 클릭 이벤트 함수
+ * @constructor
+ */
 export default function SaveImageButton({
   isLoading,
   imgFile,

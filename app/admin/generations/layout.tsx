@@ -8,6 +8,7 @@ export default async function GenerationsLayout({
 }: {
   children: ReactNode
 }) {
+  // 사용자가 generation 페이지에 접근할 권한이 있는지 확인
   const session = await auth()
   if (!(await handlePermission(session?.user?.id, 'get', 'generationsPage'))) {
     forbidden()

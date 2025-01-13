@@ -14,7 +14,9 @@ export default async function MemberPage({
 }) {
   const { memberId } = await params
 
+  // Member 정보 가져오기
   const memberData = await getMember(memberId)
+  // 사용자 로그인 정보 가져오기
   const session = await auth()
 
   return (

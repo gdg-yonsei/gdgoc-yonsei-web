@@ -14,12 +14,15 @@ export default async function EditGenerationPage({
   params: Promise<{ generationId: string }>
 }) {
   const { generationId } = await params
+  // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
 
+  // generation 데이터가 없을 경우 404 페이지로 이동
   if (!generationData) {
     notFound()
   }
 
+  // updateGenerationAction 에 generationId 를 넣어서 새로운 함수 생성
   const updateGenerationActionWithGenerationId = updateGenerationAction.bind(
     null,
     generationId

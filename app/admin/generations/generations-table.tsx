@@ -2,7 +2,12 @@ import { getGenerations } from '@/lib/fetcher/get-generations'
 import Link from 'next/link'
 import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'
 
+/**
+ * Generations 를 보여주는 Table 컴포넌트
+ * @constructor
+ */
 export default async function GenerationsTable() {
+  // generations 데이터 가져오기
   const generationsData = await getGenerations()
 
   return (

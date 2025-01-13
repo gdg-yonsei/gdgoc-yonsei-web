@@ -9,12 +9,20 @@ import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import { memberValidation } from '@/lib/validations/member'
 import { z } from 'zod'
+import getMemberFormData from '@/lib/admin/get-member-form-data'
 
+/**
+ * Update Member Action
+ * @param memberId - member id
+ * @param prev - previous state for form error
+ * @param formData - member data
+ */
 export async function updateMemberAction(
   memberId: string,
   prev: { error: string },
   formData: FormData
 ) {
+  // 사용자가 member 를 수정할 권한이 있는지 확인
   const session = await auth()
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
@@ -22,25 +30,24 @@ export async function updateMemberAction(
     return forbidden()
   }
 
-  const name = formData.get('name') as string | null
-  const firstName = formData.get('firstName') as string | null
-  const lastName = formData.get('lastName') as string | null
-  const email = formData.get('email') as string | null
-  const githubId = formData.get('githubId') as string | null
-  const instagramId = formData.get('instagramId') as string | null
-  const linkedInId = formData.get('linkedInId') as string | null
-  const major = formData.get('major') as string | null
-  const studentId = formData.get('studentId') as string | null
-  const telephone = formData.get('telephone') as string | null
-  const role = formData.get('role') as
-    | 'MEMBER'
-    | 'CORE'
-    | 'LEAD'
-    | 'ALUMNUS'
-    | null
-  const isForeigner = formData.get('isForeigner') === 'true'
+  // form data 에서 member data 추출
+  const {
+    name,
+    firstName,
+    lastName,
+    email,
+    githubId,
+    instagramId,
+    linkedInId,
+    major,
+    studentId,
+    telephone,
+    role,
+    isForeigner,
+  } = getMemberFormData(formData)
 
   try {
+    // zod validation
     memberValidation.parse({
       name,
       firstName,
@@ -56,11 +63,13 @@ export async function updateMemberAction(
       isForeigner,
     })
   } catch (err) {
+    // 데이터 형식이 맞지 않을 경우 오류 반환
     if (err instanceof z.ZodError) {
       console.log(err.issues)
       return { error: err.issues[0].message }
     }
   }
+  // member data 업데이트 쿼리
   try {
     await db
       .update(users)
@@ -83,11 +92,14 @@ export async function updateMemberAction(
       })
       .where(eq(users.id, memberId))
 
+    // 캐시 업데이트
     revalidateTag('members')
   } catch (e) {
+    // DB 업데이트 오류 발생 시 오류 반환
     console.error(e)
     return { error: 'DB Update Error' }
   }
 
+  // 성공 시 해당 member 페이지로 이동
   redirect(`/admin/members/${memberId}`)
 }

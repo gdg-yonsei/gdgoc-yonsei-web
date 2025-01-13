@@ -13,10 +13,13 @@ export default async function GenerationPage({
   params: Promise<{ generationId: string }>
 }) {
   const { generationId } = await params
+  // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
+  // generation 데이터가 없을 경우 404 페이지로 이동
   if (!generationData) {
     notFound()
   }
+  // 사용자 권한 가져오기
   const session = await auth()
 
   return (

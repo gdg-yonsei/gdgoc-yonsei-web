@@ -20,15 +20,19 @@ export default async function EditGenerationPage({
   params: Promise<{ partId: string }>
 }) {
   const { partId } = await params
+  // Part 정보 가져오기
   const partData = await getPart(Number(partId))
+  // 파트에 속한 멤버 정보 리스트
   const membersIdList = partData
     ? partData.usersToParts.map((user) => user.user.id)
     : []
 
+  // 파트 정보가 없다면 404 페이지로 이동
   if (!partData) {
     notFound()
   }
 
+  // Part 정보 업데이트 Action
   const updatePartsActionWithPartId = updatePartAction.bind(null, partId)
 
   const generations = await getGenerations()

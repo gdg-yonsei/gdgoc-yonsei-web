@@ -3,7 +3,12 @@ import Link from 'next/link'
 import formatUserName from '@/lib/format-user-name'
 import UserProfileImage from '@/app/components/user-profile-image'
 
+/**
+ * 멤버 정보 테이블 컴포넌트
+ * @constructor
+ */
 export default async function MembersTable() {
+  // 멤버 정보 가져오기
   const membersData = await getMembers()
 
   return (
