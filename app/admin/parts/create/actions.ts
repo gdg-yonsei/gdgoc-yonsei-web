@@ -1,23 +1,21 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
-import db from '@/db'
-import { forbidden, redirect } from 'next/navigation'
-import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
-import { z } from 'zod'
+import handlePermission from '@/lib/admin/handle-permission'
+import db from '@/db'
 import { parts } from '@/db/schema/parts'
+import { forbidden, redirect } from 'next/navigation'
+import { z } from 'zod'
+import { revalidateTag } from 'next/cache'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 
-export async function updatePartAction(
-  partId: string,
-  prevState: { error: string },
+export async function createPartAction(
+  prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
-  if (!(await handlePermission(session?.user?.id, 'put', 'parts', partId))) {
+  if (!(await handlePermission(session?.user?.id, 'put', 'parts'))) {
     return forbidden()
   }
 
@@ -38,20 +36,20 @@ export async function updatePartAction(
   }
 
   try {
-    await db
-      .update(parts)
-      .set({
+    const createPart = await db
+      .insert(parts)
+      .values({
         name: name!,
         description: description,
         generationsId: generationId,
       })
-      .where(eq(parts.id, Number(partId)))
-    await db.delete(usersToParts).where(eq(usersToParts.partId, Number(partId)))
+      .returning({ id: parts.id })
+
     if (membersList.length > 0) {
       await db.insert(usersToParts).values(
         membersList.map((memberId) => ({
           userId: memberId,
-          partId: Number(partId),
+          partId: createPart[0].id,
         }))
       )
     }
@@ -63,5 +61,5 @@ export async function updatePartAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/parts/${partId}`)
+  redirect(`/admin/parts`)
 }

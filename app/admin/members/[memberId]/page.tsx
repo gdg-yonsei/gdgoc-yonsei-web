@@ -94,6 +94,12 @@ export default async function MemberPage({
           <div className={'member-data-title'}>Telephone</div>
           <div className={'member-data-context'}>{memberData.telephone}</div>
         </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Foreigner</div>
+          <div className={'member-data-context'}>
+            {memberData.isForeigner ? 'True' : 'False'}
+          </div>
+        </div>
       </div>
     </AdminDefaultLayout>
   )

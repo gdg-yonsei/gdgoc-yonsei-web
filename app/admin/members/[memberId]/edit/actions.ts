@@ -32,7 +32,7 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
     | 'LEAD'
     | 'ALUMNUS'
     | null
-  console.log(role)
+  const isForeigner = formData.get('isForeigner') === 'true'
 
   await db
     .update(users)
@@ -51,6 +51,7 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
       role
         ? { role: role }
         : {}),
+      isForeigner,
     })
     .where(eq(users.id, memberId))
 

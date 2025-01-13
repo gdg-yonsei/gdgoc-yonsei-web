@@ -112,6 +112,15 @@ export default async function EditMemberPage({
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
           />
+          <DataInput
+            title={'Foreigner'}
+            defaultValue={'true'}
+            name={'isForeigner'}
+            placeholder={''}
+            type={'checkbox'}
+            isChecked={memberData.isForeigner}
+          />
+
           {(await handlePermission(
             session?.user?.id,
             'put',

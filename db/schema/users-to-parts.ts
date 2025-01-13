@@ -8,10 +8,10 @@ export const usersToParts = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade' }),
     partId: serial('part_id')
       .notNull()
-      .references(() => parts.id),
+      .references(() => parts.id, { onDelete: 'cascade' }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.partId] }),

@@ -23,10 +23,14 @@ export default function DataSelectInput({
   }, [value])
 
   return (
-    <div className={'flex gap-2 flex-col'}>
+    <div
+      className={
+        'flex gap-2 flex-col col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4'
+      }
+    >
       <div className={'member-data-title'}>{title}</div>
       <input name={name} hidden={true} ref={inputRef} />
-      <div className={'grid grid-cols-2 gap-2'}>
+      <div className={'member-data-grid gap-2'}>
         {data.map((d, i) => (
           <button
             type={'button'}
