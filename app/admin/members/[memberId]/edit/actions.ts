@@ -7,8 +7,14 @@ import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
+import { memberValidation } from '@/lib/validations/member'
+import { z } from 'zod'
 
-export async function updateMemberAction(memberId: string, formData: FormData) {
+export async function updateMemberAction(
+  memberId: string,
+  prev: { error: string },
+  formData: FormData
+) {
   const session = await auth()
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
@@ -34,9 +40,8 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
     | null
   const isForeigner = formData.get('isForeigner') === 'true'
 
-  await db
-    .update(users)
-    .set({
+  try {
+    memberValidation.parse({
       name,
       firstName,
       lastName,
@@ -45,16 +50,44 @@ export async function updateMemberAction(memberId: string, formData: FormData) {
       instagramId,
       linkedInId,
       major,
-      studentId: studentId ? Number(studentId) : null,
-      telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
-      ...((await handlePermission(session?.user?.id, 'put', 'membersRole')) &&
-      role
-        ? { role: role }
-        : {}),
+      studentId,
+      telephone,
+      role,
       isForeigner,
     })
-    .where(eq(users.id, memberId))
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.issues)
+      return { error: err.issues[0].message }
+    }
+  }
+  try {
+    await db
+      .update(users)
+      .set({
+        name,
+        firstName,
+        lastName,
+        email,
+        githubId,
+        instagramId,
+        linkedInId,
+        major,
+        studentId: studentId ? Number(studentId) : null,
+        telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
+        ...((await handlePermission(session?.user?.id, 'put', 'membersRole')) &&
+        role
+          ? { role: role }
+          : {}),
+        isForeigner,
+      })
+      .where(eq(users.id, memberId))
 
-  revalidateTag('members')
+    revalidateTag('members')
+  } catch (e) {
+    console.error(e)
+    return { error: 'DB Update Error' }
+  }
+
   redirect(`/admin/members/${memberId}`)
 }
