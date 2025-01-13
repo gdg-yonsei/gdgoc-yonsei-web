@@ -5,7 +5,7 @@ import UserProfileImage from '@/app/components/user-profile-image'
 
 export default async function MembersTable() {
   const membersData = await getMembers()
-  console.log(membersData)
+
   return (
     <div
       className={
