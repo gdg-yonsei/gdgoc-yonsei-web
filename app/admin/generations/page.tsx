@@ -13,6 +13,7 @@ export default async function GenerationsPage() {
     'post',
     'generations'
   )
+
   return (
     <AdminDefaultLayout>
       <div className={'flex items-center gap-2 pb-2'}>
@@ -21,7 +22,7 @@ export default async function GenerationsPage() {
           <Link
             href={'/admin/generations/create'}
             className={
-              'flex items-center gap-1 p-2 px-4 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-all'
+              'flex items-center gap-1 p-2 px-3 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-all'
             }
           >
             <PlusCircleIcon className={'size-5'} />

@@ -1,8 +1,9 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
-import { asc } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
+import { parts } from '@/db/schema/parts'
 
 export const preload = () => {
   void getParts()
@@ -23,7 +24,7 @@ export const getParts = unstable_cache(
           },
         },
       },
-      orderBy: [asc(generations.id)],
+      orderBy: [desc(generations.id), desc(parts.id)],
     })
   },
   [],

@@ -10,7 +10,7 @@ export default function CreateGenerationPage() {
       <div className={'admin-title'}>Create New Generation</div>
       <DataForm
         action={createGenerationAction}
-        className={'flex flex-col gap-2'}
+        className={'gap-2 member-data-grid'}
       >
         <DataInput
           title={'Generation Name'}

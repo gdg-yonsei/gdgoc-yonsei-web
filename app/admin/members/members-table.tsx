@@ -5,7 +5,7 @@ import UserProfileImage from '@/app/components/user-profile-image'
 
 export default async function MembersTable() {
   const membersData = await getMembers()
-
+  console.log(membersData)
   return (
     <div
       className={
@@ -30,7 +30,7 @@ export default async function MembersTable() {
               {formatUserName(member.name, member.firstName, member.lastName)}
             </div>
             <div className={'flex items-center gap-2 text-sm'}>
-              {member.generation && <div>{member.generation}기</div>}
+              {member.generation && <div>{member.generation}</div>}
               <div>{member.role.toUpperCase()}</div>
               <div>{member.part}</div>
             </div>

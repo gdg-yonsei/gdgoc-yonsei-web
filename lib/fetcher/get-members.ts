@@ -14,7 +14,8 @@ export const preload = () => {
 export const getMembers = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Members Data')
-    return db
+
+    const userList = await db
       .select({
         id: users.id,
         name: users.name,
@@ -30,7 +31,19 @@ export const getMembers = unstable_cache(
       .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
       .leftJoin(parts, eq(parts.id, usersToParts.partId))
       .leftJoin(generations, eq(generations.id, parts.generationsId))
-      .orderBy(desc(users.updatedAt))
+      .orderBy(desc(users.updatedAt), desc(parts.id))
+
+    const uniqueUsersId: string[] = []
+    const uniqueUsers = []
+
+    for (const user of userList) {
+      if (!uniqueUsersId.includes(user.id)) {
+        uniqueUsers.push(user)
+        uniqueUsersId.push(user.id)
+      }
+    }
+
+    return uniqueUsers
   },
   [],
   {

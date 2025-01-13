@@ -65,6 +65,7 @@ export async function updatePartAction(
     }
 
     revalidateTag('parts')
+    revalidateTag('members')
   } catch (e) {
     console.error(e)
     return { error: 'DB Update Error' }
