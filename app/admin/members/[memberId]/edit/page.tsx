@@ -3,7 +3,6 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getMember } from '@/lib/fetcher/get-member'
 import formatUserName from '@/lib/format-user-name'
-import Form from 'next/form'
 import { updateMemberAction } from '@/app/admin/members/[memberId]/edit/actions'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
@@ -12,6 +11,7 @@ import ImageUpload from '@/app/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/admin/members/[memberId]/edit/member-role-manager'
 import DataInput from '@/app/components/admin/data-input'
+import DataForm from '@/app/components/data-form'
 
 export default async function EditMemberPage({
   params,
@@ -48,24 +48,24 @@ export default async function EditMemberPage({
       </div>
       <div className={'flex flex-col gap-4'}>
         <ImageUpload image={memberData.image} memberId={memberData.id} />
-        <Form
+        <DataForm
           action={updateMemberActionWithMemberId}
           className={'w-full gap-4 member-data-grid'}
         >
           <DataInput
-            title={'Github Name'}
+            title={'Github Name*'}
             defaultValue={memberData.name}
             name={'name'}
             placeholder={'Github Name'}
           />
           <DataInput
-            title={'First Name'}
+            title={'First Name*'}
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'First Name'}
           />
           <DataInput
-            title={'Last Name'}
+            title={'Last Name*'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Last Name'}
@@ -127,7 +127,7 @@ export default async function EditMemberPage({
             'membersRole'
           )) && <MemberRoleManager userRole={memberData.role} />}
           <SubmitButton />
-        </Form>
+        </DataForm>
       </div>
     </AdminDefaultLayout>
   )
