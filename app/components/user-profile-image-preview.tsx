@@ -1,3 +1,14 @@
+import Image from 'next/image'
+
+/**
+ * User profile image preview component
+ * @param src - image source
+ * @param alt - image alt
+ * @param width - image width
+ * @param height - image height
+ * @param className - Image Component ClassName
+ * @constructor
+ */
 export default function UserProfileImagePreview({
   src,
   alt,
@@ -12,8 +23,7 @@ export default function UserProfileImagePreview({
   className: string
 }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={
         src
           ? src.includes('http') || src.includes('data:image')

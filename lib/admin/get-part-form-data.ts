@@ -1,3 +1,7 @@
+/**
+ * Get the part form data from the form data object
+ * @param formData
+ */
 export default function getPartFormData(formData: FormData) {
   const name = formData.get('name') as string | null
   const description = formData.get('description') as string | null

@@ -1,3 +1,7 @@
+/**
+ * Get the generation form data
+ * @param formData - form data
+ */
 export default function getGenerationFormData(formData: FormData) {
   const name = formData.get('name') as string
   const startDate = formData.get('startDate') as string

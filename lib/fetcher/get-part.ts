@@ -8,6 +8,10 @@ export const preload = (partId: number) => {
   void getPart(partId)
 }
 
+/**
+ * Get Part Data
+ * @param partId - part id
+ */
 export const getPart = unstable_cache(
   async (partId: number) => {
     console.log(new Date(), 'Fetch Part Data', partId)

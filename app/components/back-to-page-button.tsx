@@ -2,6 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 
+/**
+ * 이전 페이지 이동 버튼
+ * @constructor
+ */
 export default function BackToPageButton() {
   const router = useRouter()
   return (

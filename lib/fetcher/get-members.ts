@@ -11,6 +11,9 @@ export const preload = () => {
   void getMembers()
 }
 
+/**
+ * Get Members Data
+ */
 export const getMembers = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Members Data')

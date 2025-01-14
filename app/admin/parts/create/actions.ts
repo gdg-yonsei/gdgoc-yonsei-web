@@ -11,21 +11,30 @@ import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/admin/get-part-form-data'
 
+/**
+ * Create Part Action
+ * @param prev - previous state for form error
+ * @param formData - part data
+ */
 export async function createPartAction(
   prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
+  // 사용자가 part 를 수정할 권한이 있는지 확인
   if (!(await handlePermission(session?.user?.id, 'put', 'parts'))) {
     return forbidden()
   }
 
+  // form data 에서 part data 추출
   const { name, description, generationId, membersList } =
     getPartFormData(formData)
 
   try {
+    // zod validation
     partValidation.parse({ name, description, generationId, membersList })
   } catch (err) {
+    // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
       return { error: err.issues[0].message }
@@ -33,6 +42,7 @@ export async function createPartAction(
   }
 
   try {
+    // 파트 생성 쿼리
     const createPart = await db
       .insert(parts)
       .values({
@@ -42,6 +52,7 @@ export async function createPartAction(
       })
       .returning({ id: parts.id })
 
+    // 파트에 멤버가 있을 경우 멤버와 파트 연결 쿼리
     if (membersList.length > 0) {
       await db.insert(usersToParts).values(
         membersList.map((memberId) => ({
@@ -51,9 +62,11 @@ export async function createPartAction(
       )
     }
 
+    // 캐시 업데이트
     revalidateTag('parts')
     revalidateTag('members')
   } catch (e) {
+    // DB 에러 처리
     console.error(e)
     return { error: 'DB Update Error' }
   }

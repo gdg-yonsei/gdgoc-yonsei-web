@@ -11,12 +11,15 @@ import { getGenerations } from '@/lib/fetcher/get-generations'
 import { getMembers } from '@/lib/fetcher/get-members'
 
 export default async function CreatePartPage() {
+  // 기수 정보 가져오기
   const generations = await getGenerations()
+  // 기수 선택용 리스트
   const generationList = generations.map((generation) => ({
     name: generation.name,
     value: String(generation.id),
   }))
 
+  // 멤버 데이터 가져오기
   const membersData = await getMembers()
 
   return (

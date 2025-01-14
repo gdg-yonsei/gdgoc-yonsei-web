@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+/**
+ * Data Multiple Select Input Component
+ * @param data - data list
+ * @param name - input name
+ * @param title - input title
+ * @param defaultValue - default value
+ * @constructor
+ */
 export default function DataSelectMultipleInput({
   data,
   name,
@@ -13,18 +21,24 @@ export default function DataSelectMultipleInput({
   title: string
   defaultValue: string[]
 }) {
+  // input ref
   const inputRef = useRef<HTMLInputElement>(null)
+  // multiple value state
   const [value, setValue] = useState(defaultValue)
 
+  // handle click event
   function handleClick(data: string) {
+    // if value includes data, remove data from value
     if (value.includes(data)) {
       setValue(value.filter((v) => v !== data))
     } else {
+      // if value does not include data, add data to value
       setValue([...value, data])
     }
   }
 
   useEffect(() => {
+    // if input ref exists, set value to input
     if (inputRef.current) {
       inputRef.current.value = JSON.stringify(value)
     }

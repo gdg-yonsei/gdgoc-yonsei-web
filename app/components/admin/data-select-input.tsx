@@ -2,6 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+/**
+ * Data Single Select Input Component
+ * @param data - data list
+ * @param name - input name
+ * @param title - input title
+ * @param defaultValue - default value
+ * @constructor
+ */
 export default function DataSelectInput({
   data,
   name,
@@ -13,11 +21,14 @@ export default function DataSelectInput({
   title: string
   defaultValue: string
 }) {
+  // input ref
   const inputRef = useRef<HTMLInputElement>(null)
+  // value state
   const [value, setValue] = useState(defaultValue)
 
   useEffect(() => {
     if (inputRef.current) {
+      // is value is changed, set value to input
       inputRef.current.value = value
     }
   }, [value])

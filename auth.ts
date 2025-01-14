@@ -8,6 +8,9 @@ import { authSessions } from '@/db/schema/auth-sessions'
 import { accounts } from '@/db/schema/accounts'
 import { users } from '@/db/schema/users'
 
+/**
+ * NextAuth Configuration
+ */
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db, {
     usersTable: users,

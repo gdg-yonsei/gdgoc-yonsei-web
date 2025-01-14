@@ -1,3 +1,10 @@
+/**
+ * Textarea input component
+ * @param defaultValue - 기본값
+ * @param name - input name
+ * @param placeholder - input placeholder
+ * @constructor
+ */
 export default function DataTextarea({
   defaultValue,
   name,

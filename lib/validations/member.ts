@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+/**
+ * Member 데이터 타입 검증 스키마
+ */
 export const memberValidation = z.object({
   name: z.string().nonempty('Name is required'),
   firstName: z.string().nonempty('First Name is required'),

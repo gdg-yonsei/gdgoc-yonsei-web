@@ -8,6 +8,7 @@ import { PlusCircleIcon } from '@heroicons/react/24/outline'
 
 export default async function PartsPage() {
   const session = await auth()
+  // 사용자가 파타를 생성할 권한이 있는지 확인
   const canCreate = await handlePermission(session?.user?.id, 'post', 'parts')
 
   return (

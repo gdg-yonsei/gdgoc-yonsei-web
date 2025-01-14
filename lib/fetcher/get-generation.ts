@@ -8,6 +8,10 @@ export const preload = (generationId: number) => {
   void getGeneration(generationId)
 }
 
+/**
+ * Get generation data
+ * @param generationId - generation id
+ */
 export const getGeneration = unstable_cache(
   async (generationId: number) => {
     console.log(new Date(), 'Fetch Generation Data', generationId)

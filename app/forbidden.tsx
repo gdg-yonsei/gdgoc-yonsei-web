@@ -1,5 +1,9 @@
 import BackToPageButton from '@/app/components/back-to-page-button'
 
+/**
+ * 403 Forbidden Page
+ * @constructor
+ */
 export default function Forbidden() {
   return (
     <div

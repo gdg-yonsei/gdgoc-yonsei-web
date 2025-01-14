@@ -12,16 +12,24 @@ export interface PostBody {
   type: string
 }
 
+/**
+ * 사용자의 프로필 이미지를 업로드 할 수 있는 URL 을 반환하는 API
+ * @param request
+ * @constructor
+ */
 export async function POST(request: Request) {
   const session = await auth()
+  // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'members'))) {
     return NextResponse.error()
   }
 
   const res = (await request.json()) as PostBody
 
+  // 파일 업로드 경로
   const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${res.fileName.split('.').pop()}`
 
+  // R2 Pre Signed URL 생성
   const uploadUrl = await getSignedUrl(
     r2Client,
     new PutObjectCommand({
@@ -32,5 +40,6 @@ export async function POST(request: Request) {
     { expiresIn: 3600 }
   )
 
+  // Pre Signed URL 반환
   return NextResponse.json({ uploadUrl, fileName })
 }

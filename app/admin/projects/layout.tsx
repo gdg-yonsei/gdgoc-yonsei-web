@@ -9,6 +9,7 @@ export default async function ProjectsLayout({
   children: ReactNode
 }) {
   const session = await auth()
+  // 사용자가 partsPage 를 볼 권한이 있는지 확인
   if (!(await handlePermission(session?.user?.id, 'get', 'projectsPage'))) {
     forbidden()
   }

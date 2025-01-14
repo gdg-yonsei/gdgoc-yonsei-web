@@ -1,4 +1,4 @@
-import getUserRole from '@/lib/admin/get-user-role'
+import getUserRole from '@/lib/fetcher/get-user-role'
 import checkPermission from '@/lib/admin/check-permission'
 import { ResourceType } from '@/lib/admin/handle-permission'
 

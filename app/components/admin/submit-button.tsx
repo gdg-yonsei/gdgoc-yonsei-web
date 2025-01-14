@@ -5,6 +5,10 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isLoadingState } from '@/lib/atoms'
 
+/**
+ * Form Submit Button Component
+ * @constructor
+ */
 export default function SubmitButton() {
   const { pending } = useFormStatus()
   const [isLoading] = useAtom(isLoadingState)

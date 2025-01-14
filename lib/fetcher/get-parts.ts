@@ -9,6 +9,9 @@ export const preload = () => {
   void getParts()
 }
 
+/**
+ * Get Parts Data
+ */
 export const getParts = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Parts Data')

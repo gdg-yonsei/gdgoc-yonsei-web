@@ -1,3 +1,13 @@
+/**
+ * Data input component
+ * @param defaultValue - 기본값
+ * @param name - input name
+ * @param placeholder - input placeholder
+ * @param title - input title
+ * @param type - input type
+ * @param isChecked - input checked 여부
+ * @constructor
+ */
 export default function DataInput({
   defaultValue,
   name,

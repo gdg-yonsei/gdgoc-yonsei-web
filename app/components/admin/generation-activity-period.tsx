@@ -1,3 +1,10 @@
+/**
+ * Generation Activity Period Component
+ * @param startDate
+ * @param endDate
+ * @param className
+ * @constructor
+ */
 export default function GenerationActivityPeriod({
   startDate,
   endDate,

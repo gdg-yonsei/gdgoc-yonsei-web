@@ -8,6 +8,9 @@ export const preload = () => {
   void getGenerations()
 }
 
+/**
+ * Get Generations Data
+ */
 export const getGenerations = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Generations Data')

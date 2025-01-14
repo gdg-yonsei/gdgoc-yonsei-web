@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+/**
+ * Part 데이터 타입 검증 스키마
+ */
 export const partValidation = z.object({
   name: z.string({ message: 'Name is required' }).nonempty('Name is required'),
   description: z.string().nullable(),

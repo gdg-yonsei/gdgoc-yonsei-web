@@ -7,6 +7,13 @@ const initialState = {
   error: '',
 }
 
+/**
+ * Data Form
+ * @param action - form action
+ * @param children - React Children
+ * @param className - classname of form
+ * @constructor
+ */
 export default function DataForm({
   action,
   children,

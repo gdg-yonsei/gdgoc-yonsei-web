@@ -1,7 +1,12 @@
 import { getParts } from '@/lib/fetcher/get-parts'
 import Link from 'next/link'
 
+/**
+ * 파트 정보 표시 테이블
+ * @constructor
+ */
 export default async function PartsTable() {
+  // 파트 데이터 가져오기
   const partsData = await getParts()
 
   return (

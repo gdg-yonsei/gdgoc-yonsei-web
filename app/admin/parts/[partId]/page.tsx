@@ -14,14 +14,18 @@ export default async function PartPage({
   params: Promise<{ partId: string }>
 }) {
   const { partId } = await params
+  // Part 데이터 가져오기
   const partData = await getPart(Number(partId))
+  // Part 데이터가 없으면 404 페이지 표시
   if (!partData) {
     notFound()
   }
 
+  // 기수 데이터 가져오기
   const generationData = partData.generationsId
     ? await getGeneration(partData.generationsId)
     : null
+  // 사용자 로그인 정보
   const session = await auth()
 
   return (

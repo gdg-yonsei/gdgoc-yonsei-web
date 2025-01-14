@@ -11,6 +11,10 @@ export const preload = (userId: string) => {
   void getMember(userId)
 }
 
+/**
+ * Get Member Data
+ * @param userId - user id
+ */
 export const getMember = unstable_cache(
   async (userId: string) => {
     console.log(new Date(), 'Fetch Member Data:', userId)

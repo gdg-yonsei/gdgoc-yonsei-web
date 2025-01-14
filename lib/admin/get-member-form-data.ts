@@ -1,3 +1,7 @@
+/**
+ * Get member form data from form data
+ * @param formData - form data
+ */
 export default function getMemberFormData(formData: FormData) {
   const name = formData.get('name') as string | null
   const firstName = formData.get('firstName') as string | null
