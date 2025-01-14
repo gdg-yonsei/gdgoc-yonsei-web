@@ -18,7 +18,7 @@
   .member-data-title {
     @apply text-sm font-semibold text-neutral-600
   }
-  .member-data-context {
+  .member-data-content {
     @apply text-lg font-bold break-all
   }
   .member-data-input {

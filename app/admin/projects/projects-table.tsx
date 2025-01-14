@@ -1,4 +1,5 @@
 import { getProjects } from '@/lib/fetcher/get-projects'
+import Link from 'next/link'
 
 /**
  * 프로젝트 정보 표시 테이블
@@ -9,9 +10,33 @@ export default async function ProjectsTable() {
   const projectsData = await getProjects()
 
   return (
-    <div className={'w-full flex flex-col gap-2'}>
+    <div className={'member-data-grid w-full gap-2'}>
       {projectsData.map((project) => (
-        <div key={project.id}>{project.name}</div>
+        <Link
+          href={`/admin/projects/${project.id}`}
+          key={project.id}
+          className={'p-4 rounded-xl bg-white flex flex-col items-center'}
+        >
+          <div className={'text-xl font-semibold pb-4'}>{project.name}</div>
+          <div className={'flex text-sm flex-col'}>
+            <div>
+              Created At:{' '}
+              {new Intl.DateTimeFormat('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }).format(new Date(project.createdAt))}
+            </div>
+            <div>
+              Updated At:{' '}
+              {new Intl.DateTimeFormat('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }).format(new Date(project.updatedAt))}
+            </div>
+          </div>
+        </Link>
       ))}
     </div>
   )

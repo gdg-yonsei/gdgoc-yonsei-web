@@ -45,7 +45,7 @@ export default async function GenerationPage({
         <div className={'member-data-box col-span-1 sm:col-span-2'}>
           <div className={'member-data-title'}>Activity Period</div>
           <GenerationActivityPeriod
-            className={'member-data-context flex gap-2 items-center'}
+            className={'member-data-content flex gap-2 items-center'}
             startDate={generationData.startDate}
             endDate={generationData.endDate}
           />
@@ -59,7 +59,7 @@ export default async function GenerationPage({
           >
             {generationData.parts.map((part) => (
               <div key={part.id} className={'member-data-box'}>
-                <div className={'member-data-context'}>{part.name}</div>
+                <div className={'member-data-content'}>{part.name}</div>
                 <div>Member: {part.usersToParts.length}</div>
               </div>
             ))}

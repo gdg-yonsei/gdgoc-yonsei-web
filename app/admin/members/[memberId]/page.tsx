@@ -54,51 +54,51 @@ export default async function MemberPage({
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>First Name</div>
-          <div className={'member-data-context'}>{memberData.firstName}</div>
+          <div className={'member-data-content'}>{memberData.firstName}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Last Name</div>
-          <div className={'member-data-context'}>{memberData.lastName}</div>
+          <div className={'member-data-content'}>{memberData.lastName}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>E-Mail</div>
-          <div className={'member-data-context'}>{memberData.email}</div>
+          <div className={'member-data-content'}>{memberData.email}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Role</div>
-          <div className={'member-data-context'}>{memberData.role}</div>
+          <div className={'member-data-content'}>{memberData.role}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Part</div>
-          <div className={'member-data-context'}>{memberData.part}</div>
+          <div className={'member-data-content'}>{memberData.part}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Github ID</div>
-          <div className={'member-data-context'}>{memberData.githubId}</div>
+          <div className={'member-data-content'}>{memberData.githubId}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Instagram ID</div>
-          <div className={'member-data-context'}>{memberData.instagramId}</div>
+          <div className={'member-data-content'}>{memberData.instagramId}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Linked In ID</div>
-          <div className={'member-data-context'}>{memberData.linkedInId}</div>
+          <div className={'member-data-content'}>{memberData.linkedInId}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Major</div>
-          <div className={'member-data-context'}>{memberData.major}</div>
+          <div className={'member-data-content'}>{memberData.major}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Student ID</div>
-          <div className={'member-data-context'}>{memberData.studentId}</div>
+          <div className={'member-data-content'}>{memberData.studentId}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Telephone</div>
-          <div className={'member-data-context'}>{memberData.telephone}</div>
+          <div className={'member-data-content'}>{memberData.telephone}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Foreigner</div>
-          <div className={'member-data-context'}>
+          <div className={'member-data-content'}>
             {memberData.isForeigner ? 'True' : 'False'}
           </div>
         </div>

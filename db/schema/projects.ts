@@ -18,6 +18,6 @@ export const projects = pgTable('projects', {
 })
 
 export const projectsRelations = relations(projects, ({ many }) => ({
-  usersToParts: many(usersToProjects),
+  usersToProjects: many(usersToProjects),
   projectsToTags: many(projectsToTags),
 }))
