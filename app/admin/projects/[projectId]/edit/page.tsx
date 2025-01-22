@@ -7,6 +7,7 @@ import { updateProjectAction } from '@/app/admin/projects/[projectId]/edit/actio
 import DataForm from '@/app/components/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
+import DataTextarea from '@/app/components/admin/data-textarea'
 
 export default async function EditProjectPage({
   params,
@@ -46,6 +47,11 @@ export default async function EditProjectPage({
           name={'description'}
           placeholder={'Project Description'}
           title={'Project Description'}
+        />
+        <DataTextarea
+          defaultValue={projectData.content}
+          name={'content'}
+          placeholder={'Content'}
         />
         <SubmitButton />
       </DataForm>

@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import aspectRatio from '@tailwindcss/aspect-ratio'
+import typography from '@tailwindcss/typography'
 
 export default {
   content: [
@@ -7,7 +8,7 @@ export default {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  plugins: [aspectRatio],
+  plugins: [aspectRatio, typography],
   theme: {
     extend: {
       fontFamily: {

@@ -57,6 +57,13 @@
       "when": 1736757305606,
       "tag": "0007_hesitant_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1737521111650,
+      "tag": "0008_milky_scarecrow",
+      "breakpoints": true
     }
   ]
 }

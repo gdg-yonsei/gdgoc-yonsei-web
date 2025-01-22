@@ -7,7 +7,8 @@ import { projectsToTags } from '@/db/schema/projects-to-tags'
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   name: text('name').notNull(),
-  description: text('description').notNull(),
+  description: text('description').notNull().default(''),
+  content: text('content').notNull().default(''),
   mainImage: text('mainImage').notNull().default('/project-default.png'),
   images: jsonb('images').$type<string[]>().notNull().default([]),
   authorId: text('authorId')

@@ -5,6 +5,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 export default async function ProjectPage({
   params,
@@ -43,6 +44,10 @@ export default async function ProjectPage({
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{projectData.description}</div>
+        </div>
+        <div className={'prose w-full col-span-4'}>
+          <div className={'member-data-title'}>Content</div>
+          <MDXRemote source={projectData.content} />
         </div>
       </div>
     </AdminDefaultLayout>
