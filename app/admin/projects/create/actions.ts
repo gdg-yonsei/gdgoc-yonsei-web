@@ -29,11 +29,11 @@ export async function createProjectAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description } = getProjectFormData(formData)
+  const { name, description, content } = getProjectFormData(formData)
 
   try {
     // zod validation
-    projectValidation.parse({ name, description })
+    projectValidation.parse({ name, description, content })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -53,6 +53,7 @@ export async function createProjectAction(
       authorId: session.user.id,
       images: [],
       mainImage: '/project-default.png',
+      content: content!,
     })
 
     // 캐시 업데이트

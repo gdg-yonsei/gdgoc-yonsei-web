@@ -12,7 +12,7 @@ export default function MDXEditor({
   title: string
   name: string
   placeholder: string
-  defaultValue: string
+  defaultValue?: string
 }) {
   const [content, setContent] = useState<string>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)

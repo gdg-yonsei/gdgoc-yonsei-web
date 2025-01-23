@@ -6,6 +6,7 @@ import { createProjectAction } from '@/app/admin/projects/create/actions'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import DataTextarea from '@/app/components/admin/data-textarea'
+import MDXEditor from '@/app/components/admin/mdx-editor'
 
 export default async function CreateProjectPage() {
   return (
@@ -31,6 +32,11 @@ export default async function CreateProjectPage() {
           defaultValue={''}
           name={'description'}
           placeholder={'Description'}
+        />
+        <MDXEditor
+          title={'Project Content'}
+          name={'content'}
+          placeholder={'Please write content'}
         />
         <SubmitButton />
       </DataForm>
