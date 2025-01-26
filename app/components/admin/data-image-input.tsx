@@ -2,6 +2,7 @@
 
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
+import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
 
 export default function DataImageInput({
   children,
@@ -14,19 +15,43 @@ export default function DataImageInput({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [imgFileUrl, setImgFileUrl] = useState('')
+  const [previewImageUrl, setPreviewImageUrl] = useState('')
+  const [uploadedImageUrl, setUploadedImageUrl] = useState('')
 
   /**
    * 선택한 이미지 파일을 주소로 변환하는 함수
    */
-  const saveImgFile = () => {
+  const saveImgFile = async () => {
     const fileData = inputRef?.current?.files?.[0]
     if (fileData) {
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
-        setImgFileUrl(reader.result as string)
+        setPreviewImageUrl(reader.result as string)
       }
+      if (uploadedImageUrl) {
+        await fetch('/api/admin/projects/content-image', {
+          method: 'DELETE',
+          body: JSON.stringify({ imageUrl: uploadedImageUrl }),
+        })
+      }
+      // upload new image
+      const requestUploadUrl = await fetch(
+        '/api/admin/projects/content-image',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            fileName: fileData.name,
+            type: fileData.type,
+          } as ProjectContentImagePostRequest),
+        }
+      )
+      const { uploadUrl, fileName } = await requestUploadUrl.json()
+      await fetch(uploadUrl, {
+        method: 'PUT',
+        body: fileData,
+      })
+      setUploadedImageUrl(fileName)
     }
   }
 
@@ -41,11 +66,16 @@ export default function DataImageInput({
         hidden={true}
         ref={inputRef}
         onChange={saveImgFile}
+      />
+      <input
+        hidden={true}
+        value={uploadedImageUrl}
+        readOnly={true}
         name={name}
       />
-      {imgFileUrl && (
+      {previewImageUrl && (
         <Image
-          src={imgFileUrl}
+          src={previewImageUrl}
           alt={'Project Main Image'}
           width={400}
           height={400}

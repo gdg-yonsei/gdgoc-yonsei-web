@@ -1,10 +1,8 @@
-import r2Client from '@/lib/admin/r2-client'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { Request } from 'next/dist/compiled/@edge-runtime/primitives'
 import { NextResponse } from 'next/server'
 import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
+import getPreSignedUrl from '@/lib/admin/get-pre-signed-url'
 
 export interface PostBody {
   memberId: string
@@ -30,15 +28,7 @@ export async function POST(request: Request) {
   const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${res.fileName.split('.').pop()}`
 
   // R2 Pre Signed URL 생성
-  const uploadUrl = await getSignedUrl(
-    r2Client,
-    new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
-      Key: fileName,
-      ContentType: res.type,
-    }),
-    { expiresIn: 3600 }
-  )
+  const uploadUrl = await getPreSignedUrl(fileName, res.type)
 
   // Pre Signed URL 반환
   return NextResponse.json({ uploadUrl, fileName })
