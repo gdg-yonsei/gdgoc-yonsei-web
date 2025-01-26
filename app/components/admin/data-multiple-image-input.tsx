@@ -2,6 +2,8 @@
 
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
+import { isLoadingState } from '@/lib/atoms'
+import { useAtom } from 'jotai'
 
 export default function DataMultipleImageInput({
   children,
@@ -15,6 +17,8 @@ export default function DataMultipleImageInput({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [imgFileUrl, setImgFileUrl] = useState<string[]>([])
+  const [, setGlobalLoading] = useAtom(isLoadingState)
+  const [localLoading, setLocalLoading] = useState(false)
 
   /**
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
@@ -22,6 +26,8 @@ export default function DataMultipleImageInput({
   const saveImgFile = () => {
     const fileData = inputRef?.current?.files
     if (fileData) {
+      setGlobalLoading(true)
+      setLocalLoading(true)
       for (let i = 0; i < fileData.length; i++) {
         const reader = new FileReader()
         reader.readAsDataURL(fileData[i])
@@ -30,10 +36,14 @@ export default function DataMultipleImageInput({
         }
       }
     }
+    setGlobalLoading(false)
+    setLocalLoading(false)
   }
 
   return (
-    <div className={'col-span-4 flex flex-col gap-2'}>
+    <div
+      className={'col-span-1 sm:col-span-3 lg:col-span-4 flex flex-col gap-2'}
+    >
       <div className={'text-sm font-semibold text-neutral-700 px-1'}>
         {title}
       </div>
@@ -61,6 +71,7 @@ export default function DataMultipleImageInput({
         type={'button'}
         className={'p-2 rounded-xl bg-neutral-900 text-white text-sm'}
         onClick={() => inputRef.current?.click()}
+        disabled={localLoading}
       >
         {children}
       </button>

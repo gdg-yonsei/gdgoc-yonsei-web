@@ -2,7 +2,9 @@
 
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
-import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
+import { useAtom } from 'jotai'
+import { isLoadingState } from '@/lib/atoms'
+import { ProjectMainImagePostRequest } from '@/app/api/admin/projects/main-image/route'
 
 export default function DataImageInput({
   children,
@@ -17,6 +19,8 @@ export default function DataImageInput({
 
   const [previewImageUrl, setPreviewImageUrl] = useState('')
   const [uploadedImageUrl, setUploadedImageUrl] = useState('')
+  const [, setGlobalLoading] = useAtom(isLoadingState)
+  const [localLoading, setLocalLoading] = useState(false)
 
   /**
    * 선택한 이미지 파일을 주소로 변환하는 함수
@@ -24,39 +28,42 @@ export default function DataImageInput({
   const saveImgFile = async () => {
     const fileData = inputRef?.current?.files?.[0]
     if (fileData) {
+      setGlobalLoading(true)
+      setLocalLoading(true)
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
         setPreviewImageUrl(reader.result as string)
       }
       if (uploadedImageUrl) {
-        await fetch('/api/admin/projects/content-image', {
+        await fetch('/api/admin/projects/main-image', {
           method: 'DELETE',
           body: JSON.stringify({ imageUrl: uploadedImageUrl }),
         })
       }
       // upload new image
-      const requestUploadUrl = await fetch(
-        '/api/admin/projects/content-image',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            fileName: fileData.name,
-            type: fileData.type,
-          } as ProjectContentImagePostRequest),
-        }
-      )
+      const requestUploadUrl = await fetch('/api/admin/projects/main-image', {
+        method: 'POST',
+        body: JSON.stringify({
+          fileName: fileData.name,
+          type: fileData.type,
+        } as ProjectMainImagePostRequest),
+      })
       const { uploadUrl, fileName } = await requestUploadUrl.json()
       await fetch(uploadUrl, {
         method: 'PUT',
         body: fileData,
       })
       setUploadedImageUrl(fileName)
+      setGlobalLoading(false)
+      setLocalLoading(false)
     }
   }
 
   return (
-    <div className={'col-span-2 flex flex-col gap-2'}>
+    <div
+      className={'col-span-1 sm:col-span-3 lg:col-span-4 flex flex-col gap-2'}
+    >
       <div className={'text-sm font-semibold text-neutral-700 px-1'}>
         {title}
       </div>
@@ -85,9 +92,10 @@ export default function DataImageInput({
       <button
         type={'button'}
         onClick={() => inputRef.current?.click()}
-        className={'p-2 rounded-xl px-3 text-white bg-neutral-900 text-sm'}
+        className={`p-2 rounded-xl px-3 text-white  text-sm ${localLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
+        disabled={localLoading}
       >
-        {children}
+        {localLoading ? 'Uploading...' : children}
       </button>
     </div>
   )

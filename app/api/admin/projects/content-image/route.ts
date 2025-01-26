@@ -6,8 +6,7 @@ import r2Client from '@/lib/admin/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 
 export interface ProjectContentImagePostRequest {
-  fileName: string
-  type: string
+  images: { fileName: string; type: string }[]
 }
 
 export async function POST(request: Request) {
@@ -19,14 +18,28 @@ export async function POST(request: Request) {
 
   const res = (await request.json()) as ProjectContentImagePostRequest
 
-  // 파일 업로드 경로
-  const fileName = `projects/${crypto.randomUUID()}.${res.fileName.split('.').pop()}`
+  const uploadUrlsPromise = []
+  const fileNames: string[] = []
 
-  // R2 Pre Signed URL 생성
-  const uploadUrl = await getPreSignedUrl(fileName, res.type)
+  for (const image of res.images) {
+    // 파일 업로드 경로
+    const fileName = `projects/${crypto.randomUUID()}.${image.fileName.split('.').pop()}`
+
+    // R2 Pre Signed URL 생성
+    uploadUrlsPromise.push(getPreSignedUrl(fileName, image.type))
+    fileNames.push(fileName)
+  }
+
+  const uploadUrls = await Promise.all(uploadUrlsPromise)
+
+  const responseData: { fileName: string; uploadUrl: string }[] = []
+
+  for (let i = 0; i < uploadUrls.length; i++) {
+    responseData.push({ fileName: fileNames[i], uploadUrl: uploadUrls[i] })
+  }
 
   // Pre Signed URL 반환
-  return NextResponse.json({ uploadUrl, fileName })
+  return NextResponse.json({ uploadUrls: responseData })
 }
 
 export async function DELETE(request: Request) {
