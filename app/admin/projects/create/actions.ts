@@ -29,11 +29,18 @@ export async function createProjectAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, content } = getProjectFormData(formData)
+  const { name, description, content, mainImage, contentImages } =
+    getProjectFormData(formData)
 
   try {
     // zod validation
-    projectValidation.parse({ name, description, content })
+    projectValidation.parse({
+      name,
+      description,
+      content,
+      mainImage,
+      contentImages,
+    })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -49,10 +56,10 @@ export async function createProjectAction(
     // 프로젝트 생성 쿼리
     await db.insert(projects).values({
       name: name,
-      description: description,
+      description: description!,
       authorId: session.user.id,
-      images: [],
-      mainImage: '/project-default.png',
+      images: contentImages,
+      mainImage: mainImage!,
       content: content!,
     })
 

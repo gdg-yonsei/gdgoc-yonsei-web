@@ -16,12 +16,22 @@ export default async function CreateProjectPage() {
         action={createProjectAction}
         className={'gap-2 member-data-grid'}
       >
-        <DataImageInput title={'Main Image'} name={'mainImage'}>
-          Select Main Image
-        </DataImageInput>
-        <DataMultipleImageInput name={'images'} title={'Images'}>
-          Select Images
-        </DataMultipleImageInput>
+        <div
+          className={
+            'col-span-1 sm:col-span-3 md:col-span-4 member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'
+          }
+        >
+          <div>
+            <DataImageInput title={'Main Image'} name={'mainImage'}>
+              Select Main Image
+            </DataImageInput>
+          </div>
+          <div>
+            <DataMultipleImageInput name={'contentImages'} title={'Images'}>
+              Select Images
+            </DataMultipleImageInput>
+          </div>
+        </div>
         <DataInput
           title={'Name'}
           defaultValue={''}

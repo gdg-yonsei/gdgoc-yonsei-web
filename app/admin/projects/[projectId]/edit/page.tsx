@@ -8,6 +8,8 @@ import DataForm from '@/app/components/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import MDXEditor from '@/app/components/admin/mdx-editor'
+import DataImageInput from '@/app/components/admin/data-image-input'
+import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 
 export default async function EditProjectPage({
   params,
@@ -48,6 +50,26 @@ export default async function EditProjectPage({
           placeholder={'Project Description'}
           title={'Project Description'}
         />
+        <div
+          className={
+            'col-span-1 sm:col-span-3 md:col-span-4 member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'
+          }
+        >
+          <div>
+            <DataImageInput
+              title={'Main Image'}
+              name={'mainImage'}
+              defaultValue={projectData.mainImage}
+            >
+              Select Main Image
+            </DataImageInput>
+          </div>
+          <div>
+            <DataMultipleImageInput name={'contentImages'} title={'Images'}>
+              Select Images
+            </DataMultipleImageInput>
+          </div>
+        </div>
         <MDXEditor
           title={'Content'}
           name={'content'}

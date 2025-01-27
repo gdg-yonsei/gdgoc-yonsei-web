@@ -10,15 +10,17 @@ export default function DataImageInput({
   children,
   name,
   title,
+  defaultValue = '',
 }: {
   children?: ReactNode
   name: string
   title: string
+  defaultValue?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [previewImageUrl, setPreviewImageUrl] = useState('')
-  const [uploadedImageUrl, setUploadedImageUrl] = useState('')
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(defaultValue)
   const [, setGlobalLoading] = useAtom(isLoadingState)
   const [localLoading, setLocalLoading] = useState(false)
 

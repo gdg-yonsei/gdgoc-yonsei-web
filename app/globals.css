@@ -27,4 +27,7 @@
   .member-data-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
   }
+  .member-data-col-span {
+    @apply col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4
+  }
 }

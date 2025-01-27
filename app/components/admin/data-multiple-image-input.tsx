@@ -4,6 +4,7 @@ import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { isLoadingState } from '@/lib/atoms'
 import { useAtom } from 'jotai'
+import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
 
 export default function DataMultipleImageInput({
   children,
@@ -16,14 +17,15 @@ export default function DataMultipleImageInput({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [imgFileUrl, setImgFileUrl] = useState<string[]>([])
+  const [prevImageUrls, setPrevImageUrls] = useState<string[]>([])
   const [, setGlobalLoading] = useAtom(isLoadingState)
   const [localLoading, setLocalLoading] = useState(false)
+  const [imageUrls, setImageUrls] = useState<string[]>([])
 
   /**
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
    */
-  const saveImgFile = () => {
+  const saveImgFile = async () => {
     const fileData = inputRef?.current?.files
     if (fileData) {
       setGlobalLoading(true)
@@ -32,12 +34,43 @@ export default function DataMultipleImageInput({
         const reader = new FileReader()
         reader.readAsDataURL(fileData[i])
         reader.onloadend = () => {
-          setImgFileUrl((prev) => [...prev, reader.result as string])
+          setPrevImageUrls((prev) => [...prev, reader.result as string])
         }
       }
+      const requestUploadUrl = await fetch(
+        '/api/admin/projects/content-image',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            images: Array.from(fileData).map((file) => ({
+              fileName: file.name,
+              type: file.type,
+            })),
+          } as ProjectContentImagePostRequest),
+        }
+      )
+      const uploadUrls = (await requestUploadUrl.json()) as {
+        uploadUrls: { fileName: string; uploadUrl: string }[]
+      }
+      const uploadPromise = []
+      for (let i = 0; i < fileData.length; i++) {
+        uploadPromise.push(
+          fetch(uploadUrls.uploadUrls[i].uploadUrl, {
+            method: 'PUT',
+            body: fileData[i],
+          })
+        )
+      }
+
+      await Promise.all(uploadPromise)
+      setImageUrls((prev) => [
+        ...prev,
+        ...uploadUrls.uploadUrls.map((url) => url.fileName),
+      ])
+
+      setGlobalLoading(false)
+      setLocalLoading(false)
     }
-    setGlobalLoading(false)
-    setLocalLoading(false)
   }
 
   return (
@@ -53,27 +86,35 @@ export default function DataMultipleImageInput({
         accept={'image'}
         multiple={true}
         hidden={true}
-        name={name}
         onChange={saveImgFile}
       />
-      <div className={'grid grid-cols-4 gap-2 w-full'}>
-        {imgFileUrl.map((url, index) => (
-          <Image
-            key={index}
-            src={url}
-            alt={'Project Main Image'}
-            width={400}
-            height={400}
-          />
-        ))}
-      </div>
+      <input
+        name={name}
+        hidden={true}
+        value={JSON.stringify(imageUrls)}
+        readOnly={true}
+      />
+      {prevImageUrls.length > 0 && (
+        <div className={'grid grid-cols-1 gap-2 w-full'}>
+          {prevImageUrls.map((url, index) => (
+            <Image
+              key={index}
+              src={url}
+              alt={'Project Main Image'}
+              width={400}
+              height={400}
+              className={'w-full'}
+            />
+          ))}
+        </div>
+      )}
       <button
         type={'button'}
         className={'p-2 rounded-xl bg-neutral-900 text-white text-sm'}
         onClick={() => inputRef.current?.click()}
         disabled={localLoading}
       >
-        {children}
+        {localLoading ? 'Uploading...' : children}
       </button>
     </div>
   )
