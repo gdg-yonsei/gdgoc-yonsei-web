@@ -7,10 +7,16 @@ import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
+import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
+import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 
 export default async function CreateProjectPage() {
   return (
     <AdminDefaultLayout>
+      <AdminNavigationButton href={'/admin/projects'}>
+        <ChevronLeftIcon className={'size-8'} />
+        <p className={'text-lg'}>Projects</p>
+      </AdminNavigationButton>
       <div className={'admin-title'}>Create New Project</div>
       <DataForm
         action={createProjectAction}

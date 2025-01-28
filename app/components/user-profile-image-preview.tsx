@@ -28,7 +28,7 @@ export default function UserProfileImagePreview({
         src
           ? src.includes('http') || src.includes('data:image')
             ? src
-            : `https://image.gdgyonsei.moveto.kr/${src}`
+            : 'process.env.NEXT_PUBLIC_IMAGE_URL' + src
           : '/default-user-profile.png'
       }
       alt={alt}

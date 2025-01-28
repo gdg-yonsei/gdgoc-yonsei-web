@@ -19,7 +19,7 @@ export default function DataImageInput({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [previewImageUrl, setPreviewImageUrl] = useState('')
+  const [previewImageUrl, setPreviewImageUrl] = useState(defaultValue)
   const [uploadedImageUrl, setUploadedImageUrl] = useState(defaultValue)
   const [, setGlobalLoading] = useAtom(isLoadingState)
   const [localLoading, setLocalLoading] = useState(false)
@@ -56,7 +56,7 @@ export default function DataImageInput({
         method: 'PUT',
         body: fileData,
       })
-      setUploadedImageUrl(fileName)
+      setUploadedImageUrl(process.env.NEXT_PUBLIC_IMAGE_URL + fileName)
       setGlobalLoading(false)
       setLocalLoading(false)
     }
@@ -86,9 +86,11 @@ export default function DataImageInput({
         <Image
           src={previewImageUrl}
           alt={'Project Main Image'}
-          width={400}
+          width={600}
           height={400}
           className={'w-full'}
+          placeholder={'blur'}
+          blurDataURL={'/default-image.png'}
         />
       )}
       <button

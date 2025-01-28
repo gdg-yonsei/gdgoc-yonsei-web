@@ -65,7 +65,11 @@ export default async function EditProjectPage({
             </DataImageInput>
           </div>
           <div>
-            <DataMultipleImageInput name={'contentImages'} title={'Images'}>
+            <DataMultipleImageInput
+              name={'contentImages'}
+              title={'Images'}
+              defaultValue={projectData.images.map((image) => image)}
+            >
               Select Images
             </DataMultipleImageInput>
           </div>

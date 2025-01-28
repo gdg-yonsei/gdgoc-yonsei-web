@@ -31,11 +31,18 @@ export async function updateProjectAction(
   }
 
   // form data 에서 project data 추출
-  const { name, description, content } = getProjectFormData(formData)
+  const { name, description, content, contentImages, mainImage } =
+    getProjectFormData(formData)
 
   try {
     // zod validation
-    projectValidation.parse({ name, description, content })
+    projectValidation.parse({
+      name,
+      description,
+      content,
+      contentImages,
+      mainImage,
+    })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -52,6 +59,8 @@ export async function updateProjectAction(
         name: name!,
         description: description!,
         content: content!,
+        images: contentImages,
+        mainImage: mainImage!,
       })
       .where(eq(projects.id, projectId))
 

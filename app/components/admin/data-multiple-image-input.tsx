@@ -10,17 +10,19 @@ export default function DataMultipleImageInput({
   children,
   name,
   title,
+  defaultValue = [],
 }: {
   children?: ReactNode
   name: string
   title: string
+  defaultValue?: string[]
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [prevImageUrls, setPrevImageUrls] = useState<string[]>([])
+  const [prevImageUrls, setPrevImageUrls] = useState<string[]>(defaultValue)
   const [, setGlobalLoading] = useAtom(isLoadingState)
   const [localLoading, setLocalLoading] = useState(false)
-  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [imageUrls, setImageUrls] = useState<string[]>(defaultValue)
 
   /**
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
@@ -65,7 +67,9 @@ export default function DataMultipleImageInput({
       await Promise.all(uploadPromise)
       setImageUrls((prev) => [
         ...prev,
-        ...uploadUrls.uploadUrls.map((url) => url.fileName),
+        ...uploadUrls.uploadUrls.map(
+          (url) => process.env.NEXT_PUBLIC_IMAGE_URL + url.fileName
+        ),
       ])
 
       setGlobalLoading(false)
@@ -101,9 +105,11 @@ export default function DataMultipleImageInput({
               key={index}
               src={url}
               alt={'Project Main Image'}
-              width={400}
+              width={600}
               height={400}
               className={'w-full'}
+              placeholder={'blur'}
+              blurDataURL={'/default-image.png'}
             />
           ))}
         </div>
