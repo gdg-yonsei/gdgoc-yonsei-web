@@ -10,6 +10,8 @@ import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { eq } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
+import r2Client from '@/lib/admin/r2-client'
+import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 
 /**
  * Update Project Action
@@ -52,6 +54,37 @@ export async function updateProjectAction(
   }
 
   try {
+    // 삭제된 이미지 R2에서 삭제
+    const prevImages = (
+      await db
+        .select({ images: projects.images, mainImage: projects.mainImage })
+        .from(projects)
+        .where(eq(projects.id, projectId))
+        .limit(1)
+    )[0]
+
+    const toDeleteImages = prevImages.images.filter(
+      (prevImage) => !contentImages.includes(prevImage)
+    )
+    const deleteImagePromises = []
+
+    if (prevImages.mainImage !== mainImage) {
+      toDeleteImages.push(prevImages.mainImage)
+    }
+
+    for (const imageUrl of toDeleteImages) {
+      deleteImagePromises.push(
+        r2Client.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: imageUrl.replace(process.env.NEXT_PUBLIC_IMAGE_URL!, ''),
+          })
+        )
+      )
+    }
+
+    await Promise.all(deleteImagePromises)
+
     // project 업데이트
     await db
       .update(projects)

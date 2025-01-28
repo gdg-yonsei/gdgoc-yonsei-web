@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { isLoadingState } from '@/lib/atoms'
 import { useAtom } from 'jotai'
 import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { TrashIcon } from '@heroicons/react/24/outline'
 
 export default function DataMultipleImageInput({
   children,
@@ -78,6 +78,11 @@ export default function DataMultipleImageInput({
     }
   }
 
+  async function deleteContentImage(url: string) {
+    setPrevImageUrls((prev) => prev.filter((prevUrl) => prevUrl !== url))
+    setImageUrls((imageUrl) => imageUrl.filter((u) => u !== url))
+  }
+
   return (
     <div
       className={'col-span-1 sm:col-span-3 lg:col-span-4 flex flex-col gap-2'}
@@ -106,13 +111,11 @@ export default function DataMultipleImageInput({
               <button
                 type={'button'}
                 className={
-                  'absolute top-2 right-2 cursor-pointer ring-2 rounded-full ring-red-500'
+                  'absolute top-1 right-1 cursor-pointer p-1 bg-red-500 rounded-lg'
                 }
-                onClick={() => alert('Clicked!!')}
+                onClick={() => deleteContentImage(url)}
               >
-                <XMarkIcon
-                  className={'size-6 text-red-500 bg-white rounded-full'}
-                />
+                <TrashIcon className={'size-6 text-white'} />
               </button>
               <Image
                 src={url}
