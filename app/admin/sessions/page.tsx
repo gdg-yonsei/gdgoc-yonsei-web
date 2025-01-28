@@ -4,6 +4,7 @@ export default function SessionsPage() {
   return (
     <AdminDefaultLayout className={'p-4'}>
       <div className={'admin-title'}>Sessions</div>
+      <div>Session List</div>
     </AdminDefaultLayout>
   )
 }
