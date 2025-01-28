@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { isLoadingState } from '@/lib/atoms'
 import { useAtom } from 'jotai'
 import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 
 export default function DataMultipleImageInput({
   children,
@@ -101,16 +102,28 @@ export default function DataMultipleImageInput({
       {prevImageUrls.length > 0 && (
         <div className={'grid grid-cols-1 gap-2 w-full'}>
           {prevImageUrls.map((url, index) => (
-            <Image
-              key={index}
-              src={url}
-              alt={'Project Main Image'}
-              width={600}
-              height={400}
-              className={'w-full'}
-              placeholder={'blur'}
-              blurDataURL={'/default-image.png'}
-            />
+            <div key={index} className={'w-full relative'}>
+              <button
+                type={'button'}
+                className={
+                  'absolute top-2 right-2 cursor-pointer ring-2 rounded-full ring-red-500'
+                }
+                onClick={() => alert('Clicked!!')}
+              >
+                <XMarkIcon
+                  className={'size-6 text-red-500 bg-white rounded-full'}
+                />
+              </button>
+              <Image
+                src={url}
+                alt={'Project Main Image'}
+                width={600}
+                height={400}
+                className={'w-full'}
+                placeholder={'blur'}
+                blurDataURL={'/default-image.png'}
+              />
+            </div>
           ))}
         </div>
       )}
