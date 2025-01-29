@@ -6,4 +6,5 @@ export const projectValidation = z.object({
   content: z.string().nonempty('Content is required'),
   mainImage: z.string().nonempty('Main Image is required'),
   contentImages: z.array(z.string()).nonempty('Content Images is required'),
+  participants: z.array(z.string()).nonempty('Participants is required'),
 })

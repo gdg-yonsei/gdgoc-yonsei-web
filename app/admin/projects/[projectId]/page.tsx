@@ -7,6 +7,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Image from 'next/image'
+import formatUserName from '@/lib/format-user-name'
 
 export default async function ProjectPage({
   params,
@@ -16,6 +17,7 @@ export default async function ProjectPage({
   const { projectId } = await params
   // Project 데이터 가져오기
   const projectData = await getProject(projectId)
+
   // Project 데이터가 없으면 404 페이지 표시
   if (!projectData) {
     notFound()
@@ -45,6 +47,21 @@ export default async function ProjectPage({
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{projectData.description}</div>
+        </div>
+        <div className={'member-data-col-span'}>
+          <div className={'member-data-title'}>Participants</div>
+          <div className={'member-data-grid gap-2'}>
+            {projectData.usersToProjects.map((user) => (
+              <div key={user.user.id} className={'member-data-box'}>
+                {formatUserName(
+                  user.user.name,
+                  user.user.firstName,
+                  user.user.lastName,
+                  user.user.isForeigner
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         <div
           className={

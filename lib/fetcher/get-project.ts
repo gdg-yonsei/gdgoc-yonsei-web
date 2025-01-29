@@ -16,11 +16,16 @@ export const getProject = unstable_cache(
   async (projectId: string) => {
     console.log(new Date(), 'Fetch Project Data', projectId)
     return (
-      await db
-        .select()
-        .from(projects)
-        .where(eq(projects.id, projectId))
-        .limit(1)
+      await db.query.projects.findMany({
+        where: eq(projects.id, projectId),
+        with: {
+          usersToProjects: {
+            with: {
+              user: true,
+            },
+          },
+        },
+      })
     )[0]
   },
   [],

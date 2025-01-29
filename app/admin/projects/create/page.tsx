@@ -9,8 +9,12 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
+import { getMembers } from '@/lib/fetcher/get-members'
+import formatUserName from '@/lib/format-user-name'
 
 export default async function CreateProjectPage() {
+  const membersList = await getMembers()
   return (
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/projects'}>
@@ -48,6 +52,15 @@ export default async function CreateProjectPage() {
           defaultValue={''}
           name={'description'}
           placeholder={'Description'}
+        />
+        <DataSelectMultipleInput
+          data={membersList.map((member) => ({
+            value: member.id,
+            name: `${member.generation} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
+          }))}
+          name={'participants'}
+          title={'Participants'}
+          defaultValue={[]}
         />
         <MDXEditor
           title={'Project Content'}

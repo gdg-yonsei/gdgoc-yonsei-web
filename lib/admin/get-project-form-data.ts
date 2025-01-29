@@ -9,6 +9,8 @@ export default function getProjectFormData(formData: FormData) {
   const mainImage = formData.get('mainImage') as string | null
   const contentImages = formData.get('contentImages') as string
   const contentImagesArray = JSON.parse(contentImages) as string[]
+  const participants = formData.get('participants') as string
+  const participantsArray = JSON.parse(participants) as string[]
 
   return {
     name,
@@ -16,5 +18,6 @@ export default function getProjectFormData(formData: FormData) {
     content,
     mainImage,
     contentImages: contentImagesArray,
+    participants: participantsArray,
   }
 }

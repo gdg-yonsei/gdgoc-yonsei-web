@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 
 /**
  * Data Multiple Select Input Component
+ *
+ * input 데이터는 리스트 형태를 JSON 문자열로 변환하여 input 에 저장
+ *
+ * 이후 활용할 때 JSON.parse 를 통해 데이터를 추출하여 사용 필요
  * @param data - data list
  * @param name - input name
  * @param title - input title

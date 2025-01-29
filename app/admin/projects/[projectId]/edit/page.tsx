@@ -10,6 +10,9 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
+import formatUserName from '@/lib/format-user-name'
+import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
+import { getMembers } from '@/lib/fetcher/get-members'
 
 export default async function EditProjectPage({
   params,
@@ -26,6 +29,8 @@ export default async function EditProjectPage({
     null,
     projectId
   )
+
+  const membersList = await getMembers()
 
   return (
     <AdminDefaultLayout>
@@ -49,6 +54,15 @@ export default async function EditProjectPage({
           name={'description'}
           placeholder={'Project Description'}
           title={'Project Description'}
+        />
+        <DataSelectMultipleInput
+          data={membersList.map((member) => ({
+            value: member.id,
+            name: `${member.generation} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
+          }))}
+          name={'participants'}
+          title={'Participants'}
+          defaultValue={projectData.usersToProjects.map((user) => user.userId)}
         />
         <div
           className={

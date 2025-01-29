@@ -23,10 +23,11 @@ export default async function ProjectsTable() {
             alt={'Main Image'}
             width={600}
             height={400}
-            className={'w-full rounded-t-xl'}
+            className={'object-cover rounded-t-xl aspect-3/2 w-full'}
             placeholder={'blur'}
             blurDataURL={'/default-image.png'}
           />
+
           <div className={'p-4'}>
             <div className={'text-xl font-semibold pb-4'}>{project.name}</div>
             <div className={'flex text-sm flex-col'}>

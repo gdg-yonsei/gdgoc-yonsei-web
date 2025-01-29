@@ -9,6 +9,7 @@ import getProjectFormData from '@/lib/admin/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
+import { usersToProjects } from '@/db/schema/users-to-projects'
 /**
  * Create Part Action
  * @param prev - previous state for form error
@@ -29,7 +30,7 @@ export async function createProjectAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, content, mainImage, contentImages } =
+  const { name, description, content, mainImage, contentImages, participants } =
     getProjectFormData(formData)
 
   try {
@@ -40,6 +41,7 @@ export async function createProjectAction(
       content,
       mainImage,
       contentImages,
+      participants,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -54,14 +56,28 @@ export async function createProjectAction(
       return { error: 'Name and Description are required' }
     }
     // 프로젝트 생성 쿼리
-    await db.insert(projects).values({
-      name: name,
-      description: description!,
-      authorId: session.user.id,
-      images: contentImages,
-      mainImage: mainImage!,
-      content: content!,
-    })
+    const createProject = (
+      await db
+        .insert(projects)
+        .values({
+          name: name,
+          description: description!,
+          authorId: session.user.id,
+          images: contentImages,
+          mainImage: mainImage!,
+          content: content!,
+        })
+        .returning({ id: projects.id })
+    )[0]
+
+    if (participants.length > 0) {
+      await db.insert(usersToProjects).values(
+        participants.map((participant) => ({
+          projectId: createProject.id,
+          userId: participant,
+        }))
+      )
+    }
 
     // 캐시 업데이트
     revalidateTag('projects')

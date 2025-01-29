@@ -12,6 +12,7 @@ import { eq } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
 import r2Client from '@/lib/admin/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { usersToProjects } from '@/db/schema/users-to-projects'
 
 /**
  * Update Project Action
@@ -33,7 +34,7 @@ export async function updateProjectAction(
   }
 
   // form data 에서 project data 추출
-  const { name, description, content, contentImages, mainImage } =
+  const { name, description, content, contentImages, mainImage, participants } =
     getProjectFormData(formData)
 
   try {
@@ -44,6 +45,7 @@ export async function updateProjectAction(
       content,
       contentImages,
       mainImage,
+      participants,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -94,8 +96,22 @@ export async function updateProjectAction(
         content: content!,
         images: contentImages,
         mainImage: mainImage!,
+        updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))
+
+    // project 참여자 업데이트
+    // 기존 참여자 삭제
+    await db
+      .delete(usersToProjects)
+      .where(eq(usersToProjects.projectId, projectId))
+
+    // 새로운 참여자 추가
+    await db
+      .insert(usersToProjects)
+      .values(
+        participants.map((user) => ({ projectId: projectId, userId: user }))
+      )
 
     // 캐시 업데이트
     revalidateTag('projects')

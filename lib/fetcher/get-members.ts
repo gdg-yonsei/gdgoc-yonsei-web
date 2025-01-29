@@ -28,6 +28,7 @@ export const getMembers = unstable_cache(
         image: users.image,
         part: parts.name,
         generation: generations.name,
+        isForeigner: users.isForeigner,
       })
       .from(users)
       .where(ne(users.role, 'UNVERIFIED'))
