@@ -10,11 +10,13 @@ export default function DataImageInput({
   children,
   name,
   title,
+  baseUrl,
   defaultValue = '',
 }: {
   children?: ReactNode
   name: string
   title: string
+  baseUrl: string
   defaultValue?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -36,13 +38,13 @@ export default function DataImageInput({
         setPreviewImageUrl(reader.result as string)
       }
       if (uploadedImageUrl) {
-        await fetch('/api/admin/projects/main-image', {
+        await fetch(baseUrl, {
           method: 'DELETE',
           body: JSON.stringify({ imageUrl: uploadedImageUrl }),
         })
       }
       // upload new image
-      const requestUploadUrl = await fetch('/api/admin/projects/main-image', {
+      const requestUploadUrl = await fetch(baseUrl, {
         method: 'POST',
         body: JSON.stringify({
           fileName: fileData.name,

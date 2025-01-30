@@ -71,6 +71,7 @@ export default async function EditProjectPage({
         >
           <div>
             <DataImageInput
+              baseUrl={'/admin/projects/main-image'}
               title={'Main Image'}
               name={'mainImage'}
               defaultValue={projectData.mainImage}
@@ -80,6 +81,7 @@ export default async function EditProjectPage({
           </div>
           <div>
             <DataMultipleImageInput
+              baseUrl={'/api/admin/projects/content-image'}
               name={'contentImages'}
               title={'Images'}
               defaultValue={projectData.images.map((image) => image)}

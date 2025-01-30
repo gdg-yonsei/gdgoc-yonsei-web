@@ -11,11 +11,13 @@ export default function DataMultipleImageInput({
   children,
   name,
   title,
+  baseUrl,
   defaultValue = [],
 }: {
   children?: ReactNode
   name: string
   title: string
+  baseUrl: string
   defaultValue?: string[]
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -38,18 +40,15 @@ export default function DataMultipleImageInput({
           setPrevImageUrls((prev) => [...prev, reader.result as string])
         }
       }
-      const requestUploadUrl = await fetch(
-        '/api/admin/projects/content-image',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            images: Array.from(fileData).map((file) => ({
-              fileName: file.name,
-              type: file.type,
-            })),
-          } as ProjectContentImagePostRequest),
-        }
-      )
+      const requestUploadUrl = await fetch(baseUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          images: Array.from(fileData).map((file) => ({
+            fileName: file.name,
+            type: file.type,
+          })),
+        } as ProjectContentImagePostRequest),
+      })
       const uploadUrls = (await requestUploadUrl.json()) as {
         uploadUrls: { fileName: string; uploadUrl: string }[]
       }

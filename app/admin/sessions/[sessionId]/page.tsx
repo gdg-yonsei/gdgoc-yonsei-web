@@ -1,0 +1,84 @@
+import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
+import Image from 'next/image'
+import { auth } from '@/auth'
+import { notFound } from 'next/navigation'
+import { getSession } from '@/lib/fetcher/get-session'
+import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
+import DataEditLink from '@/app/components/admin/data-edit-link'
+import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+
+export default async function SessionPage({
+  params,
+}: {
+  params: Promise<{ sessionId: string }>
+}) {
+  const { sessionId } = await params
+  // Project 데이터 가져오기
+  const sessionData = await getSession(sessionId)
+
+  // Project 데이터가 없으면 404 페이지 표시
+  if (!sessionData) {
+    notFound()
+  }
+
+  const session = await auth()
+
+  return (
+    <AdminDefaultLayout>
+      <AdminNavigationButton href={'/admin/sessions'}>
+        <ChevronLeftIcon className={'size-8'} />
+        <p className={'text-lg'}>Sessions</p>
+      </AdminNavigationButton>
+      <div className={'flex gap-2 items-center'}>
+        <div className={'admin-title'}>{sessionData.name}</div>
+        <DataEditLink
+          session={session}
+          dataId={sessionId}
+          dataType={'sessions'}
+          href={`/admin/sessions/${sessionId}/edit`}
+        />
+      </div>
+      <div className={'member-data-grid gap-2'}>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Name</div>
+          <div className={'member-data-content'}>{sessionData.name}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Description</div>
+          <div className={'member-data-content'}>{sessionData.description}</div>
+        </div>
+      </div>
+      <div
+        className={'member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'}
+      >
+        <div className={'w-full max-w-lg mx-auto flex flex-col gap-2'}>
+          <div className={'member-data-title'}>Main Image</div>
+          <Image
+            src={sessionData.mainImage}
+            alt={sessionData.mainImage}
+            width={600}
+            height={400}
+            className={'w-full'}
+            placeholder={'blur'}
+            blurDataURL={'/default-image.png'}
+          />
+        </div>
+        <div className={'w-full max-w-lg mx-auto gap-2 flex flex-col'}>
+          <div className={'member-data-title'}>Content Images</div>
+          {sessionData.images.map((image, index) => (
+            <Image
+              key={index}
+              src={image}
+              alt={image}
+              width={600}
+              height={400}
+              className={'w-full'}
+              placeholder={'blur'}
+              blurDataURL={'/default-image.png'}
+            />
+          ))}
+        </div>
+      </div>
+    </AdminDefaultLayout>
+  )
+}

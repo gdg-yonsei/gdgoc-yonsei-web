@@ -33,12 +33,20 @@ export default async function CreateProjectPage() {
           }
         >
           <div>
-            <DataImageInput title={'Main Image'} name={'mainImage'}>
+            <DataImageInput
+              title={'Main Image'}
+              name={'mainImage'}
+              baseUrl={'/admin/projects/main-image'}
+            >
               Select Main Image
             </DataImageInput>
           </div>
           <div>
-            <DataMultipleImageInput name={'contentImages'} title={'Images'}>
+            <DataMultipleImageInput
+              baseUrl={'/api/admin/projects/content-image'}
+              name={'contentImages'}
+              title={'Images'}
+            >
               Select Images
             </DataMultipleImageInput>
           </div>
