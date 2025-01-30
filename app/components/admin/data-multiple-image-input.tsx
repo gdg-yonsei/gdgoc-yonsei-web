@@ -2,10 +2,10 @@
 
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
-import { isLoadingState } from '@/lib/atoms'
-import { useAtom } from 'jotai'
 import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content-image/route'
 import { TrashIcon } from '@heroicons/react/24/outline'
+import { useAtom } from 'jotai'
+import { uploadMultipleImagesState } from '@/lib/atoms'
 
 export default function DataMultipleImageInput({
   children,
@@ -21,8 +21,7 @@ export default function DataMultipleImageInput({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [prevImageUrls, setPrevImageUrls] = useState<string[]>(defaultValue)
-  const [, setGlobalLoading] = useAtom(isLoadingState)
-  const [localLoading, setLocalLoading] = useState(false)
+  const [isLoading, setIsLoading] = useAtom(uploadMultipleImagesState)
   const [imageUrls, setImageUrls] = useState<string[]>(defaultValue)
 
   /**
@@ -31,8 +30,7 @@ export default function DataMultipleImageInput({
   const saveImgFile = async () => {
     const fileData = inputRef?.current?.files
     if (fileData) {
-      setGlobalLoading(true)
-      setLocalLoading(true)
+      setIsLoading(true)
       for (let i = 0; i < fileData.length; i++) {
         const reader = new FileReader()
         reader.readAsDataURL(fileData[i])
@@ -72,9 +70,7 @@ export default function DataMultipleImageInput({
           (url) => process.env.NEXT_PUBLIC_IMAGE_URL + url.fileName
         ),
       ])
-
-      setGlobalLoading(false)
-      setLocalLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -134,9 +130,9 @@ export default function DataMultipleImageInput({
         type={'button'}
         className={'p-2 rounded-xl bg-neutral-900 text-white text-sm'}
         onClick={() => inputRef.current?.click()}
-        disabled={localLoading}
+        disabled={isLoading}
       >
-        {localLoading ? 'Uploading...' : children}
+        {isLoading ? 'Uploading...' : children}
       </button>
     </div>
   )

@@ -15,6 +15,7 @@ import formatUserName from '@/lib/format-user-name'
 
 export default async function CreateProjectPage() {
   const membersList = await getMembers()
+
   return (
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/projects'}>

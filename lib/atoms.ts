@@ -11,6 +11,28 @@ export const isAuthenticatingState = atom(false)
 export const menuBarState = atom(false)
 
 /**
- * 로딩중인지 저장하는 상태
+ * Global Loading State
+ *
+ * POST, PUT 을 할 수 없는 상태를 나타냄 (ex. 이미지 업로드 중)
  */
-export const isLoadingState = atom(false)
+export const isLoadingState = atom(
+  (get) =>
+    get(uploadSingleImageState) ||
+    get(uploadMultipleImagesState) ||
+    get(uploadProfileImageState)
+)
+
+/**
+ * 개별 이미지를 업로드 하고 있는지 나타내는 상태
+ */
+export const uploadSingleImageState = atom(false)
+
+/**
+ * 다중 이미지를 업로드 하고 있는지 나타내는 상태
+ */
+export const uploadMultipleImagesState = atom(false)
+
+/**
+ * 사용자 프로필 이미지 업로드 상태
+ */
+export const uploadProfileImageState = atom(false)

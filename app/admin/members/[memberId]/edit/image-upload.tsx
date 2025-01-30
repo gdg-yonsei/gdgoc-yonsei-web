@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useAtom } from 'jotai'
-import { isLoadingState } from '@/lib/atoms'
+import { uploadProfileImageState } from '@/lib/atoms'
 import { PostBody } from '@/app/api/admin/members/profile-image/route'
 import SelectImageButton from '@/app/admin/members/[memberId]/edit/select-image-button'
 import SaveImageButton from '@/app/admin/members/[memberId]/edit/save-image-button'
@@ -28,7 +28,7 @@ export default function ImageUpload({
   // input 태그에 선택된 파일
   const [file, setFile] = useState<File>()
   // 로딩 상태
-  const [isLoading, setIsLoading] = useAtom(isLoadingState)
+  const [isLoading, setIsLoading] = useAtom(uploadProfileImageState)
   // 사용자 기존 프로필 이미지 URL
   const [profileImage, setProfileImage] = useState(image)
 

@@ -3,7 +3,7 @@
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
-import { isLoadingState } from '@/lib/atoms'
+import { uploadSingleImageState } from '@/lib/atoms'
 import { ProjectMainImagePostRequest } from '@/app/api/admin/projects/main-image/route'
 
 export default function DataImageInput({
@@ -21,8 +21,7 @@ export default function DataImageInput({
 
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultValue)
   const [uploadedImageUrl, setUploadedImageUrl] = useState(defaultValue)
-  const [, setGlobalLoading] = useAtom(isLoadingState)
-  const [localLoading, setLocalLoading] = useState(false)
+  const [isLoading, setIsLoading] = useAtom(uploadSingleImageState)
 
   /**
    * 선택한 이미지 파일을 주소로 변환하는 함수
@@ -30,8 +29,7 @@ export default function DataImageInput({
   const saveImgFile = async () => {
     const fileData = inputRef?.current?.files?.[0]
     if (fileData) {
-      setGlobalLoading(true)
-      setLocalLoading(true)
+      setIsLoading(true)
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
@@ -57,8 +55,7 @@ export default function DataImageInput({
         body: fileData,
       })
       setUploadedImageUrl(process.env.NEXT_PUBLIC_IMAGE_URL + fileName)
-      setGlobalLoading(false)
-      setLocalLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -96,10 +93,10 @@ export default function DataImageInput({
       <button
         type={'button'}
         onClick={() => inputRef.current?.click()}
-        className={`p-2 rounded-xl px-3 text-white  text-sm ${localLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
-        disabled={localLoading}
+        className={`p-2 rounded-xl px-3 text-white  text-sm ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
+        disabled={isLoading}
       >
-        {localLoading ? 'Uploading...' : children}
+        {isLoading ? 'Uploading...' : children}
       </button>
     </div>
   )
