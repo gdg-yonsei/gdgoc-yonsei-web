@@ -86,12 +86,12 @@ export default function ImageUpload({
         profileImage: uploadUrl.fileName,
       }),
     })
-    // 로딩 상태 변경
-    setIsLoading(false)
     // 기존 프로필 이미지 변경
     setProfileImage(uploadUrl.fileName)
     // 이미지 파일 경로 초기화
     setImgFileUrl('')
+    // 로딩 상태 변경
+    setIsLoading(false)
   }
 
   return (
