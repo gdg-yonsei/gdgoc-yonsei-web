@@ -14,7 +14,7 @@ export const memberValidation = z.object({
   major: z.string().nullable(),
   studentId: z.string().nullable(),
   telephone: z.string().nullable(),
-  role: z.enum(['MEMBER', 'CORE', 'LEAD', 'ALUMNUS']),
+  role: z.enum(['MEMBER', 'CORE', 'LEAD', 'ALUMNUS']).nullable(),
   isForeigner: z.boolean(),
   profileImage: z.string().nullable(),
 })

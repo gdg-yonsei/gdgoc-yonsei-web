@@ -42,7 +42,6 @@ export async function updateProfileAction(
     major,
     studentId,
     telephone,
-    role,
     isForeigner,
     profileImage,
   } = getMemberFormData(formData)
@@ -62,9 +61,9 @@ export async function updateProfileAction(
       major,
       studentId,
       telephone,
-      role,
       isForeigner,
       profileImage,
+      role: null,
     })
   } catch (err) {
     // 데이터 형식이 맞지 않을 경우 오류 반환
@@ -88,10 +87,6 @@ export async function updateProfileAction(
         major,
         studentId: studentId ? Number(studentId) : null,
         telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
-        ...((await handlePermission(session?.user?.id, 'put', 'membersRole')) &&
-        role
-          ? { role: role }
-          : {}),
         isForeigner,
         image: profileImage,
       })

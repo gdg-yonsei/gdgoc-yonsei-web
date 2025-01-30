@@ -7,7 +7,6 @@ import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import ImageUpload from '@/app/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
-import MemberRoleManager from '@/app/admin/members/[memberId]/edit/member-role-manager'
 import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/data-form'
 import { updateProfileAction } from '@/app/admin/profile/edit/actions'
@@ -118,12 +117,6 @@ export default async function EditProfilePage() {
             type={'checkbox'}
             isChecked={memberData.isForeigner}
           />
-
-          {(await handlePermission(
-            session?.user?.id,
-            'put',
-            'membersRole'
-          )) && <MemberRoleManager userRole={memberData.role} />}
           <SubmitButton />
         </DataForm>
       </div>

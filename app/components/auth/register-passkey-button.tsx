@@ -10,7 +10,7 @@ export default function RegisterPasskeyButton() {
   return (
     <button
       type={'button'}
-      className={'button-black'}
+      className={'button-black max-w-lg mx-auto'}
       onClick={() =>
         signIn('passkey', { action: 'register' })
           .then(() => alert('The passkey has been registered.'))

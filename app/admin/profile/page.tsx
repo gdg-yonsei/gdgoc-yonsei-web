@@ -20,9 +20,9 @@ export default function ProfilePage() {
       </div>
       <Suspense
         fallback={
-          <p className={'p-2 rounded-lg bg-white shadow-xl text-center'}>
-            Loading...
-          </p>
+          <div
+            className={'w-full h-96 rounded-xl bg-neutral-200 animate-pulse'}
+          />
         }
       >
         <UserProfile />
