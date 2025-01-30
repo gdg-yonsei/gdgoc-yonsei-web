@@ -16,4 +16,5 @@ export const memberValidation = z.object({
   telephone: z.string().nullable(),
   role: z.enum(['MEMBER', 'CORE', 'LEAD', 'ALUMNUS']),
   isForeigner: z.boolean(),
+  profileImage: z.string().nullable(),
 })

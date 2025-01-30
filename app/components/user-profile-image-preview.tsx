@@ -24,13 +24,7 @@ export default function UserProfileImagePreview({
 }) {
   return (
     <Image
-      src={
-        src
-          ? src.includes('http') || src.includes('data:image')
-            ? src
-            : process.env.NEXT_PUBLIC_IMAGE_URL + src
-          : '/default-user-profile.png'
-      }
+      src={src ? src : '/default-user-profile.png'}
       alt={alt}
       width={width}
       height={height}

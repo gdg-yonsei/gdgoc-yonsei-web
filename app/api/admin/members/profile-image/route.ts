@@ -31,5 +31,8 @@ export async function POST(request: Request) {
   const uploadUrl = await getPreSignedUrl(fileName, res.type)
 
   // Pre Signed URL 반환
-  return NextResponse.json({ uploadUrl, fileName })
+  return NextResponse.json({
+    uploadUrl,
+    fileName: process.env.NEXT_PUBLIC_IMAGE_URL + fileName,
+  })
 }

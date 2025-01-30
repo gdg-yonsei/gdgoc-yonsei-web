@@ -5,28 +5,28 @@ import { useAtom } from 'jotai'
 import { uploadProfileImageState } from '@/lib/atoms'
 import { PostBody } from '@/app/api/admin/members/profile-image/route'
 import SelectImageButton from '@/app/admin/members/[memberId]/edit/select-image-button'
-import SaveImageButton from '@/app/admin/members/[memberId]/edit/save-image-button'
 import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
 
 /**
  * 이미지 업로드 컴포넌트
  * @param image - 사용자 기존 프로필 이미지 URL
  * @param memberId - 멤버 ID
+ * @param name - input name
  * @constructor
  */
 export default function ImageUpload({
   image,
   memberId,
+  name,
 }: {
   image: string | null
   memberId: string
+  name: string
 }) {
   // input 태그 ref
   const inputRef = useRef<HTMLInputElement>(null)
   // 선택된 이미지 파일 링크
   const [imgFileUrl, setImgFileUrl] = useState('')
-  // input 태그에 선택된 파일
-  const [file, setFile] = useState<File>()
   // 로딩 상태
   const [isLoading, setIsLoading] = useAtom(uploadProfileImageState)
   // 사용자 기존 프로필 이미지 URL
@@ -35,75 +35,62 @@ export default function ImageUpload({
   /**
    * 선택한 이미지 파일을 주소로 변환하는 함수
    */
-  const saveImgFile = () => {
+  const saveImgFile = async () => {
+    // 로딩 상태 변환
+    setIsLoading(true)
     const fileData = inputRef?.current?.files?.[0]
-    setFile(fileData)
+
     if (fileData) {
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
         setImgFileUrl(reader.result as string)
       }
-    }
-  }
+      // 이미지 파일을 업로드 할 URL 요청
+      const requestUploadUrl = await fetch('/api/admin/members/profile-image', {
+        method: 'POST',
+        body: JSON.stringify({
+          type: inputRef?.current?.files?.[0].type,
+          fileName: inputRef?.current?.files?.[0].name,
+          memberId: memberId,
+        } as PostBody),
+      })
+      // 이미지 파일 업로드 URL 및 난수로 생성된 파일 이름
+      const uploadUrl = (await requestUploadUrl.json()) as {
+        uploadUrl: string
+        fileName: string
+      }
 
-  /**
-   * 이미지를 업로드 하는 함수
-   */
-  async function handleSaveImage() {
-    // 로딩 상태 변환
-    setIsLoading(true)
-    // 선택된 파일이 없을 경우 알림 및 종료
-    if (!file) {
-      alert('Please select an image to upload')
-      setIsLoading(false)
-      return
-    }
-    // 이미지 파일을 업로드 할 URL 요청
-    const requestUploadUrl = await fetch('/api/admin/members/profile-image', {
-      method: 'POST',
-      body: JSON.stringify({
-        type: inputRef?.current?.files?.[0].type,
-        fileName: inputRef?.current?.files?.[0].name,
-        memberId: memberId,
-      } as PostBody),
-    })
-    // 이미지 파일 업로드 URL 및 난수로 생성된 파일 이름
-    const uploadUrl = (await requestUploadUrl.json()) as {
-      uploadUrl: string
-      fileName: string
+      // 이미지 업로드 요청
+      await fetch(uploadUrl.uploadUrl, {
+        method: 'PUT',
+        body: inputRef?.current?.files?.[0],
+      })
+
+      // 기존 프로필 이미지 변경
+      setProfileImage(uploadUrl.fileName)
+      // 이미지 파일 경로 초기화
+      setImgFileUrl('')
     }
 
-    // 이미지 업로드 요청
-    await fetch(uploadUrl.uploadUrl, {
-      method: 'PUT',
-      body: inputRef?.current?.files?.[0],
-    })
-    // 멤버 프로필 이미지 업데이트 요청
-    await fetch(`/api/admin/members/${memberId}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        profileImage: uploadUrl.fileName,
-      }),
-    })
-    // 기존 프로필 이미지 변경
-    setProfileImage(uploadUrl.fileName)
-    // 이미지 파일 경로 초기화
-    setImgFileUrl('')
     // 로딩 상태 변경
     setIsLoading(false)
   }
 
   return (
-    <div
-      className={'flex flex-col sm:flex-row gap-2 items-center justify-start'}
-    >
+    <div className={'flex flex-col gap-2 items-start'}>
       <input
         hidden={true}
         type="file"
         accept="image/*"
         ref={inputRef}
         onChange={saveImgFile}
+      />
+      <input
+        hidden={true}
+        name={name}
+        value={profileImage ? profileImage : ''}
+        readOnly={true}
       />
       <UserProfileImagePreview
         src={imgFileUrl ? imgFileUrl : profileImage}
@@ -115,11 +102,6 @@ export default function ImageUpload({
       <SelectImageButton
         onClick={() => inputRef.current?.click()}
         disabled={isLoading}
-      />
-      <SaveImageButton
-        isLoading={isLoading}
-        imgFile={imgFileUrl}
-        onClick={handleSaveImage}
       />
     </div>
   )

@@ -44,7 +44,10 @@ export async function updateProfileAction(
     telephone,
     role,
     isForeigner,
+    profileImage,
   } = getMemberFormData(formData)
+
+  console.log(profileImage)
 
   try {
     // zod validation
@@ -61,6 +64,7 @@ export async function updateProfileAction(
       telephone,
       role,
       isForeigner,
+      profileImage,
     })
   } catch (err) {
     // 데이터 형식이 맞지 않을 경우 오류 반환
@@ -89,6 +93,7 @@ export async function updateProfileAction(
           ? { role: role }
           : {}),
         isForeigner,
+        image: profileImage,
       })
       .where(eq(users.id, memberId))
 

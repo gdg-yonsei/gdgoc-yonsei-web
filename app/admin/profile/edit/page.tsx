@@ -40,11 +40,16 @@ export default async function EditProfilePage() {
       </AdminNavigationButton>
       <div className={'admin-title py-4'}>Edit Profile</div>
       <div className={'flex flex-col gap-4'}>
-        <ImageUpload image={memberData.image} memberId={memberData.id} />
         <DataForm
           action={updateProfileActionWithMemberId}
           className={'w-full gap-4 member-data-grid'}
         >
+          <ImageUpload
+            image={memberData.image}
+            memberId={memberData.id}
+            name={'profileImage'}
+          />
+
           <DataInput
             title={'Github Name*'}
             defaultValue={memberData.name}

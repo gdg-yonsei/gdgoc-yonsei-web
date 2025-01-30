@@ -20,6 +20,7 @@ export default function getMemberFormData(formData: FormData) {
     | 'ALUMNUS'
     | null
   const isForeigner = formData.get('isForeigner') === 'true'
+  const profileImage = formData.get('profileImage') as string | null
 
   return {
     name,
@@ -34,5 +35,6 @@ export default function getMemberFormData(formData: FormData) {
     telephone,
     role,
     isForeigner,
+    profileImage,
   }
 }
