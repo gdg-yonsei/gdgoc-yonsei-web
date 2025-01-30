@@ -6,6 +6,7 @@ import { getSession } from '@/lib/fetcher/get-session'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import formatUserName from '@/lib/format-user-name'
 
 export default async function SessionPage({
   params,
@@ -13,10 +14,10 @@ export default async function SessionPage({
   params: Promise<{ sessionId: string }>
 }) {
   const { sessionId } = await params
-  // Project 데이터 가져오기
+  // Session 데이터 가져오기
   const sessionData = await getSession(sessionId)
 
-  // Project 데이터가 없으면 404 페이지 표시
+  // Session 데이터가 없으면 404 페이지 표시
   if (!sessionData) {
     notFound()
   }
@@ -47,11 +48,46 @@ export default async function SessionPage({
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{sessionData.description}</div>
         </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Created At</div>
+          <div className={'member-data-content'}>
+            {new Intl.DateTimeFormat('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              hour: 'numeric',
+              minute: 'numeric',
+              day: 'numeric',
+            }).format(new Date(sessionData.createdAt))}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Updated At</div>
+          <div className={'member-data-content'}>
+            {new Intl.DateTimeFormat('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              hour: 'numeric',
+              minute: 'numeric',
+              day: 'numeric',
+            }).format(new Date(sessionData.updatedAt))}
+          </div>
+        </div>
+      </div>
+      <div className={'member-data-box'}>
+        <div className={'member-data-title'}>Author</div>
+        <div className={'member-data-content'}>
+          {formatUserName(
+            sessionData.author?.name,
+            sessionData.author?.firstName,
+            sessionData.author?.lastName,
+            sessionData.author?.isForeigner
+          )}
+        </div>
       </div>
       <div
         className={'member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'}
       >
-        <div className={'w-full max-w-lg mx-auto flex flex-col gap-2'}>
+        <div className={'w-full max-w-lg mx-auto flex flex-col py-2'}>
           <div className={'member-data-title'}>Main Image</div>
           <Image
             src={sessionData.mainImage}
@@ -63,7 +99,7 @@ export default async function SessionPage({
             blurDataURL={'/default-image.png'}
           />
         </div>
-        <div className={'w-full max-w-lg mx-auto gap-2 flex flex-col'}>
+        <div className={'w-full max-w-lg mx-auto flex flex-col py-2'}>
           <div className={'member-data-title'}>Content Images</div>
           {sessionData.images.map((image, index) => (
             <Image

@@ -13,7 +13,9 @@ export default async function PartsTable() {
     <div className={'w-full flex flex-col gap-2'}>
       {partsData.map((generation) => (
         <div key={generation.id}>
-          <div className={'border-b-2 text-sm text-neutral-600'}>
+          <div
+            className={'border-b-2 text-sm text-neutral-600 border-neutral-300'}
+          >
             Generation: {generation.name}
           </div>
           <div className={'member-data-grid w-full gap-2 pt-2'}>
