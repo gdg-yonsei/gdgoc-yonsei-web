@@ -49,6 +49,17 @@ export default async function SessionPage({
           <div className={'member-data-content'}>{sessionData.description}</div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Author</div>
+          <div className={'member-data-content'}>
+            {formatUserName(
+              sessionData.author?.name,
+              sessionData.author?.firstName,
+              sessionData.author?.lastName,
+              sessionData.author?.isForeigner
+            )}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Created At</div>
           <div className={'member-data-content'}>
             {new Intl.DateTimeFormat('ko-KR', {
@@ -73,17 +84,7 @@ export default async function SessionPage({
           </div>
         </div>
       </div>
-      <div className={'member-data-box'}>
-        <div className={'member-data-title'}>Author</div>
-        <div className={'member-data-content'}>
-          {formatUserName(
-            sessionData.author?.name,
-            sessionData.author?.firstName,
-            sessionData.author?.lastName,
-            sessionData.author?.isForeigner
-          )}
-        </div>
-      </div>
+
       <div
         className={'member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'}
       >

@@ -54,7 +54,7 @@ export default async function PartPage({
         </div>
         <div className={'col-span-4'}>
           <div className={'member-data-title'}>Members</div>
-          <div className={'member-data-grid'}>
+          <div className={'member-data-grid gap-2'}>
             {partData.usersToParts.map((user) => (
               <div key={user.user.id} className={'member-data-box'}>
                 <div className={'member-data-content'}>
