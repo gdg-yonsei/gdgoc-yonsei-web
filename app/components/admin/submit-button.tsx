@@ -17,7 +17,7 @@ export default function SubmitButton() {
     <button
       type={'submit'}
       className={
-        'bg-neutral-950 text-white p-2 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
+        'bg-neutral-950 text-white p-2 px-4 disabled:bg-neutral-600 rounded-xl flex items-center justify-center gap-2 hover:not-disabled:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
       }
       disabled={pending || isLoading}
     >
@@ -28,7 +28,7 @@ export default function SubmitButton() {
       ) : (
         ''
       )}
-      <p>Submit</p>
+      <p>{isLoading ? 'Suspend...' : 'Submit'}</p>
     </button>
   )
 }

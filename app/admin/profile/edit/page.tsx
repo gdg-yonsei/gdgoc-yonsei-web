@@ -25,6 +25,7 @@ export default async function EditProfilePage() {
   }
   // Member 정보 가져오기
   const memberData = await getMember(memberId)
+
   // Member 정보 업데이트 Action
   const updateProfileActionWithMemberId = updateProfileAction.bind(
     null,

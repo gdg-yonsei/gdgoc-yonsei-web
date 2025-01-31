@@ -3,6 +3,7 @@ import UserProfile from '@/app/admin/profile/user-profile'
 import { Suspense } from 'react'
 import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button'
 import Link from 'next/link'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
 
 export default function ProfilePage() {
   return (
@@ -12,10 +13,11 @@ export default function ProfilePage() {
         <Link
           href={'/admin/profile/edit'}
           className={
-            'p-2 px-3 rounded-lg bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-all'
+            'p-2 px-4 rounded-full bg-neutral-900 text-white flex gap-2 items-center hover:bg-neutral-800 transition-all'
           }
         >
-          Edit
+          <PencilSquareIcon className={'size-5'} />
+          <p>Edit</p>
         </Link>
       </div>
       <Suspense
