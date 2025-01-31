@@ -22,9 +22,21 @@ export default function ProfilePage() {
       </div>
       <Suspense
         fallback={
-          <div
-            className={'w-full h-96 rounded-xl bg-neutral-200 animate-pulse'}
-          />
+          <div className={'member-data-grid gap-2 py-4'}>
+            <div
+              className={
+                'size-48 mx-auto rounded-lg bg-neutral-200 animate-pulse'
+              }
+            />
+            {new Array(11).fill(0).map((_, i) => (
+              <div
+                key={i}
+                className={
+                  'w-full h-20 rounded-lg bg-neutral-200 animate-pulse'
+                }
+              />
+            ))}
+          </div>
         }
       >
         <UserProfile />

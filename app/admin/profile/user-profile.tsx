@@ -18,11 +18,11 @@ export default async function UserProfile() {
   const userData = await getMember(session.user.id)
 
   return (
-    <div className={'member-data-grid gap-2 p-4'}>
+    <div className={'member-data-grid gap-2 py-4'}>
       <UserProfileImage
         src={userData.image}
-        width={200}
-        height={200}
+        width={100}
+        height={100}
         className={'size-48 aspect-1/1 rounded-lg mx-auto'}
         alt={'User Profile Image'}
       />

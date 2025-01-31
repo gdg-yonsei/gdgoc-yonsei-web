@@ -45,7 +45,7 @@ export default function MenuBar({
   return (
     <>
       <div
-        className={`w-full flex justify-center transition-all bg-neutral-100 ${isOpen ? 'h-[80vh]' : 'h-0'}`}
+        className={`w-full flex justify-center transition-all bg-neutral-100 ${isOpen ? 'h-[70vh]' : 'h-0'}`}
       >
         {isOpen && (
           <div className={'w-full flex flex-col gap-4 p-4 max-w-4xl'}>
