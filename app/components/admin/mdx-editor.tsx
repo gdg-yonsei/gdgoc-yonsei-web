@@ -52,8 +52,12 @@ export default function MDXEditor({
         </div>
         <div className={'w-full'}>
           <div>Preview</div>
-          <div className={'ring-2 min-h-96 w-full rounded-lg ring-sky-900 p-4'}>
-            <Markdown className={'w-full prose'}>{content}</Markdown>
+          <div
+            className={
+              'ring-2 min-h-96 w-full rounded-lg ring-sky-900 p-4 prose'
+            }
+          >
+            <Markdown>{content}</Markdown>
           </div>
         </div>
       </div>

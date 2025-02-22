@@ -5,7 +5,7 @@ import GDGLogo from '@/public/logo/gdg.svg'
  * @param className
  * @constructor
  */
-export default function GDGoCYonseiLogo({ className }: { className: string }) {
+export default function GDGoCYonseiLogo({ className }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <GDGLogo className={'w-16 md:w-24'} />

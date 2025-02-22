@@ -36,3 +36,8 @@ export const uploadMultipleImagesState = atom(false)
  * 사용자 프로필 이미지 업로드 상태
  */
 export const uploadProfileImageState = atom(false)
+
+/**
+ * Home Page 상단 메뉴 바 상태
+ */
+export const homeMenuBarState = atom(false)
