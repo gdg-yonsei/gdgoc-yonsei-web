@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import GDGoCLogo from '@/public/logo/gdg-lg.svg'
 import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
+import GDGLogo from '@/app/components/gdg-logo'
 
 /**
  * 사이드 바 내비게이터
@@ -46,7 +46,7 @@ export default function Sidebar({
     >
       {/*관리자 페이지 사이드바 제목*/}
       <div className={'flex items-center gap-2 w-full'}>
-        <GDGoCLogo className={'w-12'} />
+        <GDGLogo className={'w-12'} />
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       {/*관리자 페이지 내비게이터 리스트*/}

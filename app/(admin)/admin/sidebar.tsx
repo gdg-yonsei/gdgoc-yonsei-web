@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import GDGoCLogo from '@/public/logo/gdg-lg.svg'
 import { auth } from '@/auth'
 import navigationList from '@/app/(admin)/admin/navigation-list'
+import GDGLogo from '@/app/components/gdg-logo'
 
 /**
  * 사이드 바 네비게이션 컴포넌트
@@ -42,7 +42,7 @@ export default async function Sidebar() {
       }
     >
       <div className={'flex items-center gap-2 w-full'}>
-        <GDGoCLogo className={'w-12'} />
+        <GDGLogo className={'w-12'} />
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       <div className={'w-full flex flex-col gap-4 pt-4'}>

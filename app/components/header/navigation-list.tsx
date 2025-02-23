@@ -23,7 +23,7 @@ function MotionLink({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: state ? 1 : 0 }}
-      className={'p-1 px-2'}
+      className={'p-1 px-4 last:pb-4'}
     >
       {children}
     </motion.div>

@@ -1,4 +1,4 @@
-import GDGLogo from '@/public/logo/gdg.svg'
+import GDGLogo from '@/app/components/gdg-logo'
 
 /**
  * GDGoC Yonsei Logo 컴포넌트
@@ -8,7 +8,7 @@ import GDGLogo from '@/public/logo/gdg.svg'
 export default function GDGoCYonseiLogo({ className }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <GDGLogo className={'w-16 md:w-24'} />
+      <GDGLogo className={'w-16 md:w-24'} svgKey={'GDGoCYonseiLogo'} />
       <p className={'text-xs md:text-base'}>
         Google Developer Groups <br />
         on Campus Yonsei
