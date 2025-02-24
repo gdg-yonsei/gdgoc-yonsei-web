@@ -17,7 +17,10 @@ export default function Footer() {
         >
           <LinkedIn className={'size-9'} />
         </Link>
-        <Link href={'mailto:gdsc.yonsei.univ@gmail.com'} target={'_blank'}>
+        <Link
+          href={'https://www.instagram.com/gdg.yonseiuniv/'}
+          target={'_blank'}
+        >
           <Instagram className={'size-10'} />
         </Link>
       </div>
