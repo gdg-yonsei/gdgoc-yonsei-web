@@ -25,7 +25,7 @@ export default function Footer() {
         </Link>
       </div>
       <p className={'text-sm text-neutral-700 mx-auto text-center'}>
-        Copyright ⓒ 2024. GDG on Campus Yonsei <br />
+        Copyright ⓒ 2025. GDG on Campus Yonsei <br />
         All rights reserved.
       </p>
     </div>
