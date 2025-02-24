@@ -15,7 +15,7 @@ export default function Instagram({ ...rest }: SVGProps<SVGSVGElement>) {
         width="33"
         height="33"
         fill="url(#pattern0_601_388)"
-        fill-opacity="0.5"
+        fillOpacity="0.5"
       />
       <defs>
         <pattern

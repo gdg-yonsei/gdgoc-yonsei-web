@@ -1,4 +1,4 @@
-import { getGenerations } from '@/lib/fetcher/get-generations'
+import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import Link from 'next/link'
 import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'
 

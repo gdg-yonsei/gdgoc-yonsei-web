@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getGeneration } from '@/lib/fetcher/get-generation'
+import { getGeneration } from '@/lib/fetcher/admin/get-generation'
 import { notFound } from 'next/navigation'
 import { updateGenerationAction } from '@/app/(admin)/admin/generations/[generationId]/edit/actions'
 import DataInput from '@/app/components/admin/data-input'

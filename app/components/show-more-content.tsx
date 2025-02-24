@@ -11,7 +11,7 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
       <button
         type={'button'}
         onClick={() => setShowMore(true)}
-        className={`${showMore ? 'hidden' : ''} ml-auto text-base underline text-neutral-600`}
+        className={`${showMore ? 'hidden' : ''} ml-auto text-base underline text-neutral-600 cursor-pointer`}
       >
         Show More
       </button>

@@ -1,5 +1,5 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import { getProject } from '@/lib/fetcher/get-project'
+import { getProject } from '@/lib/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -12,7 +12,7 @@ import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import formatUserName from '@/lib/format-user-name'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
-import { getMembers } from '@/lib/fetcher/get-members'
+import { getMembers } from '@/lib/fetcher/admin/get-members'
 
 export default async function EditProjectPage({
   params,

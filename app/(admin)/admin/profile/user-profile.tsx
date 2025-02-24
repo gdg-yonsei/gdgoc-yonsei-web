@@ -1,6 +1,6 @@
 import { auth } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
-import { getMember } from '@/lib/fetcher/get-member'
+import { getMember } from '@/lib/fetcher/admin/get-member'
 import { notFound } from 'next/navigation'
 import formatUserName from '@/lib/format-user-name'
 

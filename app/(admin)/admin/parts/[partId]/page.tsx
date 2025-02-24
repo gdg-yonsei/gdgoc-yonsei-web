@@ -4,9 +4,9 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
-import { getPart } from '@/lib/fetcher/get-part'
+import { getPart } from '@/lib/fetcher/admin/get-part'
 import formatUserName from '@/lib/format-user-name'
-import { getGeneration } from '@/lib/fetcher/get-generation'
+import { getGeneration } from '@/lib/fetcher/admin/get-generation'
 
 export default async function PartPage({
   params,

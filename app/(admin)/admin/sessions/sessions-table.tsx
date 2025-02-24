@@ -1,4 +1,4 @@
-import { getSessions } from '@/lib/fetcher/get-sessions'
+import { getSessions } from '@/lib/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
 

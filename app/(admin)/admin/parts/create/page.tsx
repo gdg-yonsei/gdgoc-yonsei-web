@@ -7,8 +7,8 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
-import { getGenerations } from '@/lib/fetcher/get-generations'
-import { getMembers } from '@/lib/fetcher/get-members'
+import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import { getMembers } from '@/lib/fetcher/admin/get-members'
 
 export default async function CreatePartPage() {
   // 기수 정보 가져오기

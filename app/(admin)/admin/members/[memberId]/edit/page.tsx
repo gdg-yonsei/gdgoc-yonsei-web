@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getMember } from '@/lib/fetcher/get-member'
+import { getMember } from '@/lib/fetcher/admin/get-member'
 import formatUserName from '@/lib/format-user-name'
 import { updateMemberAction } from '@/app/(admin)/admin/members/[memberId]/edit/actions'
 import handlePermission from '@/lib/admin/handle-permission'

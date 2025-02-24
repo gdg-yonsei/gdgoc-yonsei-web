@@ -1,5 +1,5 @@
 import 'server-only'
-import getUserRole from '@/lib/fetcher/get-user-role'
+import getUserRole from '@/lib/fetcher/admin/get-user-role'
 import checkPermission from '@/lib/admin/check-permission'
 
 export type ActionType = 'get' | 'post' | 'put' | 'delete'

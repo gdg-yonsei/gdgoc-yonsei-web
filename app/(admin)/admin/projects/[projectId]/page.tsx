@@ -1,5 +1,5 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import { getProject } from '@/lib/fetcher/get-project'
+import { getProject } from '@/lib/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import DataEditLink from '@/app/components/admin/data-edit-link'

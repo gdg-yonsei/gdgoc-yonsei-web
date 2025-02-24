@@ -1,4 +1,4 @@
-import { getProjects } from '@/lib/fetcher/get-projects'
+import { getProjects } from '@/lib/fetcher/admin/get-projects'
 import Link from 'next/link'
 import Image from 'next/image'
 

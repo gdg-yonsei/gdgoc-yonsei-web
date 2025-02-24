@@ -5,7 +5,7 @@ import Header from '@/app/components/admin/header'
 import JotaiProvider from '@/app/components/jotai-provider'
 import Sidebar from '@/app/components/admin/sidebar'
 import AuthProvider from '@/app/components/auth/auth-provider'
-import getUserRole from '@/lib/fetcher/get-user-role'
+import getUserRole from '@/lib/fetcher/admin/get-user-role'
 import navigationList from '@/app/(admin)/admin/navigation-list'
 import { forbidden, redirect } from 'next/navigation'
 

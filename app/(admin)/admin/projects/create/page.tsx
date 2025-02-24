@@ -10,7 +10,7 @@ import MDXEditor from '@/app/components/admin/mdx-editor'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
-import { getMembers } from '@/lib/fetcher/get-members'
+import { getMembers } from '@/lib/fetcher/admin/get-members'
 import formatUserName from '@/lib/format-user-name'
 
 export default async function CreateProjectPage() {

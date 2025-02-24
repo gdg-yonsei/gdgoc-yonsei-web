@@ -1,4 +1,4 @@
-import { getParts } from '@/lib/fetcher/get-parts'
+import { getParts } from '@/lib/fetcher/admin/get-parts'
 import Link from 'next/link'
 
 /**

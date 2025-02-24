@@ -4,7 +4,7 @@ import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import * as motion from 'motion/react-client'
 import formatUserName from '@/lib/format-user-name'
 import { notFound } from 'next/navigation'
-import { getMember } from '@/lib/fetcher/get-member'
+import { getMember } from '@/lib/fetcher/admin/get-member'
 
 /**
  * 사용자 정보 표시 패널
