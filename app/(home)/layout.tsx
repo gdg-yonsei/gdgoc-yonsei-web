@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import '../globals.css'
 import { ReactNode } from 'react'
 import Header from '@/app/components/header'
+import Footer from '@/app/components/footer'
 
 export const metadata: Metadata = {
   title: 'GDGoC Yonsei',
@@ -17,6 +18,7 @@ export default function RootLayout({
     <>
       <Header />
       {children}
+      <Footer />
     </>
   )
 }

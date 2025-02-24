@@ -1,0 +1,209 @@
+import { SVGProps } from 'react'
+
+export default function Trophy({ ...rest }: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width="126"
+      height="197"
+      viewBox="0 0 126 197"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...rest}
+    >
+      <path
+        d="M23.2705 71.1641L81.1461 50.0298"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M81.2329 50.1094L99.0914 99.0143"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M23.3037 71.1914L41.1622 120.096"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M41 119.922L60.6172 128.848"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M99.1289 98.9102L89.5296 118.221"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M89.4712 118.232L99.9327 146.881"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M60.639 128.781L71.1005 157.43"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M63.885 160.176L107.292 144.325"
+        stroke="#1E1E1E"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M63.9719 160.053L69.2555 174.522"
+        stroke="#1E1E1E"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M107.273 144.219L112.556 158.688"
+        stroke="#1E1E1E"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M61.626 177.285L119.502 156.151"
+        stroke="#1E1E1E"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M84.0566 57.8965L98.5255 52.6129"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M94.5665 86.6738L109.035 81.3903"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M98.8633 52.6367L109.325 81.2852"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M85.7957 62.6562L94.477 59.4861"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M92.9285 82.1895L101.61 79.0193"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M94.4771 59.4863L101.557 78.8747"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M25.8216 78.9805L11.3527 84.264"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M36.3289 107.758L21.86 113.041"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M11.1092 84.5L21.5707 113.148"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M27.5583 83.7402L18.877 86.9104"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M34.6911 103.273L26.0098 106.444"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M18.8768 86.9102L25.9568 106.298"
+        stroke="#F9AB00"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <rect
+        width="3.08068"
+        height="46.2103"
+        rx="1.54034"
+        transform="matrix(1 0 0 -1 122.303 158.963)"
+        fill="#4285F4"
+      />
+      <circle
+        cx="2.15648"
+        cy="2.15648"
+        r="2.15648"
+        transform="matrix(1 0 0 -1 121.687 111.213)"
+        fill="#4285F4"
+      />
+      <rect
+        width="3.08068"
+        height="46.2103"
+        rx="1.54034"
+        transform="matrix(1 0 0 -1 109.056 52.0625)"
+        fill="#34A853"
+      />
+      <circle
+        cx="2.15648"
+        cy="2.15648"
+        r="2.15648"
+        transform="matrix(1 0 0 -1 108.44 4.3125)"
+        fill="#34A853"
+      />
+      <rect
+        width="3.08068"
+        height="46.2103"
+        rx="1.54034"
+        transform="matrix(1 0 0 -1 0.61615 80.0977)"
+        fill="#F9AB00"
+      />
+      <circle
+        cx="2.15648"
+        cy="2.15648"
+        r="2.15648"
+        transform="matrix(1 0 0 -1 0 32.3477)"
+        fill="#F9AB00"
+      />
+      <rect
+        width="3.08068"
+        height="46.2103"
+        rx="1.54034"
+        transform="matrix(1 0 0 -1 36.3521 196.547)"
+        fill="#EA4335"
+      />
+      <circle
+        cx="2.15648"
+        cy="2.15648"
+        r="2.15648"
+        transform="matrix(1 0 0 -1 35.7359 148.797)"
+        fill="#EA4335"
+      />
+    </svg>
+  )
+}
