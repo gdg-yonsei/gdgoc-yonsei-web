@@ -36,9 +36,12 @@ export default function NavigationList() {
   return (
     <motion.div
       initial={{ height: 0 }}
-      animate={{ height: isMenuOpen ? 'auto' : 0 }}
+      animate={{
+        height: isMenuOpen ? 'auto' : 0,
+        visibility: isMenuOpen ? 'visible' : 'hidden',
+      }}
       transition={{ duration: 0.2 }}
-      className={`flex flex-col gap-2 w-full text-lg`}
+      className={'flex flex-col gap-2 w-full text-lg'}
     >
       <MotionLink state={isMenuOpen}>
         <Link
