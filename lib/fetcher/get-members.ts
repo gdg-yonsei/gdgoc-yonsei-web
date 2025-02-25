@@ -1,7 +1,8 @@
 import db from '@/db'
 import { unstable_cache } from 'next/cache'
-import { desc } from 'drizzle-orm'
+import { asc, desc } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
+import { parts } from '@/db/schema/parts'
 
 export const preload = () => {
   void getMembers()
@@ -26,7 +27,6 @@ export const getMembers = unstable_cache(
               },
             },
           },
-          limit: 1,
           columns: {
             partId: false,
             userId: false,
@@ -43,6 +43,7 @@ export const getMembers = unstable_cache(
         telephone: false,
         updatedAt: false,
       },
+      orderBy: asc(parts.id),
     }),
   [],
   {

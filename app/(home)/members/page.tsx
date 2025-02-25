@@ -1,8 +1,8 @@
-import { getMembers } from '@/lib/fetcher/get-members'
 import { getGenerations } from '@/lib/fetcher/get-generations'
+import GenerationButtonGroup from '@/app/(home)/members/generation-button-group'
+import MembersList from '@/app/(home)/members/members-list'
 
 export default async function MembersPage() {
-  const membersData = await getMembers()
   const generationsData = await getGenerations()
 
   return (
@@ -14,14 +14,11 @@ export default async function MembersPage() {
       </h1>
       <div className={'flex items-center justify-between p-4'}>
         <p className={'text-2xl font-semibold'}>Stage</p>
-        <div className={'flex items-center gap-2 text-xl'}>
-          {generationsData.map((generation, i) => (
-            <button type={'button'} key={i} className={'p-2 rounded-xl ring-2'}>
-              {generation.name}
-            </button>
-          ))}
-        </div>
+        <GenerationButtonGroup
+          generations={generationsData.map((data) => data.name)}
+        />
       </div>
+      <MembersList generationData={generationsData} />
     </div>
   )
 }

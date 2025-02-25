@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import Github from '@/public/logo/github.svg'
+import Github from '@/public/github.svg'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isAuthenticatingState } from '@/lib/atoms'

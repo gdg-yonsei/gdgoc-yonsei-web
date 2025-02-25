@@ -41,3 +41,8 @@ export const uploadProfileImageState = atom(false)
  * Home Page 상단 메뉴 바 상태
  */
 export const homeMenuBarState = atom(false)
+
+/**
+ * Generation 선택 상태
+ */
+export const generationState = atom('')

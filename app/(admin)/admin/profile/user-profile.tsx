@@ -74,7 +74,7 @@ export default async function UserProfile() {
         <div className={'member-data-content'}>{userData.instagramId}</div>
       </div>
       <div className={'member-data-box'}>
-        <div className={'member-data-title'}>Linked In ID</div>
+        <div className={'member-data-title'}>Linked In Profile URL</div>
         <div className={'member-data-content'}>{userData.linkedInId}</div>
       </div>
     </div>

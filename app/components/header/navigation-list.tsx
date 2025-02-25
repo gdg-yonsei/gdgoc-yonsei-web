@@ -35,7 +35,7 @@ export default function NavigationList() {
 
   return (
     <motion.div
-      initial={{ height: 0 }}
+      initial={{ height: 0, visibility: 'hidden' }}
       animate={{
         height: isMenuOpen ? 'auto' : 0,
         visibility: isMenuOpen ? 'visible' : 'hidden',

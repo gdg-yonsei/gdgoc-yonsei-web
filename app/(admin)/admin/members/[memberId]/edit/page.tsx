@@ -93,10 +93,10 @@ export default async function EditMemberPage({
             placeholder={'Instagram ID'}
           />
           <DataInput
-            title={'Linked In ID'}
+            title={'Linked In Profile URL'}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
-            placeholder={'Linked In ID'}
+            placeholder={'Linked In Profile URL'}
           />
           <DataInput
             title={'Major'}
