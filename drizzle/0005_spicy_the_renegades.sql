@@ -1,1 +1,0 @@
-DROP TABLE "users_to_generations" CASCADE;

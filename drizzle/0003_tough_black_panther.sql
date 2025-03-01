@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "isForeigner" boolean DEFAULT false;

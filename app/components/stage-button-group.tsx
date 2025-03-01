@@ -1,4 +1,4 @@
-import GenerationButtonGroup from '@/app/(home)/members/generation-button-group'
+import GenerationButtonGroup from '@/app/components/generation-button-group'
 import { getGenerations } from '@/lib/fetcher/get-generations'
 
 export default function StageButtonGroup({

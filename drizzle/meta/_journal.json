@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1735739507513,
-      "tag": "0000_legal_nightmare",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1735739703810,
-      "tag": "0001_moaning_lady_vermin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1735739987399,
-      "tag": "0002_demonic_doctor_spectrum",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1735742214532,
-      "tag": "0003_tough_black_panther",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1735742289311,
-      "tag": "0004_light_tyger_tiger",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1735792761850,
-      "tag": "0005_spicy_the_renegades",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1735795200430,
-      "tag": "0006_illegal_nomad",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1736757305606,
-      "tag": "0007_hesitant_red_ghost",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1737521111650,
-      "tag": "0008_milky_scarecrow",
+      "when": 1740805451921,
+      "tag": "0000_fixed_namora",
       "breakpoints": true
     }
   ]
