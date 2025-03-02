@@ -50,6 +50,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
             width={100}
             height={100}
             priority={false}
+            onClick={() => setImageIndex(i)}
             className={`size-24 aspect-square object-cover ${imageIndex === i ? 'grayscale' : ''}`}
           />
         ))}
