@@ -8,7 +8,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
   const [imageIndex, setImageIndex] = useState(0)
 
   return (
-    <div className={'w-full overflow-hidden flex flex-col p-4 gap-4'}>
+    <div className={'w-full overflow-hidden flex flex-col p-2 gap-4'}>
       <div className={'flex w-full'}>
         <button
           type={'button'}
@@ -20,20 +20,16 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         >
           <ChevronLeftIcon className={'size-8'} />
         </button>
-        <div
-          className={
-            'flex transition-transform duration-500 ease-in-out w-[90%]'
-          }
-        >
-          <Image
-            src={images[imageIndex]}
-            alt={''}
-            width={200}
-            height={200}
-            className={'w-auto flex-shrink-0'}
-            priority={false}
-          />
-        </div>
+
+        <Image
+          src={images[imageIndex]}
+          alt={''}
+          width={200}
+          height={200}
+          className={'object-contain w-full aspect-square'}
+          priority={false}
+        />
+
         <button
           type={'button'}
           onClick={() => {
@@ -49,11 +45,12 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         {images.map((src, i) => (
           <Image
             src={src}
-            alt={'  '}
+            alt={'Project Image'}
             key={i}
             width={100}
             height={100}
             priority={false}
+            className={'size-24 aspect-square object-cover'}
           />
         ))}
       </div>
