@@ -48,6 +48,12 @@ export default async function ProjectPage({
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{projectData.description}</div>
         </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Generation</div>
+          <div className={'member-data-content'}>
+            {projectData.generation.name}
+          </div>
+        </div>
         <div className={'member-data-col-span'}>
           <div className={'member-data-title'}>Participants</div>
           <div className={'member-data-grid gap-2'}>

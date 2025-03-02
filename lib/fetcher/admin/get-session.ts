@@ -18,6 +18,9 @@ export const getSession = unstable_cache(
     console.log(new Date(), 'Fetch Session Data', sessionId)
     const sessionData = await db.query.sessions.findFirst({
       where: eq(projects.id, sessionId),
+      with: {
+        generation: true,
+      },
     })
     if (!sessionData) {
       return null

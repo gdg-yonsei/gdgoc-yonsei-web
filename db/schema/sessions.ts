@@ -1,5 +1,14 @@
-import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core'
 import { users } from '@/db/schema/users'
+import { generations } from '@/db/schema/generations'
+import { relations } from 'drizzle-orm'
 
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
@@ -10,6 +19,14 @@ export const sessions = pgTable('sessions', {
   authorId: text('authorId')
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
+  generationId: integer('generationId').notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })
+
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  generation: one(generations, {
+    fields: [sessions.generationId],
+    references: [generations.id],
+  }),
+}))

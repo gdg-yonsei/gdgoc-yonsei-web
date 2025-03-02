@@ -13,6 +13,8 @@ import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-i
 import formatUserName from '@/lib/format-user-name'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import { getMembers } from '@/lib/fetcher/admin/get-members'
+import DataSelectInput from '@/app/components/admin/data-select-input'
+import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 
 export default async function EditProjectPage({
   params,
@@ -31,6 +33,14 @@ export default async function EditProjectPage({
   )
 
   const membersList = await getMembers()
+
+  // 기수 정보 가져오기
+  const generations = await getGenerations()
+  // 기수 선택용 리스트
+  const generationList = generations.map((generation) => ({
+    name: generation.name,
+    value: String(generation.id),
+  }))
 
   return (
     <AdminDefaultLayout>
@@ -54,6 +64,12 @@ export default async function EditProjectPage({
           name={'description'}
           placeholder={'Project Description'}
           title={'Project Description'}
+        />
+        <DataSelectInput
+          title={'Generation'}
+          data={generationList}
+          name={'generationId'}
+          defaultValue={String(projectData.generationId)}
         />
         <DataSelectMultipleInput
           data={membersList.map((member) => ({

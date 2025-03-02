@@ -24,6 +24,7 @@ export const getProject = unstable_cache(
               user: true,
             },
           },
+          generation: true,
         },
       })
     )[0]

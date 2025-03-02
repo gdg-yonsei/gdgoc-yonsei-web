@@ -12,9 +12,18 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import { getMembers } from '@/lib/fetcher/admin/get-members'
 import formatUserName from '@/lib/format-user-name'
+import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import DataSelectInput from '@/app/components/admin/data-select-input'
 
 export default async function CreateProjectPage() {
   const membersList = await getMembers()
+  // 기수 정보 가져오기
+  const generations = await getGenerations()
+  // 기수 선택용 리스트
+  const generationList = generations.map((generation) => ({
+    name: generation.name,
+    value: String(generation.id),
+  }))
 
   return (
     <AdminDefaultLayout>
@@ -36,7 +45,7 @@ export default async function CreateProjectPage() {
             <DataImageInput
               title={'Main Image'}
               name={'mainImage'}
-              baseUrl={'/admin/projects/main-image'}
+              baseUrl={'/api/admin/projects/main-image'}
             >
               Select Main Image
             </DataImageInput>
@@ -61,6 +70,12 @@ export default async function CreateProjectPage() {
           defaultValue={''}
           name={'description'}
           placeholder={'Description'}
+        />
+        <DataSelectInput
+          title={'Generation'}
+          data={generationList}
+          name={'generationId'}
+          defaultValue={''}
         />
         <DataSelectMultipleInput
           data={membersList.map((member) => ({

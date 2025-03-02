@@ -8,6 +8,20 @@
       "when": 1740805451921,
       "tag": "0000_fixed_namora",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1740819050065,
+      "tag": "0001_giant_wallop",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740889208949,
+      "tag": "0002_rainy_terror",
+      "breakpoints": true
     }
   ]
 }

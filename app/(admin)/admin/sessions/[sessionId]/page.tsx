@@ -49,6 +49,12 @@ export default async function SessionPage({
           <div className={'member-data-content'}>{sessionData.description}</div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Generation</div>
+          <div className={'member-data-content'}>
+            {sessionData.generation.name}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Author</div>
           <div className={'member-data-content'}>
             {formatUserName(

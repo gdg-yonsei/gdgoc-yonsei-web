@@ -30,8 +30,15 @@ export async function createProjectAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, content, mainImage, contentImages, participants } =
-    getProjectFormData(formData)
+  const {
+    name,
+    description,
+    content,
+    mainImage,
+    contentImages,
+    participants,
+    generationId,
+  } = getProjectFormData(formData)
 
   try {
     // zod validation
@@ -42,6 +49,7 @@ export async function createProjectAction(
       mainImage,
       contentImages,
       participants,
+      generationId,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -63,6 +71,7 @@ export async function createProjectAction(
           name: name,
           description: description!,
           authorId: session.user.id,
+          generationId: Number(generationId),
           images: contentImages,
           mainImage: mainImage!,
           content: content!,

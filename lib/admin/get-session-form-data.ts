@@ -8,11 +8,13 @@ export default function getSessionFormData(formData: FormData) {
   const mainImage = formData.get('mainImage') as string | null
   const contentImages = formData.get('contentImages') as string
   const contentImagesArray = JSON.parse(contentImages) as string[]
+  const generationId = formData.get('generationId') as string | null
 
   return {
     name,
     description,
     mainImage,
     contentImages: contentImagesArray,
+    generationId,
   }
 }

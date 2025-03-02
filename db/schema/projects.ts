@@ -22,7 +22,7 @@ export const projects = pgTable('projects', {
   authorId: text('authorId')
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
-  generationId: integer('generationId'),
+  generationId: integer('generationId').notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })

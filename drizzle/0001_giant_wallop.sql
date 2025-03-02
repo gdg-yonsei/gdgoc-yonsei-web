@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "generationId" SET NOT NULL;

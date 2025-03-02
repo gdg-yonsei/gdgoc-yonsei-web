@@ -8,7 +8,9 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
-import { getSession } from '@/lib/fetcher/admin/get-session'
+import { getSession, preload } from '@/lib/fetcher/admin/get-session'
+import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import DataSelectInput from '@/app/components/admin/data-select-input'
 
 export default async function EditSessionPage({
   params,
@@ -25,6 +27,14 @@ export default async function EditSessionPage({
     null,
     sessionId
   )
+
+  // 기수 정보 가져오기
+  const generations = await getGenerations()
+  // 기수 선택용 리스트
+  const generationList = generations.map((generation) => ({
+    name: generation.name,
+    value: String(generation.id),
+  }))
 
   return (
     <AdminDefaultLayout>
@@ -48,6 +58,12 @@ export default async function EditSessionPage({
           name={'description'}
           placeholder={'Session Description'}
           title={'Session Description'}
+        />
+        <DataSelectInput
+          title={'Generation'}
+          data={generationList}
+          name={'generationId'}
+          defaultValue={String(sessionData.generationId)}
         />
         <div
           className={

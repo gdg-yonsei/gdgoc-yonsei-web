@@ -34,8 +34,15 @@ export async function updateProjectAction(
   }
 
   // form data 에서 project data 추출
-  const { name, description, content, contentImages, mainImage, participants } =
-    getProjectFormData(formData)
+  const {
+    name,
+    description,
+    content,
+    contentImages,
+    mainImage,
+    participants,
+    generationId,
+  } = getProjectFormData(formData)
 
   try {
     // zod validation
@@ -46,6 +53,7 @@ export async function updateProjectAction(
       contentImages,
       mainImage,
       participants,
+      generationId,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -96,6 +104,7 @@ export async function updateProjectAction(
         content: content!,
         images: contentImages,
         mainImage: mainImage!,
+        generationId: Number(generationId),
         updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))

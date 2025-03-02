@@ -8,7 +8,9 @@ export const preload = () => {
 export const getProjects = unstable_cache(
   async () =>
     db.query.projects.findMany({
-      with: {},
+      with: {
+        generation: true,
+      },
     }),
   [],
   {
