@@ -8,7 +8,7 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
-import { getSession, preload } from '@/lib/fetcher/admin/get-session'
+import { getSession } from '@/lib/fetcher/admin/get-session'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 
