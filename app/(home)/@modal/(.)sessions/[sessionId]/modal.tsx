@@ -15,15 +15,15 @@ export default function Modal({ children }: { children: ReactNode }) {
     >
       <div
         className={
-          'w-full h-full max-w-2xl bg-neutral-50 rounded-2xl relative overflow-y-scroll'
+          'w-full h-full max-h-2/3 max-w-2xl bg-neutral-50 rounded-2xl relative overflow-y-scroll'
         }
       >
         <button
           type={'button'}
           onClick={() => router.back()}
-          className={'absolute top-2 right-2'}
+          className={'absolute top-1 right-1'}
         >
-          <XCircleIcon className={'size-10'} />
+          <XCircleIcon className={'size-8'} />
         </button>
         {children}
       </div>

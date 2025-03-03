@@ -24,8 +24,8 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         <Image
           src={images[imageIndex]}
           alt={''}
-          width={200}
-          height={200}
+          width={100}
+          height={100}
           className={'object-contain w-full aspect-square'}
           priority={false}
         />
