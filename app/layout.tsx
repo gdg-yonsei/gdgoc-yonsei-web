@@ -17,12 +17,17 @@ const googleSans = localFont({
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: ReactNode
+  modal: ReactNode
 }>) {
   return (
     <html lang="en" className={`bg-neutral-50 ${googleSans.className}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {modal}
+      </body>
     </html>
   )
 }

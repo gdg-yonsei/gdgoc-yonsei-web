@@ -5,16 +5,7 @@ import { generationState } from '@/lib/atoms'
 import { getProjects } from '@/lib/fetcher/get-projects'
 import Image from 'next/image'
 import Link from 'next/link'
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .format(date)
-    .replace(/-/g, '.')
-}
+import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'
 
 export default function ProjectsList({
   projectsData,
@@ -44,7 +35,7 @@ export default function ProjectsList({
           />
           <div className={'p-2'}>
             <h2 className={'text-xl font-semibold'}>{data.name}</h2>
-            <p>{formatDate(new Date(data.updatedAt))}</p>
+            <p>{formatDateYYYYMMDD(new Date(data.updatedAt))}</p>
             <p>{data.description}</p>
           </div>
         </Link>
