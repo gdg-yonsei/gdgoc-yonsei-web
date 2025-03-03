@@ -11,13 +11,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: ReactNode
+  modal: ReactNode
 }>) {
   return (
     <>
       <Header />
       {children}
+      {modal}
       <Footer />
     </>
   )
