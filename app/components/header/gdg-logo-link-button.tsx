@@ -1,10 +1,10 @@
 'use client'
 
-import GDGoCYonseiLogo from '@/app/components/gdgoc-yonsei-logo'
+import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Link from 'next/link'
 import { homeMenuBarState } from '@/lib/atoms'
 import { useAtom } from 'jotai'
-import GDGLogo from '@/app/components/gdg-logo'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 
 export default function GDGLogoLinkButton() {
   const [, setIsMenuOpen] = useAtom(homeMenuBarState)

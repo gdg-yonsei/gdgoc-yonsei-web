@@ -1,4 +1,4 @@
-import GithubSubmitButton from '@/app/auth/sign-in/sign-in-options/github/github-submit-button'
+import GithubSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/github/github-submit-button'
 import { signIn } from '@/auth'
 
 /**

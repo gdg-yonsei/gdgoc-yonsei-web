@@ -1,5 +1,5 @@
-import GDGoCYonseiLogo from '@/app/components/gdgoc-yonsei-logo'
-import SignInOptions from '@/app/auth/sign-in/sign-in-options'
+import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
+import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 
 /**
  * Sing In Page

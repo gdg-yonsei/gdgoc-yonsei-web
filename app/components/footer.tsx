@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
-import LinkedIn from '@/app/components/linked-in'
-import Instagram from '@/app/components/instagram'
+import LinkedIn from '@/app/components/svg/linked-in'
+import Instagram from '@/app/components/svg/instagram'
 
 export default function Footer() {
   return (
