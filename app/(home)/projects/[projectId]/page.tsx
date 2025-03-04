@@ -1,7 +1,7 @@
 import { getProject } from '@/lib/fetcher/get-project'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
-import ImagesSliders from '@/app/(home)/projects/[projectId]/images-slider'
+import ImagesSliders from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 

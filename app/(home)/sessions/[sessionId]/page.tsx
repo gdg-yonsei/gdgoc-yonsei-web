@@ -10,7 +10,7 @@ export default async function SessionPage({
   const sessionData = await getSession(sessionId)
 
   return (
-    <div className={'pt-20 w-full'}>
+    <div className={'pt-20 w-full min-h-screen'}>
       <SessionPageContent sessionData={sessionData} />
     </div>
   )

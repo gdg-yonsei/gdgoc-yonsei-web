@@ -26,6 +26,7 @@
     "@tailwindcss/postcss": "^4.0.9",
     "acorn": "^8.14.0",
     "drizzle-orm": "^0.40.0",
+    "framer-motion": "^12.4.10",
     "jotai": "^2.12.1",
     "motion": "^12.4.7",
     "next": "15.1.7",
