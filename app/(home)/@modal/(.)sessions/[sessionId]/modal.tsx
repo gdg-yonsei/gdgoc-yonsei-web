@@ -15,7 +15,7 @@ export default function Modal({ children }: { children: ReactNode }) {
     >
       <div
         className={
-          'w-full h-full max-h-2/3 max-w-2xl bg-neutral-50 rounded-2xl relative overflow-y-scroll'
+          'w-full h-full max-h-2/3 max-w-3xl bg-neutral-50 rounded-2xl relative overflow-y-scroll'
         }
       >
         <button

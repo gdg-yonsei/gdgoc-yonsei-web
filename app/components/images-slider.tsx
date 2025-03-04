@@ -6,6 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export default function ImagesSliders({ images }: { images: string[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState<number>(0)
 
   function imagePreviewClick(i: number) {
@@ -47,7 +48,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
   }
 
   return (
-    <div className={'w-full'}>
+    <div className={'w-full max-w-3xl'} ref={boxRef}>
       <div
         className={
           'flex overflow-x-scroll whitespace-nowrap snap-x bg-neutral-100 transition-all'
@@ -55,7 +56,12 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         ref={scrollRef}
       >
         {images.map((image, i) => (
-          <div key={i} className={'relative size-svw aspect-1/1 snap-center'}>
+          <div
+            key={i}
+            className={
+              'relative size-svw max-w-3xl max-h-screen aspect-1/1 snap-center'
+            }
+          >
             <Image
               key={i}
               src={image}
