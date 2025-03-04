@@ -11,8 +11,7 @@ This project is a website created to introduce the Google Developer Group on Cam
 - React 19
 - Next.js 15
 - Tailwind CSS
-- Zustand
-- React Query
+- Jotai
 
 ### Back End
 
