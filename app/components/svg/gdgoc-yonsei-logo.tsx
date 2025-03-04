@@ -1,4 +1,4 @@
-import GDGLogo from '@/app/components/gdg-logo'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 
 /**
  * GDGoC Yonsei Logo 컴포넌트

@@ -1,11 +1,11 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import Github from '@/public/github.svg'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isAuthenticatingState } from '@/lib/atoms'
 import { MouseEvent } from 'react'
+import Github from '@/app/components/svg/github'
 
 /**
  * Github 로그인 버튼
@@ -38,7 +38,7 @@ export default function GithubSubmitButton() {
           className={'size-6 border-2 border-t-white border-neutral-700'}
         />
       ) : (
-        <Github className={'size-6'} />
+        <Github className={'size-6'} fill={'white'} />
       )}
       <p>Sign in with Github</p>
     </button>

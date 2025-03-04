@@ -1,3 +1,4 @@
+import 'server-only'
 import db from '@/db'
 import { unstable_cache } from 'next/cache'
 import { asc, desc } from 'drizzle-orm'

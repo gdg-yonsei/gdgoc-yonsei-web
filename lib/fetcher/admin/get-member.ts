@@ -2,7 +2,7 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { desc, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
@@ -18,25 +18,6 @@ export const preload = (userId: string) => {
 export const getMember = unstable_cache(
   async (userId: string) => {
     console.log(new Date(), 'Fetch Member Data:', userId)
-
-    const query = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-      with: {
-        usersToParts: {
-          with: {
-            user: true,
-            part: {
-              with: {
-                generation: true,
-              },
-            },
-          },
-          orderBy: [desc(usersToParts.partId)],
-          limit: 1,
-        },
-      },
-    })
-    console.log(query)
     return (
       await db
         .select({

@@ -1,9 +1,9 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import GDGLogo from '@/app/components/gdg-logo'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 import ShowMoreContent from '@/app/components/show-more-content'
 import BookSVG from '@/app/components/book-svg'
-import Trophy from '@/app/components/trophy'
-import Friends from '@/app/components/friends'
+import Trophy from '@/app/components/svg/trophy'
+import Friends from '@/app/components/svg/friends'
 
 export default function HomePage() {
   return (

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
-import GDGLogo from '@/app/components/gdg-logo'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 
 /**
  * 사이드 바 내비게이터

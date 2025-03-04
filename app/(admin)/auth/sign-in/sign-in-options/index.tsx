@@ -1,5 +1,5 @@
-import SignInWithGithub from '@/app/auth/sign-in/sign-in-options/github'
-import Passkey from '@/app/auth/sign-in/sign-in-options/passkey'
+import SignInWithGithub from '@/app/(admin)/auth/sign-in/sign-in-options/github'
+import Passkey from '@/app/(admin)/auth/sign-in/sign-in-options/passkey'
 
 /**
  * Sign In Options 을 표시하는 컴포넌트

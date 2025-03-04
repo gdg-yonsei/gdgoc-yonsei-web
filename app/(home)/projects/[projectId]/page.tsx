@@ -4,6 +4,7 @@ import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { Suspense } from 'react'
 
 export default async function ProjectPage({
   params,
@@ -54,7 +55,11 @@ export default async function ProjectPage({
             About This Project
           </h2>
           <div className={'prose px-4'}>
-            <MDXRemote source={projectData.content} />
+            <Suspense fallback={<p>Loading...</p>}>
+              <MDXRemote
+                source={projectData.content}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

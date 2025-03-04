@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import navigationList from '@/app/(admin)/admin/navigation-list'
-import GDGLogo from '@/app/components/gdg-logo'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 
 /**
  * 사이드 바 네비게이션 컴포넌트

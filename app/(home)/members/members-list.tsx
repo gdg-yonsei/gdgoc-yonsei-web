@@ -6,9 +6,9 @@ import { getGenerations } from '@/lib/fetcher/get-generations'
 import Image from 'next/image'
 import Link from 'next/link'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
-import LinkedIn from '@/app/components/linked-in'
-import Instagram from '@/app/components/instagram'
-import Github from '@/app/components/github'
+import LinkedIn from '@/app/components/svg/linked-in'
+import Instagram from '@/app/components/svg/instagram'
+import Github from '@/app/components/svg/github'
 import formatUserName from '@/lib/format-user-name'
 
 export default function MembersList({

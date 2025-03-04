@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import ToggleMenubarButton from '@/app/components/admin/toggle-menubar-button'
 import MenuBar from '@/app/components/admin/menu-bar'
-import GDGoCLogo from '@/public/logo/gdg.svg'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
+import GDGLogo from '@/app/components/svg/gdg-logo'
 
 /**
  * 모바일 화면에서 보이는 관리자 페이지 헤더
@@ -23,7 +23,7 @@ export default function Header({
             href={'/admin'}
             className={'text-xl font-bold flex items-center gap-2'}
           >
-            <GDGoCLogo className={'w-12 h-6'} />
+            <GDGLogo className={'w-12 h-6'} />
             <p>GYMS</p>
           </Link>
           <ToggleMenubarButton />
