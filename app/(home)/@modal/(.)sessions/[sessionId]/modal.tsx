@@ -10,7 +10,7 @@ export default function Modal({ children }: { children: ReactNode }) {
   return (
     <div
       className={
-        'w-full h-screen bg-neutral-500/50 fixed top-0 left-0 flex items-center justify-center'
+        'w-full h-screen bg-neutral-500/50 fixed top-0 left-0 flex items-center justify-center p-4'
       }
     >
       <div
