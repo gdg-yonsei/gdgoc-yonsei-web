@@ -49,6 +49,7 @@ export default function MemberRoleManager({ userRole }: { userRole: string }) {
         readOnly={true}
       />
       <div className={'grid grid-cols-2 gap-2'}>
+        <RoleButton value={'UNVERIFIED'} role={role} setRole={setRole} />
         <RoleButton value={'MEMBER'} role={role} setRole={setRole} />
         <RoleButton value={'CORE'} role={role} setRole={setRole} />
         <RoleButton value={'LEAD'} role={role} setRole={setRole} />

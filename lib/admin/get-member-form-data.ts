@@ -18,6 +18,7 @@ export default function getMemberFormData(formData: FormData) {
     | 'CORE'
     | 'LEAD'
     | 'ALUMNUS'
+    | 'UNVERIFIED'
     | null
   const isForeigner = formData.get('isForeigner') === 'true'
   const profileImage = formData.get('profileImage') as string | null
