@@ -41,7 +41,7 @@ export default function NavigationList() {
         visibility: isMenuOpen ? 'visible' : 'hidden',
       }}
       transition={{ duration: 0.2 }}
-      className={'flex flex-col gap-2 w-full text-lg'}
+      className={'flex flex-col gap-2 w-full text-lg md:hidden'}
     >
       <MotionLink state={isMenuOpen}>
         <Link

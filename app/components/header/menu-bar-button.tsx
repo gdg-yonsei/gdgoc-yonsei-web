@@ -8,7 +8,11 @@ export default function MenuBarButton() {
   const [isMenuOpen, setIsMenuOpen] = useAtom(homeMenuBarState)
 
   return (
-    <button type={'button'} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+    <button
+      type={'button'}
+      onClick={() => setIsMenuOpen(!isMenuOpen)}
+      className={'md:hidden'}
+    >
       {isMenuOpen ? (
         <XMarkIcon className={'size-8 text-neutral-950'} />
       ) : (

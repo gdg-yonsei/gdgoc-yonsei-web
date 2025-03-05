@@ -48,19 +48,23 @@ export default function ImagesSliders({ images }: { images: string[] }) {
   }
 
   return (
-    <div className={'w-full max-w-3xl'} ref={boxRef}>
+    <div
+      className={
+        'w-full flex flex-col items-center md:flex-row md:justify-center md:items-start'
+      }
+      ref={boxRef}
+    >
+      {/*Images*/}
       <div
         className={
-          'flex overflow-x-scroll whitespace-nowrap snap-x bg-neutral-100 transition-all'
+          'flex overflow-x-scroll max-w-xl w-full whitespace-nowrap snap-x bg-neutral-100 transition-all aspect-square'
         }
         ref={scrollRef}
       >
         {images.map((image, i) => (
           <div
             key={i}
-            className={
-              'relative size-svw max-w-3xl max-h-screen aspect-1/1 snap-center'
-            }
+            className={'relative w-full max-w-xl aspect-square snap-center'}
           >
             <Image
               key={i}
@@ -72,27 +76,46 @@ export default function ImagesSliders({ images }: { images: string[] }) {
           </div>
         ))}
       </div>
-      <div className={'p-2 flex items-center justify-between'}>
-        <button type={'button'} onClick={() => scroll('left')}>
-          <ChevronLeftIcon className={'size-8'} />
-        </button>
-        <button type={'button'} onClick={() => scroll('right')}>
-          <ChevronRightIcon className={'size-8'} />
-        </button>
-      </div>
-
-      <div className={'flex overflow-x-scroll whitespace-nowrap gap-2 p-2'}>
-        {images.map((image, i) => (
-          <Image
-            key={i}
-            src={image}
-            alt={'Preview'}
-            width={100}
-            height={100}
-            className={`size-24 object-cover rounded-lg transition-all ${index === i && 'grayscale brightness-50'}`}
-            onClick={() => imagePreviewClick(i)}
-          />
-        ))}
+      <div className={'w-full max-w-xl md:w-24'}>
+        {/*Image Control Button Group*/}
+        <div className={'p-2 flex items-center justify-between w-full md:w-28'}>
+          <button
+            type={'button'}
+            onClick={() => scroll('left')}
+            className={
+              'rounded-full hover:bg-neutral-100 transition-colors p-1'
+            }
+          >
+            <ChevronLeftIcon className={'size-8'} />
+          </button>
+          <button
+            type={'button'}
+            onClick={() => scroll('right')}
+            className={
+              'rounded-full hover:bg-neutral-100 transition-colors p-1'
+            }
+          >
+            <ChevronRightIcon className={'size-8'} />
+          </button>
+        </div>
+        {/*Image Preview*/}
+        <div
+          className={
+            'flex overflow-x-scroll whitespace-nowrap gap-2 p-2 md:flex-col md:overflow-y-scroll md:h-[528px] w-28'
+          }
+        >
+          {images.map((image, i) => (
+            <Image
+              key={i}
+              src={image}
+              alt={'Preview'}
+              width={100}
+              height={100}
+              className={`size-24 object-cover aspect-square rounded-lg transition-all ${index === i && 'grayscale brightness-50'}`}
+              onClick={() => imagePreviewClick(i)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
