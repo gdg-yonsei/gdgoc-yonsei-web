@@ -16,7 +16,7 @@ export default function HomePage() {
             Google Developer Group
             <br /> on Campus Yonsei
           </h1>
-          <ChevronDownIcon className={'size-12 mt-24'} />
+          <ChevronDownIcon className={'size-12 mt-24 animate-bounce'} />
         </div>
       </div>
       {/*About GDG Page*/}
