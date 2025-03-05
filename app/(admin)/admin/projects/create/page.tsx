@@ -80,7 +80,7 @@ export default async function CreateProjectPage() {
         <DataSelectMultipleInput
           data={membersList.map((member) => ({
             value: member.id,
-            name: `${member.generation} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
+            name: `${member.generation ? member.generation : ''} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
           }))}
           name={'participants'}
           title={'Participants'}
