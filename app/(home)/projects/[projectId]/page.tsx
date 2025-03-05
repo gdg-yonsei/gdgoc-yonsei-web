@@ -53,7 +53,7 @@ export default async function ProjectPage({
               About This Project
             </h2>
           </div>
-          <div className={'prose px-4 w-full max-w-4xl mx-auto'}>
+          <div className={'prose p-4 w-full max-w-4xl mx-auto'}>
             <MDXRemote source={projectData.content} />
           </div>
         </div>
