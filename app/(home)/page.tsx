@@ -1,4 +1,7 @@
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import {
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import ShowMoreContent from '@/app/components/show-more-content'
 import BookSVG from '@/app/components/book-svg'
@@ -10,13 +13,32 @@ export default function HomePage() {
     <div className={'w-full flex flex-col'}>
       {/*Welcome page*/}
       <div className={'w-full flex items-center justify-center h-screen pt-16'}>
-        <div className={'flex flex-col items-center justify-center'}>
+        <div
+          className={
+            'flex flex-col items-center justify-center w-full max-w-xl'
+          }
+        >
           <GDGLogo className={'h-52 w-72'} svgKey={'homePage'} />
-          <h1 className={'text-2xl font-semibold text-center'}>
+          <h1 className={'text-2xl font-semibold text-center md:hidden'}>
             Google Developer Group
             <br /> on Campus Yonsei
           </h1>
-          <ChevronDownIcon className={'size-12 mt-24 animate-bounce'} />
+          <div
+            className={
+              'w-full p-2 px-3 rounded-full border-2 border-neutral-400 flex gap-2 items-center'
+            }
+          >
+            <MagnifyingGlassIcon className={'size-8 text-neutral-400'} />
+            <p className={'text-xl font-semibold text-neutral-700'}>
+              Who are we?
+            </p>
+          </div>
+          <div
+            className={'mt-24 flex flex-col items-center justify-center gap-2'}
+          >
+            <p className={'text-xl font-semibold not-md:hidden'}>Scroll Down</p>
+            <ChevronDownIcon className={'size-12 animate-bounce'} />
+          </div>
         </div>
       </div>
       {/*About GDG Page*/}
@@ -25,7 +47,7 @@ export default function HomePage() {
           'w-full p-4 flex flex-col items-center justify-center min-h-screen pt-16'
         }
       >
-        <h2 className={'p-8 text-3xl font-bold mx-auto'}>About GDG</h2>
+        <h1 className={'p-8 text-3xl font-bold mx-auto'}>About GDG</h1>
         <div className={'w-full flex flex-col gap-10'}>
           <div className={'home-about-box ring-blue-500'}>
             <h3>
