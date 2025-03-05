@@ -23,7 +23,7 @@ export default function Modal() {
               'p-4 bg-white rounded-xl flex flex-col gap-2 w-full max-w-2xl h-full max-h-1/2 items-center justify-center'
             }
           >
-            <div className={'text-xl md:text-2xl font-bold pb-12'}>
+            <div className={'text-xl md:text-2xl font-bold pb-12 text-center'}>
               {modal.text}
             </div>
             <div className={'flex items-center gap-2 justify-around w-full'}>
