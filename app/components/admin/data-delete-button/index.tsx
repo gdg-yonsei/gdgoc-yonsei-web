@@ -2,7 +2,7 @@ import { Session } from 'next-auth'
 import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
 import dataDeleteAction from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
-import SubmitButton from '@/app/components/admin/submit-button'
+import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
 
 export default async function DataDeleteButton({
   session,
@@ -34,6 +34,7 @@ export default async function DataDeleteButton({
             className={
               'p-1 px-3 text-white rounded-lg flex items-center gap-2 bg-red-600 hover:bg-red-500 transition-all hover:px-4'
             }
+            questionText={'Are you sure you want to delete this data?'}
           >
             Delete
           </SubmitButton>

@@ -46,3 +46,11 @@ export const homeMenuBarState = atom(false)
  * Generation 선택 상태
  */
 export const generationState = atom('')
+
+/**
+ * Modal 상태
+ */
+export const modalState = atom({
+  text: '',
+  action: () => {},
+})
