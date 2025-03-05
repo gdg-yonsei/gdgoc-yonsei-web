@@ -8,10 +8,13 @@ export const usersToProjects = pgTable(
   {
     userId: text('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     projectId: uuid('project_id')
       .notNull()
-      .references(() => projects.id),
+      .references(() => projects.id, {
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+      }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.projectId] }),

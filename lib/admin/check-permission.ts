@@ -48,7 +48,7 @@ export default function checkPermission(
         members: userId === dataOwnerId,
         membersRole: false,
         generations: false,
-        projects: userId === dataOwnerId,
+        projects: false,
         sessions: false,
         parts: false,
       },
@@ -147,7 +147,7 @@ export default function checkPermission(
         parts: false,
       },
       delete: {
-        members: userId === dataOwnerId,
+        members: false,
         membersRole: false,
         generations: false,
         projects: false,
@@ -166,7 +166,7 @@ export default function checkPermission(
         partsPage: false,
       },
       post: {
-        members: userId === dataOwnerId,
+        members: false,
         membersRole: false,
         generations: false,
         projects: false,
@@ -174,7 +174,7 @@ export default function checkPermission(
         parts: false,
       },
       put: {
-        members: userId === dataOwnerId,
+        members: false,
         membersRole: false,
         generations: false,
         projects: false,
@@ -182,7 +182,7 @@ export default function checkPermission(
         parts: false,
       },
       delete: {
-        members: userId === dataOwnerId,
+        members: false,
         membersRole: false,
         generations: false,
         projects: false,

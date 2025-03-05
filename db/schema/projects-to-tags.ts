@@ -8,10 +8,13 @@ export const projectsToTags = pgTable(
   {
     projectId: uuid('project_id')
       .notNull()
-      .references(() => projects.id),
+      .references(() => projects.id, {
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+      }),
     tagId: serial('tag_id')
       .notNull()
-      .references(() => tags.id),
+      .references(() => tags.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.projectId, t.tagId] }),

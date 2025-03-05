@@ -7,6 +7,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import formatUserName from '@/lib/format-user-name'
+import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
 export default async function SessionPage({
   params,
@@ -37,6 +38,11 @@ export default async function SessionPage({
           dataId={sessionId}
           dataType={'sessions'}
           href={`/admin/sessions/${sessionId}/edit`}
+        />
+        <DataDeleteButton
+          session={session}
+          dataType={'sessions'}
+          dataId={sessionId}
         />
       </div>
       <div className={'member-data-grid gap-2'}>

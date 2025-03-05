@@ -1,0 +1,44 @@
+import { Session } from 'next-auth'
+import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
+import dataDeleteAction from '@/app/components/admin/data-delete-button/actions'
+import DataForm from '@/app/components/data-form'
+import SubmitButton from '@/app/components/admin/submit-button'
+
+export default async function DataDeleteButton({
+  session,
+  dataType,
+  dataId,
+}: {
+  session: Session | null
+  dataType: ResourceType
+  dataId: string
+}) {
+  const canDelete = await handlePermission(
+    session?.user?.id,
+    'delete',
+    dataType
+  )
+
+  return (
+    <>
+      {canDelete && (
+        <DataForm action={dataDeleteAction}>
+          <input hidden={true} value={dataId} name={'dataId'} readOnly={true} />
+          <input
+            hidden={true}
+            value={dataType}
+            name={'dataType'}
+            readOnly={true}
+          />
+          <SubmitButton
+            className={
+              'p-1 px-3 text-white rounded-lg flex items-center gap-2 bg-red-600 hover:bg-red-500 transition-all hover:px-4'
+            }
+          >
+            Delete
+          </SubmitButton>
+        </DataForm>
+      )}
+    </>
+  )
+}

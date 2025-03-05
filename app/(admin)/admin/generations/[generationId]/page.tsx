@@ -6,6 +6,7 @@ import GenerationActivityPeriod from '@/app/components/admin/generation-activity
 import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
+import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
 export default async function GenerationPage({
   params,
@@ -35,6 +36,11 @@ export default async function GenerationPage({
           dataId={generationId}
           dataType={'generations'}
           href={`/admin/generations/${generationId}/edit`}
+        />
+        <DataDeleteButton
+          session={session}
+          dataType={'generations'}
+          dataId={generationId}
         />
       </div>
       <div

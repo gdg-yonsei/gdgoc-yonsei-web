@@ -4,12 +4,19 @@ import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isLoadingState } from '@/lib/atoms'
+import { ReactNode } from 'react'
 
 /**
  * Form Submit Button Component
  * @constructor
  */
-export default function SubmitButton({ className }: { className?: string }) {
+export default function SubmitButton({
+  className,
+  children = 'Submit',
+}: {
+  className?: string
+  children?: ReactNode
+}) {
   const { pending } = useFormStatus()
   const [isLoading] = useAtom(isLoadingState)
 
@@ -30,7 +37,7 @@ export default function SubmitButton({ className }: { className?: string }) {
       ) : (
         ''
       )}
-      <p>{isLoading ? 'Suspend...' : 'Submit'}</p>
+      <p>{isLoading ? 'Suspend...' : children}</p>
     </button>
   )
 }

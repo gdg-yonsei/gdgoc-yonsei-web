@@ -22,6 +22,20 @@
       "when": 1740889208949,
       "tag": "0002_rainy_terror",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1741157603906,
+      "tag": "0003_wandering_earthquake",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1741157662484,
+      "tag": "0004_parallel_unus",
+      "breakpoints": true
     }
   ]
 }
