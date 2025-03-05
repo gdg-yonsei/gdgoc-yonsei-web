@@ -18,12 +18,12 @@ export default function SessionsList({
   )
 
   return (
-    <div className={'w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-4'}>
+    <div className={'w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 max-w-4xl mx-auto'}>
       {sortedSessions.map((session, i) => (
         <Link
           href={`/sessions/${session.id}`}
           key={i}
-          className={`bg-white rounded-2xl flex flex-col items-center justify-center p-2 ring-2 ${i % 4 === 0 && 'ring-red-500'} ${i % 4 === 1 && 'ring-yellow-500'} ${i % 4 === 0 && 'ring-green-600'} ${i % 4 === 3 && 'ring-blue-500'}`}
+          className={`bg-white rounded-2xl flex flex-col items-center justify-center p-2 ring-2 ${i % 4 === 0 && 'ring-red-500'} ${i % 4 === 1 && 'ring-yellow-500'} ${i % 4 === 2 && 'ring-green-600'} ${i % 4 === 3 && 'ring-blue-500'}`}
         >
           <h2 className={'text-xl font-semibold p-2'}>{session.name}</h2>
           <Image
