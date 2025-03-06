@@ -71,7 +71,7 @@ export async function createSessionAction(
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),
-        eventDate: new Date(eventDate!),
+        eventDate: eventDate!,
       })
       .returning({ id: projects.id })
 
