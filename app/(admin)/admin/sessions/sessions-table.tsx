@@ -24,23 +24,14 @@ export default async function SessionsTable() {
           />
 
           <div className={'p-4'}>
-            <div className={'text-xl font-semibold pb-4'}>{session.name}</div>
+            <div className={'text-xl font-semibold pb-2'}>{session.name}</div>
             <div className={'flex text-sm flex-col'}>
               <div>
-                Created At:{' '}
                 {new Intl.DateTimeFormat('ko-KR', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
-                }).format(new Date(session.createdAt))}
-              </div>
-              <div>
-                Updated At:{' '}
-                {new Intl.DateTimeFormat('ko-KR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                }).format(new Date(session.updatedAt))}
+                }).format(new Date(session.eventDate))}
               </div>
             </div>
           </div>

@@ -59,6 +59,12 @@ export default async function EditSessionPage({
           placeholder={'Session Description'}
           title={'Session Description'}
         />
+        <DataInput
+          defaultValue={sessionData.eventDate}
+          name={'eventDate'}
+          placeholder={'YYYY-MM-DD'}
+          title={'Event Date'}
+        />
         <DataSelectInput
           title={'Generation'}
           data={generationList}

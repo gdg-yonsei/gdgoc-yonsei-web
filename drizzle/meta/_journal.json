@@ -36,6 +36,20 @@
       "when": 1741157662484,
       "tag": "0004_parallel_unus",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1741244234884,
+      "tag": "0005_tearful_prism",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741245248070,
+      "tag": "0006_puzzling_klaw",
+      "breakpoints": true
     }
   ]
 }

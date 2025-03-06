@@ -9,6 +9,7 @@ export default function getSessionFormData(formData: FormData) {
   const contentImages = formData.get('contentImages') as string
   const contentImagesArray = JSON.parse(contentImages) as string[]
   const generationId = formData.get('generationId') as string | null
+  const eventDate = formData.get('eventDate') as string | null
 
   return {
     name,
@@ -16,5 +17,6 @@ export default function getSessionFormData(formData: FormData) {
     mainImage,
     contentImages: contentImagesArray,
     generationId,
+    eventDate,
   }
 }

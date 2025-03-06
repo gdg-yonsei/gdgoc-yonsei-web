@@ -1,0 +1,1 @@
+ALTER TABLE "sessions" ADD COLUMN "eventDate" timestamp DEFAULT now() NOT NULL;

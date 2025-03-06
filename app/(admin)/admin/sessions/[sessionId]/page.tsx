@@ -72,6 +72,16 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Event Date</div>
+          <div className={'member-data-content'}>
+            {new Intl.DateTimeFormat('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }).format(new Date(sessionData.eventDate))}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Created At</div>
           <div className={'member-data-content'}>
             {new Intl.DateTimeFormat('ko-KR', {

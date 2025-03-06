@@ -30,8 +30,14 @@ export async function createSessionAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, mainImage, contentImages, generationId } =
-    getSessionFormData(formData)
+  const {
+    name,
+    description,
+    mainImage,
+    contentImages,
+    generationId,
+    eventDate,
+  } = getSessionFormData(formData)
 
   try {
     // zod validation
@@ -41,6 +47,7 @@ export async function createSessionAction(
       mainImage,
       contentImages,
       generationId,
+      eventDate,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -64,6 +71,7 @@ export async function createSessionAction(
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),
+        eventDate: new Date(eventDate!),
       })
       .returning({ id: projects.id })
 

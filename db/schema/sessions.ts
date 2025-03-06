@@ -1,4 +1,5 @@
 import {
+  date,
   integer,
   jsonb,
   pgTable,
@@ -20,6 +21,7 @@ export const sessions = pgTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
   generationId: integer('generationId').notNull(),
+  eventDate: date('eventDate').defaultNow().notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })

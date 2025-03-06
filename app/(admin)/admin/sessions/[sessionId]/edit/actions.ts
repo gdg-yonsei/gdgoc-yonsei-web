@@ -33,8 +33,14 @@ export async function updateSessionAction(
   }
 
   // form data 에서 session data 추출
-  const { name, description, contentImages, mainImage, generationId } =
-    getSessionFormData(formData)
+  const {
+    name,
+    description,
+    contentImages,
+    mainImage,
+    generationId,
+    eventDate,
+  } = getSessionFormData(formData)
 
   try {
     // zod validation
@@ -44,6 +50,7 @@ export async function updateSessionAction(
       contentImages,
       mainImage,
       generationId,
+      eventDate,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -95,6 +102,7 @@ export async function updateSessionAction(
         mainImage: mainImage!,
         updatedAt: new Date(),
         generationId: Number(generationId),
+        eventDate: eventDate!,
       })
       .where(eq(sessions.id, sessionId))
 

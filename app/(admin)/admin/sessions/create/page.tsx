@@ -66,6 +66,12 @@ export default async function CreateSessionPage() {
           name={'description'}
           placeholder={'Description'}
         />
+        <DataInput
+          title={'Event Date'}
+          defaultValue={''}
+          name={'eventDate'}
+          placeholder={'YYYY-MM-DD'}
+        />
         <DataSelectInput
           title={'Generation'}
           data={generationList}
