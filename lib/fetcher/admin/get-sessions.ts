@@ -16,7 +16,7 @@ export const getSessions = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Sessions Data')
     return db.query.sessions.findMany({
-      orderBy: desc(sessions.updatedAt),
+      orderBy: [desc(sessions.updatedAt), desc(sessions.generationId)],
     })
   },
   [],

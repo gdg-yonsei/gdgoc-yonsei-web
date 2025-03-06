@@ -3,6 +3,9 @@ import { ReactNode } from 'react'
 import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import Form from 'next/form'
+import RefreshAllDataButton from '@/app/components/admin/refresh-all-data-button'
 
 /**
  * 사이드 바 내비게이터
@@ -57,6 +60,7 @@ export default function Sidebar({
           </SidebarNavigator>
         ))}
         <UserAuthControlPanel />
+        <RefreshAllDataButton />
       </div>
     </div>
   )
