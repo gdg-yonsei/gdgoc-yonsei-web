@@ -18,7 +18,11 @@ export default function GenerationButtonGroup({
   }, [generations, setGeneration])
 
   return (
-    <div className={'flex items-center gap-3 text-xl'}>
+    <div
+      className={
+        'flex items-center gap-3 text-xl overflow-x-scroll h-24 whitespace-nowrap px-2'
+      }
+    >
       {generations.map((data, i) => (
         <button
           type={'button'}
