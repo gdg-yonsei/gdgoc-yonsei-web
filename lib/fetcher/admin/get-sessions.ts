@@ -27,6 +27,6 @@ export const getSessions = unstable_cache(
   },
   [],
   {
-    tags: ['sessions'],
+    tags: ['sessions', 'generations'],
   }
 )
