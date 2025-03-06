@@ -25,7 +25,7 @@ export default function HomePage() {
           </h1>
           <div
             className={
-              'w-full p-2 px-3 rounded-full border-2 border-neutral-400 flex gap-2 items-center'
+              'w-full p-2 px-3 rounded-full border-2 border-neutral-400 flex gap-2 items-center not-md:hidden'
             }
           >
             <MagnifyingGlassIcon className={'size-8 text-neutral-400'} />

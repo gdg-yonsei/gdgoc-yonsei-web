@@ -33,6 +33,8 @@ export default function DataSelectInput({
     }
   }, [value])
 
+  console.log()
+
   return (
     <div
       className={
