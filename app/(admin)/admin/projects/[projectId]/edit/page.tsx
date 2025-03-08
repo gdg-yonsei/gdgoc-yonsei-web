@@ -10,11 +10,10 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
-import formatUserName from '@/lib/format-user-name'
-import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
-import { getMembers } from '@/lib/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
+import MembersSelectInput from '@/app/(admin)/admin/projects/[projectId]/edit/member-select-input'
 
 export default async function EditProjectPage({
   params,
@@ -32,7 +31,7 @@ export default async function EditProjectPage({
     projectId
   )
 
-  const membersList = await getMembers()
+  const membersList = await getMembersWithGeneration()
 
   // 기수 정보 가져오기
   const generations = await getGenerations()
@@ -71,13 +70,8 @@ export default async function EditProjectPage({
           name={'generationId'}
           defaultValue={String(projectData.generationId)}
         />
-        <DataSelectMultipleInput
-          data={membersList.map((member) => ({
-            value: member.id,
-            name: `${member.generation} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
-          }))}
-          name={'participants'}
-          title={'Participants'}
+        <MembersSelectInput
+          membersList={membersList}
           defaultValue={projectData.usersToProjects.map((user) => user.userId)}
         />
         <div

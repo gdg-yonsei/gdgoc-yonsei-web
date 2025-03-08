@@ -18,22 +18,6 @@ export const getMembers = unstable_cache(
   async () => {
     console.log(new Date(), 'Fetch Members Data')
 
-    const userList2 = await db.query.generations.findMany({
-      with: {
-        parts: {
-          with: {
-            usersToParts: {
-              with: {
-                user: true,
-              },
-            },
-          },
-        },
-      },
-    })
-
-    console.log(userList2)
-
     const userList = await db
       .select({
         id: users.id,

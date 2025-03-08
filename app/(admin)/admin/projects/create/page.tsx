@@ -9,14 +9,13 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
-import { getMembers } from '@/lib/fetcher/admin/get-members'
-import formatUserName from '@/lib/format-user-name'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import MembersSelectInput from '@/app/(admin)/admin/projects/[projectId]/edit/member-select-input'
+import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
 
 export default async function CreateProjectPage() {
-  const membersList = await getMembers()
+  const membersList = await getMembersWithGeneration()
   // 기수 정보 가져오기
   const generations = await getGenerations()
   // 기수 선택용 리스트
@@ -77,15 +76,7 @@ export default async function CreateProjectPage() {
           name={'generationId'}
           defaultValue={''}
         />
-        <DataSelectMultipleInput
-          data={membersList.map((member) => ({
-            value: member.id,
-            name: `${member.generation ? member.generation : ''} ${formatUserName(member.name, member.firstName, member.lastName, member.isForeigner)}`,
-          }))}
-          name={'participants'}
-          title={'Participants'}
-          defaultValue={[]}
-        />
+        <MembersSelectInput membersList={membersList} defaultValue={[]} />
         <MDXEditor
           title={'Project Content'}
           name={'content'}
