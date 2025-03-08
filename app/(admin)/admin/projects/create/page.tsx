@@ -11,7 +11,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
-import MembersSelectInput from '@/app/(admin)/admin/projects/[projectId]/edit/member-select-input'
+import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
 
 export default async function CreateProjectPage() {

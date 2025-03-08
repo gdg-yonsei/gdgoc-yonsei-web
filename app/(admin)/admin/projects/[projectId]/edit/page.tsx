@@ -13,7 +13,7 @@ import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-i
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
-import MembersSelectInput from '@/app/(admin)/admin/projects/[projectId]/edit/member-select-input'
+import MembersSelectInput from '@/app/components/admin/member-select-input'
 
 export default async function EditProjectPage({
   params,
