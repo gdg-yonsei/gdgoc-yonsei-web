@@ -101,7 +101,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         {/*Image Preview*/}
         <div
           className={
-            'flex overflow-x-scroll whitespace-nowrap gap-2 p-2 md:flex-col md:overflow-y-scroll md:h-[528px] w-28'
+            'flex overflow-x-scroll whitespace-nowrap gap-2 p-2 md:flex-col md:overflow-y-scroll md:h-[528px] md:w-28'
           }
         >
           {images.map((image, i) => (
