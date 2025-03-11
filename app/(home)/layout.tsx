@@ -5,7 +5,11 @@ import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 
 export const metadata: Metadata = {
-  title: 'GDGoC Yonsei',
+  metadataBase: new URL('https://gdgyonsei.moveto.kr'),
+  title: {
+    default: 'GDGoC Yonsei',
+    template: '%s | GDGoC Yonsei',
+  },
   description: 'Google Developer Group on Campus Yonsei University',
 }
 
