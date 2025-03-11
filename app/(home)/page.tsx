@@ -292,10 +292,22 @@ export default function HomePage() {
             'flex flex-col w-full max-w-xl items-center justify-center md:items-start'
           }
         >
-          <div className={'flex flex-col p-8 gap-4 md:px-0'}>
+          <div
+            className={
+              'flex flex-col p-8 gap-4 md:px-0 md:flex-row md:items-end'
+            }
+          >
             <h2 className={'text-3xl font-bold mx-auto md:text-4xl md:mx-0'}>
               Parts
             </h2>
+            <div
+              className={
+                'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'
+              }
+            >
+              <Link href={'/members'}>See All</Link>
+              <ChevronRightIcon className={'size-5'} />
+            </div>
             <Friends className={'mx-auto w-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>
