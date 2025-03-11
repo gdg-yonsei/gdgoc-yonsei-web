@@ -56,22 +56,20 @@ export default function ImagesSliders({ images }: { images: string[] }) {
     >
       {/*Images*/}
       <div
-        className={
-          'flex overflow-x-scroll max-w-xl w-full whitespace-nowrap snap-x bg-neutral-100 transition-all aspect-square'
-        }
+        className="flex overflow-x-scroll max-w-xl w-full whitespace-nowrap bg-neutral-100 transition-all min-w-0 snap-x snap-mandatory"
         ref={scrollRef}
       >
         {images.map((image, i) => (
           <div
             key={i}
-            className={'relative w-full max-w-xl aspect-square snap-center'}
+            className="relative w-full flex-shrink-0 snap-center"
+            style={{ paddingTop: '100%' }}
           >
             <Image
-              key={i}
               src={image}
-              alt={''}
-              fill={true}
-              className={'object-contain'}
+              alt=""
+              fill
+              className="absolute top-0 left-0 w-full h-full object-contain"
             />
           </div>
         ))}
