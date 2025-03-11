@@ -5,7 +5,6 @@ import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
   title: {
     default: 'GDGoC Yonsei',
     template: '%s | GDGoC Yonsei',

@@ -4,8 +4,7 @@ import { ReactNode } from 'react'
 import localFont from 'next/font/local'
 
 export const metadata: Metadata = {
-  title: 'GDGoC Yonsei',
-  description: 'Google Developer Group on Campus Yonsei University',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
 }
 
 const googleSans = localFont({
