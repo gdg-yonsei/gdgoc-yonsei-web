@@ -1,6 +1,47 @@
 import type { MetadataRoute } from 'next'
+import db from '@/db'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const projectsList: MetadataRoute.Sitemap = (
+    await db.query.projects.findMany({
+      columns: {
+        id: true,
+        updatedAt: true,
+        createdAt: true,
+      },
+    })
+  ).map((project) => {
+    return {
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/projects/${project.id}`,
+      lastModified:
+        project.updatedAt > project.createdAt
+          ? project.updatedAt
+          : project.createdAt,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }
+  })
+
+  const sessionsList: MetadataRoute.Sitemap = (
+    await db.query.sessions.findMany({
+      columns: {
+        id: true,
+        updatedAt: true,
+        createdAt: true,
+      },
+    })
+  ).map((session) => {
+    return {
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/sessions/${session.id}`,
+      lastModified:
+        session.updatedAt > session.createdAt
+          ? session.updatedAt
+          : session.createdAt,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }
+  })
+
   return [
     {
       url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
@@ -20,5 +61,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/members`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...projectsList,
+    ...sessionsList,
   ]
 }
