@@ -284,7 +284,7 @@ export default function HomePage() {
       {/*Part Page*/}
       <div
         className={
-          'w-full min-h-screen flex flex-col p-4 md:flex-row md:items-center md:justify-center md:py-24'
+          'w-full min-h-screen flex flex-col p-4 md:flex-row items-center justify-center md:py-24'
         }
       >
         <div
