@@ -96,6 +96,7 @@ export default async function EditProfilePage() {
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In Profile URL'}
+            type={'link'}
           />
           <DataInput
             title={'Major'}
