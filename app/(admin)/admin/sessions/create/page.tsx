@@ -81,7 +81,7 @@ export default async function CreateSessionPage() {
           title={'Generation'}
           data={generationList}
           name={'generationId'}
-          defaultValue={generationList[0].value}
+          defaultValue={generationList[0]?.value}
         />
         <SubmitButton />
       </DataForm>
