@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'image.gdgyonsei.moveto.kr',
       },
+      {
+        protocol: 'https',
+        hostname: 'dev.image.gdgyonsei.moveto.kr',
+      },
     ],
   },
 }
