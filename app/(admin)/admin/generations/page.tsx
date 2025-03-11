@@ -5,6 +5,11 @@ import handlePermission from '@/lib/admin/handle-permission'
 import { auth } from '@/auth'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Generations',
+}
 
 export default async function GenerationsPage() {
   // 사용자가 generation 생성 권한이 있는지 확인

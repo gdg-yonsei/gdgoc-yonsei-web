@@ -6,6 +6,12 @@ import { UsersIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
 import handlePermission from '@/lib/admin/handle-permission'
 
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Members',
+}
+
 export default async function MembersPage() {
   const session = await auth()
   const canAccept = await handlePermission(

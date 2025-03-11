@@ -13,6 +13,11 @@ import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getMembers } from '@/lib/fetcher/admin/get-members'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Part',
+}
 
 export default async function EditGenerationPage({
   params,

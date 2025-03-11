@@ -4,6 +4,12 @@ import DataInput from '@/app/components/admin/data-input'
 import { createGenerationAction } from '@/app/(admin)/admin/generations/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Create Generation',
+}
+
 export default function CreateGenerationPage() {
   return (
     <AdminDefaultLayout>

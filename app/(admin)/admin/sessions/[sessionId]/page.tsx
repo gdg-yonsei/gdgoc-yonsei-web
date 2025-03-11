@@ -9,6 +9,20 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ sessionId: string }>
+}) {
+  const { sessionId } = await params
+  // Session 데이터 가져오기
+  const sessionData = await getSession(sessionId)
+
+  return {
+    title: `Session: ${sessionData?.name}`,
+  }
+}
+
 export default async function SessionPage({
   params,
 }: {

@@ -5,6 +5,11 @@ import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import SessionsTable from '@/app/(admin)/admin/sessions/sessions-table'
 import { Suspense } from 'react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Sessions',
+}
 
 export default async function SessionsPage() {
   const session = await auth()

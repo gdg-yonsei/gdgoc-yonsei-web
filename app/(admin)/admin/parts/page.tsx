@@ -5,6 +5,11 @@ import handlePermission from '@/lib/admin/handle-permission'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Parts',
+}
 
 export default async function PartsPage() {
   const session = await auth()

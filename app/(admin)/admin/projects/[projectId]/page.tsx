@@ -10,6 +10,20 @@ import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ projectId: string }>
+}) {
+  const { projectId } = await params
+  // Project 데이터 가져오기
+  const projectData = await getProject(projectId)
+
+  return {
+    title: `Project: ${projectData?.name}`,
+  }
+}
+
 export default async function ProjectPage({
   params,
 }: {

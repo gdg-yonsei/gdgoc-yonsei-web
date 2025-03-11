@@ -10,6 +10,11 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/data-form'
 import { updateProfileAction } from '@/app/(admin)/admin/profile/edit/actions'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Profile',
+}
 
 export default async function EditProfilePage() {
   // 사용자 로그인 정보 확인

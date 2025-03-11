@@ -8,6 +8,20 @@ import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ generationId: string }>
+}) {
+  const { generationId } = await params
+  // generation 데이터 가져오기
+  const generationData = await getGeneration(Number(generationId))
+
+  return {
+    title: `Generation: ${generationData?.name}`,
+  }
+}
+
 export default async function GenerationPage({
   params,
 }: {

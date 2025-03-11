@@ -3,6 +3,13 @@ import StageButtonGroup from '@/app/components/stage-button-group'
 import { getGenerations } from '@/lib/fetcher/get-generations'
 import SessionsList from '@/app/(home)/sessions/sessions-list'
 import { getSessions } from '@/lib/fetcher/get-sessions'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Sessions',
+  description:
+    'Explore GDGoC Yonsei sessions, where developers learn, share, and grow through hands-on workshops, tech talks, and collaborative events.',
+}
 
 export default async function SessionsPage() {
   const generationsData = await getGenerations()

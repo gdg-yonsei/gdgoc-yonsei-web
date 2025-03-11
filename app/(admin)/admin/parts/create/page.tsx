@@ -9,6 +9,11 @@ import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple
 import formatUserName from '@/lib/format-user-name'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import { getMembers } from '@/lib/fetcher/admin/get-members'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Create Part',
+}
 
 export default async function CreatePartPage() {
   // 기수 정보 가져오기

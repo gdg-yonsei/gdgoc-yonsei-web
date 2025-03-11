@@ -12,6 +12,11 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/member-role-manager'
 import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/data-form'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Member',
+}
 
 export default async function EditMemberPage({
   params,

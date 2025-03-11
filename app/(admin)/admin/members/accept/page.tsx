@@ -6,6 +6,11 @@ import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
 import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
 import Image from 'next/image'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Accept Members',
+}
 
 export default async function AcceptMemberPage() {
   const unacceptedMembers = await db.query.users.findMany({

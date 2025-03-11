@@ -9,6 +9,20 @@ import formatUserName from '@/lib/format-user-name'
 import { getGeneration } from '@/lib/fetcher/admin/get-generation'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ partId: string }>
+}) {
+  const { partId } = await params
+  // Part 데이터 가져오기
+  const partData = await getPart(Number(partId))
+
+  return {
+    title: `Part: ${partData?.name}`,
+  }
+}
+
 export default async function PartPage({
   params,
 }: {

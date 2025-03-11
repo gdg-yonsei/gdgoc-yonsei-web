@@ -13,6 +13,11 @@ import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Create Project',
+}
 
 export default async function CreateProjectPage() {
   const membersList = await getMembersWithGeneration()

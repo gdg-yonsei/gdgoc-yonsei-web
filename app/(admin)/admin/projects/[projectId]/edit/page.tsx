@@ -14,6 +14,11 @@ import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Project',
+}
 
 export default async function EditProjectPage({
   params,

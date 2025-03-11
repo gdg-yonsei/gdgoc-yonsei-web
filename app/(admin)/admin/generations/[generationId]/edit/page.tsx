@@ -7,6 +7,11 @@ import { updateGenerationAction } from '@/app/(admin)/admin/generations/[generat
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataForm from '@/app/components/data-form'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Generation',
+}
 
 export default async function EditGenerationPage({
   params,

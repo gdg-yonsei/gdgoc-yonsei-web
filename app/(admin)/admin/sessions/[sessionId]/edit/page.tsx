@@ -11,6 +11,11 @@ import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/ed
 import { getSession } from '@/lib/fetcher/admin/get-session'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Edit Session',
+}
 
 export default async function EditSessionPage({
   params,

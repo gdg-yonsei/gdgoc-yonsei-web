@@ -10,6 +10,11 @@ import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Create Session',
+}
 
 export default async function CreateSessionPage() {
   // 기수 정보 가져오기

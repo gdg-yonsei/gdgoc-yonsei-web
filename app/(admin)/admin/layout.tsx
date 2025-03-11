@@ -11,7 +11,10 @@ import { forbidden, redirect } from 'next/navigation'
 import Modal from '@/app/components/admin/modal'
 
 export const metadata: Metadata = {
-  title: 'GYMS',
+  title: {
+    default: 'GYMS',
+    template: '%s | GYMS',
+  },
   description:
     'Google Developer Group on Campus Yonsei University Management System',
 }

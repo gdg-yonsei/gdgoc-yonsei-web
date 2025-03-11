@@ -7,6 +7,21 @@ import { auth } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ memberId: string }>
+}) {
+  const { memberId } = await params
+
+  // Member 정보 가져오기
+  const memberData = await getMember(memberId)
+
+  return {
+    title: `Member: ${memberData?.name}`,
+  }
+}
+
 export default async function MemberPage({
   params,
 }: {

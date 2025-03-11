@@ -4,6 +4,11 @@ import { Suspense } from 'react'
 import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button'
 import Link from 'next/link'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Profile',
+}
 
 export default function ProfilePage() {
   return (
