@@ -42,7 +42,7 @@ export default function DataSelectInput({
       <div className={'member-data-title'}>{title}</div>
       <input name={name} hidden={true} ref={inputRef} />
       <div className={'member-data-grid gap-2'}>
-        {data.map((d, i) => (
+        {data?.map((d, i) => (
           <button
             type={'button'}
             key={i}
