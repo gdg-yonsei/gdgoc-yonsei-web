@@ -11,7 +11,7 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
       <button
         type={'button'}
         onClick={() => setShowMore(true)}
-        className={`${showMore ? 'hidden' : ''} ml-auto text-base underline text-neutral-600 cursor-pointer`}
+        className={`${showMore ? 'hidden' : ''} ml-auto text-base underline text-neutral-600 cursor-pointer md:hidden`}
       >
         Show More
       </button>
@@ -28,6 +28,7 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
       >
         {children}
       </motion.p>
+      <div className={'not-md:hidden'}>{children}</div>
     </>
   )
 }

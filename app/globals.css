@@ -30,7 +30,7 @@
     @apply col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4
   }
   .home-about-box {
-    @apply ring-3 rounded-2xl p-4 text-lg flex flex-col
+    @apply ring-3 rounded-2xl p-4 text-lg flex flex-col md:p-0
   }
 }
 

@@ -1,5 +1,6 @@
 import {
   ChevronDownIcon,
+  ChevronRightIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import GDGLogo from '@/app/components/svg/gdg-logo'
@@ -7,6 +8,7 @@ import ShowMoreContent from '@/app/components/show-more-content'
 import BookSVG from '@/app/components/book-svg'
 import Trophy from '@/app/components/svg/trophy'
 import Friends from '@/app/components/svg/friends'
+import Link from 'next/link'
 
 export default function HomePage() {
   return (
@@ -44,80 +46,124 @@ export default function HomePage() {
       {/*About GDG Page*/}
       <div
         className={
-          'w-full p-4 flex flex-col items-center justify-center min-h-screen pt-16'
+          'w-full p-4 flex flex-col items-center justify-center min-h-screen pt-16 md:flex-row md:gap-12'
         }
       >
-        <h1 className={'p-8 text-3xl font-bold mx-auto'}>About GDG</h1>
-        <div className={'w-full flex flex-col gap-10'}>
-          <div className={'home-about-box ring-blue-500'}>
-            <h3>
-              <strong>GDG (Google Developer Groups)</strong> on Campus is a
-              community of university student developers interested in Google
-              technologies.
-            </h3>
-            <ShowMoreContent>
-              Students in GDG engage in the process of &#34;Connect - Learn -
-              Grow,&#34; where they develop various skills such as development
-              and leadership in a peer-to-peer learning environment, with the
-              goal of building solutions for their communities and society.
-            </ShowMoreContent>
-          </div>
-          <div className={'home-about-box ring-green-600'}>
-            <h3>
-              <strong>GDG Yonsei University</strong> is a student developer
-              community based at Yonsei University that shares the development
-              ecosystem.
-            </h3>
-            <ShowMoreContent>
-              It is a group of developers who not only share development
-              knowledge but also aim to achieve social innovation through
-              technology. GDG Yonsei University seeks to build solutions that
-              address real community issues using development knowledge, with
-              the goal of growing into professionals who contribute to a
-              sustainable society through IT-driven social innovation.
-            </ShowMoreContent>
+        <GDGLogo className={' w-96 not-md:hidden'} svgKey={'homePage'} />
+        <div
+          className={
+            'w-full max-w-xl flex flex-col items-center md:items-start'
+          }
+        >
+          <h1
+            className={
+              'p-8 text-3xl font-bold mx-auto md:mx-0 md:p-0 md:pb-8 md:text-4xl'
+            }
+          >
+            About GDG
+          </h1>
+          <div className={'w-full flex flex-col gap-10 md:gap-2'}>
+            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+              <h3>
+                <strong>GDG (Google Developer Groups)</strong> on Campus is a
+                community of university student developers interested in Google
+                technologies.
+              </h3>
+              <ShowMoreContent>
+                Students in GDG engage in the process of &#34;Connect - Learn -
+                Grow,&#34; where they develop various skills such as development
+                and leadership in a peer-to-peer learning environment, with the
+                goal of building solutions for their communities and society.
+              </ShowMoreContent>
+            </div>
+            <div className={'home-about-box ring-green-600 md:ring-0'}>
+              <h3>
+                <strong>GDG Yonsei University</strong> is a student developer
+                community based at Yonsei University that shares the development
+                ecosystem.
+              </h3>
+              <ShowMoreContent>
+                It is a group of developers who not only share development
+                knowledge but also aim to achieve social innovation through
+                technology. GDG Yonsei University seeks to build solutions that
+                address real community issues using development knowledge, with
+                the goal of growing into professionals who contribute to a
+                sustainable society through IT-driven social innovation.
+              </ShowMoreContent>
+            </div>
           </div>
         </div>
       </div>
+
       {/*Session Page*/}
-      <div className={'w-full min-h-screen flex flex-col p-4'}>
-        <div className={'flex flex-col p-8'}>
-          <h2 className={'text-3xl font-bold mx-auto'}>Sessions</h2>
-          <BookSVG className={'mx-auto size-60'} />
+      <div
+        className={
+          'w-full min-h-screen flex flex-col p-4 md:flex-row md:justify-center md:items-center md:gap-8'
+        }
+      >
+        <div
+          className={
+            'flex flex-col items-center justify-center w-full max-w-xl md:items-start'
+          }
+        >
+          <div
+            className={
+              'flex flex-col p-8 md:px-0 md:flex-row md:items-end md:gap-2'
+            }
+          >
+            <h2 className={'text-3xl font-bold mx-auto md:mx-0 md:text-4xl'}>
+              Sessions
+            </h2>
+            <div
+              className={
+                'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'
+              }
+            >
+              <Link href={'/sessions'}>See All</Link>
+              <ChevronRightIcon className={'size-5'} />
+            </div>
+            <BookSVG className={'mx-auto size-60 md:hidden'} />
+          </div>
+          <div className={'w-full flex flex-col gap-10'}>
+            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>T19</h3>
+              <ShowMoreContent>
+                T19, short for &#34;Tech at 19:00,&#34; is an internal
+                tech-sharing conference held every Tuesday at 7 PM, with
+                participation from all GDG Yonsei members. Each week, 3
+                presenters share their technical knowledge or experiences.
+              </ShowMoreContent>
+            </div>
+            <div className={'home-about-box ring-green-600 md:ring-0'}>
+              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+                GDG fopen()
+              </h3>
+              <ShowMoreContent>
+                fopen() is a public tech seminar hosted by GDG Yonsei for
+                student developers. It features in-depth tech topics from T19
+                sessions or presentations by industry professionals currently
+                working in the field. These seminars are open to students
+                outside the community to encourage deeper technical discussions.
+                By engaging with student developers beyond GDG on Campus, GDG
+                Yonsei actively expands its community and fosters a leading
+                developer culture at Yonsei University.
+              </ShowMoreContent>
+            </div>
+            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+                Part Study Jam
+              </h3>
+              <ShowMoreContent>
+                GDG Yonsei is divided into six specialized
+                departments—Front-End, Back-End, Mobile, ML/AI, Design, and
+                Developer Relations—each consisting of a small, select group.
+                These departments conduct studies and workshops to develop
+                advanced technical skills.
+              </ShowMoreContent>
+            </div>
+          </div>
         </div>
-        <div className={'w-full flex flex-col gap-10'}>
-          <div className={'home-about-box ring-blue-500'}>
-            <h3 className={'text-2xl font-semibold py-3'}>T19</h3>
-            <ShowMoreContent>
-              T19, short for &#34;Tech at 19:00,&#34; is an internal
-              tech-sharing conference held every Tuesday at 7 PM, with
-              participation from all GDG Yonsei members. Each week, 3 presenters
-              share their technical knowledge or experiences.
-            </ShowMoreContent>
-          </div>
-          <div className={'home-about-box ring-green-600'}>
-            <h3 className={'text-2xl font-semibold py-3'}>GDG fopen()</h3>
-            <ShowMoreContent>
-              fopen() is a public tech seminar hosted by GDG Yonsei for student
-              developers. It features in-depth tech topics from T19 sessions or
-              presentations by industry professionals currently working in the
-              field. These seminars are open to students outside the community
-              to encourage deeper technical discussions. By engaging with
-              student developers beyond GDG on Campus, GDG Yonsei actively
-              expands its community and fosters a leading developer culture at
-              Yonsei University.
-            </ShowMoreContent>
-          </div>
-          <div className={'home-about-box ring-blue-500'}>
-            <h3 className={'text-2xl font-semibold py-3'}>Part Study Jam</h3>
-            <ShowMoreContent>
-              GDG Yonsei is divided into six specialized departments—Front-End,
-              Back-End, Mobile, ML/AI, Design, and Developer Relations—each
-              consisting of a small, select group. These departments conduct
-              studies and workshops to develop advanced technical skills.
-            </ShowMoreContent>
-          </div>
-        </div>
+        <BookSVG className={'w-96 h-80'} />
       </div>
 
       {/*Activities Page*/}
@@ -127,7 +173,7 @@ export default function HomePage() {
           <Trophy className={'mx-auto size-60'} />
         </div>
         <div className={'w-full flex flex-col gap-10'}>
-          <div className={'home-about-box ring-blue-500'}>
+          <div className={'home-about-box ring-blue-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>
               Solution Challenge
             </h3>
@@ -145,7 +191,7 @@ export default function HomePage() {
               strong technical capabilities and social impact.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-red-500'}>
+          <div className={'home-about-box ring-red-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>
               GDG x Elice Programming Contest
             </h3>
@@ -156,7 +202,7 @@ export default function HomePage() {
               coding test format, as well as planning and managing the event.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-yellow-500'}>
+          <div className={'home-about-box ring-yellow-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>
               Google I/O Extended Seoul 2023
             </h3>
@@ -169,7 +215,7 @@ export default function HomePage() {
               Flutter, and Go.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-green-600'}>
+          <div className={'home-about-box ring-green-600 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>GDG Cloud Devfest</h3>
             <ShowMoreContent>
               A joint conference organized by three communities: GDG Cloud
@@ -178,7 +224,7 @@ export default function HomePage() {
               topics related to Google Cloud.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-blue-500'}>
+          <div className={'home-about-box ring-blue-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>Namu-thon</h3>
             <ShowMoreContent>
               Hackathon co-hosted by the GDG communities of Yonsei, Hanyang,
@@ -203,7 +249,7 @@ export default function HomePage() {
           <Friends className={'mx-auto w-60'} />
         </div>
         <div className={'w-full flex flex-col gap-10'}>
-          <div className={'home-about-box ring-blue-500'}>
+          <div className={'home-about-box ring-blue-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>Organizer</h3>
             <ShowMoreContent>
               The Lead oversees all operations of GDG Yonsei. They are
@@ -211,7 +257,7 @@ export default function HomePage() {
               planning.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-green-600'}>
+          <div className={'home-about-box ring-green-600 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>FrontEnd</h3>
             <ShowMoreContent>
               Aims to design user-friendly pages by leveraging various web
@@ -221,7 +267,7 @@ export default function HomePage() {
               sustainable development practices.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-yellow-500'}>
+          <div className={'home-about-box ring-yellow-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>BackEnd</h3>
             <ShowMoreContent>
               Responsible for server and infrastructure development. Members
@@ -230,7 +276,7 @@ export default function HomePage() {
               JPA) to infrastructure during team sessions.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-red-500'}>
+          <div className={'home-about-box ring-red-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>Mobile</h3>
             <ShowMoreContent>
               Develop scalable mobile applications to ensure the product can be
@@ -238,7 +284,7 @@ export default function HomePage() {
               explores sustainable application development.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-blue-500'}>
+          <div className={'home-about-box ring-blue-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>ML/AI</h3>
             <ShowMoreContent>
               Focus on understanding and applying machine learning and
@@ -247,7 +293,7 @@ export default function HomePage() {
               discussions.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-green-600'}>
+          <div className={'home-about-box ring-green-600 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>Design</h3>
             <ShowMoreContent>
               Responsible for all design aspects in GDG&#39;s events and
@@ -258,7 +304,7 @@ export default function HomePage() {
               methodologies.
             </ShowMoreContent>
           </div>
-          <div className={'home-about-box ring-red-500'}>
+          <div className={'home-about-box ring-red-500 md:ring-0'}>
             <h3 className={'text-2xl font-semibold py-3'}>
               Devrel (Developer Relations)
             </h3>
