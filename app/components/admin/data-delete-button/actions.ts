@@ -41,20 +41,28 @@ export default async function dataDeleteAction(
     switch (dataType) {
       case 'sessions':
         const sessionImageList = await db.query.sessions.findFirst({
-          where:eq(sessions.id, dataId),
-          columns:{
-            images:true,
-            mainImage:true
-          }
+          where: eq(sessions.id, dataId),
+          columns: {
+            images: true,
+            mainImage: true,
+          },
         })
 
-        if(!sessionImageList){
+        if (!sessionImageList) {
           return { error: 'Data not found' }
         }
 
-        const sessionImageKeys = [...sessionImageList.images.map((image)=>image.replace("https://image.gdgyonsei.moveto.kr/", "")) , sessionImageList.mainImage.replace("https://image.gdgyonsei.moveto.kr/", "")]
+        const sessionImageKeys = [
+          ...sessionImageList.images.map((image) =>
+            image.replace(process.env.NEXT_PUBLIC_IMAGE_URL!, '')
+          ),
+          sessionImageList.mainImage.replace(
+            process.env.NEXT_PUBLIC_IMAGE_URL!,
+            ''
+          ),
+        ]
 
-        if(!await deleteR2Images(sessionImageKeys)){
+        if (!(await deleteR2Images(sessionImageKeys))) {
           return { error: 'R2 Image Delete Error' }
         }
         await db.delete(sessions).where(eq(sessions.id, dataId))
@@ -62,20 +70,28 @@ export default async function dataDeleteAction(
         break
       case 'projects':
         const projectImageList = await db.query.projects.findFirst({
-          where:eq(projects.id, dataId),
-          columns:{
-            images:true,
-            mainImage:true
-          }
+          where: eq(projects.id, dataId),
+          columns: {
+            images: true,
+            mainImage: true,
+          },
         })
 
-        if(!projectImageList){
+        if (!projectImageList) {
           return { error: 'Data not found' }
         }
 
-        const projectImageKeys = [...projectImageList.images.map((image)=>image.replace("https://image.gdgyonsei.moveto.kr/", "")) , projectImageList.mainImage.replace("https://image.gdgyonsei.moveto.kr/", "")]
+        const projectImageKeys = [
+          ...projectImageList.images.map((image) =>
+            image.replace(process.env.NEXT_PUBLIC_IMAGE_URL!, '')
+          ),
+          projectImageList.mainImage.replace(
+            process.env.NEXT_PUBLIC_IMAGE_URL!,
+            ''
+          ),
+        ]
 
-        if(!await deleteR2Images(projectImageKeys)){
+        if (!(await deleteR2Images(projectImageKeys))) {
           return { error: 'R2 Image Delete Error' }
         }
 
