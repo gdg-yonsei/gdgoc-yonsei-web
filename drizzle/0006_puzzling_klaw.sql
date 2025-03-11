@@ -1,1 +1,0 @@
-ALTER TABLE "sessions" ALTER COLUMN "eventDate" SET DATA TYPE date;

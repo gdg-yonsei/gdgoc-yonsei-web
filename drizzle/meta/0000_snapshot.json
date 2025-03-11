@@ -1,5 +1,5 @@
 {
-  "id": "4fdf0188-2175-43b5-951b-d754ecd3c4ff",
+  "id": "295ddd81-3816-4383-9f03-78f8676ad348",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -344,8 +344,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         },
         "projects_to_tags_tag_id_tags_id_fk": {
           "name": "projects_to_tags_tag_id_tags_id_fk",
@@ -357,8 +357,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -430,7 +430,7 @@
           "name": "generationId",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
@@ -511,6 +511,19 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "generationId": {
+          "name": "generationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eventDate": {
+          "name": "eventDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         },
         "createdAt": {
           "name": "createdAt",
@@ -612,7 +625,7 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         },
         "users_to_parts_part_id_parts_id_fk": {
           "name": "users_to_parts_part_id_parts_id_fk",
@@ -625,7 +638,7 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -671,8 +684,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         },
         "users_to_projects_project_id_projects_id_fk": {
           "name": "users_to_projects_project_id_projects_id_fk",
@@ -684,8 +697,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {
