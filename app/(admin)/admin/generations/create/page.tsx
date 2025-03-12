@@ -29,12 +29,14 @@ export default function CreateGenerationPage() {
           defaultValue={''}
           name={'startDate'}
           placeholder={'YYYY-MM-DD'}
+          type={'date'}
         />
         <DataInput
           title={'End Date'}
           defaultValue={''}
           name={'endDate'}
           placeholder={'YYYY-MM-DD'}
+          type={'date'}
         />
         <SubmitButton />
       </DataForm>

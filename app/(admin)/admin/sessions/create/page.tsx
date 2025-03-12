@@ -76,6 +76,7 @@ export default async function CreateSessionPage() {
           defaultValue={''}
           name={'eventDate'}
           placeholder={'YYYY-MM-DD'}
+          type={'date'}
         />
         <DataSelectInput
           title={'Generation'}
