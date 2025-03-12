@@ -69,6 +69,7 @@ export default async function EditSessionPage({
           name={'eventDate'}
           placeholder={'YYYY-MM-DD'}
           title={'Event Date'}
+          type={'date'}
         />
         <DataSelectInput
           title={'Generation'}

@@ -57,12 +57,14 @@ export default async function EditGenerationPage({
           defaultValue={generationData.startDate}
           name={'startDate'}
           placeholder={'Start Date'}
+          type={'date'}
         />
         <DataInput
           title={'End Date'}
           defaultValue={generationData.endDate}
           name={'endDate'}
           placeholder={'End Date'}
+          type={'date'}
         />
         <SubmitButton />
       </DataForm>
