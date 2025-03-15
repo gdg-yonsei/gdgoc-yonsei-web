@@ -19,7 +19,11 @@ export default function ProjectsList({
   )
 
   return (
-    <div className={'w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-4 max-w-4xl mx-auto'}>
+    <div
+      className={
+        'w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-4 max-w-4xl mx-auto'
+      }
+    >
       {projects.map((data, i) => (
         <Link
           href={`/projects/${data.id}`}
