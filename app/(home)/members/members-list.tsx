@@ -87,7 +87,9 @@ export default function MembersList({
           key={i}
           className={'flex flex-col gap-4 border-b-2 pb-24 last:border-b-0'}
         >
-          <div className={'text-4xl font-bold w-full max-w-4xl mx-auto px-4'}>{part.name}</div>
+          <div className={'text-4xl font-bold w-full max-w-4xl mx-auto px-4'}>
+            {part.name}
+          </div>
           <div
             className={
               'grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full max-w-4xl mx-auto px-4'
@@ -96,7 +98,9 @@ export default function MembersList({
             {part.usersToParts?.map((user, j) => (
               <UserProfileCard userData={user.user} key={j} />
             ))}
-            {part.usersToParts.length===0 && <div className={'text-neutral-600'}>There is no member.</div>}
+            {part.usersToParts.length === 0 && (
+              <div className={'text-neutral-600'}>There is no member.</div>
+            )}
           </div>
         </div>
       ))}
