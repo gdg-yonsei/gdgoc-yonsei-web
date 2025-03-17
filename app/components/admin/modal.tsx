@@ -2,6 +2,7 @@
 
 import { useAtom } from 'jotai'
 import { modalState } from '@/lib/atoms'
+import { motion } from 'motion/react'
 
 export default function Modal() {
   const [modal, setModal] = useAtom(modalState)
@@ -13,7 +14,10 @@ export default function Modal() {
   return (
     <>
       {modal.text && (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className={
             'fixed top-0 left-0 w-screen h-screen bg-neutral-500/50 p-4 z-30 flex justify-center items-center'
           }
@@ -47,7 +51,7 @@ export default function Modal() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   )
