@@ -1,7 +1,6 @@
 'use client'
 
-import Form from 'next/form'
-import { ReactNode, useActionState } from 'react'
+import { FormEvent, ReactNode, startTransition, useActionState } from 'react'
 
 const initialState = {
   error: '',
@@ -28,16 +27,22 @@ export default function DataForm({
   ) => { error: string } | Promise<{ error: string }>
   className?: string
 }) {
-  const [state, formAction, pending] = useActionState(action, initialState)
+  const [state, formAction] = useActionState(action, initialState)
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    startTransition(() => formAction(formData))
+  }
 
   return (
-    <Form action={formAction} className={className} disabled={pending}>
+    <form onSubmit={handleSubmit} className={className}>
       {children}
       {state.error ? (
         <p className={'text-red-500 m-auto'}>{state.error}</p>
       ) : (
         ''
       )}
-    </Form>
+    </form>
   )
 }
