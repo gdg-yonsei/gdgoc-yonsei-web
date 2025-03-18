@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`bg-neutral-50 ${googleSans.className}`}>
       <body>{children}</body>
-      <GoogleAnalytics gaId={'G-XRMLPE2V9S'} />
+      <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
   )
 }
