@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import LinkedIn from '@/app/components/svg/linked-in'
 import Instagram from '@/app/components/svg/instagram'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
+import Mail from '@/app/components/svg/mail'
 
 export default function Footer() {
   return (
@@ -25,13 +25,13 @@ export default function Footer() {
               target={'_blank'}
               className={'md:flex md:items-center gap-2'}
             >
-              <EnvelopeIcon className={'size-10 text-neutral-700'} />
+              <Mail className={'size-9'} />
               <p className={'not-md:hidden'}>gdsc.yonsei.univ@gamil.com</p>
             </Link>
             <Link
               href={'https://www.linkedin.com/company/gdsc-yonsei/'}
               target={'_blank'}
-              className={'md:flex md:items-center gap-2 pl-1'}
+              className={'md:flex md:items-center gap-2'}
             >
               <LinkedIn className={'size-9'} />
               <p className={'not-md:hidden'}>go to LinkedIn</p>
@@ -41,7 +41,7 @@ export default function Footer() {
               target={'_blank'}
               className={'md:flex md:items-center gap-2'}
             >
-              <Instagram className={'size-10'} />
+              <Instagram className={'size-9'} />
               <p className={'not-md:hidden'}>@gdg.yonseiuniv</p>
             </Link>
           </div>
