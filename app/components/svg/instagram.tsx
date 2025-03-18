@@ -18,9 +18,9 @@ export default function Instagram({ ...rest }: SVGProps<SVGSVGElement>) {
         height="18.5"
         rx="4.25"
         stroke="#a1a1a1"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       />
-      <circle cx="12" cy="12" r="4.25" stroke="#a1a1a1" stroke-width="1.5" />
+      <circle cx="12" cy="12" r="4.25" stroke="#a1a1a1" strokeWidth="1.5" />
       <circle cx="17.5" cy="6.5" r="1.5" fill="#a1a1a1" />
     </svg>
   )
