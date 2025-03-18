@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ReactNode } from 'react'
 import localFont from 'next/font/local'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`bg-neutral-50 ${googleSans.className}`}>
       <body>{children}</body>
+      <GoogleAnalytics gaId={'G-XRMLPE2V9S'} />
     </html>
   )
 }
