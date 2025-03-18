@@ -21,7 +21,7 @@ export async function createProjectAction(
 ) {
   const session = await auth()
   // 사용자가 part 를 수정할 권한이 있는지 확인
-  if (!(await handlePermission(session?.user?.id, 'put', 'projects'))) {
+  if (!(await handlePermission(session?.user?.id, 'post', 'projects'))) {
     return forbidden()
   }
 
