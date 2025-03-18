@@ -33,7 +33,7 @@ export default async function AcceptMemberPage() {
           <div
             key={member.id}
             className={
-              'bg-white p-2 rounded-lg flex gap-2 items-center justify-between'
+              'bg-white p-2 rounded-lg flex gap-2 items-center justify-between not-md:flex-col not-md:items-start'
             }
           >
             <div className={'flex gap-2 items-center'}>
