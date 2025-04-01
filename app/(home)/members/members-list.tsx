@@ -28,7 +28,7 @@ function UserProfileCard({ userData }: { userData: UserProfileType }) {
         />
       ) : (
         <div
-          className={'w-full aspect-41/55 max-w-52 rounded-3xl bg-blue-500'}
+          className={'w-full aspect-41/55 max-w-52 rounded-3xl bg-neutral-500'}
         />
       )}
       <div className={'text-xl font-semibold underline'}>

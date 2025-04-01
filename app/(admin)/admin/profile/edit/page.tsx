@@ -62,68 +62,79 @@ export default async function EditProfilePage() {
             placeholder={'Github Name'}
           />
           <DataInput
-            title={'First Name*'}
+            title={'First Name* (Public)'}
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'First Name'}
           />
           <DataInput
-            title={'Last Name*'}
+            title={'Last Name* (Public)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Last Name'}
           />
           <DataInput
-            title={'E-Mail'}
+            title={'E-Mail (Public)'}
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
           />
           <DataInput
-            title={'Github ID'}
+            title={'Github ID (Public)'}
             defaultValue={memberData.githubId}
             name={'githubId'}
             placeholder={'Github ID'}
           />
           <DataInput
-            title={'Instagram ID'}
+            title={'Instagram ID (Public)'}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
             placeholder={'Instagram ID'}
           />
           <DataInput
-            title={'Linked In Profile URL'}
+            title={'Linked In Profile URL (Public)'}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In Profile URL'}
             type={'link'}
           />
           <DataInput
-            title={'Major'}
+            title={'Major (Private)'}
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'Major'}
           />
           <DataInput
-            title={'Student ID'}
+            title={'Student ID (Private)'}
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
           />
           <DataInput
-            title={'Telephone'}
+            title={'Telephone (Private)'}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
           />
           <DataInput
-            title={'Foreigner'}
+            title={'Foreigner (Just for Name Display)'}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}
             type={'checkbox'}
             isChecked={memberData.isForeigner}
           />
+          <div>
+            <p className={'text-lg font-semibold'}>Notification</p>
+            <p>
+              Please leave the fields blank for any information you do not wish
+              to disclose.{' '}
+              <strong>
+                Your major, student ID number, and phone number will not be made
+                public.
+              </strong>
+            </p>
+          </div>
           <SubmitButton />
         </DataForm>
       </div>
