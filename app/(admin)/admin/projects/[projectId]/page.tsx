@@ -71,7 +71,7 @@ export default async function ProjectPage({
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Generation</div>
           <div className={'member-data-content'}>
-            {projectData.generation.name}
+            {projectData.generation?.name}
           </div>
         </div>
         <div className={'member-data-col-span'}>
