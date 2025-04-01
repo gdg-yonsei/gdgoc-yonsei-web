@@ -27,7 +27,7 @@ export default function GenerationButtonGroup({
         <button
           type={'button'}
           key={i}
-          className={`p-2 rounded-xl ${generation === data ? 'ring-green-700 ring-4' : 'ring-2'} transition-all`}
+          className={`p-2 rounded-full px-4 ${generation === data ? 'border-green-700 border-4' : 'border-2'} transition-all text-sm`}
           onClick={() => setGeneration(data)}
         >
           {data}
