@@ -7,9 +7,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import LinkedIn from '@/app/components/svg/linked-in'
-import Instagram from '@/app/components/svg/instagram'
 import Github from '@/app/components/svg/github'
 import formatUserName from '@/lib/format-user-name'
+import InstagramWhiteBg from '@/app/components/svg/instagram-white-bg'
 
 type UserProfileType = Awaited<
   ReturnType<typeof getGenerations>
@@ -55,7 +55,7 @@ function UserProfileCard({ userData }: { userData: UserProfileType }) {
             href={'https://www.instagram.com/' + userData.instagramId}
             target={'_blank'}
           >
-            <Instagram className={'size-10'} />
+            <InstagramWhiteBg className={'size-10'} />
           </Link>
         )}
         {userData.githubId && (
