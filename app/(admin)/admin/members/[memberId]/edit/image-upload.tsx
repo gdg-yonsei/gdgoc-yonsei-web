@@ -97,7 +97,7 @@ export default function ImageUpload({
         alt={'User Profile Image'}
         width={160}
         height={160}
-        className={'size-40 rounded-xl'}
+        className={'aspect-41/55 mx-auto rounded-xl'}
       />
       <SelectImageButton
         onClick={() => inputRef.current?.click()}

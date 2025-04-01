@@ -153,9 +153,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.777.0":
-  version: 3.777.0
-  resolution: "@aws-sdk/client-s3@npm:3.777.0"
+"@aws-sdk/client-s3@npm:^3.779.0":
+  version: 3.779.0
+  resolution: "@aws-sdk/client-s3@npm:3.779.0"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -213,7 +213,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.0.0"
     "@smithy/util-waiter": "npm:^4.0.3"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/21c1ca43f0f2cc09aed47e52c5e63edf2ca7858af41db9c08e6f58763233e908d7e9f8724acb0a43669797a76d15597f4075ac173ef66d2cc20e1395fc0f5557
+  checksum: 10c0/7b6f60e81a127208e37f3a79c903b2d92343eab0b952b9138469e3baef00f82f99b7221d9af8e0f1ea75fa7a2c2de4817375be5e8fb2e036ae54d1b2b4b010c0
   languageName: node
   linkType: hard
 
@@ -600,9 +600,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:^3.777.0":
-  version: 3.777.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.777.0"
+"@aws-sdk/s3-request-presigner@npm:^3.779.0":
+  version: 3.779.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.779.0"
   dependencies:
     "@aws-sdk/signature-v4-multi-region": "npm:3.775.0"
     "@aws-sdk/types": "npm:3.775.0"
@@ -612,7 +612,7 @@ __metadata:
     "@smithy/smithy-client": "npm:^4.2.0"
     "@smithy/types": "npm:^4.2.0"
     tslib: "npm:^2.6.2"
-  checksum: 10c0/af713ea0671740d38a37272b99e7f196f9cf34fa494dc27e3e91317e8a2cdf1939eb9149ba20eef4a0e346f6332c547ec4932686380a98786f081894beef2931
+  checksum: 10c0/88759ce7e68031bd82b3a92cbdba948f065b49e264c9277e85a3e0fcb7a33e10b24bcce77681ec1b9ecfa3befa60ded2bcdef5341679e1e54387ce5f360ee3b5
   languageName: node
   linkType: hard
 
@@ -4355,8 +4355,8 @@ __metadata:
   resolution: "gdgoc-yonsei-web@workspace:."
   dependencies:
     "@auth/drizzle-adapter": "npm:^1.8.0"
-    "@aws-sdk/client-s3": "npm:^3.777.0"
-    "@aws-sdk/s3-request-presigner": "npm:^3.777.0"
+    "@aws-sdk/client-s3": "npm:^3.779.0"
+    "@aws-sdk/s3-request-presigner": "npm:^3.779.0"
     "@heroicons/react": "npm:^2.2.0"
     "@next/third-parties": "npm:^15.2.4"
     "@simplewebauthn/browser": "npm:9.0.1"
@@ -4383,6 +4383,7 @@ __metadata:
     react: "npm:^19.1.0"
     react-dom: "npm:^19.1.0"
     react-markdown: "npm:^10.1.0"
+    react-qr-code: "npm:^2.0.15"
     server-only: "npm:^0.0.1"
     tailwindcss: "npm:^4.0.17"
     typescript: "npm:^5.8.2"
@@ -6306,6 +6307,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qr.js@npm:0.0.0":
+  version: 0.0.0
+  resolution: "qr.js@npm:0.0.0"
+  checksum: 10c0/1c6a4c7a58d04e52ec2fee99e39b680fdc5b2a510a981df42c36b716a8eac6634d130fc4d65af8f030f2a07dbf5fa046b97cdfa7456c250ebb50a73916efdcb5
+  languageName: node
+  linkType: hard
+
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
@@ -6350,6 +6358,18 @@ __metadata:
     "@types/react": ">=18"
     react: ">=18"
   checksum: 10c0/4a5dc7d15ca6d05e9ee95318c1904f83b111a76f7588c44f50f1d54d4c97193b84e4f64c4b592057c989228238a2590306cedd0c4d398e75da49262b2b5ae1bf
+  languageName: node
+  linkType: hard
+
+"react-qr-code@npm:^2.0.15":
+  version: 2.0.15
+  resolution: "react-qr-code@npm:2.0.15"
+  dependencies:
+    prop-types: "npm:^15.8.1"
+    qr.js: "npm:0.0.0"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/6a9d73918623eecbf6204da02bae1851b584f22f0724b2e5cf529a7eee991a757a211822146f670db63c21860ccb2d245b9288f48cd58ca2bff16de0dcdbdb25
   languageName: node
   linkType: hard
 

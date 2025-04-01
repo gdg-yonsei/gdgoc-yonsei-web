@@ -15,7 +15,7 @@ export default function ProjectsList({
   const [generation] = useAtom(generationState)
 
   const projects = projectsData.filter(
-    (data) => data.generation.name === generation
+    (data) => data?.generation?.name === generation
   )
 
   return (
@@ -26,21 +26,21 @@ export default function ProjectsList({
     >
       {projects.map((data, i) => (
         <Link
-          href={`/projects/${data.id}`}
+          href={`/projects/${data?.id}`}
           key={i}
           className={'bg-white rounded-2xl'}
         >
           <Image
-            src={data.mainImage}
+            src={data?.mainImage}
             width={200}
             height={200}
-            alt={data.name}
+            alt={data?.name}
             className={'w-full rounded-t-2xl'}
           />
           <div className={'p-2'}>
-            <h2 className={'text-xl font-semibold'}>{data.name}</h2>
-            <p>{formatDateYYYYMMDD(new Date(data.updatedAt))}</p>
-            <p>{data.description}</p>
+            <h2 className={'text-xl font-semibold'}>{data?.name}</h2>
+            <p>{formatDateYYYYMMDD(new Date(data?.updatedAt))}</p>
+            <p>{data?.description}</p>
           </div>
         </Link>
       ))}
