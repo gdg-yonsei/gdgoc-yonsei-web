@@ -1,7 +1,5 @@
 import { ImageResponse } from 'next/og'
-import db from '@/db'
-import { eq } from 'drizzle-orm'
-import { projects } from '@/db/schema/projects'
+import { getProject } from '@/lib/fetcher/get-project'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Project'
@@ -18,13 +16,7 @@ export default async function Image({
 }: {
   params: { projectId: string }
 }) {
-  const project = await db.query.projects.findFirst({
-    where: eq(projects.id, params.projectId),
-    columns: {
-      name: true,
-      description: true,
-    },
-  })
+  const project = await getProject(params.projectId)
 
   return new ImageResponse(
     (

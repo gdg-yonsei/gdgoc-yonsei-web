@@ -1,7 +1,5 @@
 import { ImageResponse } from 'next/og'
-import db from '@/db'
-import { eq } from 'drizzle-orm'
-import { sessions } from '@/db/schema/sessions'
+import { getSession } from '@/lib/fetcher/get-session'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Session'
@@ -18,13 +16,7 @@ export default async function Image({
 }: {
   params: { sessionId: string }
 }) {
-  const session = await db.query.sessions.findFirst({
-    where: eq(sessions.id, params.sessionId),
-    columns: {
-      name: true,
-      description: true,
-    },
-  })
+  const session = await getSession(params.sessionId)
 
   return new ImageResponse(
     (
