@@ -24,7 +24,13 @@ export default function QRCodeGenerator() {
           className={
             'p-2 px-4 rounded-full focus:outline-none focus:ring-2 ring-sky-500 bg-neutral-100 w-full'
           }
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length < 23652) {
+              setValue(e.target.value)
+            } else {
+              alert('The value is too long. Please enter a shorter value.')
+            }
+          }}
         />
         <p>Please capture the QR Code and use it.</p>
       </div>
