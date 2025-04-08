@@ -25,7 +25,7 @@ export default function QRCodeGenerator() {
             'p-2 px-4 rounded-full focus:outline-none focus:ring-2 ring-sky-500 bg-neutral-100 w-full'
           }
           onChange={(e) => {
-            if (e.target.value.length < 23652) {
+            if (e.target.value.length < 23648) {
               setValue(e.target.value)
             } else {
               alert('The value is too long. Please enter a shorter value.')
