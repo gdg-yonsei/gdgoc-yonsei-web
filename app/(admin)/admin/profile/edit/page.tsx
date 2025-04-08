@@ -117,7 +117,7 @@ export default async function EditProfilePage() {
             placeholder={'Telephone (only numbers)'}
           />
           <DataInput
-            title={'Foreigner (Just for Name Display)'}
+            title={'Foreigner (Used only for displaying the name.)'}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}

@@ -28,7 +28,7 @@ export default async function MembersTable() {
             alt={`${member.name} Profile Image`}
             width={100}
             height={100}
-            className={'rounded-t-lg w-full aspect-square'}
+            className={'rounded-t-lg w-full aspect-41/55'}
           />
           <div className={'p-2'}>
             <div className={'text-lg font-semibold'}>

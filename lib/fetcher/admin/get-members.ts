@@ -35,7 +35,7 @@ export const getMembers = unstable_cache(
       .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
       .leftJoin(parts, eq(parts.id, usersToParts.partId))
       .leftJoin(generations, eq(generations.id, parts.generationsId))
-      .orderBy(desc(users.updatedAt), desc(parts.id))
+      .orderBy(desc(generations.id), desc(parts.id), desc(users.updatedAt))
 
     const uniqueUsersId: string[] = []
     const uniqueUsers = []
