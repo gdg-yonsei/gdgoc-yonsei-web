@@ -23,7 +23,7 @@ export default async function UserProfile() {
         src={userData.image}
         width={100}
         height={100}
-        className={'size-48 aspect-1/1 rounded-lg mx-auto'}
+        className={'w-48 aspect-41/55 rounded-lg mx-auto'}
         alt={'User Profile Image'}
       />
       <div className={'member-data-box'}>

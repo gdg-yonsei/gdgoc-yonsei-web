@@ -1,4 +1,5 @@
 import BackToPageButton from '@/app/components/back-to-page-button'
+import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 
 /**
  * 403 Forbidden Page
@@ -13,10 +14,11 @@ export default function Forbidden() {
     >
       <div
         className={
-          'p-8 rounded-xl bg-white flex flex-col gap-2 w-full max-w-xl'
+          'p-8 rounded-xl bg-white flex flex-col gap-4 w-full max-w-xl'
         }
       >
-        <h2 className={'text-2xl font-bold lg:text-4xl'}>403 Forbidden</h2>
+        <GDGoCYonseiLogo />
+        <h1 className={'text-5xl font-bold md:text-6xl'}>403 Forbidden</h1>
         <p>
           You cannot access data with your current user account permissions.
         </p>
