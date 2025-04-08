@@ -46,8 +46,6 @@ export async function updateProfileAction(
     profileImage,
   } = getMemberFormData(formData)
 
-  console.log(profileImage)
-
   try {
     // zod validation
     memberValidation.parse({

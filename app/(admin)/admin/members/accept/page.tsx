@@ -16,6 +16,7 @@ export default async function AcceptMemberPage() {
   const unacceptedMembers = await db.query.users.findMany({
     where: eq(users.role, 'UNVERIFIED'),
   })
+
   return (
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/members'}>
