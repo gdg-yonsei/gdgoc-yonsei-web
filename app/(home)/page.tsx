@@ -215,16 +215,16 @@ export default function HomePage() {
                 following the coding test format, as well as planning and
                 managing the event.
               </ShowMoreContent>
-              <Link
-                href={'https://festa.io/events/cc5EgVt52K2NyMCF6do8BQ'}
-                target={'_blank'}
-                className={
-                  'text-blue-500 flex items-center gap-1 hover:underline pt-2 not-md:hidden'
-                }
-              >
-                <p>Event Page</p>
-                <ChevronRightIcon className={'size-5'} />
-              </Link>
+              {/*<Link*/}
+              {/*  href={'https://festa.io/events/cc5EgVt52K2NyMCF6do8BQ'}*/}
+              {/*  target={'_blank'}*/}
+              {/*  className={*/}
+              {/*    'text-blue-500 flex items-center gap-1 hover:underline pt-2 not-md:hidden'*/}
+              {/*  }*/}
+              {/*>*/}
+              {/*  <p>Event Page</p>*/}
+              {/*  <ChevronRightIcon className={'size-5'} />*/}
+              {/*</Link>*/}
             </div>
             <div className={'home-about-box ring-yellow-500 md:ring-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
@@ -238,16 +238,16 @@ export default function HomePage() {
                 experiences with Google technologies like Google Cloud,
                 TensorFlow, Android, Flutter, and Go.
               </ShowMoreContent>
-              <Link
-                href={'https://festa.io/events/3683'}
-                target={'_blank'}
-                className={
-                  'text-blue-500 flex items-center gap-1 hover:underline pt-2 not-md:hidden'
-                }
-              >
-                <p>Event Page</p>
-                <ChevronRightIcon className={'size-5'} />
-              </Link>
+              {/*<Link*/}
+              {/*  href={'https://festa.io/events/3683'}*/}
+              {/*  target={'_blank'}*/}
+              {/*  className={*/}
+              {/*    'text-blue-500 flex items-center gap-1 hover:underline pt-2 not-md:hidden'*/}
+              {/*  }*/}
+              {/*>*/}
+              {/*  <p>Event Page</p>*/}
+              {/*  <ChevronRightIcon className={'size-5'} />*/}
+              {/*</Link>*/}
             </div>
             <div className={'home-about-box ring-green-600 md:ring-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
