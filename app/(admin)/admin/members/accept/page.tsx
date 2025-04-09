@@ -16,11 +16,6 @@ export default async function AcceptMemberPage() {
   const unacceptedMembers = await db.query.users.findMany({
     where: eq(users.role, 'UNVERIFIED'),
   })
-  //WildCard
-  await db
-    .update(users)
-    .set({ role: 'LEAD' })
-    .where(eq(users.id, 'a38dc600-3839-4c7e-b036-2a2b09d7d62c'))
 
   return (
     <AdminDefaultLayout>
