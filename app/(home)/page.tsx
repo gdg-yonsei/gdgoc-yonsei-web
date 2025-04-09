@@ -64,7 +64,7 @@ export default function HomePage() {
             About GDG
           </h1>
           <div className={'w-full flex flex-col gap-10 md:gap-2'}>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3>
                 <strong>GDG (Google Developer Groups)</strong> on Campus is a
                 community of university student developers interested in Google
@@ -77,7 +77,7 @@ export default function HomePage() {
                 goal of building solutions for their communities and society.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-green-600 md:ring-0'}>
+            <div className={'home-about-box border-green-600 md:border-0'}>
               <h3>
                 <strong>GDG Yonsei University</strong> is a student developer
                 community based at Yonsei University that shares the development
@@ -126,7 +126,7 @@ export default function HomePage() {
             <BookSVG className={'mx-auto size-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>T19</h3>
               <ShowMoreContent>
                 T19, short for &#34;Tech at 19:00,&#34; is an internal
@@ -135,7 +135,7 @@ export default function HomePage() {
                 presenters share their technical knowledge or experiences.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-green-600 md:ring-0'}>
+            <div className={'home-about-box border-green-600 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 GDG fopen()
               </h3>
@@ -150,7 +150,7 @@ export default function HomePage() {
                 developer culture at Yonsei University.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Part Study Jam
               </h3>
@@ -186,7 +186,7 @@ export default function HomePage() {
             <Trophy className={'mx-auto size-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Solution Challenge
               </h3>
@@ -204,7 +204,7 @@ export default function HomePage() {
                 our group&#39;s strong technical capabilities and social impact.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-red-500 md:ring-0'}>
+            <div className={'home-about-box border-red-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 GDG x Elice Programming Contest
               </h3>
@@ -226,7 +226,7 @@ export default function HomePage() {
               {/*  <ChevronRightIcon className={'size-5'} />*/}
               {/*</Link>*/}
             </div>
-            <div className={'home-about-box ring-yellow-500 md:ring-0'}>
+            <div className={'home-about-box border-yellow-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Google I/O Extended Seoul 2023
               </h3>
@@ -249,7 +249,7 @@ export default function HomePage() {
               {/*  <ChevronRightIcon className={'size-5'} />*/}
               {/*</Link>*/}
             </div>
-            <div className={'home-about-box ring-green-600 md:ring-0'}>
+            <div className={'home-about-box border-green-600 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 GDG Cloud Devfest
               </h3>
@@ -260,7 +260,7 @@ export default function HomePage() {
                 topics related to Google Cloud.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Namu-thon
               </h3>
@@ -311,7 +311,7 @@ export default function HomePage() {
             <Friends className={'mx-auto w-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Organizer
               </h3>
@@ -321,7 +321,7 @@ export default function HomePage() {
                 planning.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-green-600 md:ring-0'}>
+            <div className={'home-about-box border-green-600 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 FrontEnd
               </h3>
@@ -333,7 +333,7 @@ export default function HomePage() {
                 sustainable development practices.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-yellow-500 md:ring-0'}>
+            <div className={'home-about-box border-yellow-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 BackEnd
               </h3>
@@ -344,7 +344,7 @@ export default function HomePage() {
                 JPA) to infrastructure during team sessions.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-red-500 md:ring-0'}>
+            <div className={'home-about-box border-red-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Mobile
               </h3>
@@ -354,7 +354,7 @@ export default function HomePage() {
                 explores sustainable application development.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-blue-500 md:ring-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 ML/AI
               </h3>
@@ -365,7 +365,7 @@ export default function HomePage() {
                 discussions.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-green-600 md:ring-0'}>
+            <div className={'home-about-box border-green-600 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Design
               </h3>
@@ -378,7 +378,7 @@ export default function HomePage() {
                 methodologies.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box ring-red-500 md:ring-0'}>
+            <div className={'home-about-box border-red-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 Devrel (Developer Relations)
               </h3>

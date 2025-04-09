@@ -690,7 +690,7 @@ __metadata:
   resolution: "@aws-sdk/util-format-url@npm:3.775.0"
   dependencies:
     "@aws-sdk/types": "npm:3.775.0"
-    "@smithy/querystring-builder": "npm:^4.0.2"
+    "@smithy/querystborder-builder": "npm:^4.0.2"
     "@smithy/types": "npm:^4.2.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/4128a39b8b7c6f3b8e4cbf28ea1a85b97ebcd52c9e4468ffac3bae3d6fd56f23c7f4dff5ee3dc9689d5c04cd272d4159094e7d504f0ebf779894eb94bd5f7447
@@ -1850,7 +1850,7 @@ __metadata:
   resolution: "@smithy/fetch-http-handler@npm:5.0.2"
   dependencies:
     "@smithy/protocol-http": "npm:^5.1.0"
-    "@smithy/querystring-builder": "npm:^4.0.2"
+    "@smithy/querystborder-builder": "npm:^4.0.2"
     "@smithy/types": "npm:^4.2.0"
     "@smithy/util-base64": "npm:^4.0.0"
     tslib: "npm:^2.6.2"
@@ -2014,7 +2014,7 @@ __metadata:
   dependencies:
     "@smithy/abort-controller": "npm:^4.0.2"
     "@smithy/protocol-http": "npm:^5.1.0"
-    "@smithy/querystring-builder": "npm:^4.0.2"
+    "@smithy/querystborder-builder": "npm:^4.0.2"
     "@smithy/types": "npm:^4.2.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/fb621c6ebcf012a99fc442d82965ca18d752f66be6f937a400e3b4e3feef1c259c028c27df9e78fc9ac7c40679b25276cbaa8d7ab82fd111bda64003ef831358
@@ -2041,9 +2041,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/querystring-builder@npm:^4.0.2":
+"@smithy/querystborder-builder@npm:^4.0.2":
   version: 4.0.2
-  resolution: "@smithy/querystring-builder@npm:4.0.2"
+  resolution: "@smithy/querystborder-builder@npm:4.0.2"
   dependencies:
     "@smithy/types": "npm:^4.2.0"
     "@smithy/util-uri-escape": "npm:^4.0.0"
@@ -2052,9 +2052,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/querystring-parser@npm:^4.0.2":
+"@smithy/querystborder-parser@npm:^4.0.2":
   version: 4.0.2
-  resolution: "@smithy/querystring-parser@npm:4.0.2"
+  resolution: "@smithy/querystborder-parser@npm:4.0.2"
   dependencies:
     "@smithy/types": "npm:^4.2.0"
     tslib: "npm:^2.6.2"
@@ -2134,7 +2134,7 @@ __metadata:
   version: 4.0.2
   resolution: "@smithy/url-parser@npm:4.0.2"
   dependencies:
-    "@smithy/querystring-parser": "npm:^4.0.2"
+    "@smithy/querystborder-parser": "npm:^4.0.2"
     "@smithy/types": "npm:^4.2.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/3da40fc18871c145bcbbb036a3d767ae113b954e94c745770f268dc877378cbafa6fc06759ea5a5e5c159a88e7331739b35b69f4d110ba0bd04b2d0923443f32
@@ -3819,9 +3819,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escape-string-regexp@npm:^4.0.0":
+"escape-stborder-regexp@npm:^4.0.0":
   version: 4.0.0
-  resolution: "escape-string-regexp@npm:4.0.0"
+  resolution: "escape-stborder-regexp@npm:4.0.0"
   checksum: 10c0/9497d4dd307d845bd7f75180d8188bb17ea8c151c1edbf6b6717c100e104d629dc2dfb687686181b0f4b7d732c7dfdc4d5e7a8ff72de1b0ca283a75bbb3a9cd9
   languageName: node
   linkType: hard
@@ -4034,7 +4034,7 @@ __metadata:
     chalk: "npm:^4.0.0"
     cross-spawn: "npm:^7.0.6"
     debug: "npm:^4.3.2"
-    escape-string-regexp: "npm:^4.0.0"
+    escape-stborder-regexp: "npm:^4.0.0"
     eslint-scope: "npm:^8.3.0"
     eslint-visitor-keys: "npm:^4.2.0"
     espree: "npm:^10.3.0"

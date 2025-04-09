@@ -59,7 +59,7 @@ export default function AcceptForm({ userId }: { userId: string }) {
       />
       <SubmitButton
         className={
-          'p-1 px-3 flex items-center gap-2 rounded-lg font-semibold ring-2 hover:bg-neutral-100 transition-colors'
+          'p-1 px-3 flex items-center gap-2 rounded-lg font-semibold border-2 hover:bg-neutral-100 transition-colors'
         }
       />
     </DataForm>
