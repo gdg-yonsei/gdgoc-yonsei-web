@@ -27,7 +27,7 @@ export default function SessionsList({
         <Link
           href={`/sessions/${session.id}`}
           key={i}
-          className={`bg-white rounded-2xl flex flex-col items-center justify-center p-2 ring-2 ${i % 4 === 0 && 'ring-red-500'} ${i % 4 === 1 && 'ring-yellow-500'} ${i % 4 === 2 && 'ring-green-600'} ${i % 4 === 3 && 'ring-blue-500'}`}
+          className={`bg-white rounded-2xl flex flex-col items-center justify-center p-2 border-2 ${i % 4 === 0 && 'border-red-500'} ${i % 4 === 1 && 'border-yellow-500'} ${i % 4 === 2 && 'border-green-600'} ${i % 4 === 3 && 'border-blue-500'}`}
         >
           <h2 className={'text-xl font-semibold p-2'}>{session.name}</h2>
           <Image

@@ -25,7 +25,7 @@ export default function SaveImageButton({
       initial={{ opacity: 0 }}
       animate={{ opacity: imgFile ? 1 : 0 }}
       className={
-        'p-2 px-4 rounded-xl ring-2 ring-neutral-900 bg-neutral-900 transition-all disabled:bg-neutral-800 disabled:text-neutral-300 text-white flex items-center gap-2'
+        'p-2 px-4 rounded-xl border-2 border-neutral-900 bg-neutral-900 transition-all disabled:bg-neutral-800 disabled:text-neutral-300 text-white flex items-center gap-2'
       }
       onClick={onClick}
     >

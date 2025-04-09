@@ -54,7 +54,7 @@ export default function MDXEditor({
           <div>Preview</div>
           <div
             className={
-              'ring-2 min-h-96 w-full rounded-lg ring-sky-900 p-4 prose'
+              'border-2 min-h-96 w-full rounded-lg border-sky-900 p-4 prose'
             }
           >
             <Markdown>{content}</Markdown>

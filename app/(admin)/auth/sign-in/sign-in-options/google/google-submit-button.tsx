@@ -30,7 +30,7 @@ export default function GoogleSubmitButton() {
     <button
       type={'submit'}
       className={
-        'flex gap-2 items-center w-full  justify-center bg-neutral-50 p-2 px-4 rounded-full transition-all disabled:bg-neutral-100 ring-2 disabled:hover:ring-offset-0 ring-neutral-900 hover:md:ring-offset-2'
+        'flex gap-2 items-center w-full  justify-center bg-neutral-50 p-2 px-4 rounded-full transition-all disabled:bg-neutral-100 border-2 border-neutral-900'
       }
       disabled={pending || isAuthenticating}
       onClick={handleClick}

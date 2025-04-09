@@ -22,7 +22,7 @@ function RoleButton({
     <button
       type={'button'}
       onClick={() => setRole(value)}
-      className={`${value === role ? 'bg-neutral-900 text-white' : ''} p-2 rounded-lg ring-2 ring-neutral-900 text-sm transition-all`}
+      className={`${value === role ? 'bg-neutral-900 text-white' : ''} p-2 rounded-lg border-2 border-neutral-900 text-sm transition-all`}
     >
       {value}
     </button>

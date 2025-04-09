@@ -9,7 +9,7 @@ export default function Button() {
     <button
       type={'submit'}
       className={
-        'p-2 text-sm rounded-full ring-2 w-full justify-center ring-neutral-900 px-4 hover:bg-neutral-100 transition-all flex items-center gap-2'
+        'p-2 text-sm rounded-full border-2 w-full justify-center border-neutral-900 px-4 hover:bg-neutral-100 transition-all flex items-center gap-2'
       }
       disabled={pending}
     >
