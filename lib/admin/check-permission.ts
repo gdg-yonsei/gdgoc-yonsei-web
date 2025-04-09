@@ -69,6 +69,7 @@ export default function checkPermission(
         generations: false,
         projects: true,
         sessions: true,
+        parts: true,
       },
       put: {
         members: true,
@@ -76,6 +77,7 @@ export default function checkPermission(
         generations: false,
         projects: true,
         sessions: true,
+        parts: true,
       },
       delete: {
         members: userId === dataOwnerId,
@@ -83,6 +85,7 @@ export default function checkPermission(
         generations: false,
         projects: true,
         sessions: true,
+        parts: false,
       },
     },
     LEAD: {
