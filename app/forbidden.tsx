@@ -1,5 +1,6 @@
 import BackToPageButton from '@/app/components/back-to-page-button'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
+import { SignOutButton } from '@/app/components/auth/sign-out-button'
 
 /**
  * 403 Forbidden Page
@@ -23,6 +24,7 @@ export default function Forbidden() {
           You cannot access data with your current user account permissions.
         </p>
         <BackToPageButton />
+        <SignOutButton />
       </div>
     </div>
   )
