@@ -56,13 +56,13 @@ export default function HomePage() {
             'w-full max-w-xl flex flex-col items-center md:items-start'
           }
         >
-          <h1
+          <h2
             className={
               'p-8 text-3xl font-bold mx-auto md:mx-0 md:p-0 md:pb-8 md:text-4xl'
             }
           >
             About GDG
-          </h1>
+          </h2>
           <div className={'w-full flex flex-col gap-10 md:gap-2'}>
             <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3>
