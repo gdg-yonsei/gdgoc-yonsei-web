@@ -4,7 +4,7 @@ export default function DesktopNavigationList() {
   return (
     <div
       className={
-        'flex items-center gap-2 *:p-1 *:px-4 *:hover:underline not-md:hidden'
+        'flex items-center gap-2 *:p-1 *:px-4 *:hover:underline not-md:hidden text-lg'
       }
     >
       <Link href={'/members'}>Members</Link>
