@@ -22,6 +22,7 @@ export default function HomePage() {
           }
         >
           <GDGLogo className={'h-52 w-72'} svgKey={'homePage'} />
+
           <h1 className={'text-2xl font-semibold text-center md:hidden'}>
             Google Developer Group
             <br /> on Campus Yonsei
