@@ -26,7 +26,7 @@ export default async function AdminLayout({
 }) {
   /** 사용자가 로그인 되어 있는지 확인 */
   const session = await auth()
-  if (!session) {
+  if (!session?.user?.id) {
     redirect('/auth/sign-in')
   }
   // 인증되지 않은 사용자의 경우 접근 금지

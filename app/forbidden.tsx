@@ -21,6 +21,10 @@ export default function Forbidden() {
         <GDGoCYonseiLogo />
         <h1 className={'text-5xl font-bold md:text-6xl'}>403 Forbidden</h1>
         <p>
+          If you have just signed up, please wait until the administrator grants
+          you permission.
+        </p>
+        <p>
           You cannot access data with your current user account permissions.
         </p>
         <BackToPageButton />
