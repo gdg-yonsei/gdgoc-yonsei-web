@@ -10,7 +10,7 @@ export default function DesktopNavigationList() {
       <Link href={'/members'}>Members</Link>
       <Link href={'/projects'}>Projects</Link>
       <Link href={'/sessions'}>Sessions</Link>
-      <Link href={'/recruit'}>Recruit</Link>
+      {/*<Link href={'/recruit'}>Recruit</Link>*/}
     </div>
   )
 }

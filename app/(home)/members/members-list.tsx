@@ -24,7 +24,7 @@ function UserProfileCard({ userData }: { userData: UserProfileType }) {
           alt={userData.name + ' Profile Image'}
           width={100}
           height={100}
-          className={'w-full aspect-41/55 max-w-52 rounded-3xl object-cover'}
+          className={'w-full aspect-41/55 max-w-32 rounded-xl object-cover'}
         />
       ) : (
         <div
