@@ -20,41 +20,64 @@ This project is a website created to introduce the Google Developer Group on Cam
 - Drizzle ORM
 - Auth.js
 - PostgreSQL
+- Cloudflare R2 (for image storage)
 
 ## Commands
 
 1. Install Packages
 
 ```bash
-yarn
+pnpm i
 ```
 
 2. Dev Mode
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 3. Build
 
 ```bash
-yarn build
+pnpm build
 ```
 
 4. Start Project
 
 ```bash
-yarn start
+pnpm start
 ```
 
 5. DB Push (drizzle generate & drizzle migrate)
 
 ```bash
-yarn db:push
+pnpm db:push
 ```
 
 6. DB Studio
 
 ```bash
-yarn db:studio
+pnpm db:studio
+```
+
+# How to Deploy
+
+1. Copy .env.example to .env and fill in the required environment variables.
+2. Create a PostgreSQL database and set the connection string in the .env file.
+3. Run the following command to push the database schema:
+
+```bash
+pnpm db:push
+```
+
+4. Build the project:
+
+```bash
+pnpm build
+```
+
+5. Start the project:
+
+```bash
+pnpm start
 ```
