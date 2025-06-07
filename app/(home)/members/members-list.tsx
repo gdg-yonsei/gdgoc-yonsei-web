@@ -85,7 +85,9 @@ export default function MembersList({
       {partsData?.map((part, i) => (
         <div
           key={i}
-          className={'flex flex-col gap-4 border-b-2 pb-24 last:border-b-0'}
+          className={
+            'flex flex-col gap-4 border-b-2 border-neutral-200 pb-24 last:border-b-0'
+          }
         >
           <div className={'text-4xl font-bold w-full max-w-4xl mx-auto px-4'}>
             {part.name}

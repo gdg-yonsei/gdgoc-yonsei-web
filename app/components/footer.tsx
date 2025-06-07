@@ -6,7 +6,7 @@ import Mail from '@/app/components/svg/mail'
 
 export default function Footer() {
   return (
-    <div className={'w-full p-4 bg-neutral-400 flex'}>
+    <div className={'w-full p-4 bg-neutral-300 flex'}>
       <div className={'w-full max-w-4xl mx-auto md:flex'}>
         <div className={'flex flex-col gap-6 w-full'}>
           <div className={'text-white text-lg font-semibold md:text-3xl'}>
