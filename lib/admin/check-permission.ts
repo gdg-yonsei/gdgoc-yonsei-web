@@ -27,6 +27,7 @@ export default function checkPermission(
         sessionsPage: true,
         generationsPage: false,
         partsPage: false,
+        performancePage: false,
       },
       post: {
         members: userId === dataOwnerId,
@@ -62,6 +63,7 @@ export default function checkPermission(
         sessionsPage: true,
         generationsPage: false,
         partsPage: true,
+        performancePage: true,
       },
       post: {
         members: true,
@@ -97,6 +99,7 @@ export default function checkPermission(
         sessionsPage: true,
         generationsPage: true,
         partsPage: true,
+        performancePage: true,
       },
       post: {
         members: true,
@@ -132,6 +135,7 @@ export default function checkPermission(
         sessionsPage: true,
         generationsPage: false,
         partsPage: false,
+        performancePage: false,
       },
       post: {
         members: userId === dataOwnerId,

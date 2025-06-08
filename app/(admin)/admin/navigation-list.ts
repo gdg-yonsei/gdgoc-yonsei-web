@@ -52,6 +52,11 @@ export default async function navigationList(userId: string | undefined) {
       path: '/admin/profile',
       dataResource: 'profilePage',
     },
+    {
+      name: 'Performance',
+      path: '/admin/performance',
+      dataResource: 'performancePage',
+    },
   ]
 
   return navigations.filter(

@@ -167,7 +167,7 @@ export default function PerformancePage() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-col md:flex-row">
           <h1 className="text-3xl font-bold">웹사이트 성능 분석</h1>
           <div className="flex items-center space-x-4">
             <label className="text-sm font-medium">기간:</label>
