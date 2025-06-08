@@ -12,12 +12,12 @@ const performanceDataSchema = z.object({
   sessionId: z.string().optional(),
 
   // Core Web Vitals
-  lcp: z.number().positive().optional(),
-  inp: z.number().positive().optional(),
+  lcp: z.number().min(0).optional(),
+  inp: z.number().min(0).optional(), // 상호작용이 없을 때 0일 수 있음
   cls: z.number().min(0).optional(),
-  fcp: z.number().positive().optional(),
-  ttfb: z.number().positive().optional(),
-  tti: z.number().positive().optional(),
+  fcp: z.number().min(0).optional(),
+  ttfb: z.number().min(0).optional(), // 측정 오차로 0일 수 있음
+  tti: z.number().min(0).optional(),
 
   // 추가 성능 지표
   domContentLoadedTime: z.number().min(0).optional(),

@@ -171,13 +171,57 @@ function getAdditionalPerformanceMetrics() {
   }
 }
 
+// 성능 데이터 검증 함수
+function validatePerformanceData(
+  data: Partial<PerformanceData>
+): data is PerformanceData {
+  // 필수 필드 검증
+  if (!data.url || !data.userAgent || !data.deviceType) {
+    return false
+  }
+
+  // 숫자 필드들의 유효성 검증
+  const numericFields: (keyof PerformanceData)[] = [
+    'lcp',
+    'inp',
+    'cls',
+    'fcp',
+    'ttfb',
+    'tti',
+    'domContentLoadedTime',
+    'loadTime',
+    'firstPaintTime',
+  ]
+
+  for (const field of numericFields) {
+    const value = data[field]
+    if (
+      value !== undefined &&
+      (typeof value !== 'number' ||
+        isNaN(value) ||
+        !isFinite(value) ||
+        value < 0)
+    ) {
+      console.warn(`Invalid ${field} value:`, value)
+      // 잘못된 값은 제거
+      delete data[field]
+    }
+  }
+
+  return true
+}
+
 async function sendPerformanceData(data: PerformanceData) {
   try {
     // 데이터 유효성 검사
-    if (!data.url || !data.userAgent || !data.deviceType) {
+    if (!validatePerformanceData(data)) {
       console.warn('Invalid performance data, skipping send:', data)
       return
     }
+
+    // AbortController로 타임아웃 설정
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(() => abortController.abort(), 10000) // 10초 타임아웃
 
     const response = await fetch('/api/performance/metrics', {
       method: 'POST',
@@ -185,10 +229,18 @@ async function sendPerformanceData(data: PerformanceData) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+      signal: abortController.signal,
     })
 
+    clearTimeout(timeoutId)
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
+      let errorData = {}
+      try {
+        errorData = await response.json()
+      } catch (parseError) {
+        console.warn('Failed to parse error response:', parseError)
+      }
       console.error(
         'Failed to send performance data:',
         response.status,
@@ -196,7 +248,21 @@ async function sendPerformanceData(data: PerformanceData) {
       )
     }
   } catch (error) {
-    console.error('Failed to send performance data:', error)
+    // 네트워크 에러 타입별 처리
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        console.warn('Performance data request timed out')
+      } else if (error.message.includes('fetch')) {
+        console.warn(
+          'Network error while sending performance data:',
+          error.message
+        )
+      } else {
+        console.error('Failed to send performance data:', error)
+      }
+    } else {
+      console.error('Failed to send performance data:', error)
+    }
   }
 }
 
@@ -234,9 +300,16 @@ export function usePerformanceTracker(options?: {
     const metricsCollected: Record<string, number> = {}
 
     const onMetric = (metric: PerformanceMetric) => {
-      // 유효한 메트릭 값만 저장
-      if (metric.value >= 0) {
+      // 유효한 메트릭 값만 저장 (숫자이고 0 이상이며 유한한 값)
+      if (
+        typeof metric.value === 'number' &&
+        !isNaN(metric.value) &&
+        isFinite(metric.value) &&
+        metric.value >= 0
+      ) {
         metricsCollected[metric.name.toLowerCase()] = metric.value
+      } else if (debug) {
+        console.warn('Invalid metric value:', metric.name, metric.value)
       }
 
       // 모든 주요 메트릭이 수집되면 전송
