@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { usePerformanceTracker } from '@/lib/hooks/use-performance-tracker'
 
 interface PerformanceSummary {
   avgLcp: number | null | undefined
@@ -26,11 +27,25 @@ interface BrowserStats {
   count: number
 }
 
+interface RecentMetric {
+  id: string
+  url: string
+  pageTitle: string
+  lcp?: number
+  inp?: number
+  cls?: number
+  fcp?: number
+  ttfb?: number
+  deviceType: string
+  browserName: string
+  createdAt: string
+}
+
 interface PerformanceData {
   summary: PerformanceSummary | null
   deviceStats: DeviceStats[]
   browserStats: BrowserStats[]
-  recentMetrics: any[]
+  recentMetrics: RecentMetric[]
   dateRange: {
     startDate: string
     endDate: string
@@ -43,8 +58,16 @@ export default function PerformancePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [days, setDays] = useState(7)
+  const [isCollectingMetrics, setIsCollectingMetrics] = useState(false)
 
-  const fetchPerformanceData = async () => {
+  // 실시간 성능 측정을 위한 훅
+  const { collectMetrics } = usePerformanceTracker({
+    enabled: true,
+    sendImmediately: true,
+    debug: true,
+  })
+
+  const fetchPerformanceData = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/performance/summary?days=${days}`)
@@ -56,15 +79,34 @@ export default function PerformancePage() {
         setError(result.error)
       }
     } catch (err) {
+      console.error(err)
       setError('Failed to fetch performance data')
     } finally {
       setLoading(false)
     }
-  }
+  }, [days])
+
+  // 실시간 성능 측정 함수
+  const handleRealTimeCollection = useCallback(async () => {
+    if (isCollectingMetrics) return
+
+    setIsCollectingMetrics(true)
+    try {
+      await collectMetrics()
+      // 측정 후 잠시 기다린 다음 데이터 새로고침
+      setTimeout(() => {
+        fetchPerformanceData()
+      }, 2000)
+    } catch (error) {
+      console.error('실시간 성능 측정 실패:', error)
+    } finally {
+      setIsCollectingMetrics(false)
+    }
+  }, [isCollectingMetrics, collectMetrics, fetchPerformanceData])
 
   useEffect(() => {
     fetchPerformanceData()
-  }, [days])
+  }, [fetchPerformanceData])
 
   const formatMs = (ms: number | null | undefined) => {
     if (ms === null || ms === undefined) return 'N/A'
@@ -167,9 +209,9 @@ export default function PerformancePage() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8 flex-col md:flex-row">
+        <div className="flex justify-between items-center mb-8 flex-col md:flex-row gap-4">
           <h1 className="text-3xl font-bold">웹사이트 성능 분석</h1>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-wrap">
             <label className="text-sm font-medium">기간:</label>
             <select
               value={days}
@@ -187,8 +229,32 @@ export default function PerformancePage() {
             >
               새로고침
             </button>
+            <button
+              onClick={handleRealTimeCollection}
+              disabled={isCollectingMetrics}
+              className={`px-4 py-2 text-sm rounded transition-colors ${
+                isCollectingMetrics
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+            >
+              {isCollectingMetrics ? '🔄 측정 중...' : '📊 실시간 측정'}
+            </button>
           </div>
         </div>
+
+        {/* 실시간 측정 안내 */}
+        {isCollectingMetrics && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+              <p className="text-blue-800">
+                현재 페이지의 성능을 실시간으로 측정하고 있습니다. 측정 완료 후
+                자동으로 데이터가 업데이트됩니다.
+              </p>
+            </div>
+          </div>
+        )}
 
         {data && (
           <>

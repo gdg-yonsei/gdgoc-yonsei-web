@@ -3,6 +3,18 @@
 import { useEffect, useCallback } from 'react'
 import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 
+// Navigator 인터페이스 확장 (네트워크 연결 정보용)
+interface NetworkConnection {
+  type?: string
+  effectiveType?: string
+}
+
+interface ExtendedNavigator extends Navigator {
+  connection?: NetworkConnection
+  mozConnection?: NetworkConnection
+  webkitConnection?: NetworkConnection
+}
+
 interface PerformanceMetric {
   name: string
   value: number
@@ -104,10 +116,11 @@ function getDeviceInfo(): DeviceInfo {
 }
 
 function getNetworkInfo(): NetworkInfo {
+  const extendedNavigator = navigator as ExtendedNavigator
   const connection =
-    (navigator as any).connection ||
-    (navigator as any).mozConnection ||
-    (navigator as any).webkitConnection
+    extendedNavigator.connection ||
+    extendedNavigator.mozConnection ||
+    extendedNavigator.webkitConnection
 
   if (connection) {
     return {
@@ -280,7 +293,7 @@ export function usePerformanceTracker(options?: {
       window.addEventListener('load', startCollection)
       return () => window.removeEventListener('load', startCollection)
     }
-  }, [collectAndSendMetrics])
+  }, [collectAndSendMetrics, enabled])
 
   // 페이지 unload 시에도 메트릭 전송
   useEffect(() => {

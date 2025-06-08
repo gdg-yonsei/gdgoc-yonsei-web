@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import db from '@/db'
 import { performanceMetrics } from '@/db/schema/performance-metrics'
-import { eq, gte, lte, desc } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 import { z } from 'zod'
 
 // 성능 데이터 검증 스키마
@@ -44,7 +44,7 @@ const performanceDataSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // 더 안전한 JSON 파싱
-    let body: any
+    let body: unknown
     try {
       const text = await request.text()
       if (!text || text.trim() === '') {
@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       }
       body = JSON.parse(text)
     } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError)
       return NextResponse.json(
         { success: false, error: 'Invalid JSON format' },
         { status: 400 }
