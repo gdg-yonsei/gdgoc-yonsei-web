@@ -1,0 +1,1 @@
+ALTER TABLE "performance_metrics" RENAME COLUMN "fid" TO "inp";

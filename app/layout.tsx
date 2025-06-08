@@ -3,6 +3,7 @@ import './globals.css'
 import { ReactNode } from 'react'
 import localFont from 'next/font/local'
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { PerformanceTracker } from './components/performance-tracker'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`bg-neutral-50 ${googleSans.className}`}>
       <body>{children}</body>
       <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
+      <PerformanceTracker />
     </html>
   )
 }

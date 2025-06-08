@@ -14,6 +14,7 @@ import * as usersSchema from './schema/users'
 import * as usersToPartsSchema from './schema/users-to-parts'
 import * as usersToProjectsSchema from './schema/users-to-projects'
 import * as verificationTokensSchema from './schema/verification-tokens'
+import * as performanceMetricsSchema from './schema/performance-metrics'
 
 const db = drizzle(process.env.AUTH_DRIZZLE_URL!, {
   schema: {
@@ -30,6 +31,7 @@ const db = drizzle(process.env.AUTH_DRIZZLE_URL!, {
     ...usersToPartsSchema,
     ...usersToProjectsSchema,
     ...verificationTokensSchema,
+    ...performanceMetricsSchema,
   },
 })
 
