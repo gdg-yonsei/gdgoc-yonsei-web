@@ -1,0 +1,1 @@
+ALTER TABLE "projects_to_tags" DROP CONSTRAINT "projects_to_tags_project_id_tag_id_pk";
