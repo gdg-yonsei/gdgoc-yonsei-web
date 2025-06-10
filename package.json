@@ -17,6 +17,7 @@
     "@auth/drizzle-adapter": "^1.9.1",
     "@aws-sdk/client-s3": "^3.826.0",
     "@aws-sdk/s3-request-presigner": "^3.826.0",
+    "@formatjs/intl-localematcher": "^0.6.1",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^15.3.3",
     "@simplewebauthn/browser": "9.0.1",
@@ -26,6 +27,7 @@
     "framer-motion": "^12.16.0",
     "jotai": "^2.12.5",
     "motion": "^12.16.0",
+    "negotiator": "^1.0.0",
     "next": "^15.3.3",
     "next-auth": "5.0.0-beta.28",
     "next-mdx-remote": "^5.0.0",
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "@types/negotiator": "^0.6.4",
     "@types/node": "^22.15.31",
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.6",

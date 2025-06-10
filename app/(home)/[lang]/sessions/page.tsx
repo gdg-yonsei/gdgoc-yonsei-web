@@ -1,7 +1,7 @@
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import { getGenerations } from '@/lib/fetcher/get-generations'
-import SessionsList from '@/app/(home)/sessions/sessions-list'
+import SessionsList from '@/app/(home)/[lang]/sessions/sessions-list'
 import { getSessions } from '@/lib/fetcher/get-sessions'
 import { Metadata } from 'next'
 

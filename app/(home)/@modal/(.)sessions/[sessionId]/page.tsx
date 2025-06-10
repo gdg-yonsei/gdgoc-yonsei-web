@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/fetcher/get-session'
-import SessionPageContent from '@/app/(home)/sessions/[sessionId]/session-page-content'
+import SessionPageContent from '@/app/(home)/[lang]/sessions/[sessionId]/session-page-content'
 import Modal from '@/app/(home)/@modal/(.)sessions/[sessionId]/modal'
 
 export default async function SessionPage({

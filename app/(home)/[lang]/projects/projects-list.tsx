@@ -26,7 +26,7 @@ export default function ProjectsList({
     >
       {projects.map((data, i) => (
         <Link
-          href={`/projects/${data?.id}`}
+          href={`/app/(home)/%5Blang%5D/projects/${data?.id}`}
           key={i}
           className={'bg-white rounded-2xl'}
         >
