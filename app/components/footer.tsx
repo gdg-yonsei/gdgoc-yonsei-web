@@ -26,7 +26,7 @@ export default function Footer() {
               className={'md:flex md:items-center gap-2'}
             >
               <Mail className={'size-9'} />
-              <p className={'not-md:hidden'}>gdsc.yonsei.univ@gamil.com</p>
+              <p className={'not-md:hidden'}>gdsc.yonsei.univ@gmail.com</p>
             </Link>
             <Link
               href={'https://www.linkedin.com/company/gdsc-yonsei/'}
