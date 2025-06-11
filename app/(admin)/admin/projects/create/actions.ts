@@ -11,16 +11,16 @@ import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 /**
- * Create Part Action
+ * Create Project Action
  * @param prev - previous state for form error
- * @param formData - part data
+ * @param formData - project data
  */
 export async function createProjectAction(
   prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
-  // 사용자가 part 를 수정할 권한이 있는지 확인
+  // 사용자가 프로젝트를 수정할 권한이 있는지 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'projects'))) {
     return forbidden()
   }
@@ -29,7 +29,7 @@ export async function createProjectAction(
     return { error: 'User not found' }
   }
 
-  // form data 에서 part data 추출
+  // form data 에서 프로젝트 데이터를 추출
   const {
     name,
     description,
