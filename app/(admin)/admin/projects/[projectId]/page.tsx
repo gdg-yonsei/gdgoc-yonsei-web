@@ -5,7 +5,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import SafeMDX from '@/app/components/safe-mdx'
 import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
@@ -124,7 +124,7 @@ export default async function ProjectPage({
         </div>
         <div className={'prose w-full member-data-col-span py-8'}>
           <div className={'member-data-title'}>Content</div>
-          <MDXRemote source={projectData.content} />
+          <SafeMDX source={projectData.content} />
         </div>
       </div>
     </AdminDefaultLayout>
