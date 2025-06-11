@@ -3,8 +3,8 @@
 import { auth } from '@/auth'
 import handlePermission from '@/lib/admin/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
-import getAccpetMemberFormData from '@/lib/admin/get-accpet-member-form-data'
-import { acceptMemberValidation } from '@/lib/validations/accpet-member'
+import getAcceptMemberFormData from '@/lib/admin/get-accept-member-form-data'
+import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { z } from 'zod'
 import db from '@/db'
 import { users } from '@/db/schema/users'
@@ -20,7 +20,7 @@ export default async function actions(
   if (!(await handlePermission(session?.user?.id, 'put', 'membersRole'))) {
     return forbidden()
   }
-  const { userId, role } = getAccpetMemberFormData(formData)
+  const { userId, role } = getAcceptMemberFormData(formData)
 
   try {
     acceptMemberValidation.parse({ userId, role })
