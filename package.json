@@ -11,7 +11,8 @@
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",
@@ -50,7 +51,8 @@
     "postcss": "^8.5.4",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.8",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^1.5.0"
   },
   "engines": {
     "node": ">=20.0.0 <=22"
