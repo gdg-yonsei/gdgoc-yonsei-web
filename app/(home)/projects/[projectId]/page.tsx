@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import SafeMDX from '@/app/components/safe-mdx'
 
 export default async function ProjectPage({
   params,
@@ -54,7 +54,7 @@ export default async function ProjectPage({
             </h2>
           </div>
           <div className={'prose p-4 w-full max-w-4xl mx-auto'}>
-            <MDXRemote source={projectData.content} />
+            <SafeMDX source={projectData.content} />
           </div>
         </div>
       </div>
