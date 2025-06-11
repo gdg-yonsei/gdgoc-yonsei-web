@@ -9,8 +9,8 @@ export default function SafeMDX({ source }: { source: string }) {
   return (
     <MDXRemote
       source={source}
+      // @ts-expect-error - rehypeSanitize is not typed correctly
       options={{ mdxOptions: { rehypePlugins: [rehypeSanitize] } }}
     />
   )
 }
-
