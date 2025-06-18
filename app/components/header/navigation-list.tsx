@@ -52,24 +52,24 @@ export default function NavigationList() {
           Members
         </Link>
       </MotionLink>
-      <MotionLink state={isMenuOpen}>
-        <Link
-          href={'/projects'}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={'w-full'}
-        >
-          Projects
-        </Link>
-      </MotionLink>
-      <MotionLink state={isMenuOpen}>
-        <Link
-          href={'/sessions'}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={'w-full'}
-        >
-          Sessions
-        </Link>
-      </MotionLink>
+      {/*<MotionLink state={isMenuOpen}>*/}
+      {/*  <Link*/}
+      {/*    href={'/projects'}*/}
+      {/*    onClick={() => setIsMenuOpen(!isMenuOpen)}*/}
+      {/*    className={'w-full'}*/}
+      {/*  >*/}
+      {/*    Projects*/}
+      {/*  </Link>*/}
+      {/*</MotionLink>*/}
+      {/*<MotionLink state={isMenuOpen}>*/}
+      {/*  <Link*/}
+      {/*    href={'/sessions'}*/}
+      {/*    onClick={() => setIsMenuOpen(!isMenuOpen)}*/}
+      {/*    className={'w-full'}*/}
+      {/*  >*/}
+      {/*    Sessions*/}
+      {/*  </Link>*/}
+      {/*</MotionLink>*/}
       {/*<MotionLink state={isMenuOpen}>*/}
       {/*  <Link*/}
       {/*    href={'/recruit'}*/}
