@@ -116,14 +116,14 @@ export default function HomePage() {
             <h2 className={'text-3xl font-bold mx-auto md:mx-0 md:text-4xl'}>
               Sessions
             </h2>
-            <div
-              className={
-                'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'
-              }
-            >
-              <Link href={'/sessions'}>See All</Link>
-              <ChevronRightIcon className={'size-5'} />
-            </div>
+            {/*<div*/}
+            {/*  className={*/}
+            {/*    'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'*/}
+            {/*  }*/}
+            {/*>*/}
+            {/*  <Link href={'/sessions'}>See All</Link>*/}
+            {/*  <ChevronRightIcon className={'size-5'} />*/}
+            {/*</div>*/}
             <BookSVG className={'mx-auto size-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>

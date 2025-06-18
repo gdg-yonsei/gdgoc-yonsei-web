@@ -10,8 +10,8 @@ export default function GDGoCYonseiLogo({ className }: { className?: string }) {
     <div className={`flex items-center gap-2 ${className}`}>
       <GDGLogo className={'w-16 md:w-24'} svgKey={'GDGoCYonseiLogo'} />
       <p className={'text-xs md:text-base'}>
-        Google Developer Groups <br />
-        on Campus Yonsei
+        Google Developer Group <br />
+        Yonsei University
       </p>
     </div>
   )
