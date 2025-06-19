@@ -324,14 +324,17 @@ export default function HomePage() {
             </div>
             <div className={'home-about-box border-green-600 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
-                FrontEnd
+                FrontEnd (Web&Mobile)
               </h3>
               <ShowMoreContent>
                 Aims to design user-friendly pages by leveraging various web
                 technologies and developing web applications that align with the
                 latest tech trends. The focus is on building efficient web
                 structures to optimize the user experience while adhering to
-                sustainable development practices.
+                sustainable development practices. <br />
+                Develop scalable mobile applications to ensure the product can
+                be used in various environments. The mobile team discusses and
+                explores sustainable application development.
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-yellow-500 md:border-0'}>
@@ -347,16 +350,6 @@ export default function HomePage() {
             </div>
             <div className={'home-about-box border-red-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
-                Mobile
-              </h3>
-              <ShowMoreContent>
-                Develop scalable mobile applications to ensure the product can
-                be used in various environments. The mobile team discusses and
-                explores sustainable application development.
-              </ShowMoreContent>
-            </div>
-            <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
                 ML/AI
               </h3>
               <ShowMoreContent>
@@ -366,22 +359,31 @@ export default function HomePage() {
                 discussions.
               </ShowMoreContent>
             </div>
-            <div className={'home-about-box border-green-600 md:border-0'}>
+            <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
-                Design
+                Cloud
               </h3>
               <ShowMoreContent>
-                Responsible for all design aspects in GDG&#39;s events and
-                projects. Members meet weekly to work on projects. We work on
-                projects following a Google design/brand guide, with a focus on
-                user experience, supported by user interviews. When no project
-                is active, they learn together and discuss about design
-                methodologies.
+                The newly established Cloud team this term focuses on learning
+                cloud technologies for service deployment and applying them to
+                real projects. They utilize various cloud technologies to
+                efficiently deploy and manage multiple services.
+              </ShowMoreContent>
+            </div>
+            <div className={'home-about-box border-green-600 md:border-0'}>
+              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+                UI/UX
+              </h3>
+              <ShowMoreContent>
+                The UI/UX team works on improving service structures to enhance
+                user experience. They collaborate with the Front-End team to
+                research various methods for improving user experience and apply
+                them to real projects.
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-red-500 md:border-0'}>
               <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
-                Devrel (Developer Relations)
+                DevRel (Developer Relations)
               </h3>
               <ShowMoreContent>
                 Responsible for planning and managing overall community
