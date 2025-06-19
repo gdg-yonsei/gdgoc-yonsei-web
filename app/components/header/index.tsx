@@ -1,7 +1,4 @@
-import MenuBarButton from '@/app/components/header/menu-bar-button'
-import NavigationList from '@/app/components/header/navigation-list'
 import GDGLogoLinkButton from '@/app/components/header/gdg-logo-link-button'
-import DesktopNavigationList from '@/app/components/header/desktop-navigation-list'
 
 export default function Header() {
   return (
