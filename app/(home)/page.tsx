@@ -1,6 +1,5 @@
 import {
   ChevronDownIcon,
-  ChevronRightIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import GDGLogo from '@/app/components/svg/gdg-logo'
@@ -8,7 +7,6 @@ import ShowMoreContent from '@/app/components/show-more-content'
 import BookSVG from '@/app/components/book-svg'
 import Trophy from '@/app/components/svg/trophy'
 import Friends from '@/app/components/svg/friends'
-import Link from 'next/link'
 import FriendsTree from '@/app/components/svg/friends-tree'
 
 export default function HomePage() {
@@ -301,14 +299,14 @@ export default function HomePage() {
             <h2 className={'text-3xl font-bold mx-auto md:text-4xl md:mx-0'}>
               Parts
             </h2>
-            <div
-              className={
-                'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'
-              }
-            >
-              <Link href={'/members'}>See All</Link>
-              <ChevronRightIcon className={'size-5'} />
-            </div>
+            {/*<div*/}
+            {/*  className={*/}
+            {/*    'flex items-center gap-1 text-blue-500 not-md:hidden pb-[1px] hover:underline'*/}
+            {/*  }*/}
+            {/*>*/}
+            {/*  <Link href={'/members'}>See All</Link>*/}
+            {/*  <ChevronRightIcon className={'size-5'} />*/}
+            {/*</div>*/}
             <Friends className={'mx-auto w-60 md:hidden'} />
           </div>
           <div className={'w-full flex flex-col gap-10'}>
