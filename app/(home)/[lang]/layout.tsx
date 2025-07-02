@@ -37,7 +37,7 @@ export default async function RootLayout({
   return (
     <html
       lang={(await params).lang}
-      className={`bg-neutral-50 ${googleSans.className}`}
+      className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
     >
       <body>
         <Header />

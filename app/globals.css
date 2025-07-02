@@ -34,6 +34,24 @@
   }
 }
 
+@theme {
+  --color-logo-blue: #4285F4;
+  --color-gdg-blue-100: #C3ECF6;
+    --color-gdg-blue-200: #57CAFF;
+    --color-gdg-blue-300: #4285F4;
+  --color-gdg-green-100: #CCF6C5;
+    --color-gdg-green-200: #5CDB6D;
+    --color-gdg-green-300: #34A853;
+    --color-gdg-yellow-100: #FFE7A5;
+    --color-gdg-yellow-200: #FFD427;
+    --color-gdg-yellow-300: #F9AB00;
+    --color-gdg-red-100: #F8D8D8;
+    --color-gdg-red-200: #FF7DAF;
+    --color-gdg-red-300: #EA4335;
+  --color-gdg-white: #F0F0F0;
+    --color-gdg-black: #1E1E1E;
+}
+
 .h-home-screen {
   height: calc(100vh - 4.2rem);
 }
