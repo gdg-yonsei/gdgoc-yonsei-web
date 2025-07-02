@@ -35,7 +35,7 @@ export default function ProjectsList({
             width={200}
             height={200}
             alt={data?.name}
-            className={'w-full rounded-t-2xl aspect-square'}
+            className={'w-full rounded-t-2xl aspect-square object-cover'}
           />
           <div className={'p-2'}>
             <h2 className={'text-xl font-semibold'}>{data?.name}</h2>
