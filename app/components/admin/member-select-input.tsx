@@ -42,12 +42,12 @@ export default function MembersSelectInput({
         name={'participants'}
       />
       <p className={'text-sm font-semibold text-neutral-700'}>Participants</p>
-      <div className={'w-full flex flex-col gap-2'}>
+      <div className={'flex w-full flex-col gap-2'}>
         {membersList.map((generation, i) => (
           <div key={i}>
             <div
               className={
-                'flex items-center px-2 gap-2 w-full border-b-2 border-neutral-400'
+                'flex w-full items-center gap-2 border-b-2 border-neutral-400 px-2'
               }
             >
               <div className={'text-sm text-neutral-700'}>
@@ -62,14 +62,14 @@ export default function MembersSelectInput({
               </button>
             </div>
             <div
-              className={`grid grid-cols-4 gap-2 w-full transition-all py-2 ${generations.includes(generation.id) ? '' : 'hidden'}`}
+              className={`grid w-full grid-cols-4 gap-2 py-2 transition-all ${generations.includes(generation.id) ? '' : 'hidden'}`}
             >
               {generation.parts.map((part) =>
                 part.usersToParts.map((user) => (
                   <button
                     type={'button'}
                     key={`${part.id}-${user.user.id}`}
-                    className={`p-1 px-2 rounded-lg flex flex-col items-start ${participants.includes(user.user.id) ? 'bg-neutral-900 text-white' : 'bg-white'}`}
+                    className={`flex flex-col items-start rounded-lg p-1 px-2 ${participants.includes(user.user.id) ? 'bg-neutral-900 text-white' : 'bg-white'}`}
                     onClick={() => handleSelectMember(user.user.id)}
                   >
                     <div className={'text-sm'}>{part.name}</div>

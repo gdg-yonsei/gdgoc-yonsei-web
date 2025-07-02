@@ -37,7 +37,7 @@ export default async function DataEditLink({
         <Link
           href={href}
           className={
-            'p-1 rounded-lg px-3 hover:px-4 bg-neutral-900 text-white hover:bg-neutral-800 transition-all'
+            'rounded-lg bg-neutral-900 p-1 px-3 text-white transition-all hover:bg-neutral-800 hover:px-4'
           }
         >
           Edit

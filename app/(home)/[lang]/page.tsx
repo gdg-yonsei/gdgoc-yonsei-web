@@ -11,23 +11,23 @@ import FriendsTree from '@/app/components/svg/friends-tree'
 
 export default function HomePage() {
   return (
-    <div className={'w-full flex flex-col'}>
+    <div className={'flex w-full flex-col'}>
       {/*Welcome page*/}
-      <div className={'w-full flex items-center justify-center h-screen pt-16'}>
+      <div className={'flex h-screen w-full items-center justify-center pt-16'}>
         <div
           className={
-            'flex flex-col items-center justify-center w-full max-w-xl'
+            'flex w-full max-w-xl flex-col items-center justify-center'
           }
         >
           <GDGLogo className={'h-52 w-72'} svgKey={'homePage'} />
 
-          <h1 className={'text-2xl font-semibold text-center md:hidden'}>
+          <h1 className={'text-center text-2xl font-semibold md:hidden'}>
             Google Developer Group
             <br /> on Campus Yonsei
           </h1>
           <div
             className={
-              'w-full p-2 px-3 rounded-full border-2 border-neutral-400 flex gap-2 items-center not-md:hidden'
+              'flex w-full items-center gap-2 rounded-full border-2 border-neutral-400 p-2 px-3 not-md:hidden'
             }
           >
             <MagnifyingGlassIcon className={'size-8 text-neutral-400'} />
@@ -46,23 +46,23 @@ export default function HomePage() {
       {/*About GDG Page*/}
       <div
         className={
-          'w-full p-4 flex flex-col items-center justify-center min-h-screen pt-16 md:flex-row md:gap-12 md:py-24'
+          'flex min-h-screen w-full flex-col items-center justify-center p-4 pt-16 md:flex-row md:gap-12 md:py-24'
         }
       >
-        <GDGLogo className={' w-96 not-md:hidden'} svgKey={'homePage'} />
+        <GDGLogo className={'w-96 not-md:hidden'} svgKey={'homePage'} />
         <div
           className={
-            'w-full max-w-xl flex flex-col items-center md:items-start'
+            'flex w-full max-w-xl flex-col items-center md:items-start'
           }
         >
           <h2
             className={
-              'p-8 text-3xl font-bold mx-auto md:mx-0 md:p-0 md:pb-8 md:text-4xl'
+              'mx-auto p-8 text-3xl font-bold md:mx-0 md:p-0 md:pb-8 md:text-4xl'
             }
           >
             About GDG
           </h2>
-          <div className={'w-full flex flex-col gap-10 md:gap-2'}>
+          <div className={'flex w-full flex-col gap-10 md:gap-2'}>
             <div className={'home-about-box border-blue-500 md:border-0'}>
               <h3>
                 <strong>GDG (Google Developer Groups)</strong> on Campus is a
@@ -98,20 +98,20 @@ export default function HomePage() {
       {/*Session Page*/}
       <div
         className={
-          'w-full min-h-screen flex flex-col p-4 md:flex-row justify-center items-center md:gap-8 md:py-24'
+          'flex min-h-screen w-full flex-col items-center justify-center p-4 md:flex-row md:gap-8 md:py-24'
         }
       >
         <div
           className={
-            'flex flex-col items-center justify-center w-full max-w-xl md:items-start'
+            'flex w-full max-w-xl flex-col items-center justify-center md:items-start'
           }
         >
           <div
             className={
-              'flex flex-col p-8 md:px-0 md:flex-row md:items-end md:gap-2'
+              'flex flex-col p-8 md:flex-row md:items-end md:gap-2 md:px-0'
             }
           >
-            <h2 className={'text-3xl font-bold mx-auto md:mx-0 md:text-4xl'}>
+            <h2 className={'mx-auto text-3xl font-bold md:mx-0 md:text-4xl'}>
               Sessions
             </h2>
             {/*<div*/}
@@ -124,9 +124,9 @@ export default function HomePage() {
             {/*</div>*/}
             <BookSVG className={'mx-auto size-60 md:hidden'} />
           </div>
-          <div className={'w-full flex flex-col gap-10'}>
+          <div className={'flex w-full flex-col gap-10'}>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>T19</h3>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>T19</h3>
               <ShowMoreContent>
                 T19, short for &#34;Tech at 19:00,&#34; is an internal
                 tech-sharing conference held every Tuesday at 7 PM, with
@@ -135,7 +135,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-green-600 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 GDG fopen()
               </h3>
               <ShowMoreContent>
@@ -150,7 +150,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Part Study Jam
               </h3>
               <ShowMoreContent>
@@ -163,30 +163,30 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <BookSVG className={'w-96 h-80 not-md:hidden'} />
+        <BookSVG className={'h-80 w-96 not-md:hidden'} />
       </div>
 
       {/*Activities Page*/}
       <div
         className={
-          'w-full min-h-screen flex flex-col p-4 md:flex-row items-center justify-center md:gap-8 md:py-24'
+          'flex min-h-screen w-full flex-col items-center justify-center p-4 md:flex-row md:gap-8 md:py-24'
         }
       >
         <Trophy className={'h-96 w-96 not-md:hidden'} />
         <div
           className={
-            'flex flex-col w-full max-w-xl items-center justify-center md:items-start'
+            'flex w-full max-w-xl flex-col items-center justify-center md:items-start'
           }
         >
-          <div className={'flex flex-col p-8 gap-4 md:px-0 md:items-start'}>
-            <h2 className={'text-3xl font-bold mx-auto md:text-4xl md:mx-0'}>
+          <div className={'flex flex-col gap-4 p-8 md:items-start md:px-0'}>
+            <h2 className={'mx-auto text-3xl font-bold md:mx-0 md:text-4xl'}>
               Activities
             </h2>
             <Trophy className={'mx-auto size-60 md:hidden'} />
           </div>
-          <div className={'w-full flex flex-col gap-10'}>
+          <div className={'flex w-full flex-col gap-10'}>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Solution Challenge
               </h3>
               <ShowMoreContent>
@@ -204,7 +204,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-red-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 GDG x Elice Programming Contest
               </h3>
               <ShowMoreContent>
@@ -226,7 +226,7 @@ export default function HomePage() {
               {/*</Link>*/}
             </div>
             <div className={'home-about-box border-yellow-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Google I/O Extended Seoul 2023
               </h3>
               <ShowMoreContent>
@@ -249,7 +249,7 @@ export default function HomePage() {
               {/*</Link>*/}
             </div>
             <div className={'home-about-box border-green-600 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 GDG Cloud Devfest
               </h3>
               <ShowMoreContent>
@@ -260,7 +260,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Namu-thon
               </h3>
               <ShowMoreContent>
@@ -283,20 +283,20 @@ export default function HomePage() {
       {/*Part Page*/}
       <div
         className={
-          'w-full min-h-screen flex flex-col p-4 md:flex-row items-center justify-center md:py-24'
+          'flex min-h-screen w-full flex-col items-center justify-center p-4 md:flex-row md:py-24'
         }
       >
         <div
           className={
-            'flex flex-col w-full max-w-xl items-center justify-center md:items-start'
+            'flex w-full max-w-xl flex-col items-center justify-center md:items-start'
           }
         >
           <div
             className={
-              'flex flex-col p-8 gap-4 md:px-0 md:flex-row md:items-end'
+              'flex flex-col gap-4 p-8 md:flex-row md:items-end md:px-0'
             }
           >
-            <h2 className={'text-3xl font-bold mx-auto md:text-4xl md:mx-0'}>
+            <h2 className={'mx-auto text-3xl font-bold md:mx-0 md:text-4xl'}>
               Parts
             </h2>
             {/*<div*/}
@@ -309,9 +309,9 @@ export default function HomePage() {
             {/*</div>*/}
             <Friends className={'mx-auto w-60 md:hidden'} />
           </div>
-          <div className={'w-full flex flex-col gap-10'}>
+          <div className={'flex w-full flex-col gap-10'}>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Organizer
               </h3>
               <ShowMoreContent>
@@ -321,7 +321,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-green-600 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 FrontEnd (Web&Mobile)
               </h3>
               <ShowMoreContent>
@@ -336,7 +336,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-yellow-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 BackEnd
               </h3>
               <ShowMoreContent>
@@ -347,7 +347,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-red-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 ML/AI
               </h3>
               <ShowMoreContent>
@@ -358,7 +358,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-blue-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 Cloud
               </h3>
               <ShowMoreContent>
@@ -369,7 +369,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-green-600 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 UI/UX
               </h3>
               <ShowMoreContent>
@@ -380,7 +380,7 @@ export default function HomePage() {
               </ShowMoreContent>
             </div>
             <div className={'home-about-box border-red-500 md:border-0'}>
-              <h3 className={'text-2xl font-semibold py-3 md:text-3xl'}>
+              <h3 className={'py-3 text-2xl font-semibold md:text-3xl'}>
                 DevRel (Developer Relations)
               </h3>
               <ShowMoreContent>

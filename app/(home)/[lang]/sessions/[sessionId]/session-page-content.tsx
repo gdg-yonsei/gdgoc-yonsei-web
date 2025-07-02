@@ -16,7 +16,7 @@ export default function SessionPageContent({
     <div className={'w-full pb-4'}>
       <PageTitle>{sessionData.name}</PageTitle>
       <ImagesSliders images={[sessionData.mainImage, ...sessionData.images]} />
-      <div className={'w-full max-w-4xl mx-auto py-8'}>
+      <div className={'mx-auto w-full max-w-4xl py-8'}>
         <p className={'px-4 text-xl font-semibold'}>Contents</p>
         <p className={'px-4'}>{sessionData.description}</p>
       </div>

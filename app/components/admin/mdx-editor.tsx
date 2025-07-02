@@ -30,11 +30,11 @@ export default function MDXEditor({
   return (
     <div
       className={
-        'col-span-1 sm:col-span-3 lg:col-span-3 xl:col-span-4 w-full flex flex-col gap-2'
+        'col-span-1 flex w-full flex-col gap-2 sm:col-span-3 lg:col-span-3 xl:col-span-4'
       }
     >
       <div className={'member-data-title'}>{title}</div>
-      <div className={'flex flex-col lg:flex-row items-start gap-2 '}>
+      <div className={'flex flex-col items-start gap-2 lg:flex-row'}>
         <div className={'w-full'}>
           <div>Editor</div>
           <textarea
@@ -46,7 +46,7 @@ export default function MDXEditor({
             }}
             defaultValue={defaultValue}
             className={
-              'min-h-96 member-data-input resize-none overflow-hidden h-auto'
+              'member-data-input h-auto min-h-96 resize-none overflow-hidden'
             }
           />
         </div>
@@ -54,7 +54,7 @@ export default function MDXEditor({
           <div>Preview</div>
           <div
             className={
-              'border-2 min-h-96 w-full rounded-lg border-sky-900 p-4 prose'
+              'prose min-h-96 w-full rounded-lg border-2 border-sky-900 p-4'
             }
           >
             <Markdown>{content}</Markdown>

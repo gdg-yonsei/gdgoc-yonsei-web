@@ -11,13 +11,13 @@ export default async function GenerationsTable() {
   const generationsData = await getGenerations()
 
   return (
-    <div className={'w-full member-data-grid gap-2'}>
+    <div className={'member-data-grid w-full gap-2'}>
       {generationsData.map((generation) => (
         <Link
           href={`/admin/generations/${generation.id}`}
           key={generation.id}
           className={
-            'p-4 rounded-xl bg-white flex flex-col items-center justify-center gap-2'
+            'flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
           }
         >
           <div className={'text-xl font-bold'}>

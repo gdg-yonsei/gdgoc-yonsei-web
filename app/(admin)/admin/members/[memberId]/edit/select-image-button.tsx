@@ -18,7 +18,7 @@ export default function SelectImageButton({
       disabled={disabled}
       onClick={onClick}
       className={
-        'p-2 px-4 rounded-xl border-2 mx-auto border-neutral-900 disabled:bg-neutral-300 flex items-center gap-2 transition-all'
+        'mx-auto flex items-center gap-2 rounded-xl border-2 border-neutral-900 p-2 px-4 transition-all disabled:bg-neutral-300'
       }
       type={'button'}
     >

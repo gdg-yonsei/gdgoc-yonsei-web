@@ -13,7 +13,7 @@ export default function BackToPageButton() {
       type={'button'}
       onClick={() => router.back()}
       className={
-        'p-2 rounded-xl bg-neutral-900 text-white w-full text-center hover:bg-neutral-700 transition-all'
+        'w-full rounded-xl bg-neutral-900 p-2 text-center text-white transition-all hover:bg-neutral-700'
       }
     >
       Go back to the previous page

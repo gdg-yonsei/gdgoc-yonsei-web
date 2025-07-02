@@ -25,10 +25,10 @@ export default function DataInput({
 }) {
   return (
     <div className={'flex flex-col'}>
-      <p className={'text-sm font-semibold text-neutral-700 px-1'}>{title}</p>
+      <p className={'px-1 text-sm font-semibold text-neutral-700'}>{title}</p>
       <input
         type={type ? type : 'text'}
-        className={`member-data-input ${type === 'checkbox' && 'mr-auto size-6 mt-1 ml-1'}`}
+        className={`member-data-input ${type === 'checkbox' && 'mt-1 mr-auto ml-1 size-6'}`}
         defaultValue={defaultValue ? defaultValue : ''}
         name={name}
         placeholder={placeholder}

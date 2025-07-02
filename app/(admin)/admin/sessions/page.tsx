@@ -28,7 +28,7 @@ export default async function SessionsPage() {
           <Link
             href={'/admin/sessions/create'}
             className={
-              'flex items-center gap-1 p-2 px-3 rounded-xl bg-neutral-900 text-white text-sm hover:bg-neutral-800 transition-all'
+              'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
             }
           >
             <PlusCircleIcon className={'size-5'} />
@@ -39,7 +39,7 @@ export default async function SessionsPage() {
       <Suspense
         fallback={
           <div
-            className={'w-full h-28 rounded-xl bg-neutral-200 animate-pulse'}
+            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
           />
         }
       >

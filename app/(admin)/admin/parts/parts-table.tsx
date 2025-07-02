@@ -10,11 +10,11 @@ export default async function PartsTable() {
   const partsData = await getParts()
 
   return (
-    <div className={'w-full flex flex-col gap-2'}>
+    <div className={'flex w-full flex-col gap-2'}>
       {partsData.map((generation) => (
         <div key={generation.id}>
           <div
-            className={'border-b-2 text-sm text-neutral-600 border-neutral-300'}
+            className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
           >
             Generation: {generation.name}
           </div>
@@ -23,9 +23,9 @@ export default async function PartsTable() {
               <Link
                 href={`/admin/parts/${part.id}`}
                 key={part.id}
-                className={'p-4 rounded-xl bg-white flex flex-col'}
+                className={'flex flex-col rounded-xl bg-white p-4'}
               >
-                <div className={'text-xl font-bold pb-1'}>{part.name}</div>
+                <div className={'pb-1 text-xl font-bold'}>{part.name}</div>
                 <div className={'text-sm'}>{part.description}</div>
                 <div className={'text-sm'}>
                   Member: {part.usersToParts.length}

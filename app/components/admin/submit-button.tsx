@@ -26,13 +26,13 @@ export default function SubmitButton({
       className={
         className
           ? className
-          : 'bg-neutral-950 text-white p-2 px-4 disabled:bg-neutral-600 rounded-xl flex items-center justify-center gap-2 hover:not-disabled:bg-neutral-800 transition-all text-lg col-span-1 sm:col-span-2'
+          : 'col-span-1 flex items-center justify-center gap-2 rounded-xl bg-neutral-950 p-2 px-4 text-lg text-white transition-all hover:not-disabled:bg-neutral-800 disabled:bg-neutral-600 sm:col-span-2'
       }
       disabled={pending || isLoading}
     >
       {pending ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-t-white border-neutral-700'}
+          className={'size-6 border-2 border-neutral-700 border-t-white'}
         />
       ) : (
         ''

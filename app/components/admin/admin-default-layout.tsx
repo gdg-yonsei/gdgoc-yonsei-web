@@ -18,7 +18,7 @@ export default function AdminDefaultLayout({
 }) {
   return (
     <div
-      className={`w-full min-h-screen pt-20 lg:pt-4 lg:pl-64 ${className} p-4`}
+      className={`min-h-screen w-full pt-20 lg:pt-4 lg:pl-64 ${className} p-4`}
     >
       {children}
     </div>

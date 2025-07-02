@@ -43,7 +43,7 @@ export default async function GenerationPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Generations</p>
       </AdminNavigationButton>
-      <div className={'flex gap-2 items-center'}>
+      <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>Generation: {generationData.name}</div>
         <DataEditLink
           session={session}
@@ -59,22 +59,22 @@ export default async function GenerationPage({
       </div>
       <div
         className={
-          'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-4 gap-2'
+          'mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
         }
       >
         <div className={'member-data-box col-span-1 sm:col-span-2'}>
           <div className={'member-data-title'}>Activity Period</div>
           <GenerationActivityPeriod
-            className={'member-data-content flex gap-2 items-center'}
+            className={'member-data-content flex items-center gap-2'}
             startDate={generationData.startDate}
             endDate={generationData.endDate}
           />
         </div>
-        <div className={'py-4 col-span-4 flex flex-col gap-2'}>
+        <div className={'col-span-4 flex flex-col gap-2 py-4'}>
           <div className={'member-data-title'}>Parts</div>
           <div
             className={
-              'w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'
+              'grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
             }
           >
             {generationData.parts.map((part) => (

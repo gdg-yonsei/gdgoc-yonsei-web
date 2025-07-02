@@ -8,21 +8,21 @@ export default function QRCodeGenerator() {
   return (
     <div
       className={
-        'w-full p-4 rounded-xl bg-white flex flex-col items-center justify-center gap-8'
+        'flex w-full flex-col items-center justify-center gap-8 rounded-xl bg-white p-4'
       }
     >
-      <h2 className={'text-xl font-semibold mr-auto'}>QR Code Generator</h2>
+      <h2 className={'mr-auto text-xl font-semibold'}>QR Code Generator</h2>
       {value ? (
         <QRCode value={value} className={'size-64'} />
       ) : (
-        <div className={'size-64 bg-neutral-200 rounded-lg'} />
+        <div className={'size-64 rounded-lg bg-neutral-200'} />
       )}
       <div className={'flex flex-col items-center justify-center gap-1'}>
         <input
           type={'text'}
           placeholder={'Please enter the value.'}
           className={
-            'p-2 px-4 rounded-full focus:outline-none focus:border-2 border-sky-500 bg-neutral-100 w-full'
+            'w-full rounded-full border-sky-500 bg-neutral-100 p-2 px-4 focus:border-2 focus:outline-none'
           }
           onChange={(e) => {
             if (e.target.value.length < 23648) {

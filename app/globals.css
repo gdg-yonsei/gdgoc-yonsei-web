@@ -3,16 +3,16 @@
 
 @layer components {
   .button-black {
-    @apply flex gap-2 items-center w-full  justify-center bg-neutral-900 text-white p-2 px-4 rounded-full transition-all disabled:bg-neutral-800 border-2 border-neutral-900;
+    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-white transition-all disabled:bg-neutral-800;
   }
   .button-white {
-    @apply flex gap-2 items-center w-full  justify-center bg-neutral-50 text-black p-2 px-4 rounded-full transition-all disabled:bg-neutral-200 border-2 border-neutral-900;
+    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 text-black transition-all disabled:bg-neutral-200;
   }
   .admin-title {
     @apply text-3xl font-bold;
   }
   .member-data-box {
-    @apply bg-white p-4 rounded-lg;
+    @apply rounded-lg bg-white p-4;
   }
   .member-data-title {
     @apply text-sm font-semibold text-neutral-600;
@@ -21,7 +21,7 @@
     @apply text-lg font-bold break-all;
   }
   .member-data-input {
-    @apply w-full p-2 rounded-lg px-3 bg-white focus:outline-none focus:border-2 border-sky-500 text-lg font-semibold;
+    @apply w-full rounded-lg border-sky-500 bg-white p-2 px-3 text-lg font-semibold focus:border-2 focus:outline-none;
   }
   .member-data-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
@@ -30,7 +30,7 @@
     @apply col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4;
   }
   .home-about-box {
-    @apply border-3 rounded-2xl p-4 text-lg flex flex-col md:p-0;
+    @apply flex flex-col rounded-2xl border-3 p-4 text-lg md:p-0;
   }
 }
 

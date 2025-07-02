@@ -18,7 +18,7 @@ function RoleButton({
 }) {
   return (
     <button
-      className={`p-1 px-2 rounded-lg ${role === value ? 'bg-neutral-900 text-white' : 'bg-neutral-100'} transition-colors`}
+      className={`rounded-lg p-1 px-2 ${role === value ? 'bg-neutral-900 text-white' : 'bg-neutral-100'} transition-colors`}
       type={'button'}
       onClick={() => setRole(value)}
     >
@@ -59,7 +59,7 @@ export default function AcceptForm({ userId }: { userId: string }) {
       />
       <SubmitButton
         className={
-          'p-1 px-3 flex items-center gap-2 rounded-lg font-semibold border-2 hover:bg-neutral-100 transition-colors'
+          'flex items-center gap-2 rounded-lg border-2 p-1 px-3 font-semibold transition-colors hover:bg-neutral-100'
         }
       />
     </DataForm>

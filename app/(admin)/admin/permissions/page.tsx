@@ -12,13 +12,13 @@ export default function PermissionsPage() {
       <div className={'admin-title'}>
         Information Accessible by Permission Level
       </div>
-      <div className={'w-full pt-4 flex flex-col gap-4'}>
+      <div className={'flex w-full flex-col gap-4 pt-4'}>
         {/*GET*/}
-        <div className={'bg-white p-2 rounded-lg w-full overflow-x-scroll'}>
+        <div className={'w-full overflow-x-scroll rounded-lg bg-white p-2'}>
           <h2 className={'text-xl font-semibold'}>GET</h2>
-          <table className={'text-center w-full'}>
+          <table className={'w-full text-center'}>
             <thead className={'bg-neutral-100'}>
-              <tr className={'*:p-1 *:border-2 *:border-neutral-200'}>
+              <tr className={'*:border-2 *:border-neutral-200 *:p-1'}>
                 <th>Permission</th>
                 <th>Admin Page</th>
                 <th>Profile Page</th>
@@ -84,11 +84,11 @@ export default function PermissionsPage() {
           </table>
         </div>
         {/*POST*/}
-        <div className={'bg-white p-2 rounded-lg w-full overflow-x-scroll'}>
+        <div className={'w-full overflow-x-scroll rounded-lg bg-white p-2'}>
           <h2 className={'text-xl font-semibold'}>POST</h2>
-          <table className={'text-center w-full'}>
+          <table className={'w-full text-center'}>
             <thead className={'bg-neutral-100'}>
-              <tr className={'*:p-1 *:border-2 *:border-neutral-200'}>
+              <tr className={'*:border-2 *:border-neutral-200 *:p-1'}>
                 <th>Permission</th>
                 <th>Members</th>
                 <th>Members Role</th>
@@ -148,11 +148,11 @@ export default function PermissionsPage() {
           </table>
         </div>
         {/*PUT*/}
-        <div className={'bg-white p-2 rounded-lg w-full overflow-x-scroll'}>
+        <div className={'w-full overflow-x-scroll rounded-lg bg-white p-2'}>
           <h2 className={'text-xl font-semibold'}>PUT</h2>
-          <table className={'text-center w-full'}>
+          <table className={'w-full text-center'}>
             <thead className={'bg-neutral-100'}>
-              <tr className={'*:p-1 *:border-2 *:border-neutral-200'}>
+              <tr className={'*:border-2 *:border-neutral-200 *:p-1'}>
                 <th>Permission</th>
                 <th>Members</th>
                 <th>Members Role</th>
@@ -212,11 +212,11 @@ export default function PermissionsPage() {
           </table>
         </div>
         {/*DELETE*/}
-        <div className={'bg-white p-2 rounded-lg w-full overflow-x-scroll'}>
+        <div className={'w-full overflow-x-scroll rounded-lg bg-white p-2'}>
           <h2 className={'text-xl font-semibold'}>DELETE</h2>
-          <table className={'text-center w-full'}>
+          <table className={'w-full text-center'}>
             <thead className={'bg-neutral-100'}>
-              <tr className={'*:p-1 *:border-2 *:border-neutral-200'}>
+              <tr className={'*:border-2 *:border-neutral-200 *:p-1'}>
                 <th>Permission</th>
                 <th>Members</th>
                 <th>Members Role</th>

@@ -36,7 +36,7 @@ export default function DataSelectInput({
   return (
     <div
       className={
-        'flex gap-2 flex-col col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4'
+        'col-span-1 flex flex-col gap-2 sm:col-span-2 lg:col-span-3 xl:col-span-4'
       }
     >
       <div className={'member-data-title'}>{title}</div>
@@ -46,7 +46,7 @@ export default function DataSelectInput({
           <button
             type={'button'}
             key={i}
-            className={`p-2 rounded-xl px-4 ${value === d.value ? 'bg-neutral-900 text-white' : 'bg-white '}`}
+            className={`rounded-xl p-2 px-4 ${value === d.value ? 'bg-neutral-900 text-white' : 'bg-white'}`}
             onClick={() => {
               setValue(d.value)
             }}

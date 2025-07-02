@@ -105,8 +105,8 @@ export function PerformanceDashboard({
   lastCollected,
 }: PerformanceDashboardProps) {
   return (
-    <div className="fixed bottom-4 right-4 bg-black bg-opacity-90 text-white p-4 rounded-lg text-xs z-50 min-w-64">
-      <h3 className="font-bold mb-3 text-green-400">🚀 Performance Monitor</h3>
+    <div className="bg-opacity-90 fixed right-4 bottom-4 z-50 min-w-64 rounded-lg bg-black p-4 text-xs text-white">
+      <h3 className="mb-3 font-bold text-green-400">🚀 Performance Monitor</h3>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span>Status:</span>
@@ -124,15 +124,15 @@ export function PerformanceDashboard({
         <button
           onClick={onManualCollect}
           disabled={isCollecting}
-          className={`w-full py-2 px-3 rounded text-xs font-medium transition-colors ${
+          className={`w-full rounded px-3 py-2 text-xs font-medium transition-colors ${
             isCollecting
-              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
+              ? 'cursor-not-allowed bg-gray-600 text-gray-400'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
           }`}
         >
           {isCollecting ? '🔄 수집 중...' : '📊 지금 측정하기'}
         </button>
-        <div className="text-xs text-gray-400 mt-2">
+        <div className="mt-2 text-xs text-gray-400">
           Console: window.__collectPerformanceMetrics()
         </div>
       </div>

@@ -20,14 +20,14 @@ export default function GenerationButtonGroup({
   return (
     <div
       className={
-        'flex items-center gap-3 text-xl overflow-x-scroll h-24 whitespace-nowrap px-2'
+        'flex h-24 items-center gap-3 overflow-x-scroll px-2 text-xl whitespace-nowrap'
       }
     >
       {generations.map((data, i) => (
         <button
           type={'button'}
           key={i}
-          className={`p-2 rounded-full px-4 ${generation === data ? 'border-green-700 border-4' : 'border-2'} transition-all text-sm`}
+          className={`rounded-full p-2 px-4 ${generation === data ? 'border-4 border-green-700' : 'border-2'} text-sm transition-all`}
           onClick={() => setGeneration(data)}
         >
           {data}

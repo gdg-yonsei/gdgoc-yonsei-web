@@ -32,7 +32,7 @@ export default async function DataDeleteButton({
           />
           <SubmitButton
             className={
-              'p-1 px-3 text-white rounded-lg flex items-center gap-2 bg-red-600 hover:bg-red-500 transition-all hover:px-4'
+              'flex items-center gap-2 rounded-lg bg-red-600 p-1 px-3 text-white transition-all hover:bg-red-500 hover:px-4'
             }
             questionText={'Are you sure you want to delete this data?'}
           >

@@ -6,24 +6,24 @@ import Mail from '@/app/components/svg/mail'
 
 export default function Footer() {
   return (
-    <div className={'w-full p-4 bg-neutral-300 flex'}>
-      <div className={'w-full max-w-4xl mx-auto md:flex'}>
-        <div className={'flex flex-col gap-6 w-full'}>
-          <div className={'text-white text-lg font-semibold md:text-3xl'}>
+    <div className={'flex w-full bg-neutral-300 p-4'}>
+      <div className={'mx-auto w-full max-w-4xl md:flex'}>
+        <div className={'flex w-full flex-col gap-6'}>
+          <div className={'text-lg font-semibold text-white md:text-3xl'}>
             Contact Us
           </div>
           <GDGoCYonseiLogo className={'not-md:hidden'} />
         </div>
-        <div className={'md:flex md:flex-col md:items-start md:w-full'}>
+        <div className={'md:flex md:w-full md:flex-col md:items-start'}>
           <div
             className={
-              'flex justify-around py-4 items-center md:flex-col md:gap-2 md:items-start'
+              'flex items-center justify-around py-4 md:flex-col md:items-start md:gap-2'
             }
           >
             <Link
               href={'mailto:gdsc.yonsei.univ@gmail.com'}
               target={'_blank'}
-              className={'md:flex md:items-center gap-2'}
+              className={'gap-2 md:flex md:items-center'}
             >
               <Mail className={'size-9'} />
               <p className={'not-md:hidden'}>gdsc.yonsei.univ@gmail.com</p>
@@ -31,7 +31,7 @@ export default function Footer() {
             <Link
               href={'https://www.linkedin.com/company/gdsc-yonsei/'}
               target={'_blank'}
-              className={'md:flex md:items-center gap-2'}
+              className={'gap-2 md:flex md:items-center'}
             >
               <LinkedIn className={'size-9'} />
               <p className={'not-md:hidden'}>go to LinkedIn</p>
@@ -39,7 +39,7 @@ export default function Footer() {
             <Link
               href={'https://www.instagram.com/gdg.yonseiuniv/'}
               target={'_blank'}
-              className={'md:flex md:items-center gap-2'}
+              className={'gap-2 md:flex md:items-center'}
             >
               <Instagram className={'size-9'} />
               <p className={'not-md:hidden'}>@gdg.yonseiuniv</p>
@@ -47,7 +47,7 @@ export default function Footer() {
           </div>
           <p
             className={
-              'text-sm text-neutral-700 mx-auto text-center md:text-start md:w-full'
+              'mx-auto text-center text-sm text-neutral-700 md:w-full md:text-start'
             }
           >
             Copyright ⓒ 2025. GDG on Campus Yonsei <br />

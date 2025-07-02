@@ -176,10 +176,10 @@ export default function PerformancePage() {
   if (loading) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">웹사이트 성능 분석</h1>
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <div className="mx-auto max-w-7xl">
+          <h1 className="mb-8 text-3xl font-bold">웹사이트 성능 분석</h1>
+          <div className="py-12 text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
             <p className="mt-4 text-gray-600">성능 데이터를 불러오는 중...</p>
           </div>
         </div>
@@ -190,13 +190,13 @@ export default function PerformancePage() {
   if (error) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">웹사이트 성능 분석</h1>
-          <div className="text-center py-12">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="mb-8 text-3xl font-bold">웹사이트 성능 분석</h1>
+          <div className="py-12 text-center">
             <p className="text-red-600">오류: {error}</p>
             <button
               onClick={fetchPerformanceData}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
               다시 시도
             </button>
@@ -208,15 +208,15 @@ export default function PerformancePage() {
 
   return (
     <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8 flex-col md:flex-row gap-4">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row">
           <h1 className="text-3xl font-bold">웹사이트 성능 분석</h1>
-          <div className="flex items-center space-x-4 flex-wrap">
+          <div className="flex flex-wrap items-center space-x-4">
             <label className="text-sm font-medium">기간:</label>
             <select
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
-              className="border rounded px-3 py-1 text-sm"
+              className="rounded border px-3 py-1 text-sm"
             >
               <option value={1}>1일</option>
               <option value={7}>7일</option>
@@ -225,16 +225,16 @@ export default function PerformancePage() {
             </select>
             <button
               onClick={fetchPerformanceData}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
             >
               새로고침
             </button>
             <button
               onClick={handleRealTimeCollection}
               disabled={isCollectingMetrics}
-              className={`px-4 py-2 text-sm rounded transition-colors ${
+              className={`rounded px-4 py-2 text-sm transition-colors ${
                 isCollectingMetrics
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  ? 'cursor-not-allowed bg-gray-400 text-gray-200'
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
             >
@@ -245,9 +245,9 @@ export default function PerformancePage() {
 
         {/* 실시간 측정 안내 */}
         {isCollectingMetrics && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
             <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+              <div className="mr-3 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
               <p className="text-blue-800">
                 현재 페이지의 성능을 실시간으로 측정하고 있습니다. 측정 완료 후
                 자동으로 데이터가 업데이트됩니다.
@@ -259,17 +259,17 @@ export default function PerformancePage() {
         {data && (
           <>
             {/* Core Web Vitals 요약 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">
+            <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-1 text-sm font-medium text-gray-500">
                   LCP (Largest Contentful Paint)
                 </h3>
-                <div className="flex items-center justify-between flex-col">
+                <div className="flex flex-col items-center justify-between">
                   <span className="text-2xl font-bold">
                     {formatMs(data.summary?.avgLcp)}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getGradeColor(getPerformanceGrade('lcp', data.summary?.avgLcp))}`}
+                    className={`rounded px-2 py-1 text-xs font-medium ${getGradeColor(getPerformanceGrade('lcp', data.summary?.avgLcp))}`}
                   >
                     {getPerformanceGrade(
                       'lcp',
@@ -279,16 +279,16 @@ export default function PerformancePage() {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-1 text-sm font-medium text-gray-500">
                   INP (Interaction to Next Paint)
                 </h3>
-                <div className="flex items-center justify-between flex-col">
+                <div className="flex flex-col items-center justify-between">
                   <span className="text-2xl font-bold">
                     {formatMs(data.summary?.avgInp)}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getGradeColor(getPerformanceGrade('inp', data.summary?.avgInp))}`}
+                    className={`rounded px-2 py-1 text-xs font-medium ${getGradeColor(getPerformanceGrade('inp', data.summary?.avgInp))}`}
                   >
                     {getPerformanceGrade(
                       'inp',
@@ -298,16 +298,16 @@ export default function PerformancePage() {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-1 text-sm font-medium text-gray-500">
                   CLS (Cumulative Layout Shift)
                 </h3>
-                <div className="flex items-center justify-between flex-col">
+                <div className="flex flex-col items-center justify-between">
                   <span className="text-2xl font-bold">
                     {formatScore(data.summary?.avgCls)}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getGradeColor(getPerformanceGrade('cls', data.summary?.avgCls))}`}
+                    className={`rounded px-2 py-1 text-xs font-medium ${getGradeColor(getPerformanceGrade('cls', data.summary?.avgCls))}`}
                   >
                     {getPerformanceGrade(
                       'cls',
@@ -317,16 +317,16 @@ export default function PerformancePage() {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-1 text-sm font-medium text-gray-500">
                   FCP (First Contentful Paint)
                 </h3>
-                <div className="flex items-center flex-col justify-between">
+                <div className="flex flex-col items-center justify-between">
                   <span className="text-2xl font-bold">
                     {formatMs(data.summary?.avgFcp)}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getGradeColor(getPerformanceGrade('fcp', data.summary?.avgFcp))}`}
+                    className={`rounded px-2 py-1 text-xs font-medium ${getGradeColor(getPerformanceGrade('fcp', data.summary?.avgFcp))}`}
                   >
                     {getPerformanceGrade(
                       'fcp',
@@ -336,16 +336,16 @@ export default function PerformancePage() {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-1 text-sm font-medium text-gray-500">
                   TTFB (Time to First Byte)
                 </h3>
-                <div className="flex items-center justify-between flex-col">
+                <div className="flex flex-col items-center justify-between">
                   <span className="text-2xl font-bold">
                     {formatMs(data.summary?.avgTtfb)}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${getGradeColor(getPerformanceGrade('ttfb', data.summary?.avgTtfb))}`}
+                    className={`rounded px-2 py-1 text-xs font-medium ${getGradeColor(getPerformanceGrade('ttfb', data.summary?.avgTtfb))}`}
                   >
                     {getPerformanceGrade(
                       'ttfb',
@@ -357,20 +357,20 @@ export default function PerformancePage() {
             </div>
 
             {/* 디바이스별 성능 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">디바이스별 성능</h3>
+            <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-4 text-lg font-semibold">디바이스별 성능</h3>
                 <div className="space-y-3">
                   {data.deviceStats.map((device) => (
                     <div
                       key={device.deviceType}
-                      className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                      className="flex items-center justify-between rounded bg-gray-50 p-3"
                     >
                       <div>
                         <span className="font-medium capitalize">
                           {device.deviceType}
                         </span>
-                        <span className="text-sm text-gray-500 ml-2">
+                        <span className="ml-2 text-sm text-gray-500">
                           ({device.count} 샘플)
                         </span>
                       </div>
@@ -387,19 +387,19 @@ export default function PerformancePage() {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">브라우저별 성능</h3>
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h3 className="mb-4 text-lg font-semibold">브라우저별 성능</h3>
                 <div className="space-y-3">
                   {data.browserStats.map((browser) => (
                     <div
                       key={browser.browserName}
-                      className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                      className="flex items-center justify-between rounded bg-gray-50 p-3"
                     >
                       <div>
                         <span className="font-medium">
                           {browser.browserName}
                         </span>
-                        <span className="text-sm text-gray-500 ml-2">
+                        <span className="ml-2 text-sm text-gray-500">
                           ({browser.count} 샘플)
                         </span>
                       </div>
@@ -418,9 +418,9 @@ export default function PerformancePage() {
             </div>
 
             {/* 요약 정보 */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">분석 요약</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-lg bg-white p-6 shadow">
+              <h3 className="mb-4 text-lg font-semibold">분석 요약</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                   <span className="text-sm text-gray-500">총 샘플 수</span>
                   <div className="text-2xl font-bold">

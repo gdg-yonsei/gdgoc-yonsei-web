@@ -24,11 +24,11 @@ function UserProfileCard({ userData }: { userData: UserProfileType }) {
           alt={userData.name + ' Profile Image'}
           width={100}
           height={100}
-          className={'w-full aspect-41/55 max-w-32 rounded-xl object-cover'}
+          className={'aspect-41/55 w-full max-w-32 rounded-xl object-cover'}
         />
       ) : (
         <div
-          className={'w-full aspect-41/55 max-w-52 rounded-3xl bg-neutral-500'}
+          className={'aspect-41/55 w-full max-w-52 rounded-3xl bg-neutral-500'}
         />
       )}
       <div className={'text-xl font-semibold underline'}>
@@ -39,7 +39,7 @@ function UserProfileCard({ userData }: { userData: UserProfileType }) {
           userData.isForeigner
         )}
       </div>
-      <div className={'w-full flex items-center justify-start gap-2'}>
+      <div className={'flex w-full items-center justify-start gap-2'}>
         {userData.email && (
           <Link href={`mailto:${userData.email}`}>
             <EnvelopeIcon className={'size-10'} />
@@ -81,7 +81,7 @@ export default function MembersList({
     ?.parts
 
   return (
-    <div className={'w-full flex flex-col gap-8'}>
+    <div className={'flex w-full flex-col gap-8'}>
       {partsData?.map((part, i) => (
         <div
           key={i}
@@ -89,12 +89,12 @@ export default function MembersList({
             'flex flex-col gap-4 border-b-2 border-neutral-200 pb-24 last:border-b-0'
           }
         >
-          <div className={'text-4xl font-bold w-full max-w-4xl mx-auto px-4'}>
+          <div className={'mx-auto w-full max-w-4xl px-4 text-4xl font-bold'}>
             {part.name}
           </div>
           <div
             className={
-              'grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full max-w-4xl mx-auto px-4'
+              'mx-auto grid w-full max-w-4xl grid-cols-1 gap-2 px-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
             }
           >
             {part.usersToParts?.map((user, j) => (

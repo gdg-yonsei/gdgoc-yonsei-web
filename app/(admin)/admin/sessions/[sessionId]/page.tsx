@@ -45,7 +45,7 @@ export default async function SessionPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
-      <div className={'flex gap-2 items-center'}>
+      <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{sessionData.name}</div>
         <DataEditLink
           session={session}
@@ -122,9 +122,9 @@ export default async function SessionPage({
       </div>
 
       <div
-        className={'member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'}
+        className={'member-data-col-span grid grid-cols-1 gap-2 sm:grid-cols-2'}
       >
-        <div className={'w-full max-w-lg mx-auto flex flex-col py-2'}>
+        <div className={'mx-auto flex w-full max-w-lg flex-col py-2'}>
           <div className={'member-data-title'}>Main Image</div>
           <Image
             src={sessionData.mainImage}
@@ -136,7 +136,7 @@ export default async function SessionPage({
             blurDataURL={'/default-image.png'}
           />
         </div>
-        <div className={'w-full max-w-lg mx-auto flex flex-col py-2'}>
+        <div className={'mx-auto flex w-full max-w-lg flex-col py-2'}>
           <div className={'member-data-title'}>Content Images</div>
           {sessionData.images.map((image, index) => (
             <Image

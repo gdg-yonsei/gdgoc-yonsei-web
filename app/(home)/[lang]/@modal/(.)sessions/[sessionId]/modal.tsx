@@ -10,12 +10,12 @@ export default function Modal({ children }: { children: ReactNode }) {
   return (
     <div
       className={
-        'w-full h-screen bg-neutral-500/50 fixed top-0 left-0 flex items-center justify-center p-4 z-20'
+        'fixed top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-neutral-500/50 p-4'
       }
     >
       <div
         className={
-          'w-full h-full max-h-4/5 max-w-4xl bg-neutral-50 rounded-2xl relative overflow-y-scroll'
+          'relative h-full max-h-4/5 w-full max-w-4xl overflow-y-scroll rounded-2xl bg-neutral-50'
         }
       >
         <button

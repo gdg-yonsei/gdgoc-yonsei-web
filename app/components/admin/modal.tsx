@@ -19,23 +19,23 @@ export default function Modal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={
-            'fixed top-0 left-0 w-screen h-screen bg-neutral-500/50 p-4 z-30 flex justify-center items-center'
+            'fixed top-0 left-0 z-30 flex h-screen w-screen items-center justify-center bg-neutral-500/50 p-4'
           }
         >
           <div
             className={
-              'p-4 bg-white rounded-xl flex flex-col gap-2 w-full max-w-2xl h-full max-h-1/2 items-center justify-center'
+              'flex h-full max-h-1/2 w-full max-w-2xl flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
             }
           >
-            <div className={'text-xl md:text-2xl font-bold pb-12 text-center'}>
+            <div className={'pb-12 text-center text-xl font-bold md:text-2xl'}>
               {modal.text}
             </div>
-            <div className={'flex items-center gap-2 justify-around w-full'}>
+            <div className={'flex w-full items-center justify-around gap-2'}>
               <button
                 type={'button'}
                 onClick={modal.action}
                 className={
-                  'p-2 px-4 rounded-xl bg-green-600 text-white hover:bg-green-700 transition-colors w-full'
+                  'w-full rounded-xl bg-green-600 p-2 px-4 text-white transition-colors hover:bg-green-700'
                 }
               >
                 Confirm
@@ -44,7 +44,7 @@ export default function Modal() {
                 type={'button'}
                 onClick={closeModal}
                 className={
-                  'p-2 px-4 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors w-full'
+                  'w-full rounded-xl bg-red-600 p-2 px-4 font-semibold text-white transition-colors hover:bg-red-700'
                 }
               >
                 Cancel

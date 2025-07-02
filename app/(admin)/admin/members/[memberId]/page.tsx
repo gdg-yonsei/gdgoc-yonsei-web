@@ -40,7 +40,7 @@ export default async function MemberPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Members</p>
       </AdminNavigationButton>
-      <div className={'w-full flex items-center justify-start gap-2 py-1'}>
+      <div className={'flex w-full items-center justify-start gap-2 py-1'}>
         <div className={'admin-title'}>
           {formatUserName(
             memberData.name,
@@ -57,14 +57,14 @@ export default async function MemberPage({
           href={`/admin/members/${memberId}/edit`}
         />
       </div>
-      <div className={'w-full py-2 member-data-grid gap-2'}>
+      <div className={'member-data-grid w-full gap-2 py-2'}>
         <div className={'row-span-2 flex items-center justify-center'}>
           <UserProfileImage
             src={memberData.image}
             alt={'User Profile Image'}
             width={160}
             height={160}
-            className={'w-40 aspect-41/55 rounded-xl'}
+            className={'aspect-41/55 w-40 rounded-xl'}
           />
         </div>
         <div className={'member-data-box'}>

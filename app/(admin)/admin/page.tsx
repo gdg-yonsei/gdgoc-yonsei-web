@@ -31,14 +31,14 @@ export default async function AdminPage() {
   }
 
   return (
-    <AdminDefaultLayout className={'w-full flex flex-col p-4 gap-4'}>
+    <AdminDefaultLayout className={'flex w-full flex-col gap-4 p-4'}>
       <div className={'admin-title'}>Home</div>
-      <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'}>
+      <div className={'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'}>
         <QRCodeGenerator />
         <Link
           href={'/admin/permissions'}
           className={
-            'w-full p-4 rounded-xl bg-neutral-900 hover:bg-neutral-800 transition-colors place-self-start text-white flex items-center justify-center text-xl font-semibold text-center'
+            'flex w-full items-center justify-center place-self-start rounded-xl bg-neutral-900 p-4 text-center text-xl font-semibold text-white transition-colors hover:bg-neutral-800'
           }
         >
           Information Accessible

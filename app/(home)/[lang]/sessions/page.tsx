@@ -16,7 +16,7 @@ export default async function SessionsPage() {
   const sessionsData = await getSessions()
 
   return (
-    <div className={'w-full min-h-screen pt-20'}>
+    <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Sessions</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
       <SessionsList sessionsData={sessionsData} />

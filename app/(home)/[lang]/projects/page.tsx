@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
   const projectsData = await getProjects()
 
   return (
-    <div className={'w-full min-h-screen pt-20'}>
+    <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Projects</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
       <ProjectsList projectsData={projectsData} />

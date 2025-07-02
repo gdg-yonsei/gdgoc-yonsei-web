@@ -10,21 +10,21 @@ function SessionCard({
   return (
     <Link
       href={`/admin/sessions/${session.id}`}
-      className={'rounded-xl bg-white flex flex-col '}
+      className={'flex flex-col rounded-xl bg-white'}
     >
       <Image
         src={session.mainImage}
         alt={'Main Image'}
         width={600}
         height={400}
-        className={'object-cover rounded-t-xl aspect-3/2 w-full'}
+        className={'aspect-3/2 w-full rounded-t-xl object-cover'}
         placeholder={'blur'}
         blurDataURL={'/default-image.png'}
       />
 
       <div className={'p-4'}>
-        <div className={'text-xl font-semibold pb-2'}>{session.name}</div>
-        <div className={'flex text-sm flex-col'}>
+        <div className={'pb-2 text-xl font-semibold'}>{session.name}</div>
+        <div className={'flex flex-col text-sm'}>
           <div>
             {new Intl.DateTimeFormat('ko-KR', {
               year: 'numeric',
@@ -42,11 +42,11 @@ export default async function SessionsTable() {
   const sessionsData = await getSessions()
 
   return (
-    <div className={'w-full flex flex-col gap-2'}>
+    <div className={'flex w-full flex-col gap-2'}>
       {sessionsData.map((generation) => (
         <div key={generation.id}>
           <div
-            className={'border-b-2 text-sm text-neutral-600 border-neutral-300'}
+            className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
           >
             Generation: {generation.name}
           </div>

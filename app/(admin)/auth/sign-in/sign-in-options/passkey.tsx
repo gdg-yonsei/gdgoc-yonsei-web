@@ -33,7 +33,7 @@ export default function Passkey() {
     >
       {isLoading ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-t-black border-neutral-300'}
+          className={'size-6 border-2 border-neutral-300 border-t-black'}
         />
       ) : (
         <KeyIcon className={'size-6'} />

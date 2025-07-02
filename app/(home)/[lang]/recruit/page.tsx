@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 
 export default function RecruitPage() {
   return (
-    <div className={'w-full min-h-screen'}>
+    <div className={'min-h-screen w-full'}>
       <div
         className={
-          'w-full h-screen flex flex-col gap-8 items-center justify-center'
+          'flex h-screen w-full flex-col items-center justify-center gap-8'
         }
       >
         <div className={'flex items-center justify-center gap-8'}>
@@ -22,7 +22,7 @@ export default function RecruitPage() {
             <br />
             2025-2026
             <br />
-            <span className={'font-bold text-5xl'}>
+            <span className={'text-5xl font-bold'}>
               GDGoC Yonsei
               <br />
               Core Members
@@ -32,51 +32,51 @@ export default function RecruitPage() {
       </div>
       <div
         className={
-          'w-full h-screen flex items-center justify-center bg-gradient-to-b from-sky-300/50  via-sky-100/50  to-blue-700/30 '
+          'flex h-screen w-full items-center justify-center bg-gradient-to-b from-sky-300/50 via-sky-100/50 to-blue-700/30'
         }
       >
         <div className={'grid grid-cols-3 gap-4'}>
-          <h2 className={'text-4xl font-semibold text-center col-span-3 p-8'}>
+          <h2 className={'col-span-3 p-8 text-center text-4xl font-semibold'}>
             Recruitment Fields
           </h2>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>Front-End Core</h3>
           </div>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>Back-End Core</h3>
           </div>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>Mobile Core</h3>
           </div>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>ML/AI Core</h3>
           </div>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>DevRel Core</h3>
           </div>
           <div
             className={
-              'p-8 px-12 rounded-xl bg-white/50 backdrop-blur-sm border-2 border-white flex items-center justify-center'
+              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
             }
           >
             <h3 className={'text-2xl font-semibold'}>Design Core</h3>

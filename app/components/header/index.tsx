@@ -5,8 +5,8 @@ import NavigationList from '@/app/components/header/navigation-list'
 
 export default function Header() {
   return (
-    <div className={'w-full bg-neutral-100 fixed top-0 left-0 z-10'}>
-      <div className={'p-4 flex items-center justify-between'}>
+    <div className={'fixed top-0 left-0 z-10 w-full bg-neutral-100'}>
+      <div className={'flex items-center justify-between p-4'}>
         <GDGLogoLinkButton />
         <MenuBarButton />
         <DesktopNavigationList />

@@ -55,7 +55,7 @@ export default async function EditProjectPage({
       <div className={'admin-title py-4'}>Edit {projectData.name} Project</div>
       <DataForm
         action={updateProjectActionWithProjectId}
-        className={'w-full gap-4 member-data-grid'}
+        className={'member-data-grid w-full gap-4'}
       >
         <DataInput
           defaultValue={projectData.name}
@@ -81,7 +81,7 @@ export default async function EditProjectPage({
         />
         <div
           className={
-            'col-span-1 sm:col-span-3 md:col-span-4 member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'
+            'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
           }
         >
           <div>

@@ -4,10 +4,10 @@ export default function PageTitle({ children }: { children: ReactNode }) {
   return (
     <div
       className={
-        'text-4xl font-bold border-b-2 pb-2 pt-8 flex border-neutral-400'
+        'flex border-b-2 border-neutral-400 pt-8 pb-2 text-4xl font-bold'
       }
     >
-      <h1 className={'w-full max-w-4xl mx-auto px-4'}>{children}</h1>
+      <h1 className={'mx-auto w-full max-w-4xl px-4'}>{children}</h1>
     </div>
   )
 }

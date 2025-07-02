@@ -18,21 +18,21 @@ export default async function ProjectPage({
   }
 
   return (
-    <div className={'w-full min-h-screen pt-20'}>
+    <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>{projectData.name}</PageTitle>
       <ImagesSliders images={[projectData.mainImage, ...projectData.images]} />
-      <div className={'gap-8 flex flex-col py-8'}>
+      <div className={'flex flex-col gap-8 py-8'}>
         <div className={'flex flex-col'}>
-          <div className={'border-b-2 border-neutral-400 w-full flex'}>
+          <div className={'flex w-full border-b-2 border-neutral-400'}>
             <h2
-              className={'text-xl font-semibold px-4 w-full max-w-4xl mx-auto'}
+              className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
             >
               Contributor
             </h2>
           </div>
-          <div className={'px-4 w-full max-w-4xl mx-auto'}>
+          <div className={'mx-auto w-full max-w-4xl px-4'}>
             {projectData.usersToProjects.map((user, i) => (
-              <div key={i} className={'flex gap-1 items-center'}>
+              <div key={i} className={'flex items-center gap-1'}>
                 <div>
                   {formatUserName(
                     user.user.name,
@@ -46,14 +46,14 @@ export default async function ProjectPage({
           </div>
         </div>
         <div className={'flex flex-col'}>
-          <div className={'border-b-2 border-neutral-400 flex w-full'}>
+          <div className={'flex w-full border-b-2 border-neutral-400'}>
             <h2
-              className={'text-xl font-semibold px-4 w-full max-w-4xl mx-auto'}
+              className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
             >
               About This Project
             </h2>
           </div>
-          <div className={'prose p-4 w-full max-w-4xl mx-auto'}>
+          <div className={'prose mx-auto w-full max-w-4xl p-4'}>
             <SafeMDX source={projectData.content} />
           </div>
         </div>

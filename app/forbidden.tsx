@@ -10,12 +10,12 @@ export default function Forbidden() {
   return (
     <div
       className={
-        'w-screen h-screen flex items-center justify-center bg-neutral-100 p-4'
+        'flex h-screen w-screen items-center justify-center bg-neutral-100 p-4'
       }
     >
       <div
         className={
-          'p-8 rounded-xl bg-white flex flex-col gap-4 w-full max-w-xl'
+          'flex w-full max-w-xl flex-col gap-4 rounded-xl bg-white p-8'
         }
       >
         <GDGoCYonseiLogo />

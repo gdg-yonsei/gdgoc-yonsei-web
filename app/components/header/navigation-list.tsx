@@ -23,7 +23,7 @@ function MotionLink({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: state ? 1 : 0 }}
-      className={'p-1 px-4 last:pb-4 w-full flex'}
+      className={'flex w-full p-1 px-4 last:pb-4'}
     >
       {children}
     </motion.div>
@@ -41,7 +41,7 @@ export default function NavigationList() {
         visibility: isMenuOpen ? 'visible' : 'hidden',
       }}
       transition={{ duration: 0.2 }}
-      className={'flex flex-col gap-2 w-full text-lg md:hidden'}
+      className={'flex w-full flex-col gap-2 text-lg md:hidden'}
     >
       <MotionLink state={isMenuOpen}>
         <Link

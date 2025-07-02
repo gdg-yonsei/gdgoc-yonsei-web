@@ -39,7 +39,7 @@ export default function DataForm({
     <form onSubmit={handleSubmit} className={className}>
       {children}
       {state.error ? (
-        <p className={'text-red-500 m-auto'}>{state.error}</p>
+        <p className={'m-auto text-red-500'}>{state.error}</p>
       ) : (
         ''
       )}
