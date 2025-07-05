@@ -9,8 +9,8 @@ export default function MainPage() {
       }
     >
       <HomePageBackground />
-      <div className={'flex items-center gap-4'}>
-        <GDGLogo svgKey={'main'} className={'w-52 md:w-64'} />
+      <div className={'flex items-center gap-4 p-4'}>
+        <GDGLogo svgKey={'main'} className={'w-40 md:w-64'} />
         <h1 className={'flex flex-col gap-4'}>
           <p className={'text-2xl md:text-4xl'}>Welcome to</p>
           <div

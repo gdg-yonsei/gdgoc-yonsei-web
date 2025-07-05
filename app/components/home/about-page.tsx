@@ -44,7 +44,7 @@ export default function AboutPage() {
         <div className={'grid grid-cols-1 gap-4 md:grid-cols-3'}>
           <OpacityDiv
             transition={{
-              delay: 0.3,
+              delay: 0.2,
             }}
             className={'ring-gdg-red-300 rounded-lg bg-white p-4 ring-2'}
           >
@@ -57,7 +57,7 @@ export default function AboutPage() {
           </OpacityDiv>
           <OpacityDiv
             transition={{
-              delay: 0.6,
+              delay: 0.4,
             }}
             className={'ring-gdg-green-300 rounded-lg bg-white p-4 ring-2'}
           >
