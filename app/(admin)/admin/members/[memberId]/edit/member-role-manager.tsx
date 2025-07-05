@@ -22,7 +22,7 @@ function RoleButton({
     <button
       type={'button'}
       onClick={() => setRole(value)}
-      className={`${value === role ? 'bg-neutral-900 text-white' : ''} p-2 rounded-lg border-2 border-neutral-900 text-sm transition-all`}
+      className={`${value === role ? 'bg-neutral-900 text-white' : ''} rounded-lg border-2 border-neutral-900 p-2 text-sm transition-all`}
     >
       {value}
     </button>
@@ -39,8 +39,8 @@ export default function MemberRoleManager({ userRole }: { userRole: string }) {
   const [role, setRole] = useState<string>(userRole)
 
   return (
-    <div className={'flex flex-col col-span-1 sm:col-span-2'}>
-      <p className={'text-sm font-semibold text-neutral-700 px-1'}>Role</p>
+    <div className={'col-span-1 flex flex-col sm:col-span-2'}>
+      <p className={'px-1 text-sm font-semibold text-neutral-700'}>Role</p>
       <input
         name={'role'}
         hidden={true}

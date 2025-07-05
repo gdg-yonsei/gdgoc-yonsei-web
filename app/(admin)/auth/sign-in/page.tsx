@@ -9,20 +9,20 @@ export default function SignInPage() {
   return (
     <div
       className={
-        'w-screen h-screen flex flex-col items-center justify-center p-4'
+        'flex h-screen w-screen flex-col items-center justify-center p-4'
       }
     >
       <div
         className={
-          'rounded-xl md:rounded-2xl max-w-3xl bg-white shadow-xl w-full h-1/2 relative flex flex-col items-center p-8'
+          'relative flex h-1/2 w-full max-w-3xl flex-col items-center rounded-xl bg-white p-8 shadow-xl md:rounded-2xl'
         }
       >
-        <div className="flex flex-col gap-2 md:flex-row items-center md:justify-around justify-center w-full h-full relative">
-          <GDGoCYonseiLogo className={'md:absolute top-0 left-0 mr-auto'} />
-          <div className={'flex gap-4 flex-col md:w-2/3 w-full'}>
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-2 md:flex-row md:justify-around">
+          <GDGoCYonseiLogo className={'top-0 left-0 mr-auto md:absolute'} />
+          <div className={'flex w-full flex-col gap-4 md:w-2/3'}>
             <div
               className={
-                'flex flex-col gap-1 items-start text-2xl md:text-4xl font-bold'
+                'flex flex-col items-start gap-1 text-2xl font-bold md:text-4xl'
               }
             >
               <h1>GDGoC Yonsei</h1>

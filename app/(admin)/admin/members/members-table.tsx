@@ -14,21 +14,21 @@ export default async function MembersTable() {
   return (
     <div
       className={
-        'w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 pt-4'
+        'grid w-full grid-cols-2 gap-2 pt-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5'
       }
     >
       {membersData.map((member) => (
         <Link
           href={`/admin/members/${member.id}`}
           key={member.id}
-          className={'bg-white rounded-lg'}
+          className={'rounded-lg bg-white'}
         >
           <UserProfileImage
             src={member.image}
             alt={`${member.name} Profile Image`}
             width={100}
             height={100}
-            className={'rounded-t-lg w-full aspect-41/55'}
+            className={'aspect-41/55 w-full rounded-t-lg'}
           />
           <div className={'p-2'}>
             <div className={'text-lg font-semibold'}>

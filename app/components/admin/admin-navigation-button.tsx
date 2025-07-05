@@ -17,7 +17,7 @@ export default function AdminNavigationButton({
   return (
     <Link
       href={href}
-      className={'flex gap-1 items-center hover:underline py-1'}
+      className={'flex items-center gap-1 py-1 hover:underline'}
     >
       {children}
     </Link>

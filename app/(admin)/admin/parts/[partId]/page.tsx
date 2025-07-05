@@ -49,7 +49,7 @@ export default async function PartPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Parts</p>
       </AdminNavigationButton>
-      <div className={'flex gap-2 items-center'}>
+      <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{partData.name}</div>
         <DataEditLink
           session={session}

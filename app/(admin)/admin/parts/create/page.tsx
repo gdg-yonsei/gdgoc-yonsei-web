@@ -30,7 +30,7 @@ export default async function CreatePartPage() {
   return (
     <AdminDefaultLayout>
       <div className={'admin-title'}>Create New Part</div>
-      <DataForm action={createPartAction} className={'gap-2 member-data-grid'}>
+      <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
         <DataInput
           title={'Name'}
           defaultValue={''}

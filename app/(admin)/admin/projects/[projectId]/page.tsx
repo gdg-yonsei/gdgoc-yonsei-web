@@ -45,7 +45,7 @@ export default async function ProjectPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Projects</p>
       </AdminNavigationButton>
-      <div className={'flex gap-2 items-center'}>
+      <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{projectData.name}</div>
         <DataEditLink
           session={session}
@@ -91,10 +91,10 @@ export default async function ProjectPage({
         </div>
         <div
           className={
-            'member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'
+            'member-data-col-span grid grid-cols-1 gap-2 sm:grid-cols-2'
           }
         >
-          <div className={'w-full max-w-lg mx-auto flex flex-col gap-2'}>
+          <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
             <div className={'member-data-title'}>Main Image</div>
             <Image
               src={projectData.mainImage}
@@ -106,7 +106,7 @@ export default async function ProjectPage({
               blurDataURL={'/default-image.png'}
             />
           </div>
-          <div className={'w-full max-w-lg mx-auto gap-2 flex flex-col'}>
+          <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
             <div className={'member-data-title'}>Content Images</div>
             {projectData.images.map((image, index) => (
               <Image
@@ -122,7 +122,7 @@ export default async function ProjectPage({
             ))}
           </div>
         </div>
-        <div className={'prose w-full member-data-col-span py-8'}>
+        <div className={'prose member-data-col-span w-full py-8'}>
           <div className={'member-data-title'}>Content</div>
           <SafeMDX source={projectData.content} />
         </div>

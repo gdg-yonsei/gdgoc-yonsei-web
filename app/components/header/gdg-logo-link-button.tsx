@@ -12,7 +12,7 @@ export default function GDGLogoLinkButton() {
   return (
     <Link href={'/'} onClick={() => setIsMenuOpen(false)}>
       <GDGoCYonseiLogo className={'not-md:hidden'} />
-      <GDGLogo className={'w-16 md:w-24 md:hidden'} svgKey={'header'} />
+      <GDGLogo className={'w-16 md:hidden md:w-24'} svgKey={'header'} />
     </Link>
   )
 }

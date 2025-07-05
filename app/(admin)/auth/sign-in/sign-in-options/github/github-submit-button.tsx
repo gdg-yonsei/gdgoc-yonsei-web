@@ -35,7 +35,7 @@ export default function GithubSubmitButton() {
     >
       {pending ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-t-white border-neutral-700'}
+          className={'size-6 border-2 border-neutral-700 border-t-white'}
         />
       ) : (
         <Github className={'size-6'} fill={'white'} />

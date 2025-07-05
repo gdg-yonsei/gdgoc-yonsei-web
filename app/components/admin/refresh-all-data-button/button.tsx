@@ -9,13 +9,13 @@ export default function Button() {
     <button
       type={'submit'}
       className={
-        'p-2 text-sm rounded-full border-2 w-full justify-center border-neutral-900 px-4 hover:bg-neutral-100 transition-all flex items-center gap-2'
+        'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 p-2 px-4 text-sm transition-all hover:bg-neutral-100'
       }
       disabled={pending}
     >
       {pending && (
         <LoadingSpinner
-          className={'size-4 border-2 border-t-white border-neutral-700'}
+          className={'size-4 border-2 border-neutral-700 border-t-white'}
         />
       )}
       {pending ? 'Refresh...' : 'Refresh All Data'}

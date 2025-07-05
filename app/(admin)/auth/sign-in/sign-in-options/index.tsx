@@ -8,7 +8,7 @@ import SignInWithGoogle from '@/app/(admin)/auth/sign-in/sign-in-options/google'
  */
 export default function SignInOptions() {
   return (
-    <div className={'w-full md:w-1/3 flex flex-col items-center gap-2'}>
+    <div className={'flex w-full flex-col items-center gap-2 md:w-1/3'}>
       <SignInWithGithub />
       <SignInWithGoogle />
       <Passkey />

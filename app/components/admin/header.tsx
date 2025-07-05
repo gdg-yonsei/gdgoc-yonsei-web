@@ -14,16 +14,16 @@ export default function Header({
   navigations: NavigationItem[]
 }) {
   return (
-    <div className={'w-full fixed top-0 left-0 flex flex-col z-10 lg:hidden'}>
-      <div className={'w-full bg-neutral-100 flex items-center justify-center'}>
+    <div className={'fixed top-0 left-0 z-10 flex w-full flex-col lg:hidden'}>
+      <div className={'flex w-full items-center justify-center bg-neutral-100'}>
         <div
-          className={'flex justify-between items-center w-full max-w-4xl p-4'}
+          className={'flex w-full max-w-4xl items-center justify-between p-4'}
         >
           <Link
             href={'/admin'}
-            className={'text-xl font-bold flex items-center gap-2'}
+            className={'flex items-center gap-2 text-xl font-bold'}
           >
-            <GDGLogo className={'w-12 h-6'} />
+            <GDGLogo className={'h-6 w-12'} />
             <p>GYMS</p>
           </Link>
           <ToggleMenubarButton />

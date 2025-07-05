@@ -22,7 +22,7 @@ function SidebarNavigator({
     <Link
       href={href}
       className={
-        'p-2 px-4 rounded-lg bg-white text-lg font-semibold hover:bg-neutral-200 transition-all'
+        'rounded-lg bg-white p-2 px-4 text-lg font-semibold transition-all hover:bg-neutral-200'
       }
     >
       {children}
@@ -42,16 +42,16 @@ export default function Sidebar({
   return (
     <div
       className={
-        'w-60 p-4 h-screen fixed top-0 left-0 bg-neutral-100 hidden lg:block'
+        'fixed top-0 left-0 hidden h-screen w-60 bg-neutral-100 p-4 lg:block'
       }
     >
       {/*관리자 페이지 사이드바 제목*/}
-      <div className={'flex items-center gap-2 w-full'}>
+      <div className={'flex w-full items-center gap-2'}>
         <GDGLogo className={'w-12'} />
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       {/*관리자 페이지 내비게이터 리스트*/}
-      <div className={'w-full flex flex-col gap-4 pt-4'}>
+      <div className={'flex w-full flex-col gap-4 pt-4'}>
         {navigations.map((item, i) => (
           <SidebarNavigator href={item.path} key={i}>
             {item.name}

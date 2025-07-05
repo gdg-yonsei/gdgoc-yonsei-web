@@ -16,7 +16,7 @@ export default function CreateGenerationPage() {
       <div className={'admin-title'}>Create New Generation</div>
       <DataForm
         action={createGenerationAction}
-        className={'gap-2 member-data-grid'}
+        className={'member-data-grid gap-2'}
       >
         <DataInput
           title={'Generation Name'}

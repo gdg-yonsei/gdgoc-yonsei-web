@@ -80,9 +80,9 @@ export default function DataMultipleImageInput({
 
   return (
     <div
-      className={'col-span-1 sm:col-span-3 lg:col-span-4 flex flex-col gap-2'}
+      className={'col-span-1 flex flex-col gap-2 sm:col-span-3 lg:col-span-4'}
     >
-      <div className={'text-sm font-semibold text-neutral-700 px-1'}>
+      <div className={'px-1 text-sm font-semibold text-neutral-700'}>
         {title}
       </div>
       <input
@@ -100,13 +100,13 @@ export default function DataMultipleImageInput({
         readOnly={true}
       />
       {prevImageUrls.length > 0 && (
-        <div className={'grid grid-cols-1 gap-2 w-full'}>
+        <div className={'grid w-full grid-cols-1 gap-2'}>
           {prevImageUrls.map((url, index) => (
-            <div key={index} className={'w-full relative'}>
+            <div key={index} className={'relative w-full'}>
               <button
                 type={'button'}
                 className={
-                  'absolute top-1 right-1 cursor-pointer p-1 bg-red-500 rounded-lg'
+                  'absolute top-1 right-1 cursor-pointer rounded-lg bg-red-500 p-1'
                 }
                 onClick={() => deleteContentImage(url)}
               >
@@ -127,7 +127,7 @@ export default function DataMultipleImageInput({
       )}
       <button
         type={'button'}
-        className={'p-2 rounded-xl bg-neutral-900 text-white text-sm'}
+        className={'rounded-xl bg-neutral-900 p-2 text-sm text-white'}
         onClick={() => inputRef.current?.click()}
         disabled={isLoading}
       >

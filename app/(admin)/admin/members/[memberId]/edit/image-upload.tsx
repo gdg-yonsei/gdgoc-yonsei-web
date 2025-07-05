@@ -78,7 +78,7 @@ export default function ImageUpload({
   }
 
   return (
-    <div className={'flex flex-col gap-2 items-start'}>
+    <div className={'flex flex-col items-start gap-2'}>
       <input
         hidden={true}
         type="file"
@@ -97,7 +97,7 @@ export default function ImageUpload({
         alt={'User Profile Image'}
         width={160}
         height={160}
-        className={'aspect-41/55 mx-auto rounded-xl'}
+        className={'mx-auto aspect-41/55 rounded-xl'}
       />
       <SelectImageButton
         onClick={() => inputRef.current?.click()}

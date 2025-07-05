@@ -16,21 +16,21 @@ export default async function ProjectsTable() {
         <Link
           href={`/admin/projects/${project.id}`}
           key={project.id}
-          className={'rounded-xl bg-white flex flex-col '}
+          className={'flex flex-col rounded-xl bg-white'}
         >
           <Image
             src={project.mainImage}
             alt={'Main Image'}
             width={600}
             height={400}
-            className={'object-cover rounded-t-xl aspect-3/2 w-full'}
+            className={'aspect-3/2 w-full rounded-t-xl object-cover'}
             placeholder={'blur'}
             blurDataURL={'/default-image.png'}
           />
 
           <div className={'p-4'}>
-            <div className={'text-xl font-semibold pb-4'}>{project.name}</div>
-            <div className={'flex text-sm flex-col'}>
+            <div className={'pb-4 text-xl font-semibold'}>{project.name}</div>
+            <div className={'flex flex-col text-sm'}>
               <div>
                 Created At:{' '}
                 {new Intl.DateTimeFormat('ko-KR', {

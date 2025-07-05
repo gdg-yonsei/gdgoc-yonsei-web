@@ -50,13 +50,13 @@ export default function ImagesSliders({ images }: { images: string[] }) {
   return (
     <div
       className={
-        'w-full flex flex-col items-center md:flex-row md:justify-center md:items-start'
+        'flex w-full flex-col items-center md:flex-row md:items-start md:justify-center'
       }
       ref={boxRef}
     >
       {/*Images*/}
       <div
-        className="flex overflow-x-scroll max-w-xl w-full whitespace-nowrap bg-neutral-100 transition-all min-w-0 snap-x snap-mandatory"
+        className="flex w-full max-w-xl min-w-0 snap-x snap-mandatory overflow-x-scroll bg-neutral-100 whitespace-nowrap transition-all"
         ref={scrollRef}
       >
         {images.map((image, i) => (
@@ -69,19 +69,19 @@ export default function ImagesSliders({ images }: { images: string[] }) {
               src={image}
               alt=""
               fill
-              className="absolute top-0 left-0 w-full h-full object-contain"
+              className="absolute top-0 left-0 h-full w-full object-contain"
             />
           </div>
         ))}
       </div>
       <div className={'w-full max-w-xl md:w-24'}>
         {/*Image Control Button Group*/}
-        <div className={'p-2 flex items-center justify-between w-full md:w-28'}>
+        <div className={'flex w-full items-center justify-between p-2 md:w-28'}>
           <button
             type={'button'}
             onClick={() => scroll('left')}
             className={
-              'rounded-full hover:bg-neutral-100 transition-colors p-1'
+              'rounded-full p-1 transition-colors hover:bg-neutral-100'
             }
           >
             <ChevronLeftIcon className={'size-8'} />
@@ -90,7 +90,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
             type={'button'}
             onClick={() => scroll('right')}
             className={
-              'rounded-full hover:bg-neutral-100 transition-colors p-1'
+              'rounded-full p-1 transition-colors hover:bg-neutral-100'
             }
           >
             <ChevronRightIcon className={'size-8'} />
@@ -99,7 +99,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         {/*Image Preview*/}
         <div
           className={
-            'flex overflow-x-scroll whitespace-nowrap gap-2 p-2 md:flex-col md:overflow-y-scroll md:h-[528px] md:w-28'
+            'flex gap-2 overflow-x-scroll p-2 whitespace-nowrap md:h-[528px] md:w-28 md:flex-col md:overflow-y-scroll'
           }
         >
           {images.map((image, i) => (
@@ -109,7 +109,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
               alt={'Preview'}
               width={100}
               height={100}
-              className={`size-24 object-cover aspect-square rounded-lg transition-all ${index === i && 'grayscale brightness-50'}`}
+              className={`aspect-square size-24 rounded-lg object-cover transition-all ${index === i && 'brightness-50 grayscale'}`}
               onClick={() => imagePreviewClick(i)}
             />
           ))}

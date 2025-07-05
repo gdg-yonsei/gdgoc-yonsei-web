@@ -14,6 +14,6 @@ export default function LoadingSpinner({
   className?: string
 }) {
   return (
-    <div className={`${className} border-solid rounded-full animate-spin`} />
+    <div className={`${className} animate-spin rounded-full border-solid`} />
   )
 }

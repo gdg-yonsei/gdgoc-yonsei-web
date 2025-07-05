@@ -4,6 +4,14 @@
 
 This project is a website created to introduce the Google Developer Group on Campus Yonsei University and manage its projects and activities.
 
+## TODO List
+
+- [ ] i18n support
+- [ ] Recruit Page Refactoring
+- [ ] Home Page Refactoring
+- [ ] Project Page Refactoring
+- [ ] Session Page Refactoring
+
 ## Tech Stack
 
 ### Front End

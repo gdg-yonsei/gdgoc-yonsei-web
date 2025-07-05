@@ -45,10 +45,10 @@ export default function MenuBar({
   return (
     <>
       <div
-        className={`w-full flex justify-center transition-all bg-neutral-100 ${isOpen ? 'h-[70vh]' : 'h-0'}`}
+        className={`flex w-full justify-center bg-neutral-100 transition-all ${isOpen ? 'h-[70vh]' : 'h-0'}`}
       >
         {isOpen && (
-          <div className={'w-full flex flex-col gap-4 p-4 max-w-4xl'}>
+          <div className={'flex w-full max-w-4xl flex-col gap-4 p-4'}>
             {navigations.map((item, i) => (
               <MenuBarNavigator
                 key={i}
@@ -67,7 +67,7 @@ export default function MenuBar({
           initial={{ opacity: 0 }}
           animate={{ opacity: isOpen ? 1 : 0 }}
           onClick={() => setIsOpen(false)}
-          className={'w-full h-[40vh] bg-neutral-500/50 backdrop-blur'}
+          className={'h-[40vh] w-full bg-neutral-500/50 backdrop-blur'}
         />
       )}
     </>

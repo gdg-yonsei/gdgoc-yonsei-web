@@ -63,9 +63,9 @@ export default function DataImageInput({
 
   return (
     <div
-      className={'col-span-1 sm:col-span-3 lg:col-span-4 flex flex-col gap-2'}
+      className={'col-span-1 flex flex-col gap-2 sm:col-span-3 lg:col-span-4'}
     >
-      <div className={'text-sm font-semibold text-neutral-700 px-1'}>
+      <div className={'px-1 text-sm font-semibold text-neutral-700'}>
         {title}
       </div>
       <input
@@ -95,7 +95,7 @@ export default function DataImageInput({
       <button
         type={'button'}
         onClick={() => inputRef.current?.click()}
-        className={`p-2 rounded-xl px-3 text-white  text-sm ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
+        className={`rounded-xl p-2 px-3 text-sm text-white ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
         disabled={isLoading}
       >
         {isLoading ? 'Uploading...' : children}

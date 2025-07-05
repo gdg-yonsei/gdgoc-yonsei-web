@@ -7,13 +7,13 @@ export default function StageButtonGroup({
   generationsData: Awaited<ReturnType<typeof getGenerations>>
 }) {
   return (
-    <div className={'w-full flex'}>
+    <div className={'flex w-full'}>
       <div
         className={
-          'flex items-center justify-between p-4 w-full max-w-4xl mx-auto'
+          'mx-auto flex w-full max-w-4xl items-center justify-between p-4'
         }
       >
-        <p className={'text-2xl font-semibold pr-2'}>Stage</p>
+        <p className={'pr-2 text-2xl font-semibold'}>Stage</p>
         <GenerationButtonGroup
           generations={generationsData.map((data) => data.name)}
         />

@@ -38,11 +38,11 @@ export default async function CreateProjectPage() {
       <div className={'admin-title'}>Create New Project</div>
       <DataForm
         action={createProjectAction}
-        className={'gap-2 member-data-grid'}
+        className={'member-data-grid gap-2'}
       >
         <div
           className={
-            'col-span-1 sm:col-span-3 md:col-span-4 member-data-col-span grid grid-cols-1 sm:grid-cols-2 gap-2'
+            'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
           }
         >
           <div>

@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 
 export default function ProfilePage() {
   return (
-    <AdminDefaultLayout className={'p-4 flex flex-col gap-2'}>
+    <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
       <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>Profile</div>
         <Link
           href={'/admin/profile/edit'}
           className={
-            'p-2 px-4 rounded-full bg-neutral-900 text-white flex gap-2 items-center hover:bg-neutral-800 transition-all'
+            'flex items-center gap-2 rounded-full bg-neutral-900 p-2 px-4 text-white transition-all hover:bg-neutral-800'
           }
         >
           <PencilSquareIcon className={'size-5'} />
@@ -30,14 +30,14 @@ export default function ProfilePage() {
           <div className={'member-data-grid gap-2 py-4'}>
             <div
               className={
-                'size-48 mx-auto rounded-lg bg-neutral-200 animate-pulse'
+                'mx-auto size-48 animate-pulse rounded-lg bg-neutral-200'
               }
             />
             {new Array(11).fill(0).map((_, i) => (
               <div
                 key={i}
                 className={
-                  'w-full h-20 rounded-lg bg-neutral-200 animate-pulse'
+                  'h-20 w-full animate-pulse rounded-lg bg-neutral-200'
                 }
               />
             ))}

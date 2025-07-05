@@ -29,7 +29,7 @@ function SubmitButton({
           className={
             spinnerClassName
               ? spinnerClassName
-              : 'size-6 border-2 border-t-white border-neutral-700'
+              : 'size-6 border-2 border-neutral-700 border-t-white'
           }
         />
       ) : (

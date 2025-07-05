@@ -57,7 +57,7 @@ export default async function EditGenerationPage({
       <div className={'admin-title py-4'}>Edit {partData.name}</div>
       <DataForm
         action={updatePartsActionWithPartId}
-        className={'w-full gap-4 member-data-grid'}
+        className={'member-data-grid w-full gap-4'}
       >
         <DataInput
           title={'Name'}
