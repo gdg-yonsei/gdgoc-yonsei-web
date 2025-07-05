@@ -36,21 +36,21 @@ export default function ActivitiesList() {
       key: 'oTP',
       title: 'oTP',
       content:
-        'GDG Yonsei is divided into six specialized departments—Front-End, Back-End, ML/AI, UI/UX, and Developer Relations—each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
+        'oTP (Open Tech Project) is a project where teams freely choose a topic and develop a service based on it. The goal is to actively utilize various technologies and solve real-world problems. Ultimately, teams present and share their results at a demo day, fostering growth through the experience.',
       className: 'bg-gdg-blue-300 ring-gdg-blue-300 flex-shrink-0',
     },
     {
       key: 'Yonsei X Korea Demo Day',
       title: 'Yonsei X Korea Demo Day',
       content:
-        'GDG Yonsei is divided into six specialized departments—Front-End, Back-End, ML/AI, UI/UX, and Developer Relations—each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
+        'Yonsei X Korea Demo Day is an event jointly hosted by GDGoC Yonsei and GDGoC Korea, where participants share their experiences and projects. The goal is to broaden perspectives and foster a wide-reaching network through this collaborative exchange.',
       className: 'bg-gdg-red-300 ring-gdg-red-300 flex-shrink-0',
     },
     {
       key: 'The Bridge Hackathon',
       title: 'The Bridge Hackathon',
       content:
-        'GDG Yonsei is divided into six specialized departments—Front-End, Back-End, ML/AI, UI/UX, and Developer Relations—each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
+        'The Bridge Hackathon is a joint Korea-Japan hackathon hosted by the GDGoC chapters of Yonsei University, Korea University, the University of Tokyo, and Waseda University. Starting in 2025, it will be held regularly. The event aims to broaden perspectives through interaction with students from different countries and provide hands-on experience in turning ideas into reality through a hackathon format.',
       className: 'bg-gdg-green-300 ring-gdg-green-300 flex-shrink-0',
     },
   ]
