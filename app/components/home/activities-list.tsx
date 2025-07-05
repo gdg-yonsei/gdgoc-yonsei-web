@@ -113,7 +113,7 @@ export default function ActivitiesList() {
                     },
                     borderRadius: { duration: 0.3 },
                   }}
-                  className={`relative flex min-h-1/2 w-full max-w-2xl flex-col gap-6 rounded-2xl bg-white p-8 shadow-2xl`}
+                  className={`relative flex max-h-11/12 min-h-1/2 w-full max-w-2xl flex-col gap-6 rounded-2xl bg-white p-8 shadow-2xl`}
                   style={{ borderRadius: 16 }}
                 >
                   {/* 닫기 버튼 */}
@@ -155,7 +155,7 @@ export default function ActivitiesList() {
                       duration: 0.2,
                     }}
                     className={
-                      'text-lg leading-relaxed text-gray-700 md:text-xl'
+                      'overflow-y-auto text-lg leading-relaxed text-gray-700 md:text-xl'
                     }
                   >
                     {modalOpen.content}
