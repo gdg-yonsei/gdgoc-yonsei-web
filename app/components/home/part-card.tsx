@@ -26,7 +26,7 @@ export function PartCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col items-center justify-center text-center"
+            className="flex flex-col items-center justify-center text-center transition-all"
           >
             <h3 className={'text-4xl font-semibold'}>{title}</h3>
           </motion.div>
@@ -37,7 +37,7 @@ export function PartCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col items-center justify-center text-left"
+            className="flex flex-col items-center justify-center text-left transition-all"
           >
             <p className="text-lg leading-relaxed">{content}</p>
           </motion.div>
