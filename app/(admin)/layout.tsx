@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import './globals.css'
+import '../globals.css'
 import { ReactNode } from 'react'
 import localFont from 'next/font/local'
 
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const googleSans = localFont({
-  src: './fonts/google-sans.woff2',
+  src: '../fonts/google-sans.woff2',
   display: 'swap',
   variable: '--font-sans',
   weight: '100 900',

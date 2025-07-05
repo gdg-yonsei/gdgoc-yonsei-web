@@ -11,7 +11,7 @@ export default function NotFoundPage() {
       <div className={'flex flex-col gap-4'}>
         <GDGoCYonseiLogo />
         <h1 className={'text-5xl font-bold md:text-6xl'}>404 Not Found</h1>
-        <Link href={'/'} className={'text-2xl font-semibold underline'}>
+        <Link href={'/public'} className={'text-2xl font-semibold underline'}>
           Back to Home
         </Link>
       </div>
