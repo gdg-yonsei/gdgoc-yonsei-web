@@ -26,21 +26,23 @@ export default function ProjectsList({
     >
       {projects.map((data, i) => (
         <Link
-          href={`/app/(home)/%5Blang%5D/projects/${data?.id}`}
+          href={`/projects/${data?.id}`}
           key={i}
-          className={'rounded-2xl bg-white'}
+          className={'ring-gdg-white rounded-lg bg-white ring-2'}
         >
           <Image
             src={data?.mainImage}
             width={200}
             height={200}
             alt={data?.name}
-            className={'aspect-square w-full rounded-t-2xl object-cover'}
+            className={'aspect-3/2 w-full rounded-t-lg object-cover'}
           />
-          <div className={'p-2'}>
-            <h2 className={'text-xl font-semibold'}>{data?.name}</h2>
-            <p>{formatDateYYYYMMDD(new Date(data?.updatedAt))}</p>
-            <p>{data?.description}</p>
+          <div className={'p-3'}>
+            <h2 className={'pb-2 text-2xl font-semibold'}>{data?.name}</h2>
+            <p className={'text-sm'}>
+              {formatDateYYYYMMDD(new Date(data?.updatedAt))}
+            </p>
+            <p className={'text-sm'}>{data?.description}</p>
           </div>
         </Link>
       ))}

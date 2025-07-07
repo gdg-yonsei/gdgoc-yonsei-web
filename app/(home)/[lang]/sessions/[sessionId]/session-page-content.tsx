@@ -2,11 +2,14 @@ import { getSession } from '@/lib/fetcher/get-session'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
+import NavigationButton from '@/app/components/navigation-button'
 
 export default function SessionPageContent({
   sessionData,
+  isModal = false,
 }: {
   sessionData: Awaited<ReturnType<typeof getSession>>
+  isModal?: boolean
 }) {
   if (!sessionData) {
     return notFound()
@@ -14,6 +17,11 @@ export default function SessionPageContent({
 
   return (
     <div className={'w-full pb-4'}>
+      {!isModal && (
+        <NavigationButton href={'/sessions'}>
+          <p>Sessions</p>
+        </NavigationButton>
+      )}
       <PageTitle>{sessionData.name}</PageTitle>
       <ImagesSliders images={[sessionData.mainImage, ...sessionData.images]} />
       <div className={'mx-auto w-full max-w-4xl py-8'}>

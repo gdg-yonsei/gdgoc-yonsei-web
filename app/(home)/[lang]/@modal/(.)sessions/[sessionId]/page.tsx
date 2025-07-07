@@ -12,7 +12,7 @@ export default async function SessionPage({
 
   return (
     <Modal>
-      <SessionPageContent sessionData={sessionData} />
+      <SessionPageContent isModal={true} sessionData={sessionData} />
     </Modal>
   )
 }

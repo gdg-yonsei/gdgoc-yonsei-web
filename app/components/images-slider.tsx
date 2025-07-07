@@ -1,13 +1,45 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export default function ImagesSliders({ images }: { images: string[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState<number>(0)
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observerOptions = {
+      root: scrollRef.current,
+      threshold: 0.5, // 이미지의 50% 이상이 보일 때 활성화
+      rootMargin: '0px',
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const targetIndex = imageRefs.current.findIndex(
+            (ref) => ref === entry.target
+          )
+          if (targetIndex !== -1) {
+            setIndex(targetIndex)
+          }
+        }
+      })
+    }, observerOptions)
+
+    // 각 이미지 관찰 시작
+    imageRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref)
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [images])
 
   function imagePreviewClick(i: number) {
     if (scrollRef.current) {
@@ -62,6 +94,9 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         {images.map((image, i) => (
           <div
             key={i}
+            ref={(el) => {
+              imageRefs.current[i] = el
+            }}
             className="relative w-full flex-shrink-0 snap-center"
             style={{ paddingTop: '100%' }}
           >

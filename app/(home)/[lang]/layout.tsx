@@ -30,9 +30,11 @@ export async function generateStaticParams() {
 export default async function RootLayout({
   children,
   params,
+  modal,
 }: Readonly<{
   children: ReactNode
   params: Promise<{ lang: 'en' | 'ko' }>
+  modal?: boolean
 }>) {
   return (
     <html
@@ -41,6 +43,7 @@ export default async function RootLayout({
     >
       <body>
         <Header />
+        {modal}
         {children}
         <Footer />
       </body>

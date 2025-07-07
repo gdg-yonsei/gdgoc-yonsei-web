@@ -20,26 +20,28 @@ export default function SessionsList({
   return (
     <div
       className={
-        'mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+        'mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 p-4 lg:grid-cols-2'
       }
     >
       {sortedSessions.map((session, i) => (
         <Link
           href={`/sessions/${session.id}`}
           key={i}
-          className={`flex flex-col items-center justify-center rounded-2xl border-2 bg-white p-2 ${i % 4 === 0 && 'border-red-500'} ${i % 4 === 1 && 'border-yellow-500'} ${i % 4 === 2 && 'border-green-600'} ${i % 4 === 3 && 'border-blue-500'}`}
+          className={`flex rounded-xl bg-white shadow-xl`}
         >
-          <h2 className={'p-2 text-xl font-semibold'}>{session.name}</h2>
           <Image
             src={session.mainImage}
             width={200}
             height={200}
             alt={session.name}
-            className={'aspect-square w-full object-cover'}
+            className={'aspect-5/4 w-2/3 rounded-l-xl object-cover'}
           />
-          <p className={'text-lg font-semibold'}>
-            {formatDateYYYYMMDD(new Date(session.updatedAt))}
-          </p>
+          <div className={'flex w-1/3 flex-col justify-between p-2'}>
+            <h2 className={'text-2xl font-semibold'}>{session.name}</h2>
+            <p className={'ml-auto'}>
+              {formatDateYYYYMMDD(new Date(session.updatedAt))}
+            </p>
+          </div>
         </Link>
       ))}
     </div>
