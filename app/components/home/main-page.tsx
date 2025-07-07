@@ -1,4 +1,4 @@
-import HomePageBackground from '@/app/(home)/[lang]/home-page-background'
+import HomePageBackground from '@/app/components/home/home-page-background'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 
 export default function MainPage() {
