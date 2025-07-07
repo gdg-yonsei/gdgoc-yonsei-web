@@ -1,6 +1,5 @@
 import PopUpDiv from '@/app/components/pop-up-div'
 import GDGLogo from '@/app/components/svg/gdg-logo'
-import OpacityDiv from '@/app/components/opacity-div'
 
 export default function AboutPage() {
   return (
@@ -42,43 +41,28 @@ export default function AboutPage() {
           </h2>
         </div>
         <div className={'grid grid-cols-1 gap-4 md:grid-cols-3'}>
-          <OpacityDiv
-            transition={{
-              delay: 0.2,
-            }}
-            className={'ring-gdg-red-300 rounded-lg bg-white p-4 ring-2'}
-          >
+          <div className={'ring-gdg-red-300 rounded-lg bg-white p-4 ring-2'}>
             <h3 className={'text-xl font-semibold'}>Community</h3>
             <p>
               A student developer group at Yonsei University that fosters
               collaboration and shares knowledge about the development
               ecosystem.
             </p>
-          </OpacityDiv>
-          <OpacityDiv
-            transition={{
-              delay: 0.4,
-            }}
-            className={'ring-gdg-green-300 rounded-lg bg-white p-4 ring-2'}
-          >
+          </div>
+          <div className={'ring-gdg-green-300 rounded-lg bg-white p-4 ring-2'}>
             <h3 className={'text-xl font-semibold'}>Tech</h3>
             <p>
               Focused on using technology to address real-world community issues
               and drive positive social change.
             </p>
-          </OpacityDiv>
-          <OpacityDiv
-            transition={{
-              delay: 0.9,
-            }}
-            className={'ring-gdg-blue-300 rounded-lg bg-white p-4 ring-2'}
-          >
+          </div>
+          <div className={'ring-gdg-blue-300 rounded-lg bg-white p-4 ring-2'}>
             <h3 className={'text-xl font-semibold'}>Sustainable Growth</h3>
             <p>
               Aims to nurture developers into professionals who contribute to a
               sustainable society through IT-based solutions.
             </p>
-          </OpacityDiv>
+          </div>
         </div>
       </div>
     </div>
