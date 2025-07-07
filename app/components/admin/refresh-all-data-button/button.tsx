@@ -18,7 +18,7 @@ export default function Button() {
           className={'size-4 border-2 border-neutral-700 border-t-white'}
         />
       )}
-      {pending ? 'Refresh...' : 'Refresh All Data'}
+      {pending ? 'Refresh...' : 'Refresh Cache Data'}
     </button>
   )
 }
