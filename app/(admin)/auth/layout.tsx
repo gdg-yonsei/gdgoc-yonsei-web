@@ -1,6 +1,16 @@
 import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    default: 'GYMS',
+    template: '%s | GYMS',
+  },
+  description:
+    'Google Developer Group on Campus Yonsei University Management System',
+}
 
 export default async function AuthLayout({
   children,

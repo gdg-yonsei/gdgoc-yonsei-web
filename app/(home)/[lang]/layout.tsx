@@ -8,7 +8,6 @@ import { PerformanceTracker } from '@/app/components/performance-tracker'
 import localFont from 'next/font/local'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
   title: {
     default: 'GDGoC Yonsei',
     template: '%s | GDGoC Yonsei',

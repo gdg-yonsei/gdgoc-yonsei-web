@@ -1,5 +1,10 @@
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Sign In',
+}
 
 /**
  * Sing In Page
