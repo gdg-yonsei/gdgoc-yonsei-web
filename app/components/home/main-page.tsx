@@ -3,7 +3,7 @@ import GDGLogo from '@/app/components/svg/gdg-logo'
 
 export default function MainPage() {
   return (
-    <div
+    <section
       className={
         'relative flex h-screen w-screen items-center justify-center overflow-hidden p-8 pt-16'
       }
@@ -27,6 +27,6 @@ export default function MainPage() {
           </p>
         </h1>
       </div>
-    </div>
+    </section>
   )
 }

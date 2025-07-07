@@ -3,7 +3,7 @@ import GDGLogo from '@/app/components/svg/gdg-logo'
 
 export default function AboutPage() {
   return (
-    <div
+    <section
       className={
         'flex min-h-screen w-full flex-col items-center justify-center bg-neutral-200 p-4 pt-16 md:gap-12 md:py-24'
       }
@@ -65,6 +65,6 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
