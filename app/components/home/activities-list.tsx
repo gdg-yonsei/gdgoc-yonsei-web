@@ -19,7 +19,7 @@ const activities = [
     title: 'Part Session',
     content: {
       en: 'GDG Yonsei is divided into six specialized departments—Front-End, Back-End, ML/AI, Cloud, UI/UX, and Developer Relations—each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
-      ko: 'GDG Yonsei는 프론트엔드, 백엔드, ML/AI, UI/UX, Developer Relations의 여섯 개 전문 파트로 구성되어 있으며, 각 파트는 소수의 선발된 인원으로 이루어져 있습니다. 이들은 고급 기술 역량 강화를 위해 스터디와 워크숍을 진행합니다.',
+      ko: 'GDG Yonsei는 프론트엔드, 백엔드, ML/AI, Cloud, UI/UX, Developer Relations의 여섯 개 전문 파트로 구성되어 있으며, 각 파트는 소수의 선발된 인원으로 이루어져 있습니다. 이들은 고급 기술 역량 강화를 위해 스터디와 워크숍을 진행합니다.',
     },
     className: 'bg-gdg-green-300 ring-gdg-green-300 flex-shrink-0',
   },
