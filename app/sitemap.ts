@@ -85,7 +85,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...sessionsList,
   ]
 
-  console.log(intlSitemapGenerator(sitemapList))
-
   return intlSitemapGenerator(sitemapList)
 }

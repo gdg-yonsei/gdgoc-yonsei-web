@@ -27,13 +27,8 @@ const activities = [
     key: 'Solution Challenge',
     title: 'Solution Challenge',
     content: {
-      en: "We participated in the 2023 Solution Challenge, an annual international student development competition organized by Google for Developers. We designed and built a product aimed at contributing to the achievement of the UN's Sustainable Development Goals (SDGs). GDG Yonsei achieved the highest award rate among university chapters in South Korea. - 2,100 teams participated from university GDGs worldwide - Six teams from GDG Yonsei participated - Three teams making it to the Top 100 - One team being selected as a Top 10 Finalist This achievement highlights our group's strong technical capabilities and social impact.",
-      ko:
-        '우리는 Google for Developers가 주최하는 국제 대학생 개발 대회인 2023 Solution Challenge에 참가했습니다. 이 대회는 UN의 지속가능발전목표(SDGs) 달성에 기여할 수 있는 제품을 설계하고 개발하는 것을 목표로 합니다. GDG Yonsei는 한국 내 대학 챕터 중 가장 높은 수상률을 기록했습니다.\n' +
-        '\t•\t전 세계 GDG 대학 챕터에서 총 2,100개 팀이 참가\n' +
-        '\t•\tGDG Yonsei에서 6개 팀이 참가\n' +
-        '\t•\t이 중 3개 팀이 Top 100에 선정\n' +
-        '\t•\t1개 팀은 Top 10 파이널리스트로 선정\n',
+      en: "We participated in the Solution Challenge, an annual international student development competition organized by Google for Developers. We designed and built a product aimed at contributing to the achievement of the UN's Sustainable Development Goals (SDGs). GDG Yonsei achieved the highest award rate among university chapters in South Korea. - 2,100 teams participated from university GDGs worldwide - Six teams from GDG Yonsei participated - Three teams making it to the Top 100 - One team being selected as a Top 10 Finalist This achievement highlights our group's strong technical capabilities and social impact.",
+      ko: 'Google for Developers가 주최하는 국제 대학생 개발 대회인 Solution Challenge에 참가합니다. 이 대회는 UN의 지속가능발전목표(SDGs) 달성에 기여할 수 있는 제품을 설계하고 개발하는 것을 목표로 합니다. 2023년 대회에서 전 세계 GDG 대학 챕터에서 총 2,100개 팀이 참가하였으며 GDG Yonsei에서 6개 팀이 참가하였습니다. 이 중 3개 팀이 Top 100에 선정되었고 1개 팀은 Top 10 파이널리스트로 선정되었습니다. GDGoC Yonsei는 한국 내 대학 챕터 중 가장 높은 수상률을 기록했습니다.',
     },
     className: 'bg-gdg-yellow-300 ring-gdg-yellow-300 flex-shrink-0',
   },
