@@ -11,20 +11,26 @@ export default function ActivityCard({
   setModalOpen,
 }: {
   title: string
-  content: string
+  content: { en: string; ko: string }
   className?: string
   modalOpen:
     | false
     | {
         title: string
-        content: string
+        content: {
+          en: string
+          ko: string
+        }
       }
   setModalOpen: Dispatch<
     SetStateAction<
       | false
       | {
           title: string
-          content: string
+          content: {
+            en: string
+            ko: string
+          }
         }
     >
   >

@@ -1,6 +1,6 @@
 import ActivitiesList from '@/app/components/home/activities-list'
 
-export default function ActivitiesPage() {
+export default function ActivitiesPage({ lang }: { lang: string }) {
   return (
     <section
       className={
@@ -8,9 +8,11 @@ export default function ActivitiesPage() {
       }
     >
       <div className={'flex w-full max-w-4xl flex-col items-center gap-4'}>
-        <h2 className={'text-3xl font-bold md:text-5xl'}>Activities</h2>
+        <h2 className={'text-3xl font-bold md:text-5xl'}>
+          {lang === 'ko' ? '주요 활동' : 'Activities'}
+        </h2>
       </div>
-      <ActivitiesList />
+      <ActivitiesList lang={lang} />
     </section>
   )
 }

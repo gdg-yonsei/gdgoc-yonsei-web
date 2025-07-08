@@ -13,6 +13,7 @@ export default function MainPage() {
         <GDGLogo svgKey={'main'} className={'w-40 md:w-64'} />
         <h1 className={'flex flex-col gap-4'}>
           <p className={'text-2xl md:text-4xl'}>Welcome to</p>
+
           <div
             className={
               'flex flex-col gap-3 text-4xl font-semibold md:text-6xl lg:flex-row'

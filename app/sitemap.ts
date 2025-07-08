@@ -1,6 +1,20 @@
 import type { MetadataRoute } from 'next'
 import db from '@/db'
 
+function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
+  const langs = ['ko', 'en']
+
+  return langs.flatMap((lang) => {
+    return MetadataRoute.map((item) => ({
+      ...item,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${lang}${item.url}`,
+      lastModified: item.lastModified || new Date(),
+      changeFrequency: item.changeFrequency || 'monthly',
+      priority: item.priority || 0.5,
+    }))
+  })
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectsList: MetadataRoute.Sitemap = (
     await db.query.projects.findMany({
@@ -12,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   ).map((project) => {
     return {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/projects/${project.id}`,
+      url: `/projects/${project.id}`,
       lastModified:
         project.updatedAt > project.createdAt
           ? project.updatedAt
@@ -32,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   ).map((session) => {
     return {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/sessions/${session.id}`,
+      url: `/sessions/${session.id}`,
       lastModified:
         session.updatedAt > session.createdAt
           ? session.updatedAt
@@ -42,38 +56,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   })
 
-  return [
+  const sitemapList: MetadataRoute.Sitemap = [
     {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+      url: '',
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 1,
     },
     {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/projects`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/sessions`,
+      url: `/projects`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/members`,
+      url: `/sessions`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/recruit`,
+      url: `/members`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     ...projectsList,
     ...sessionsList,
   ]
+
+  console.log(intlSitemapGenerator(sitemapList))
+
+  return intlSitemapGenerator(sitemapList)
 }

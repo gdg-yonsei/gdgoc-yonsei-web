@@ -5,6 +5,7 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 
 export default function Button() {
   const { pending } = useFormStatus()
+
   return (
     <button
       type={'submit'}
