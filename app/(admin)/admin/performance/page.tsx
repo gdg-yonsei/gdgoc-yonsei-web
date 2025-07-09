@@ -177,10 +177,10 @@ export default function PerformancePage() {
     return (
       <div className="min-h-screen p-8">
         <div className="mx-auto max-w-7xl">
-          <h1 className="mb-8 text-3xl font-bold">웹사이트 성능 분석</h1>
+          <h1 className="mb-8 text-3xl font-bold">Website Performance</h1>
           <div className="py-12 text-center">
             <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">성능 데이터를 불러오는 중...</p>
+            <p className="mt-4 text-gray-600">loading data...</p>
           </div>
         </div>
       </div>
@@ -191,14 +191,14 @@ export default function PerformancePage() {
     return (
       <div className="min-h-screen p-8">
         <div className="mx-auto max-w-7xl">
-          <h1 className="mb-8 text-3xl font-bold">웹사이트 성능 분석</h1>
+          <h1 className="mb-8 text-3xl font-bold">Website Performance</h1>
           <div className="py-12 text-center">
-            <p className="text-red-600">오류: {error}</p>
+            <p className="text-red-600">Error: {error}</p>
             <button
               onClick={fetchPerformanceData}
               className="mt-4 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
-              다시 시도
+              Retry
             </button>
           </div>
         </div>
@@ -210,24 +210,24 @@ export default function PerformancePage() {
     <div className="min-h-screen p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row">
-          <h1 className="text-3xl font-bold">웹사이트 성능 분석</h1>
+          <h1 className="text-3xl font-bold">Website Performance</h1>
           <div className="flex flex-wrap items-center space-x-4">
-            <label className="text-sm font-medium">기간:</label>
+            <label className="text-sm font-medium">Date Range:</label>
             <select
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
               className="rounded border px-3 py-1 text-sm"
             >
-              <option value={1}>1일</option>
-              <option value={7}>7일</option>
-              <option value={30}>30일</option>
-              <option value={90}>90일</option>
+              <option value={1}>1 Day</option>
+              <option value={7}>7 Days</option>
+              <option value={30}>30 Days</option>
+              <option value={90}>90 Days</option>
             </select>
             <button
               onClick={fetchPerformanceData}
               className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
             >
-              새로고침
+              Refresh Data
             </button>
             <button
               onClick={handleRealTimeCollection}
@@ -238,7 +238,7 @@ export default function PerformancePage() {
                   : 'bg-green-600 text-white hover:bg-green-700'
               }`}
             >
-              {isCollectingMetrics ? '🔄 측정 중...' : '📊 실시간 측정'}
+              {isCollectingMetrics ? '🔄 Testing...' : '📊 Real-time Test'}
             </button>
           </div>
         </div>
@@ -249,8 +249,9 @@ export default function PerformancePage() {
             <div className="flex items-center">
               <div className="mr-3 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
               <p className="text-blue-800">
-                현재 페이지의 성능을 실시간으로 측정하고 있습니다. 측정 완료 후
-                자동으로 데이터가 업데이트됩니다.
+                We are currently measuring the performance of the page in real
+                time. The data will be automatically updated once the
+                measurement is complete.
               </p>
             </div>
           </div>
@@ -359,7 +360,9 @@ export default function PerformancePage() {
             {/* 디바이스별 성능 */}
             <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
               <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">디바이스별 성능</h3>
+                <h3 className="mb-4 text-lg font-semibold">
+                  Performance by Device
+                </h3>
                 <div className="space-y-3">
                   {data.deviceStats.map((device) => (
                     <div
@@ -371,7 +374,7 @@ export default function PerformancePage() {
                           {device.deviceType}
                         </span>
                         <span className="ml-2 text-sm text-gray-500">
-                          ({device.count} 샘플)
+                          ({device.count} samples)
                         </span>
                       </div>
                       <div className="text-right">
@@ -388,7 +391,9 @@ export default function PerformancePage() {
               </div>
 
               <div className="rounded-lg bg-white p-6 shadow">
-                <h3 className="mb-4 text-lg font-semibold">브라우저별 성능</h3>
+                <h3 className="mb-4 text-lg font-semibold">
+                  Performance by Browser
+                </h3>
                 <div className="space-y-3">
                   {data.browserStats.map((browser) => (
                     <div
@@ -419,22 +424,26 @@ export default function PerformancePage() {
 
             {/* 요약 정보 */}
             <div className="rounded-lg bg-white p-6 shadow">
-              <h3 className="mb-4 text-lg font-semibold">분석 요약</h3>
+              <h3 className="mb-4 text-lg font-semibold">Analysis Report</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
-                  <span className="text-sm text-gray-500">총 샘플 수</span>
+                  <span className="text-sm text-gray-500">
+                    Total Sample Size
+                  </span>
                   <div className="text-2xl font-bold">
                     {data.summary?.sampleCount || 0}
                   </div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">평균 로드 시간</span>
+                  <span className="text-sm text-gray-500">
+                    Average Load Time
+                  </span>
                   <div className="text-2xl font-bold">
                     {formatMs(data.summary?.avgLoadTime)}
                   </div>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">분석 기간</span>
+                  <span className="text-sm text-gray-500">Analysis Period</span>
                   <div className="text-lg">{data.dateRange.days}일</div>
                 </div>
               </div>
