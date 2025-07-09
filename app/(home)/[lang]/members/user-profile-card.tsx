@@ -17,55 +17,63 @@ export default function UserProfileCard({
   userData: UserProfileType
 }) {
   return (
-    <div className={'flex flex-col gap-2'}>
+    <div
+      className={
+        'flex w-full items-center gap-2 rounded-2xl bg-white p-4 shadow-lg'
+      }
+    >
       {userData.image ? (
         <Image
           src={userData.image}
           alt={userData.name + ' Profile Image'}
           width={100}
           height={100}
-          className={'aspect-41/55 w-full max-w-32 rounded-xl object-cover'}
+          className={'aspect-square w-full max-w-20 rounded-full object-cover'}
         />
       ) : (
         <div
-          className={'aspect-41/55 w-full max-w-52 rounded-3xl bg-neutral-500'}
+          className={
+            'aspect-square w-full max-w-20 rounded-full bg-neutral-500'
+          }
         />
       )}
-      <div className={'text-xl font-semibold underline'}>
-        {formatUserName(
-          userData.name,
-          userData.firstName,
-          userData.lastName,
-          userData.isForeigner
-        )}
-      </div>
-      <div className={'flex w-full items-center justify-start gap-2'}>
-        {userData.email && (
-          <Link href={`mailto:${userData.email}`}>
-            <EnvelopeIcon className={'size-10'} />
-          </Link>
-        )}
-        {userData.linkedInId && (
-          <Link href={userData.linkedInId} target={'_blank'}>
-            <LinkedIn className={'size-8'} />
-          </Link>
-        )}
-        {userData.instagramId && (
-          <Link
-            href={'https://www.instagram.com/' + userData.instagramId}
-            target={'_blank'}
-          >
-            <InstagramWhiteBg className={'size-10'} />
-          </Link>
-        )}
-        {userData.githubId && (
-          <Link
-            href={'https://github.com/' + userData.githubId}
-            target={'_blank'}
-          >
-            <Github className={'size-8'} />
-          </Link>
-        )}
+      <div className={'flex w-full flex-col'}>
+        <div className={'text-xl font-semibold underline'}>
+          {formatUserName(
+            userData.name,
+            userData.firstName,
+            userData.lastName,
+            userData.isForeigner
+          )}
+        </div>
+        <div className={'flex w-full items-center justify-start gap-2'}>
+          {userData.email && (
+            <Link href={`mailto:${userData.email}`}>
+              <EnvelopeIcon className={'size-8'} />
+            </Link>
+          )}
+          {userData.linkedInId && (
+            <Link href={userData.linkedInId} target={'_blank'}>
+              <LinkedIn className={'size-6'} />
+            </Link>
+          )}
+          {userData.instagramId && (
+            <Link
+              href={'https://www.instagram.com/' + userData.instagramId}
+              target={'_blank'}
+            >
+              <InstagramWhiteBg className={'size-8'} />
+            </Link>
+          )}
+          {userData.githubId && (
+            <Link
+              href={'https://github.com/' + userData.githubId}
+              target={'_blank'}
+            >
+              <Github className={'size-7'} />
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   )

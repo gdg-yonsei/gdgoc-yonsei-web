@@ -64,7 +64,7 @@ export default async function MemberPage({
             alt={'User Profile Image'}
             width={160}
             height={160}
-            className={'aspect-41/55 w-40 rounded-xl'}
+            className={'aspect-square w-40 rounded-full'}
           />
         </div>
         <div className={'member-data-box'}>
