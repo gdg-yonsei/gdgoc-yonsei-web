@@ -22,7 +22,7 @@ export default async function MembersTable() {
           href={`/admin/members/${member.id}`}
           key={member.id}
           className={
-            'flex items-center gap-2 rounded-2xl bg-white p-4 shadow-lg'
+            'flex items-center gap-2 rounded-2xl bg-white p-2 shadow-lg'
           }
         >
           <UserProfileImage
@@ -37,9 +37,9 @@ export default async function MembersTable() {
               {formatUserName(member.name, member.firstName, member.lastName)}
             </div>
             <div className={'flex items-center gap-2 text-sm'}>
-              {member.generation && <div>{member.generation}</div>}
-              <div>{member.role.toUpperCase()}</div>
-              <div>{member.part}</div>
+              {member?.generation && <div>{member.generation}</div>}
+              <div>{member?.part}</div>
+              <div>{member?.role.toUpperCase()}</div>
             </div>
           </div>
         </Link>

@@ -51,7 +51,7 @@ export default function Sidebar({
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       {/*관리자 페이지 내비게이터 리스트*/}
-      <div className={'flex w-full flex-col gap-4 pt-4'}>
+      <div className={'flex w-full flex-col gap-2 pt-4'}>
         {navigations.map((item, i) => (
           <SidebarNavigator href={item.path} key={i}>
             {item.name}
