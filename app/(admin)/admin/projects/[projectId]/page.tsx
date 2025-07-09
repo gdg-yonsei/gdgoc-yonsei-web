@@ -61,12 +61,22 @@ export default async function ProjectPage({
       </div>
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Name</div>
+          <div className={'member-data-title'}>Name (English)</div>
           <div className={'member-data-content'}>{projectData.name}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Description</div>
+          <div className={'member-data-title'}>Name (Korean)</div>
+          <div className={'member-data-content'}>{projectData.nameKo}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Description (English)</div>
           <div className={'member-data-content'}>{projectData.description}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Description (Korean)</div>
+          <div className={'member-data-content'}>
+            {projectData.descriptionKo}
+          </div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Generation</div>
@@ -125,6 +135,10 @@ export default async function ProjectPage({
         <div className={'prose member-data-col-span w-full py-8'}>
           <div className={'member-data-title'}>Content</div>
           <SafeMDX source={projectData.content} />
+        </div>
+        <div className={'prose member-data-col-span w-full py-8'}>
+          <div className={'member-data-title'}>Content (Korean)</div>
+          <SafeMDX source={projectData.contentKo} />
         </div>
       </div>
     </AdminDefaultLayout>

@@ -32,8 +32,11 @@ export async function createProjectAction(
   // form data 에서 프로젝트 데이터를 추출
   const {
     name,
+    nameKo,
     description,
+    descriptionKo,
     content,
+    contentKo,
     mainImage,
     contentImages,
     participants,
@@ -44,8 +47,11 @@ export async function createProjectAction(
     // zod validation
     projectValidation.parse({
       name,
+      nameKo,
       description,
+      descriptionKo,
       content,
+      contentKo,
       mainImage,
       contentImages,
       participants,
@@ -69,12 +75,15 @@ export async function createProjectAction(
         .insert(projects)
         .values({
           name: name,
+          nameKo: nameKo!,
           description: description!,
+          descriptionKo: descriptionKo!,
           authorId: session.user.id,
           generationId: Number(generationId),
           images: contentImages,
           mainImage: mainImage!,
           content: content!,
+          contentKo: contentKo!,
         })
         .returning({ id: projects.id })
     )[0]

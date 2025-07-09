@@ -7,18 +7,24 @@
  * @param firstName
  * @param lastName
  * @param isForeigner
+ * @param isKorean
  */
 export default function formatUserName(
   name: string | null | undefined,
   firstName: string | null | undefined,
   lastName: string | null | undefined,
-  isForeigner: boolean = false
+  isForeigner: boolean = false,
+  isKorean: boolean = false
 ) {
   if (firstName && lastName) {
     if (isForeigner) {
       return `${firstName} ${lastName}`
     }
-    return `${lastName} ${firstName}`
+    if (isKorean) {
+      return `${lastName}${firstName}`
+    } else {
+      return `${lastName} ${firstName}`
+    }
   }
   if (name) {
     return name

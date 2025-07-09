@@ -5,8 +5,10 @@ import { z } from 'zod'
  */
 export const memberValidation = z.object({
   name: z.string().nonempty('Name is required'),
-  firstName: z.string().nonempty('First Name is required'),
-  lastName: z.string().nonempty('Last Name is required'),
+  firstName: z.string().nonempty('First Name (English) is required'),
+  firstNameKo: z.string().nonempty('First Name (Korean) is required'),
+  lastName: z.string().nonempty('Last Name (English) is required'),
+  lastNameKo: z.string().nonempty('Last Name (Korean) is required'),
   email: z.string().email().nullable(),
   githubId: z.string().nullable(),
   instagramId: z.string().nullable(),

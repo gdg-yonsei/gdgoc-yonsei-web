@@ -60,14 +60,26 @@ export default async function EditProjectPage({
         <DataInput
           defaultValue={projectData.name}
           name={'name'}
-          placeholder={'Project Name'}
-          title={'Project Name'}
+          placeholder={'Project Name (English)'}
+          title={'Project Name (English)'}
+        />
+        <DataInput
+          defaultValue={projectData.nameKo}
+          name={'nameKo'}
+          placeholder={'Project Name (Korean)'}
+          title={'Project Name (Korean)'}
         />
         <DataInput
           defaultValue={projectData.description}
           name={'description'}
-          placeholder={'Project Description'}
-          title={'Project Description'}
+          placeholder={'Project Description (English)'}
+          title={'Project Description (English)'}
+        />
+        <DataInput
+          defaultValue={projectData.descriptionKo}
+          name={'descriptionKo'}
+          placeholder={'Project Description (Korean)'}
+          title={'Project Description (Korean)'}
         />
         <DataSelectInput
           title={'Generation'}
@@ -106,10 +118,16 @@ export default async function EditProjectPage({
           </div>
         </div>
         <MDXEditor
-          title={'Content'}
+          title={'Content (English)'}
           name={'content'}
           defaultValue={projectData.content}
           placeholder={'Please write content'}
+        />
+        <MDXEditor
+          title={'Content (Korean)'}
+          name={'contentKo'}
+          defaultValue={projectData.contentKo}
+          placeholder={'Please write content (Korean)'}
         />
         <SubmitButton />
       </DataForm>

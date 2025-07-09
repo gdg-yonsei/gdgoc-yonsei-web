@@ -65,15 +65,26 @@ export default async function CreateProjectPage() {
           </div>
         </div>
         <DataInput
-          title={'Name'}
+          title={'Name (English)'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Name'}
+          placeholder={'Name (English)'}
+        />
+        <DataInput
+          title={'Name (Korean)'}
+          defaultValue={''}
+          name={'nameKo'}
+          placeholder={'Name (Korean)'}
         />
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'Description'}
+          placeholder={'Description (English)'}
+        />
+        <DataTextarea
+          defaultValue={''}
+          name={'descriptionKo'}
+          placeholder={'Description (Korean)'}
         />
         <DataSelectInput
           title={'Generation'}
@@ -83,9 +94,14 @@ export default async function CreateProjectPage() {
         />
         <MembersSelectInput membersList={membersList} defaultValue={[]} />
         <MDXEditor
-          title={'Project Content'}
+          title={'Project Content (English)'}
           name={'content'}
           placeholder={'Please write content'}
+        />
+        <MDXEditor
+          title={'Project Content (Korean)'}
+          name={'contentKo'}
+          placeholder={'Please write content with Korean'}
         />
         <SubmitButton />
       </DataForm>

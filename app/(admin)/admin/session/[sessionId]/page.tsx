@@ -41,7 +41,7 @@ export default async function SessionPage({
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/sessions'}>
+      <AdminNavigationButton href={'/admin/session'}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
@@ -51,7 +51,7 @@ export default async function SessionPage({
           session={session}
           dataId={sessionId}
           dataType={'sessions'}
-          href={`/admin/sessions/${sessionId}/edit`}
+          href={`/admin/session/${sessionId}/edit`}
         />
         <DataDeleteButton
           session={session}
@@ -65,8 +65,18 @@ export default async function SessionPage({
           <div className={'member-data-content'}>{sessionData.name}</div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Name (Korean)</div>
+          <div className={'member-data-content'}>{sessionData.nameKo}</div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{sessionData.description}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Description (Korean)</div>
+          <div className={'member-data-content'}>
+            {sessionData.descriptionKo}
+          </div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Generation</div>

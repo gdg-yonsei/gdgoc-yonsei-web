@@ -27,13 +27,26 @@ export default async function UserProfile() {
         alt={'User Profile Image'}
       />
       <div className={'member-data-box'}>
-        <div className={'member-data-title'}>Name</div>
+        <div className={'member-data-title'}>Name (English)</div>
         <div className={'member-data-content'}>
           {formatUserName(
             userData.name,
             userData.firstName,
             userData.lastName,
-            userData.isForeigner
+            userData.isForeigner,
+            false
+          )}
+        </div>
+      </div>
+      <div className={'member-data-box'}>
+        <div className={'member-data-title'}>Name (Korean)</div>
+        <div className={'member-data-content'}>
+          {formatUserName(
+            userData.name,
+            userData.firstNameKo,
+            userData.lastNameKo,
+            false,
+            true
           )}
         </div>
       </div>

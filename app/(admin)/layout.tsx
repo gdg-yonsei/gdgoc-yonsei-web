@@ -15,7 +15,7 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html className={`bg-neutral-50 ${googleSans.className}`}>
+    <html lang={'en'} className={`bg-neutral-50 ${googleSans.className}`}>
       <body>{children}</body>
     </html>
   )

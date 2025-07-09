@@ -68,12 +68,20 @@ export default async function MemberPage({
           />
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>First Name</div>
+          <div className={'member-data-title'}>First Name (English)</div>
           <div className={'member-data-content'}>{memberData.firstName}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Last Name</div>
+          <div className={'member-data-title'}>Last Name (English)</div>
           <div className={'member-data-content'}>{memberData.lastName}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>First Name (Korean)</div>
+          <div className={'member-data-content'}>{memberData.firstNameKo}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Last Name (Korean)</div>
+          <div className={'member-data-content'}>{memberData.lastNameKo}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>E-Mail</div>

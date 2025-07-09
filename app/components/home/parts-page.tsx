@@ -11,14 +11,14 @@ const partsData = [
   {
     title: 'Back-End',
     content: {
-      en: 'Responsible for server and infrastructure development. Members give presentations and engage in open discussions on topics of interest, ranging from server domain design (such as DDD, MSA, JPA) to infrastructure during team sessions.',
+      en: 'Responsible for server and infrastructure development. Members give presentations and engage in open discussions on topics of interest, ranging from server domain design (such as DDD, MSA, JPA) to infrastructure during team session.',
       ko: '서버 및 인프라 개발을 담당합니다. 팀 세션에서는 DDD, MSA, JPA와 같은 서버 도메인 설계부터 인프라에 이르기까지 다양한 주제를 발표하고 자유롭게 토론합니다.',
     },
   },
   {
     title: 'ML/AI',
     content: {
-      en: 'Focus on understanding and applying machine learning and artificial intelligence models. In weekly team sessions, members explore and present AI topics of interest, followed by open discussions.',
+      en: 'Focus on understanding and applying machine learning and artificial intelligence models. In weekly team session, members explore and present AI topics of interest, followed by open discussions.',
       ko: '머신러닝과 인공지능 모델을 이해하고 적용하는 데 중점을 둡니다. 매주 팀 세션에서는 구성원들이 관심 있는 AI 주제를 탐구하고 발표한 뒤, 자유로운 토론을 진행합니다.',
     },
   },

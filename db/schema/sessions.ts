@@ -14,7 +14,9 @@ import { relations } from 'drizzle-orm'
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   name: text('name').notNull(),
+  nameKo: text('nameKo'),
   description: text('description'),
+  descriptionKo: text('descriptionKo'),
   mainImage: text('mainImage').notNull().default('/session-default.png'),
   images: jsonb('images').$type<string[]>().notNull().default([]),
   authorId: text('authorId')

@@ -32,7 +32,9 @@ export async function createSessionAction(
   // form data 에서 part data 추출
   const {
     name,
+    nameKo,
     description,
+    descriptionKo,
     mainImage,
     contentImages,
     generationId,
@@ -43,7 +45,9 @@ export async function createSessionAction(
     // zod validation
     sessionValidation.parse({
       name,
+      nameKo,
       description,
+      descriptionKo,
       mainImage,
       contentImages,
       generationId,
@@ -66,7 +70,9 @@ export async function createSessionAction(
       .insert(sessions)
       .values({
         name: name,
+        nameKo: nameKo!,
         description: description!,
+        descriptionKo: descriptionKo!,
         authorId: session.user.id,
         images: contentImages,
         mainImage: mainImage!,
@@ -83,5 +89,5 @@ export async function createSessionAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/sessions`)
+  redirect(`/admin/session`)
 }

@@ -15,8 +15,11 @@ import { generations } from '@/db/schema/generations'
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   name: text('name').notNull(),
+  nameKo: text('nameKo'),
   description: text('description').notNull().default(''),
+  descriptionKo: text('descriptionKo'),
   content: text('content').notNull().default(''),
+  contentKo: text('contentKo').notNull().default(''),
   mainImage: text('mainImage').notNull().default('/project-default.png'),
   images: jsonb('images').$type<string[]>().notNull().default([]),
   authorId: text('authorId')

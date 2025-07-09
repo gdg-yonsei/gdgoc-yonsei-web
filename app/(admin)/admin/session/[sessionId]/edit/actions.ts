@@ -35,7 +35,9 @@ export async function updateSessionAction(
   // form data 에서 session data 추출
   const {
     name,
+    nameKo,
     description,
+    descriptionKo,
     contentImages,
     mainImage,
     generationId,
@@ -46,7 +48,9 @@ export async function updateSessionAction(
     // zod validation
     sessionValidation.parse({
       name,
+      nameKo,
       description,
+      descriptionKo,
       contentImages,
       mainImage,
       generationId,
@@ -97,7 +101,9 @@ export async function updateSessionAction(
       .update(sessions)
       .set({
         name: name!,
+        nameKo: nameKo!,
         description: description!,
+        descriptionKo: descriptionKo!,
         images: contentImages,
         mainImage: mainImage!,
         updatedAt: new Date(),
@@ -114,5 +120,5 @@ export async function updateSessionAction(
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동
-  redirect(`/admin/sessions/${sessionId}`)
+  redirect(`/admin/session/${sessionId}`)
 }

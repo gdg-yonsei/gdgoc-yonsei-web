@@ -39,7 +39,7 @@ export default async function navigationList(userId: string | undefined) {
     },
     {
       name: 'Sessions',
-      path: '/admin/sessions',
+      path: '/admin/session',
       dataResource: 'sessionsPage',
     },
     {

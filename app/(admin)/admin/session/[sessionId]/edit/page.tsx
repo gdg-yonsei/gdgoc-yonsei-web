@@ -7,7 +7,7 @@ import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
-import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
+import { updateSessionAction } from '@/app/(admin)/admin/session/[sessionId]/edit/actions'
 import { getSession } from '@/lib/fetcher/admin/get-session'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
@@ -43,7 +43,7 @@ export default async function EditSessionPage({
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={`/admin/sessions/${sessionId}`}>
+      <AdminNavigationButton href={`/admin/session/${sessionId}`}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>{sessionData.name} Session</p>
       </AdminNavigationButton>
@@ -55,14 +55,26 @@ export default async function EditSessionPage({
         <DataInput
           defaultValue={sessionData.name}
           name={'name'}
-          placeholder={'Session Name'}
-          title={'Session Name'}
+          placeholder={'Session Name (English)'}
+          title={'Session Name (English)'}
+        />
+        <DataInput
+          defaultValue={sessionData.nameKo}
+          name={'nameKo'}
+          placeholder={'Session Name (Korean)'}
+          title={'Session Name (Korean)'}
         />
         <DataInput
           defaultValue={sessionData.description}
           name={'description'}
-          placeholder={'Session Description'}
-          title={'Session Description'}
+          placeholder={'Session Description (English)'}
+          title={'Session Description (English)'}
+        />
+        <DataInput
+          defaultValue={sessionData.descriptionKo}
+          name={'descriptionKo'}
+          placeholder={'Session Description (Korean)'}
+          title={'Session Description (Korean)'}
         />
         <DataInput
           defaultValue={sessionData.eventDate}
@@ -84,7 +96,7 @@ export default async function EditSessionPage({
         >
           <div>
             <DataImageInput
-              baseUrl={'/admin/sessions/main-image'}
+              baseUrl={'/admin/session/main-image'}
               title={'Main Image'}
               name={'mainImage'}
               defaultValue={sessionData.mainImage}
@@ -94,7 +106,7 @@ export default async function EditSessionPage({
           </div>
           <div>
             <DataMultipleImageInput
-              baseUrl={'/api/admin/sessions/content-image'}
+              baseUrl={'/api/admin/session/content-image'}
               name={'contentImages'}
               title={'Images'}
               defaultValue={sessionData.images.map((image) => image)}

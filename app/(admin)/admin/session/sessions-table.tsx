@@ -9,7 +9,7 @@ function SessionCard({
 }) {
   return (
     <Link
-      href={`/admin/sessions/${session.id}`}
+      href={`/admin/session/${session.id}`}
       className={'flex flex-col rounded-xl bg-white'}
     >
       <Image
@@ -21,17 +21,19 @@ function SessionCard({
         placeholder={'blur'}
         blurDataURL={'/default-image.png'}
       />
-
-      <div className={'p-4'}>
-        <div className={'pb-2 text-xl font-semibold'}>{session.name}</div>
+      <div
+        className={'flex h-full flex-col items-start justify-between p-2 px-4'}
+      >
+        <div>
+          <div className={'text-xl font-semibold'}>{session.name}</div>
+          <div className={'pb-2 text-xl font-semibold'}>{session.nameKo}</div>
+        </div>
         <div className={'flex flex-col text-sm'}>
-          <div>
-            {new Intl.DateTimeFormat('ko-KR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }).format(new Date(session.eventDate))}
-          </div>
+          {new Intl.DateTimeFormat('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }).format(new Date(session.eventDate))}
         </div>
       </div>
     </Link>

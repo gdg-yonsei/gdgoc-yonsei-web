@@ -36,8 +36,11 @@ export async function updateProjectAction(
   // form data 에서 project data 추출
   const {
     name,
+    nameKo,
     description,
+    descriptionKo,
     content,
+    contentKo,
     contentImages,
     mainImage,
     participants,
@@ -48,8 +51,11 @@ export async function updateProjectAction(
     // zod validation
     projectValidation.parse({
       name,
+      nameKo,
       description,
+      descriptionKo,
       content,
+      contentKo,
       contentImages,
       mainImage,
       participants,
@@ -100,8 +106,11 @@ export async function updateProjectAction(
       .update(projects)
       .set({
         name: name!,
+        nameKo: nameKo!,
         description: description!,
+        descriptionKo: descriptionKo!,
         content: content!,
+        contentKo: contentKo!,
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),

@@ -34,7 +34,9 @@ export async function updateProfileAction(
   const {
     name,
     firstName,
+    firstNameKo,
     lastName,
+    lastNameKo,
     email,
     githubId,
     instagramId,
@@ -51,7 +53,9 @@ export async function updateProfileAction(
     memberValidation.parse({
       name,
       firstName,
+      firstNameKo,
       lastName,
+      lastNameKo,
       email,
       githubId,
       instagramId,
@@ -77,7 +81,9 @@ export async function updateProfileAction(
       .set({
         name,
         firstName,
+        firstNameKo,
         lastName,
+        lastNameKo,
         email,
         githubId,
         instagramId,

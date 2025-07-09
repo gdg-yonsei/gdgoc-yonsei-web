@@ -34,7 +34,23 @@ export default async function MembersTable() {
           />
           <div className={'p-2'}>
             <div className={'text-lg font-semibold'}>
-              {formatUserName(member.name, member.firstName, member.lastName)}
+              {formatUserName(
+                member.name,
+                member.firstName,
+                member.lastName,
+                member.isForeigner
+              )}
+            </div>
+            <div className={'text-lg font-semibold'}>
+              {member.firstNameKo && member.lastNameKo
+                ? formatUserName(
+                    member.name,
+                    member.firstNameKo,
+                    member.lastNameKo,
+                    member.isForeigner,
+                    true
+                  )
+                : ''}
             </div>
             <div className={'flex items-center gap-2 text-sm'}>
               {member?.generation && <div>{member.generation}</div>}

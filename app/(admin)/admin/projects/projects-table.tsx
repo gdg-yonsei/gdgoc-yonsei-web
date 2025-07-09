@@ -29,7 +29,8 @@ export default async function ProjectsTable() {
           />
 
           <div className={'p-4'}>
-            <div className={'pb-4 text-xl font-semibold'}>{project.name}</div>
+            <div className={'text-xl font-semibold'}>{project.name}</div>
+            <div className={'pb-4 text-xl font-semibold'}>{project.nameKo}</div>
             <div className={'flex flex-col text-sm'}>
               <div>
                 Created At:{' '}

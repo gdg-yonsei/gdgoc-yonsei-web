@@ -18,7 +18,7 @@ export default function SessionPageContent({
   return (
     <div className={'w-full pb-4'}>
       {!isModal && (
-        <NavigationButton href={'/sessions'}>
+        <NavigationButton href={'/session'}>
           <p>Sessions</p>
         </NavigationButton>
       )}

@@ -62,16 +62,28 @@ export default async function EditProfilePage() {
             placeholder={'Github Name'}
           />
           <DataInput
-            title={'First Name* (Public)'}
+            title={'First Name* (English)'}
             defaultValue={memberData.firstName}
             name={'firstName'}
-            placeholder={'First Name'}
+            placeholder={'Yonsei'}
           />
           <DataInput
-            title={'Last Name* (Public)'}
+            title={'First Name* (Korean)'}
+            defaultValue={memberData.firstNameKo}
+            name={'firstNameKo'}
+            placeholder={'연세'}
+          />
+          <DataInput
+            title={'Last Name* (English)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
-            placeholder={'Last Name'}
+            placeholder={'Kim'}
+          />
+          <DataInput
+            title={'Last Name* (Korean)'}
+            defaultValue={memberData.lastNameKo}
+            name={'lastNameKo'}
+            placeholder={'김'}
           />
           <DataInput
             title={'E-Mail (Public)'}

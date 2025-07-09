@@ -6,7 +6,7 @@ import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import DataInput from '@/app/components/admin/data-input'
 import DataTextarea from '@/app/components/admin/data-textarea'
-import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
+import { createSessionAction } from '@/app/(admin)/admin/session/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getGenerations } from '@/lib/fetcher/admin/get-generations'
@@ -27,7 +27,7 @@ export default async function CreateSessionPage() {
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/sessions'}>
+      <AdminNavigationButton href={'/admin/session'}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
@@ -45,14 +45,14 @@ export default async function CreateSessionPage() {
             <DataImageInput
               title={'Main Image'}
               name={'mainImage'}
-              baseUrl={'/api/admin/sessions/main-image'}
+              baseUrl={'/api/admin/session/main-image'}
             >
               Select Main Image
             </DataImageInput>
           </div>
           <div>
             <DataMultipleImageInput
-              baseUrl={'/api/admin/sessions/content-image'}
+              baseUrl={'/api/admin/session/content-image'}
               name={'contentImages'}
               title={'Images'}
             >

@@ -8,7 +8,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Sessions',
   description:
-    'Explore GDGoC Yonsei sessions, where developers learn, share, and grow through hands-on workshops, tech talks, and collaborative events.',
+    'Explore GDGoC Yonsei session, where developers learn, share, and grow through hands-on workshops, tech talks, and collaborative events.',
 }
 
 export default async function SessionsPage() {
