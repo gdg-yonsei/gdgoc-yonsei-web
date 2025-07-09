@@ -15,9 +15,9 @@ export async function generateStaticParams() {
 export default async function ProjectPage({
   params,
 }: {
-  params: Promise<{ projectId: string }>
+  params: Promise<{ projectId: string; lang: string }>
 }) {
-  const { projectId } = await params
+  const { projectId, lang } = await params
   const projectData = await getProject(projectId)
 
   if (!projectData) {
@@ -29,7 +29,9 @@ export default async function ProjectPage({
       <NavigationButton href={'/projects'}>
         <p>Projects</p>
       </NavigationButton>
-      <PageTitle>{projectData.name}</PageTitle>
+      <PageTitle>
+        {lang === 'ko' ? projectData.nameKo : projectData.name}
+      </PageTitle>
       <ImagesSliders images={[projectData.mainImage, ...projectData.images]} />
       <div className={'flex flex-col gap-8 py-8'}>
         <div className={'flex flex-col'}>
@@ -37,19 +39,27 @@ export default async function ProjectPage({
             <h2
               className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
             >
-              Contributor
+              {lang === 'ko' ? '프로젝트 참여자' : 'Project Contributors'}
             </h2>
           </div>
           <div className={'mx-auto w-full max-w-4xl px-4'}>
             {projectData.usersToProjects.map((user, i) => (
               <div key={i} className={'flex items-center gap-1'}>
                 <div>
-                  {formatUserName(
-                    user.user.name,
-                    user.user.firstName,
-                    user.user.lastName,
-                    user.user.isForeigner
-                  )}
+                  {lang === 'ko'
+                    ? formatUserName(
+                        user.user.name,
+                        user.user.firstNameKo,
+                        user.user.lastNameKo,
+                        user.user.isForeigner,
+                        true
+                      )
+                    : formatUserName(
+                        user.user.name,
+                        user.user.firstName,
+                        user.user.lastName,
+                        user.user.isForeigner
+                      )}
                 </div>
               </div>
             ))}
@@ -60,11 +70,15 @@ export default async function ProjectPage({
             <h2
               className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
             >
-              About This Project
+              {lang === 'ko' ? '프로젝트 설명' : 'Project Content'}
             </h2>
           </div>
           <div className={'prose mx-auto w-full max-w-4xl p-4'}>
-            <SafeMDX source={projectData.content} />
+            <SafeMDX
+              source={
+                lang === 'ko' ? projectData.contentKo : projectData.content
+              }
+            />
           </div>
         </div>
       </div>

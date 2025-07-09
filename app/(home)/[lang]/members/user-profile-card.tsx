@@ -13,8 +13,10 @@ type UserProfileType = Awaited<
 
 export default function UserProfileCard({
   userData,
+  lang,
 }: {
   userData: UserProfileType
+  lang: string
 }) {
   return (
     <div
@@ -38,13 +40,21 @@ export default function UserProfileCard({
         />
       )}
       <div className={'flex w-full flex-col'}>
-        <div className={'text-xl font-semibold underline'}>
-          {formatUserName(
-            userData.name,
-            userData.firstName,
-            userData.lastName,
-            userData.isForeigner
-          )}
+        <div className={'text-xl font-semibold'}>
+          {lang === 'ko'
+            ? formatUserName(
+                userData.name,
+                userData.firstNameKo,
+                userData.lastNameKo,
+                userData.isForeigner,
+                true
+              )
+            : formatUserName(
+                userData.name,
+                userData.firstName,
+                userData.lastName,
+                userData.isForeigner
+              )}
         </div>
         <div className={'flex w-full items-center justify-start gap-2'}>
           {userData.email && (

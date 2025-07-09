@@ -9,8 +9,10 @@ import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'
 
 export default function SessionsList({
   sessionsData,
+  lang,
 }: {
   sessionsData: Awaited<ReturnType<typeof getSessions>>
+  lang: string
 }) {
   const [generation] = useAtom(generationState)
   const sortedSessions = sessionsData.filter(
@@ -33,11 +35,19 @@ export default function SessionsList({
             src={session.mainImage}
             width={200}
             height={200}
-            alt={session.name}
+            alt={
+              lang === 'ko'
+                ? session.nameKo
+                  ? session.nameKo
+                  : ''
+                : session.name
+            }
             className={'aspect-5/4 w-2/3 rounded-l-xl object-cover'}
           />
           <div className={'flex w-1/3 flex-col justify-between p-2'}>
-            <h2 className={'text-2xl font-semibold'}>{session.name}</h2>
+            <h2 className={'text-2xl font-semibold'}>
+              {lang === 'ko' ? session.nameKo : session.name}
+            </h2>
             <p className={'ml-auto'}>
               {formatDateYYYYMMDD(new Date(session.updatedAt))}
             </p>

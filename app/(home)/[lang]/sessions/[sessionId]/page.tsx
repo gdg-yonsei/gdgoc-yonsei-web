@@ -10,14 +10,14 @@ export async function generateStaticParams() {
 export default async function SessionPage({
   params,
 }: {
-  params: Promise<{ sessionId: string }>
+  params: Promise<{ sessionId: string; lang: string }>
 }) {
-  const { sessionId } = await params
+  const { sessionId, lang } = await params
   const sessionData = await getSession(sessionId)
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <SessionPageContent sessionData={sessionData} />
+      <SessionPageContent lang={lang} sessionData={sessionData} />
     </div>
   )
 }

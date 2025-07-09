@@ -11,15 +11,19 @@ export const metadata: Metadata = {
     'Explore GDGoC Yonsei session, where developers learn, share, and grow through hands-on workshops, tech talks, and collaborative events.',
 }
 
-export default async function SessionsPage() {
+export default async function SessionsPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>
+}) {
   const generationsData = await getGenerations()
   const sessionsData = await getSessions()
-
+  const { lang } = await params
   return (
     <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Sessions</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
-      <SessionsList sessionsData={sessionsData} />
+      <SessionsList lang={lang} sessionsData={sessionsData} />
     </div>
   )
 }

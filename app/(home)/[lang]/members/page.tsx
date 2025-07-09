@@ -10,14 +10,19 @@ export const metadata: Metadata = {
     'Meet the past members of GDGoC Yonsei who have contributed to our community with their skills and passion. Explore their journeys and achievements.',
 }
 
-export default async function MembersPage() {
+export default async function MembersPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>
+}) {
   const generationsData = await getGenerations()
+  const { lang } = await params
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Members</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
-      <MembersList generationData={generationsData} />
+      <MembersList lang={lang} generationData={generationsData} />
     </div>
   )
 }

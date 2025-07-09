@@ -9,8 +9,10 @@ import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'
 
 export default function ProjectsList({
   projectsData,
+  lang,
 }: {
   projectsData: Awaited<ReturnType<typeof getProjects>>
+  lang: string
 }) {
   const [generation] = useAtom(generationState)
 
@@ -38,7 +40,9 @@ export default function ProjectsList({
             className={'aspect-3/2 w-full rounded-t-lg object-cover'}
           />
           <div className={'p-3'}>
-            <h2 className={'pb-2 text-2xl font-semibold'}>{data?.name}</h2>
+            <h2 className={'pb-2 text-2xl font-semibold'}>
+              {lang === 'ko' ? data?.nameKo : data?.name}
+            </h2>
             <p className={'text-sm'}>
               {formatDateYYYYMMDD(new Date(data?.updatedAt))}
             </p>

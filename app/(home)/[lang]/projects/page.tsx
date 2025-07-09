@@ -11,15 +11,20 @@ export const metadata: Metadata = {
     'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
 }
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>
+}) {
   const generationsData = await getGenerations()
   const projectsData = await getProjects()
+  const { lang } = await params
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Projects</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
-      <ProjectsList projectsData={projectsData} />
+      <ProjectsList lang={lang} projectsData={projectsData} />
     </div>
   )
 }

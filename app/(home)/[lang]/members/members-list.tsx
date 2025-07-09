@@ -7,8 +7,10 @@ import UserProfileCard from '@/app/(home)/[lang]/members/user-profile-card'
 
 export default function MembersList({
   generationData,
+  lang,
 }: {
   generationData: Awaited<ReturnType<typeof getGenerations>>
+  lang: string
 }) {
   const [generation] = useAtom(generationState)
   const partsData = generationData.filter((data) => data.name === generation)[0]
@@ -32,7 +34,7 @@ export default function MembersList({
             }
           >
             {part.usersToParts?.map((user, j) => (
-              <UserProfileCard userData={user.user} key={j} />
+              <UserProfileCard lang={lang} userData={user.user} key={j} />
             ))}
             {part.usersToParts.length === 0 && (
               <div className={'text-neutral-600'}>There is no member.</div>
