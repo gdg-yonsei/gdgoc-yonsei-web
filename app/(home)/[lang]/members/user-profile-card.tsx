@@ -42,13 +42,20 @@ export default function UserProfileCard({
       <div className={'flex w-full flex-col'}>
         <div className={'text-xl font-semibold'}>
           {lang === 'ko'
-            ? formatUserName(
-                userData.name,
-                userData.firstNameKo,
-                userData.lastNameKo,
-                userData.isForeigner,
-                true
-              )
+            ? userData.firstNameKo
+              ? formatUserName(
+                  userData.name,
+                  userData.firstNameKo,
+                  userData.lastNameKo,
+                  userData.isForeigner,
+                  true
+                )
+              : formatUserName(
+                  userData.name,
+                  userData.firstName,
+                  userData.lastName,
+                  userData.isForeigner
+                )
             : formatUserName(
                 userData.name,
                 userData.firstName,
