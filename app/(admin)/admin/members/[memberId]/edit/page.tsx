@@ -74,16 +74,16 @@ export default async function EditMemberPage({
             placeholder={'Yonsei'}
           />
           <DataInput
-            title={'First Name (Korean)*'}
-            defaultValue={memberData.firstNameKo}
-            name={'firstNameKo'}
-            placeholder={'연세'}
-          />
-          <DataInput
             title={'Last Name (English)*'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Kim'}
+          />
+          <DataInput
+            title={'First Name (Korean)*'}
+            defaultValue={memberData.firstNameKo}
+            name={'firstNameKo'}
+            placeholder={'연세'}
           />
           <DataInput
             title={'Last Name (Korean)*'}
