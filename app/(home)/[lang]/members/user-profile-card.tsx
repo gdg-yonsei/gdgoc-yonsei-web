@@ -70,13 +70,17 @@ export default function UserProfileCard({
             </Link>
           )}
           {userData.linkedInId && (
-            <a
-              href={userData.linkedInId}
+            <Link
+              href={
+                'https://www.linkedin.com/in/' +
+                userData.linkedInId
+                  .replace('https://', '')
+                  .replace('www.linkedin.com/in/', '')
+              }
               target={'_blank'}
-              rel="noopener noreferrer"
             >
               <LinkedIn className={'size-6'} />
-            </a>
+            </Link>
           )}
           {userData.instagramId && (
             <Link
