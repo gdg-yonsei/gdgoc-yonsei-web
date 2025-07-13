@@ -70,13 +70,16 @@ export default function UserProfileCard({
             </Link>
           )}
           {userData.linkedInId && (
-            <Link href={userData.linkedInId} target={'_blank'}>
+            <a href={userData.linkedInId} target={'_blank'}>
               <LinkedIn className={'size-6'} />
-            </Link>
+            </a>
           )}
           {userData.instagramId && (
             <Link
-              href={'https://www.instagram.com/' + userData.instagramId}
+              href={
+                'https://www.instagram.com/' +
+                userData.instagramId.replace('@', '')
+              }
               target={'_blank'}
             >
               <InstagramWhiteBg className={'size-8'} />
