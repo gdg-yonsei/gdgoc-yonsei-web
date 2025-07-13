@@ -70,7 +70,11 @@ export default function UserProfileCard({
             </Link>
           )}
           {userData.linkedInId && (
-            <a href={userData.linkedInId} target={'_blank'}>
+            <a
+              href={userData.linkedInId}
+              target={'_blank'}
+              rel="noopener noreferrer"
+            >
               <LinkedIn className={'size-6'} />
             </a>
           )}
@@ -87,7 +91,7 @@ export default function UserProfileCard({
           )}
           {userData.githubId && (
             <Link
-              href={'https://github.com/' + userData.githubId}
+              href={'https://github.com/' + userData.githubId.replace('@', '')}
               target={'_blank'}
             >
               <Github className={'size-7'} />
