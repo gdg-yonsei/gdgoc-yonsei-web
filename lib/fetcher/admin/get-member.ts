@@ -2,7 +2,7 @@ import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
@@ -47,6 +47,7 @@ export const getMember = unstable_cache(
         .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
         .leftJoin(parts, eq(parts.id, usersToParts.partId))
         .leftJoin(generations, eq(generations.id, parts.generationsId))
+        .orderBy(desc(generations.id), desc(parts.id), desc(users.updatedAt))
         .limit(1)
     )[0]
   },
