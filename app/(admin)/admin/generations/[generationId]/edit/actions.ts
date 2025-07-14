@@ -57,6 +57,7 @@ export async function updateGenerationAction(
         name: name!,
         startDate: startDate!,
         endDate: endDate ? endDate : null,
+        updatedAt: new Date(),
       })
       .where(eq(generations.id, Number(generationId)))
 

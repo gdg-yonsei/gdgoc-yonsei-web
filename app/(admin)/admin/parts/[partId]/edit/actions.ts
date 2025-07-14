@@ -52,6 +52,7 @@ export async function updatePartAction(
         name: name!,
         description: description,
         generationsId: generationId,
+        updatedAt: new Date(),
       })
       .where(eq(parts.id, Number(partId)))
     // 파트에 연결된 모든 멤버 정보 삭제

@@ -1,4 +1,4 @@
-import { date, pgTable, serial, text } from 'drizzle-orm/pg-core'
+import { date, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { sessions } from '@/db/schema/sessions'
@@ -8,6 +8,8 @@ export const generations = pgTable('generations', {
   startDate: date('startDate').notNull(),
   endDate: date('endDate'),
   name: text('name').notNull(),
+  createdAt: timestamp('createdAt').defaultNow(),
+  updatedAt: timestamp('updatedAt').defaultNow(),
 })
 
 export const generationsRelations = relations(generations, ({ many }) => ({

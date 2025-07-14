@@ -1,7 +1,7 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 
 export const preload = (partId: number) => {
@@ -24,6 +24,7 @@ export const getPart = unstable_cache(
           },
         },
       },
+      orderBy: desc(parts.createdAt),
     })
   },
   [],
