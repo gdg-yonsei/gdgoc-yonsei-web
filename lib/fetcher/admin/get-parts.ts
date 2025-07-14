@@ -1,7 +1,7 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
 import db from '@/db'
-import { desc } from 'drizzle-orm'
+import { asc, desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 
@@ -27,7 +27,7 @@ export const getParts = unstable_cache(
           },
         },
       },
-      orderBy: [desc(generations.id), desc(parts.createdAt)],
+      orderBy: [desc(generations.id), asc(parts.createdAt)],
     })
   },
   [],
