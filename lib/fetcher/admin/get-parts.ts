@@ -27,7 +27,7 @@ export const getParts = unstable_cache(
           },
         },
       },
-      orderBy: [desc(generations.id), desc(parts.id)],
+      orderBy: [desc(generations.id), desc(parts.createdAt)],
     })
   },
   [],
