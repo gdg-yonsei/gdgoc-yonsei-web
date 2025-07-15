@@ -70,6 +70,15 @@ export default function NavigationList() {
           Sessions
         </Link>
       </MotionLink>
+      <MotionLink state={isMenuOpen}>
+        <Link
+          href={'/calendar'}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={'w-full'}
+        >
+          Calendar
+        </Link>
+      </MotionLink>
       {/*<MotionLink state={isMenuOpen}>*/}
       {/*  <Link*/}
       {/*    href={'/recruit'}*/}
