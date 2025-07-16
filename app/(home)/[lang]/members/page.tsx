@@ -15,14 +15,16 @@ export default async function MembersPage({
 }: {
   params: Promise<{ lang: string }>
 }) {
-  const generationsData = await getGenerations()
-  const { lang } = await params
+  const [generationsData, paramsData] = await Promise.all([
+    getGenerations(),
+    params,
+  ])
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
       <PageTitle>Members</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
-      <MembersList lang={lang} generationData={generationsData} />
+      <MembersList lang={paramsData.lang} generationData={generationsData} />
     </div>
   )
 }
