@@ -15,7 +15,7 @@ export default function StageButtonGroup({
       >
         <p className={'pr-2 text-2xl font-semibold'}>Stage</p>
         <GenerationButtonGroup
-          generations={generationsData.map((data) => data.name)}
+          generations={generationsData.reverse().map((data) => data.name)}
         />
       </div>
     </div>

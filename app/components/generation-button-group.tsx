@@ -13,7 +13,7 @@ export default function GenerationButtonGroup({
 
   useEffect(() => {
     if (generations.length > 0) {
-      setGeneration(generations[generations.length - 1])
+      setGeneration(generations[0])
     }
   }, [generations, setGeneration])
 
