@@ -6,11 +6,11 @@ This project is a website created to introduce the Google Developer Group on Cam
 
 ## TODO List
 
-- [ ] i18n support
+- [x] i18n support
 - [ ] Recruit Page Refactoring
-- [ ] Home Page Refactoring
-- [ ] Project Page Refactoring
-- [ ] Session Page Refactoring
+- [x] Home Page Refactoring
+- [x] Project Page Refactoring
+- [x] Session Page Refactoring
 
 ## Tech Stack
 
