@@ -35,6 +35,37 @@ export default async function AdminPage() {
       <div className={'admin-title'}>Home</div>
       <div className={'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'}>
         <QRCodeGenerator />
+
+        <div
+          className={
+            'flex flex-col items-center justify-center gap-4 rounded-xl bg-white p-4'
+          }
+        >
+          <p className={'text-center text-2xl font-semibold'}>
+            Subscribe GDGoC Yonsei Calendar
+          </p>
+          <div
+            className={
+              'flex w-full items-center justify-between gap-2 *:w-full *:rounded-full *:bg-neutral-900 *:p-2 *:text-center *:text-white *:ring-2 *:ring-neutral-950 *:transition-all *:hover:bg-neutral-800 *:hover:ring-offset-2'
+            }
+          >
+            <Link
+              href={
+                'https://calendar.google.com/calendar/u/0?cid=Njc3NjI4ZDUyODM0Mjk5NjViZTE3MmMxMzVmZjBjNjc4MzA3OTVlNWFkZmIzYmMxMTc4MmIzMDVkMTRiMzkyY0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t'
+              }
+              target={'_blank'}
+            >
+              Google Calendar
+            </Link>
+            <Link
+              href={
+                'webcal://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics'
+              }
+            >
+              Apple Calendar
+            </Link>
+          </div>
+        </div>
         <Link
           href={'/admin/permissions'}
           className={
