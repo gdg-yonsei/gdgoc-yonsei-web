@@ -18,42 +18,42 @@ export default async function navigationList(userId: string | undefined) {
   const userRole = await getUserRole(userId)
   const navigations = [
     {
-      name: 'Home',
+      name: '🏠 Home',
       path: '/admin',
       dataResource: 'adminPage',
     },
     {
-      name: 'Generations',
+      name: '🗓️ Generations',
       path: '/admin/generations',
       dataResource: 'generationsPage',
     },
     {
-      name: 'Parts',
+      name: '💻 Parts',
       path: '/admin/parts',
       dataResource: 'partsPage',
     },
     {
-      name: 'Members',
+      name: '👥 Members',
       path: '/admin/members',
       dataResource: 'membersPage',
     },
     {
-      name: 'Sessions',
+      name: '📚 Sessions',
       path: '/admin/session',
       dataResource: 'sessionsPage',
     },
     {
-      name: 'Projects',
+      name: '📝 Projects',
       path: '/admin/projects',
       dataResource: 'projectsPage',
     },
     {
-      name: 'Profile',
+      name: '🧑‍💻 Profile',
       path: '/admin/profile',
       dataResource: 'profilePage',
     },
     {
-      name: 'Performance',
+      name: '🛜 Performance',
       path: '/admin/performance',
       dataResource: 'performancePage',
     },

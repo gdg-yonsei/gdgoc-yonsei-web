@@ -22,7 +22,7 @@ function SidebarNavigator({
     <Link
       href={href}
       className={
-        'rounded-lg bg-white p-2 px-4 text-lg font-semibold transition-all hover:bg-neutral-200'
+        'rounded-lg p-2 px-4 text-lg font-semibold transition-all hover:bg-neutral-200'
       }
     >
       {children}
