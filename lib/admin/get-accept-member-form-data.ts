@@ -1,10 +1,20 @@
 /**
- * Get the accept member form data
- * @param formData - form data
+ * @file This file contains a function to extract member acceptance data from a FormData object.
  */
-export default function getAcceptMemberFormData(formData: FormData) {
-  const userId = formData.get('userId') as string
-  const role = formData.get('role') as string
 
-  return { userId, role }
+/**
+ * Extracts the user ID and role from the provided form data for member acceptance.
+ *
+ * @param formData - The FormData object containing the member acceptance data.
+ *                   It is expected to have 'userId' and 'role' fields.
+ * @returns An object containing the userId and role.
+ */
+export default function getAcceptMemberFormData(formData: FormData): {
+  userId: string;
+  role: string;
+} {
+  const userId = formData.get('userId') as string;
+  const role = formData.get('role') as string;
+
+  return { userId, role };
 }

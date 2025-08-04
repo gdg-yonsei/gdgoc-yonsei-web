@@ -1,17 +1,44 @@
 /**
- * Get project form data from form data
- * @param formData - form data
+ * @file This file contains a function to extract session data from a FormData object.
  */
-export default function getSessionFormData(formData: FormData) {
-  const name = formData.get('name') as string | null
-  const nameKo = formData.get('nameKo') as string | null
-  const description = formData.get('description') as string | null
-  const descriptionKo = formData.get('descriptionKo') as string | null
-  const mainImage = formData.get('mainImage') as string | null
-  const contentImages = formData.get('contentImages') as string
-  const contentImagesArray = JSON.parse(contentImages) as string[]
-  const generationId = formData.get('generationId') as string | null
-  const eventDate = formData.get('eventDate') as string | null
+
+/**
+ * Extracts session-related data from a FormData object.
+ * This function handles both regular fields and a JSON string for content images.
+ *
+ * @param formData - The FormData object containing the session data.
+ * @returns An object containing the extracted session information.
+ */
+export default function getSessionFormData(formData: FormData): {
+  name: string | null;
+  nameKo: string | null;
+  description: string | null;
+  descriptionKo: string | null;
+  mainImage: string | null;
+  contentImages: string[];
+  generationId: string | null;
+  eventDate: string | null;
+} {
+  const name = formData.get('name') as string | null;
+  const nameKo = formData.get('nameKo') as string | null;
+  const description = formData.get('description') as string | null;
+  const descriptionKo = formData.get('descriptionKo') as string | null;
+  const mainImage = formData.get('mainImage') as string | null;
+
+  // Safely parse contentImages JSON string
+  const contentImages = formData.get('contentImages') as string;
+  let contentImagesArray: string[] = [];
+  try {
+    if (contentImages) {
+      contentImagesArray = JSON.parse(contentImages) as string[];
+    }
+  } catch (error) {
+    console.error('Failed to parse contentImages:', error);
+    // Default to an empty array in case of an error
+  }
+
+  const generationId = formData.get('generationId') as string | null;
+  const eventDate = formData.get('eventDate') as string | null;
 
   return {
     name,
@@ -22,5 +49,5 @@ export default function getSessionFormData(formData: FormData) {
     contentImages: contentImagesArray,
     generationId,
     eventDate,
-  }
+  };
 }
