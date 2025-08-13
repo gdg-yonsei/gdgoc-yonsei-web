@@ -24,7 +24,9 @@ export default async function ProjectsPage({
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <PageTitle>Projects</PageTitle>
+      <PageTitle>
+        {paramsData.lang === 'ko' ? '프로젝트' : 'Projects'}
+      </PageTitle>
       <StageButtonGroup generationsData={generationsData} />
       <ProjectsList lang={paramsData.lang} projectsData={projectsData} />
     </div>

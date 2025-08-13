@@ -1,14 +1,19 @@
 'use client'
 
 import PageTitle from '@/app/components/page-title'
-import { useState } from 'react'
+import { use, useState } from 'react'
 
-export default function CalendarPage() {
+export default function CalendarPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>
+}) {
   const [loading, setLoading] = useState<boolean>(true)
+  const { lang } = use(params)
 
   return (
     <div className={'flex min-h-screen w-full flex-col py-20'}>
-      <PageTitle>Calendar</PageTitle>
+      <PageTitle>{lang === 'ko' ? '캘린더' : 'Calendar'}</PageTitle>
       {loading ? (
         <div className={'mx-auto w-full max-w-4xl px-4'}>
           <div

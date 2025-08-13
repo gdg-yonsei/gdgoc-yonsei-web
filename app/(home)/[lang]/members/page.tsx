@@ -22,7 +22,7 @@ export default async function MembersPage({
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <PageTitle>Members</PageTitle>
+      <PageTitle>{paramsData.lang === 'ko' ? '구성원' : 'Members'}</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
       <MembersList lang={paramsData.lang} generationData={generationsData} />
     </div>
