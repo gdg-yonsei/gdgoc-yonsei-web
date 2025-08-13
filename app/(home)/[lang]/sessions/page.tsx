@@ -24,7 +24,7 @@ export default async function SessionsPage({
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <PageTitle>Sessions</PageTitle>
+      <PageTitle>{paramsData.lang === 'ko' ? '세션' : 'Sessions'}</PageTitle>
       <StageButtonGroup generationsData={generationsData} />
       <SessionsList lang={paramsData.lang} sessionsData={sessionsData} />
     </div>
