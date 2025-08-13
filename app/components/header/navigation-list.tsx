@@ -30,7 +30,7 @@ function MotionLink({
   )
 }
 
-export default function NavigationList() {
+export default function NavigationList({ lang }: { lang: string }) {
   const [isMenuOpen, setIsMenuOpen] = useAtom(homeMenuBarState)
 
   return (
@@ -45,20 +45,11 @@ export default function NavigationList() {
     >
       <MotionLink state={isMenuOpen}>
         <Link
-          href={'/members'}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={'w-full'}
-        >
-          Members
-        </Link>
-      </MotionLink>
-      <MotionLink state={isMenuOpen}>
-        <Link
           href={'/projects'}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
-          Projects
+          {lang === 'ko' ? '프로젝트' : 'Projects'}
         </Link>
       </MotionLink>
       <MotionLink state={isMenuOpen}>
@@ -67,7 +58,7 @@ export default function NavigationList() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
-          Sessions
+          {lang === 'ko' ? '세션' : 'Sessions'}
         </Link>
       </MotionLink>
       <MotionLink state={isMenuOpen}>
@@ -76,7 +67,16 @@ export default function NavigationList() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
-          Calendar
+          {lang === 'ko' ? '캘린더' : 'Calendar'}
+        </Link>
+      </MotionLink>
+      <MotionLink state={isMenuOpen}>
+        <Link
+          href={'/members'}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={'w-full'}
+        >
+          {lang === 'ko' ? '구성원' : 'Members'}
         </Link>
       </MotionLink>
       {/*<MotionLink state={isMenuOpen}>*/}
