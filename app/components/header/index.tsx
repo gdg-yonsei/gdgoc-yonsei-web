@@ -11,7 +11,7 @@ export default function Header({ lang }: { lang: string }) {
         <MenuBarButton />
         <DesktopNavigationList lang={lang} />
       </div>
-      <NavigationList />
+      <NavigationList lang={lang} />
     </div>
   )
 }
