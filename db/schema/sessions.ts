@@ -1,5 +1,7 @@
 import {
+  boolean,
   date,
+  integer,
   jsonb,
   pgTable,
   serial,
@@ -25,6 +27,10 @@ export const sessions = pgTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
   partId: serial('sessionId'),
+  openSession: boolean('openSession').default(false),
+  maxCapacity: integer('maxCapacity').default(0),
+  location: text('location'),
+  locationKo: text('locationKo'),
   eventDate: date('eventDate').defaultNow().notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),

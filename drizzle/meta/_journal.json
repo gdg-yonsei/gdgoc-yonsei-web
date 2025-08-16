@@ -78,6 +78,13 @@
       "when": 1755341252637,
       "tag": "0010_curved_blindfold",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1755341585676,
+      "tag": "0011_flat_joystick",
+      "breakpoints": true
     }
   ]
 }
