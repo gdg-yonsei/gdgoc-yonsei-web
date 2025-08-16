@@ -64,6 +64,20 @@
       "when": 1755339708976,
       "tag": "0008_shocking_hellcat",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1755341033809,
+      "tag": "0009_charming_nightmare",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1755341252637,
+      "tag": "0010_curved_blindfold",
+      "breakpoints": true
     }
   ]
 }

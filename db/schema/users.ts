@@ -9,6 +9,7 @@ import {
 import { relations } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { usersToProjects } from '@/db/schema/users-to-projects'
+import { userToSession } from '@/db/schema/user-to-session'
 
 /**
  * @desc 사용자 권한 및 역할
@@ -54,4 +55,5 @@ export const users = pgTable('user', {
 export const usersRelations = relations(users, ({ many }) => ({
   usersToParts: many(usersToParts),
   usersToProjects: many(usersToProjects),
+  userToSession: many(userToSession),
 }))
