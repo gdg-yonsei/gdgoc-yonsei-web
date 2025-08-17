@@ -2,28 +2,20 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataForm from '@/app/components/data-form'
-import DataImageInput from '@/app/components/admin/data-image-input'
-import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import DataInput from '@/app/components/admin/data-input'
 import DataTextarea from '@/app/components/admin/data-textarea'
 import { createSessionAction } from '@/app/(admin)/admin/session/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
-import DataSelectInput from '@/app/components/admin/data-select-input'
-import { getGenerations } from '@/lib/fetcher/admin/get-generations'
 import { Metadata } from 'next'
+import { getParts } from '@/lib/fetcher/admin/get-parts'
+import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 
 export const metadata: Metadata = {
   title: 'Create Session',
 }
 
 export default async function CreateSessionPage() {
-  // 기수 정보 가져오기
-  const generations = await getGenerations()
-  // 기수 선택용 리스트
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
+  const generationData = await getParts()
 
   return (
     <AdminDefaultLayout>
@@ -36,40 +28,78 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
-        <div
-          className={
-            'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
-          }
-        >
-          <div>
-            <DataImageInput
-              title={'Main Image'}
-              name={'mainImage'}
-              baseUrl={'/api/admin/session/main-image'}
-            >
-              Select Main Image
-            </DataImageInput>
-          </div>
-          <div>
-            <DataMultipleImageInput
-              baseUrl={'/api/admin/session/content-image'}
-              name={'contentImages'}
-              title={'Images'}
-            >
-              Select Images
-            </DataMultipleImageInput>
-          </div>
-        </div>
+        {/*<div*/}
+        {/*  className={*/}
+        {/*    'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'*/}
+        {/*  }*/}
+        {/*>*/}
+        {/*  <div>*/}
+        {/*    <DataImageInput*/}
+        {/*      title={'Main Image'}*/}
+        {/*      name={'mainImage'}*/}
+        {/*      baseUrl={'/api/admin/session/main-image'}*/}
+        {/*    >*/}
+        {/*      Select Main Image*/}
+        {/*    </DataImageInput>*/}
+        {/*  </div>*/}
+        {/*  <div>*/}
+        {/*    <DataMultipleImageInput*/}
+        {/*      baseUrl={'/api/admin/session/content-image'}*/}
+        {/*      name={'contentImages'}*/}
+        {/*      title={'Images'}*/}
+        {/*    >*/}
+        {/*      Select Images*/}
+        {/*    </DataMultipleImageInput>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
         <DataInput
-          title={'Name'}
+          title={'Name (English)'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Name'}
+          placeholder={'Name (English)'}
+        />
+        <DataInput
+          title={'Name (Korean)'}
+          defaultValue={''}
+          name={'nameKo'}
+          placeholder={'Name (Korean)'}
         />
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'Description'}
+          placeholder={'Description (English)'}
+        />
+        <DataTextarea
+          defaultValue={''}
+          name={'descriptionKo'}
+          placeholder={'Description (Korean)'}
+        />
+        <DataInput
+          title={'Location (English)'}
+          defaultValue={''}
+          name={'location'}
+          placeholder={'Location (English)'}
+        />
+        <DataInput
+          title={'Location (Korean)'}
+          defaultValue={''}
+          name={'locationKo'}
+          placeholder={'Location (Korean)'}
+        />
+        <DataInput
+          title={'Open Session'}
+          defaultValue={''}
+          name={'openSession'}
+          placeholder={'Location (Korean)'}
+          type={'checkbox'}
+          isChecked={true}
+        />
+        <DataInput
+          title={'Max Capacity'}
+          defaultValue={0}
+          name={'maxCapacity'}
+          placeholder={'Max Capacity'}
+          type={'number'}
         />
         <DataInput
           title={'Event Date'}
@@ -78,12 +108,8 @@ export default async function CreateSessionPage() {
           placeholder={'YYYY-MM-DD'}
           type={'date'}
         />
-        <DataSelectInput
-          title={'Generation'}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={generationList[0]?.value}
-        />
+        <SessionPartParticipantsInput generationData={generationData} />
+
         <SubmitButton />
       </DataForm>
     </AdminDefaultLayout>

@@ -79,10 +79,12 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Generation</div>
-          <div className={'member-data-content'}>
-            {sessionData.generation.name}
-          </div>
+          <div className={'member-data-title'}>Part</div>
+          <div className={'member-data-content'}>{sessionData.part.name}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Max Capacity</div>
+          <div className={'member-data-content'}>{sessionData.maxCapacity}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Author</div>

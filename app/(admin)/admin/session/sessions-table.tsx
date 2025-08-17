@@ -5,7 +5,7 @@ import Image from 'next/image'
 function SessionCard({
   session,
 }: {
-  session: Awaited<ReturnType<typeof getSessions>>[0]['sessions'][0]
+  session: Awaited<ReturnType<typeof getSessions>>[0]['parts'][0]['sessions'][0]
 }) {
   return (
     <Link
@@ -53,9 +53,11 @@ export default async function SessionsTable() {
             Generation: {generation.name}
           </div>
           <div className={'member-data-grid w-full gap-2 pt-2'}>
-            {generation.sessions.map((session) => (
-              <SessionCard session={session} key={session.id} />
-            ))}
+            {generation.parts.map((part) =>
+              part.sessions.map((session) => (
+                <SessionCard session={session} key={session.id} />
+              ))
+            )}
           </div>
         </div>
       ))}

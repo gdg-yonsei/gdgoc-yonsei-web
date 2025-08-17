@@ -20,7 +20,7 @@ export default function DataInput({
   name: string
   placeholder: string
   title: string
-  type?: string
+  type?: 'checkbox' | 'link' | 'date' | 'number'
   isChecked?: boolean
 }) {
   return (

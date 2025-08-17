@@ -3,20 +3,21 @@
  * It uses Next.js's unstable_cache for caching.
  */
 
-import { sessions } from '@/db/schema/sessions';
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { desc } from 'drizzle-orm';
-import { generations } from '@/db/schema/generations';
+import { sessions } from '@/db/schema/sessions'
+import 'server-only'
+import { unstable_cache } from 'next/cache'
+import db from '@/db'
+import { desc } from 'drizzle-orm'
+import { parts } from '@/db/schema/parts'
+import { generations } from '@/db/schema/generations'
 
 /**
  * Preloads all sessions data, grouped by generation, into the cache.
  * This can be used to warm up the cache for pages displaying session information.
  */
 export const preload = () => {
-  void getSessions();
-};
+  void getSessions()
+}
 
 /**
  * Fetches all generations and their associated sessions from the database.
@@ -28,18 +29,22 @@ export const preload = () => {
  */
 export const getSessions = unstable_cache(
   async () => {
-    console.log(new Date(), 'Fetch Sessions Data');
+    console.log(new Date(), 'Fetch Sessions Data')
     return db.query.generations.findMany({
       with: {
-        sessions: {
-          orderBy: desc(sessions.eventDate),
+        parts: {
+          with: {
+            sessions: {
+              orderBy: desc(sessions.eventDate),
+            },
+          },
         },
       },
       orderBy: desc(generations.id),
-    });
+    })
   },
   ['getSessions'], // Unique key for this cache entry
   {
     tags: ['sessions', 'generations'], // Cache tags for revalidation
-  },
-);
+  }
+)

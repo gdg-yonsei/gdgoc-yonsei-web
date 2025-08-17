@@ -37,8 +37,13 @@ export async function createSessionAction(
     descriptionKo,
     mainImage,
     contentImages,
-    generationId,
     eventDate,
+    location,
+    locationKo,
+    maxCapacity,
+    openSession,
+    partId,
+    participantId,
   } = getSessionFormData(formData)
 
   try {
@@ -50,8 +55,13 @@ export async function createSessionAction(
       descriptionKo,
       mainImage,
       contentImages,
-      generationId,
       eventDate,
+      location,
+      locationKo,
+      maxCapacity,
+      openSession,
+      partId,
+      participantId,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -71,18 +81,22 @@ export async function createSessionAction(
       .values({
         name: name,
         nameKo: nameKo!,
-        description: description!,
+        description: description,
         descriptionKo: descriptionKo!,
         authorId: session.user.id,
         images: contentImages,
-        mainImage: mainImage!,
-        generationId: Number(generationId),
+        ...(mainImage ? { mainImage: mainImage } : {}),
         eventDate: eventDate!,
+        location: location!,
+        locationKo: locationKo!,
+        maxCapacity: maxCapacity,
+        openSession: openSession,
+        partId: Number(partId),
       })
-      .returning({ id: projects.id })
+      .returning({ id: sessions.id })
 
     // 캐시 업데이트
-    revalidateTag('sessions')
+    revalidateTag('sessions') // TODO: Cache 업데이트 유틸리티 하나로 묶기
   } catch (e) {
     // DB 에러 처리
     console.error(e)

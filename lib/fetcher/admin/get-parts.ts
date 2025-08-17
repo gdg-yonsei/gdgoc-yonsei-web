@@ -3,20 +3,20 @@
  * It uses Next.js's unstable_cache for caching.
  */
 
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { asc, desc } from 'drizzle-orm';
-import { generations } from '@/db/schema/generations';
-import { parts } from '@/db/schema/parts';
+import 'server-only'
+import { unstable_cache } from 'next/cache'
+import db from '@/db'
+import { asc, desc } from 'drizzle-orm'
+import { generations } from '@/db/schema/generations'
+import { parts } from '@/db/schema/parts'
 
 /**
  * Preloads the data for all parts into the cache.
  * This can be used to warm up the cache for pages displaying part information.
  */
 export const preload = () => {
-  void getParts();
-};
+  void getParts()
+}
 
 /**
  * Fetches all generations and their associated parts, including the members in each part.
@@ -29,7 +29,7 @@ export const preload = () => {
  */
 export const getParts = unstable_cache(
   async () => {
-    console.log(new Date(), 'Fetch Parts Data');
+    console.log(new Date(), 'Fetch Parts Data')
     return db.query.generations.findMany({
       with: {
         parts: {
@@ -43,10 +43,10 @@ export const getParts = unstable_cache(
         },
       },
       orderBy: [desc(generations.id), asc(parts.createdAt)],
-    });
+    })
   },
-  ['getParts'], // Unique key for this cache entry
+  ['parts'], // Unique key for this cache entry
   {
     tags: ['parts'], // Cache tag for revalidation
-  },
-);
+  }
+)
