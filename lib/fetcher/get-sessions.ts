@@ -10,7 +10,11 @@ export const getSessions = unstable_cache(
   async () =>
     db.query.sessions.findMany({
       with: {
-        generation: true,
+        part: {
+          with: {
+            generation: true,
+          },
+        },
       },
     }),
   [],

@@ -16,7 +16,7 @@ export default function SessionsList({
 }) {
   const [generation] = useAtom(generationState)
   const sortedSessions = sessionsData.filter(
-    (session) => session.generation.name === generation
+    (session) => session.part.generation?.name === generation
   )
 
   return (
