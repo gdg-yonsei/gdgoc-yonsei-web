@@ -4,12 +4,12 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
-import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { sessionValidation } from '@/lib/validations/session'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
+import { revalidateCache } from '@/lib/server/cache'
 /**
  * Create Session Action
  * @param prev - previous state for form error
@@ -104,7 +104,7 @@ export async function createSessionAction(
     )
 
     // 캐시 업데이트
-    revalidateTag('sessions') // TODO: Cache 업데이트 유틸리티 하나로 묶기
+    revalidateCache('sessions')
   } catch (e) {
     // DB 에러 처리
     console.error(e)

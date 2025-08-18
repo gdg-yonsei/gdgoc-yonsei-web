@@ -9,10 +9,10 @@ import { z } from 'zod'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { eq } from 'drizzle-orm'
-import { revalidateTag } from 'next/cache'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { usersToProjects } from '@/db/schema/users-to-projects'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * Update Project Action
@@ -132,7 +132,7 @@ export async function updateProjectAction(
       )
 
     // 캐시 업데이트
-    revalidateTag('projects')
+    revalidateCache('projects')
   } catch (e) {
     // DB 업데이트 오류 발생 시 오류 반환
     console.error(e)

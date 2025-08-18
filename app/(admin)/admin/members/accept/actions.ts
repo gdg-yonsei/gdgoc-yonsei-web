@@ -9,7 +9,7 @@ import { z } from 'zod'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
-import { revalidateTag } from 'next/cache'
+import { revalidateCache } from '@/lib/server/cache'
 
 export default async function actions(
   prev: { error: string },
@@ -43,7 +43,8 @@ export default async function actions(
 
   try {
     await db.update(users).set({ role: userRole }).where(eq(users.id, userId))
-    revalidateTag('members')
+
+    revalidateCache('members')
   } catch (e) {
     // DB 업데이트 오류
     console.error(e)

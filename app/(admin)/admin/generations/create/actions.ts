@@ -7,8 +7,8 @@ import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
-import { revalidateTag } from 'next/cache'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
+import { revalidateCache } from '@/lib/server/cache'
 
 export async function createGenerationAction(
   prev: { error: string },
@@ -48,8 +48,7 @@ export async function createGenerationAction(
       })
 
     // 캐시 업데이트
-    revalidateTag('generations')
-    revalidateTag('parts')
+    revalidateCache(['generations', 'parts'])
   } catch (e) {
     // DB 업데이트 오류
     console.error(e)

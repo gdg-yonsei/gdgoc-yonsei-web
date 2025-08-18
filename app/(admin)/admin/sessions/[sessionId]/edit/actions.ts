@@ -7,12 +7,12 @@ import { z } from 'zod'
 import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { eq } from 'drizzle-orm'
-import { revalidateTag } from 'next/cache'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { sessionValidation } from '@/lib/validations/session'
 import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { userToSession } from '@/db/schema/user-to-session'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * Update Project Action
@@ -141,7 +141,7 @@ export async function updateSessionAction(
     )
 
     // 캐시 업데이트
-    revalidateTag('sessions')
+    revalidateCache('sessions')
   } catch (e) {
     // DB 업데이트 오류 발생 시 오류 반환
     console.error(e)

@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { forbidden, redirect } from 'next/navigation'
@@ -10,6 +9,7 @@ import { auth } from '@/auth'
 import { memberValidation } from '@/lib/validations/member'
 import { z } from 'zod'
 import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * Update Member Action
@@ -97,7 +97,7 @@ export async function updateProfileAction(
       .where(eq(users.id, memberId))
 
     // 캐시 업데이트
-    revalidateTag('members')
+    revalidateCache('members')
   } catch (e) {
     // DB 업데이트 오류 발생 시 오류 반환
     console.error(e)
