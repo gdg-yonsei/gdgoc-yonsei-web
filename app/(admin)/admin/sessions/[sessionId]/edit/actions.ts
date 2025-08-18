@@ -107,7 +107,7 @@ export async function updateSessionAction(
         images: contentImages,
         mainImage: mainImage!,
         updatedAt: new Date(),
-        generationId: Number(generationId),
+
         eventDate: eventDate!,
       })
       .where(eq(sessions.id, sessionId))
@@ -120,5 +120,5 @@ export async function updateSessionAction(
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동
-  redirect(`/admin/session/${sessionId}`)
+  redirect(`/admin/sessions/${sessionId}`)
 }

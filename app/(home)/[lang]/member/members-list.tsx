@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai'
 import { generationState } from '@/lib/atoms'
 import { getGenerations } from '@/lib/fetcher/get-generations'
-import UserProfileCard from '@/app/(home)/[lang]/members/user-profile-card'
+import UserProfileCard from '@/app/(home)/[lang]/member/user-profile-card'
 
 export default function MembersList({
   generationData,

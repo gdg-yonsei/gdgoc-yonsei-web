@@ -36,6 +36,11 @@ export const getSession = unstable_cache(
       where: eq(sessions.id, sessionId),
       with: {
         part: true,
+        userToSession: {
+          with: {
+            user: true,
+          },
+        },
       },
     })
 
@@ -54,7 +59,7 @@ export const getSession = unstable_cache(
     // Combine the session data with the author data.
     return { ...sessionData, author: authorData }
   },
-  ['getSession'], // Unique key for this cache entry
+  ['sessions'], // Unique key for this cache entry
   {
     tags: ['sessions'], // Cache tag for revalidation
   }

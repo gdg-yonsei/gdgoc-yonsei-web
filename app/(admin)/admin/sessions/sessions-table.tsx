@@ -9,7 +9,7 @@ function SessionCard({
 }) {
   return (
     <Link
-      href={`/admin/session/${session.id}`}
+      href={`/admin/sessions/${session.id}`}
       className={'flex flex-col rounded-xl bg-white'}
     >
       <Image
@@ -43,9 +43,11 @@ function SessionCard({
 export default async function SessionsTable() {
   const sessionsData = await getSessions()
 
+  console.log(sessionsData)
+
   return (
     <div className={'flex w-full flex-col gap-2'}>
-      {sessionsData.map((generation) => (
+      {sessionsData?.map((generation) => (
         <div key={generation.id}>
           <div
             className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
@@ -53,7 +55,7 @@ export default async function SessionsTable() {
             Generation: {generation.name}
           </div>
           <div className={'member-data-grid w-full gap-2 pt-2'}>
-            {generation.parts.map((part) =>
+            {generation?.parts?.map((part) =>
               part.sessions.map((session) => (
                 <SessionCard session={session} key={session.id} />
               ))

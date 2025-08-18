@@ -8,12 +8,13 @@ import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
+import { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ sessionId: string }>
-}) {
+}): Promise<Metadata> {
   const { sessionId } = await params
   // Session 데이터 가져오기
   const sessionData = await getSession(sessionId)
@@ -41,7 +42,7 @@ export default async function SessionPage({
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/session'}>
+      <AdminNavigationButton href={'/admin/sessions'}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
@@ -51,7 +52,7 @@ export default async function SessionPage({
           session={session}
           dataId={sessionId}
           dataType={'sessions'}
-          href={`/admin/session/${sessionId}/edit`}
+          href={`/admin/sessions/${sessionId}/edit`}
         />
         <DataDeleteButton
           session={session}
@@ -95,6 +96,14 @@ export default async function SessionPage({
               sessionData.author?.lastName,
               sessionData.author?.isForeigner
             )}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Participants</div>
+          <div className={'member-data-content'}>
+            {sessionData.userToSession.map((user) => (
+              <div key={user.userId}>{user.user.name}</div>
+            ))}
           </div>
         </div>
         <div className={'member-data-box'}>

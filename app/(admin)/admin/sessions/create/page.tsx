@@ -4,7 +4,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataForm from '@/app/components/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import DataTextarea from '@/app/components/admin/data-textarea'
-import { createSessionAction } from '@/app/(admin)/admin/session/create/actions'
+import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
 import { getParts } from '@/lib/fetcher/admin/get-parts'
@@ -19,7 +19,7 @@ export default async function CreateSessionPage() {
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/session'}>
+      <AdminNavigationButton href={'/admin/sessions'}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
@@ -37,14 +37,14 @@ export default async function CreateSessionPage() {
         {/*    <DataImageInput*/}
         {/*      title={'Main Image'}*/}
         {/*      name={'mainImage'}*/}
-        {/*      baseUrl={'/api/admin/session/main-image'}*/}
+        {/*      baseUrl={'/api/admin/sessions/main-image'}*/}
         {/*    >*/}
         {/*      Select Main Image*/}
         {/*    </DataImageInput>*/}
         {/*  </div>*/}
         {/*  <div>*/}
         {/*    <DataMultipleImageInput*/}
-        {/*      baseUrl={'/api/admin/session/content-image'}*/}
+        {/*      baseUrl={'/api/admin/sessions/content-image'}*/}
         {/*      name={'contentImages'}*/}
         {/*      title={'Images'}*/}
         {/*    >*/}
