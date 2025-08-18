@@ -1,15 +1,15 @@
 import 'server-only'
 import db from '@/db'
-import { unstable_cache } from 'next/cache'
 import { asc, desc } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
+import { fetcher } from '@/lib/server/fetcher/fetcher'
 
-export const preload = () => {
+export const preloadMembers = () => {
   void getMembers()
 }
 
-export const getMembers = unstable_cache(
+export const getMembers = fetcher(
   async () =>
     db.query.users.findMany({
       with: {

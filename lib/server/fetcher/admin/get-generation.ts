@@ -3,11 +3,11 @@
  * It utilizes Next.js's unstable_cache for efficient data fetching and caching.
  */
 
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { generations } from '@/db/schema/generations';
-import { eq } from 'drizzle-orm';
+import 'server-only'
+import db from '@/db'
+import { generations } from '@/db/schema/generations'
+import { eq } from 'drizzle-orm'
+import { fetcher } from '@/lib/server/fetcher/fetcher'
 
 /**
  * Preloads the data for a specific generation into the cache.
@@ -16,11 +16,11 @@ import { eq } from 'drizzle-orm';
  *
  * @param generationId - The ID of the generation to preload.
  */
-export const preload = (generationId: number) => {
+export const preloadGeneration = (generationId: number) => {
   // The function is called without `await` to not block the execution flow.
   // The caching is handled by `getGeneration` internally.
-  void getGeneration(generationId);
-};
+  void getGeneration(generationId)
+}
 
 /**
  * Fetches data for a single generation from the database, including its associated parts and members.
@@ -30,9 +30,9 @@ export const preload = (generationId: number) => {
  * @param generationId - The ID of the generation to fetch.
  * @returns A promise that resolves to the generation object with its relations, or undefined if not found.
  */
-export const getGeneration = unstable_cache(
+export const getGeneration = fetcher(
   async (generationId: number) => {
-    console.log(new Date(), 'Fetch Generation Data', generationId);
+    console.log(new Date(), 'Fetch Generation Data', generationId)
     return db.query.generations.findFirst({
       where: eq(generations.id, generationId),
       with: {
@@ -46,10 +46,10 @@ export const getGeneration = unstable_cache(
           },
         },
       },
-    });
+    })
   },
   ['getGeneration'], // Unique key for this cache entry
   {
     tags: ['generations'], // Cache tag for revalidation
-  },
-);
+  }
+)
