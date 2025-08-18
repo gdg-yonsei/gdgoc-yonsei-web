@@ -9,9 +9,9 @@ import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
 import { getSession } from '@/lib/fetcher/admin/get-session'
-import { getGenerations } from '@/lib/fetcher/admin/get-generations'
-import DataSelectInput from '@/app/components/admin/data-select-input'
 import { Metadata } from 'next'
+import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
+import { getParts } from '@/lib/fetcher/admin/get-parts'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -34,12 +34,7 @@ export default async function EditSessionPage({
   )
 
   // 기수 정보 가져오기
-  const generations = await getGenerations()
-  // 기수 선택용 리스트
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
+  const generationData = await getParts()
 
   return (
     <AdminDefaultLayout>
@@ -77,18 +72,49 @@ export default async function EditSessionPage({
           title={'Session Description (Korean)'}
         />
         <DataInput
+          title={'Location (English)'}
+          defaultValue={sessionData.location}
+          name={'location'}
+          placeholder={'Location (English)'}
+        />
+        <DataInput
+          title={'Location (Korean)'}
+          defaultValue={sessionData.locationKo}
+          name={'locationKo'}
+          placeholder={'Location (Korean)'}
+        />
+        <DataInput
+          title={'Open Session'}
+          name={'openSession'}
+          placeholder={'Location (Korean)'}
+          type={'checkbox'}
+          defaultValue={'true'}
+          isChecked={sessionData.openSession!}
+        />
+        <DataInput
+          title={'Max Capacity'}
+          defaultValue={sessionData.maxCapacity}
+          name={'maxCapacity'}
+          placeholder={'Max Capacity'}
+          type={'number'}
+        />
+        <DataInput
           defaultValue={sessionData.eventDate}
           name={'eventDate'}
           placeholder={'YYYY-MM-DD'}
           title={'Event Date'}
           type={'date'}
         />
-        <DataSelectInput
-          title={'Generation'}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={String(sessionData.generationId)}
+        <SessionPartParticipantsInput
+          generationData={generationData}
+          defaultValue={{
+            partId: sessionData.partId,
+            selectedMembers: sessionData.userToSession.map(
+              (user) => user.userId
+            ),
+          }}
         />
+
         <div
           className={
             'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
@@ -96,7 +122,7 @@ export default async function EditSessionPage({
         >
           <div>
             <DataImageInput
-              baseUrl={'/admin/sessions/main-image'}
+              baseUrl={'/api/admin/sessions/main-image'}
               title={'Main Image'}
               name={'mainImage'}
               defaultValue={sessionData.mainImage}

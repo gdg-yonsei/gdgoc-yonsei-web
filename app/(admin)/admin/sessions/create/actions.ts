@@ -111,5 +111,5 @@ export async function createSessionAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/session`)
+  redirect(`/admin/sessions`)
 }

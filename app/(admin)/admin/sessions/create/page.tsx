@@ -88,7 +88,7 @@ export default async function CreateSessionPage() {
         />
         <DataInput
           title={'Open Session'}
-          defaultValue={''}
+          defaultValue={'true'}
           name={'openSession'}
           placeholder={'Location (Korean)'}
           type={'checkbox'}

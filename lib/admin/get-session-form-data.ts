@@ -39,6 +39,8 @@ export default function getSessionFormData(formData: FormData): {
     formData.get('participantId') as string
   ) as string[]
 
+  console.log(formData.get('openSession'))
+
   // Safely parse contentImages JSON string
   const contentImages = formData.get('contentImages') as string
   let contentImagesArray: string[] = []

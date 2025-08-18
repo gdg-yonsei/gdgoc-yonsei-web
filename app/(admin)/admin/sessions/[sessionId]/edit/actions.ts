@@ -12,6 +12,7 @@ import r2Client from '@/lib/admin/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { sessionValidation } from '@/lib/validations/session'
 import getSessionFormData from '@/lib/admin/get-session-form-data'
+import { userToSession } from '@/db/schema/user-to-session'
 
 /**
  * Update Project Action
@@ -42,6 +43,12 @@ export async function updateSessionAction(
     mainImage,
     generationId,
     eventDate,
+    location,
+    locationKo,
+    maxCapacity,
+    openSession,
+    partId,
+    participantId,
   } = getSessionFormData(formData)
 
   try {
@@ -55,6 +62,12 @@ export async function updateSessionAction(
       mainImage,
       generationId,
       eventDate,
+      location,
+      locationKo,
+      maxCapacity,
+      openSession,
+      partId,
+      participantId,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -107,10 +120,25 @@ export async function updateSessionAction(
         images: contentImages,
         mainImage: mainImage!,
         updatedAt: new Date(),
-
+        location,
+        locationKo,
+        maxCapacity,
+        openSession,
+        partId: Number(partId)!,
         eventDate: eventDate!,
       })
       .where(eq(sessions.id, sessionId))
+
+    // delete previous participants
+    await db.delete(userToSession).where(eq(userToSession.sessionId, sessionId))
+
+    // create new participants
+    await db.insert(userToSession).values(
+      participantId.map((participant) => ({
+        userId: participant,
+        sessionId: sessionId,
+      }))
+    )
 
     // 캐시 업데이트
     revalidateTag('sessions')

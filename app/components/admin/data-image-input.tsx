@@ -37,7 +37,7 @@ export default function DataImageInput({
       reader.onloadend = () => {
         setPreviewImageUrl(reader.result as string)
       }
-      if (uploadedImageUrl) {
+      if (uploadedImageUrl.includes('https')) {
         await fetch(baseUrl, {
           method: 'DELETE',
           body: JSON.stringify({ imageUrl: uploadedImageUrl }),

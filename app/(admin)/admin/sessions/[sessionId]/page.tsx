@@ -107,6 +107,12 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Open Session</div>
+          <div className={'member-data-content'}>
+            {sessionData.openSession ? 'Open' : 'Close'}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Event Date</div>
           <div className={'member-data-content'}>
             {new Intl.DateTimeFormat('ko-KR', {

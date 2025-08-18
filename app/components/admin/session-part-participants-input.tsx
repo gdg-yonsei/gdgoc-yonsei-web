@@ -1,12 +1,17 @@
 'use client'
 
 import { getParts } from '@/lib/fetcher/admin/get-parts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function SessionPartParticipantsInput({
   generationData,
+  defaultValue,
 }: {
   generationData: Awaited<ReturnType<typeof getParts>>
+  defaultValue?: {
+    partId: number
+    selectedMembers: string[]
+  }
 }) {
   const [partId, setPartId] = useState<number>(0)
   const [partMembers, setPartMembers] = useState<
@@ -15,6 +20,24 @@ export default function SessionPartParticipantsInput({
     >[0]['parts'][0]['usersToParts'][0]['user'][]
   >([])
   const [selectedMembers, setSelectedMembers] = useState<string[]>([])
+
+  useEffect(() => {
+    if (defaultValue) {
+      setPartId(defaultValue.partId)
+      setSelectedMembers(defaultValue.selectedMembers)
+      const allParts = generationData.flatMap((generation) =>
+        generation.parts.map((part) => part)
+      )
+      const selectedPart = allParts.filter(
+        (part) => part.id === defaultValue.partId
+      )
+      setPartMembers(
+        selectedPart.flatMap((userToPart) =>
+          userToPart.usersToParts.map((user) => user.user)
+        )
+      )
+    }
+  }, [defaultValue, generationData])
 
   return (
     <div className={'col-span-3 flex w-full items-start justify-between gap-4'}>
