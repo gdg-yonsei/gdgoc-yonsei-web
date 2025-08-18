@@ -1,6 +1,6 @@
-import getUserRole from '@/lib/fetcher/admin/get-user-role'
-import checkPermission from '@/lib/admin/check-permission'
-import { ResourceType } from '@/lib/admin/handle-permission'
+import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import checkPermission from '@/lib/server/permission/check-permission'
+import { ResourceType } from '@/lib/server/permission/handle-permission'
 
 export interface NavigationItem {
   name: string

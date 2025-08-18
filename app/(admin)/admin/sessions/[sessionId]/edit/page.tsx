@@ -8,10 +8,10 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
 import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
-import { getSession } from '@/lib/fetcher/admin/get-session'
+import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
-import { getParts } from '@/lib/fetcher/admin/get-parts'
+import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 
 export const metadata: Metadata = {
   title: 'Edit Session',

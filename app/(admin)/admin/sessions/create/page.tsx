@@ -7,7 +7,7 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
-import { getParts } from '@/lib/fetcher/admin/get-parts'
+import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 
 export const metadata: Metadata = {

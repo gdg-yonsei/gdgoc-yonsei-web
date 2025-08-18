@@ -1,14 +1,14 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { generationValidation } from '@/lib/validations/generation'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
 import { revalidateTag } from 'next/cache'
-import getGenerationFormData from '@/lib/admin/get-generation-form-data'
+import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 
 export async function createGenerationAction(
   prev: { error: string },

@@ -1,5 +1,7 @@
 import { Session } from 'next-auth'
-import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
+import handlePermission, {
+  ResourceType,
+} from '@/lib/server/permission/handle-permission'
 import dataDeleteAction from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'

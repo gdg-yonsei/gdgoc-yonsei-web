@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { getSession } from '@/lib/fetcher/get-session'
+import { getSession } from '@/lib/server/fetcher/get-session'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Session'

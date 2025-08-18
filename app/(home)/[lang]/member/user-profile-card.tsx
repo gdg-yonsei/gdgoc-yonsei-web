@@ -1,4 +1,4 @@
-import { getGenerations } from '@/lib/fetcher/get-generations'
+import { getGenerations } from '@/lib/server/fetcher/get-generations'
 import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import Link from 'next/link'

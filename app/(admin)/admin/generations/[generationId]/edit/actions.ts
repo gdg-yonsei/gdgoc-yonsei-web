@@ -4,12 +4,12 @@ import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import { generations } from '@/db/schema/generations'
 import { generationValidation } from '@/lib/validations/generation'
 import { z } from 'zod'
-import getGenerationFormData from '@/lib/admin/get-generation-form-data'
+import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 
 /**
  * Update Generation Action

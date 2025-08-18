@@ -5,11 +5,11 @@ import db from '@/db'
 import { users } from '@/db/schema/users'
 import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import { memberValidation } from '@/lib/validations/member'
 import { z } from 'zod'
-import getMemberFormData from '@/lib/admin/get-member-form-data'
+import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
 
 /**
  * Update Member Action

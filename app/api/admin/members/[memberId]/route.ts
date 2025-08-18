@@ -1,5 +1,5 @@
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { NextResponse } from 'next/server'
 import db from '@/db'
 import { users } from '@/db/schema/users'

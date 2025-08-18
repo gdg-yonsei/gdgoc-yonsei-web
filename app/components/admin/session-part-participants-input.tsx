@@ -1,6 +1,6 @@
 'use client'
 
-import { getParts } from '@/lib/fetcher/admin/get-parts'
+import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { useEffect, useState } from 'react'
 
 export default function SessionPartParticipantsInput({

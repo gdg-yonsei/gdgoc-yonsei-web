@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/fetcher/get-session'
+import { getSession } from '@/lib/server/fetcher/get-session'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'

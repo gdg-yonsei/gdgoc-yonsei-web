@@ -1,11 +1,11 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
 import { revalidateTag } from 'next/cache'
-import getProjectFormData from '@/lib/admin/get-project-form-data'
+import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'

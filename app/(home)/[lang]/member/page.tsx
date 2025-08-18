@@ -1,4 +1,4 @@
-import { getGenerations } from '@/lib/fetcher/get-generations'
+import { getGenerations } from '@/lib/server/fetcher/get-generations'
 import MembersList from '@/app/(home)/[lang]/member/members-list'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import PageTitle from '@/app/components/page-title'

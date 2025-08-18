@@ -1,6 +1,6 @@
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
-import getPreSignedUrl from '@/lib/admin/get-pre-signed-url'
+import handlePermission from '@/lib/server/permission/handle-permission'
+import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import { NextResponse } from 'next/server'
 
 export interface ProjectContentImagePostRequest {

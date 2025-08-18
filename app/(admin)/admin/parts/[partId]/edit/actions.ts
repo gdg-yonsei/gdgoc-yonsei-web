@@ -4,13 +4,13 @@ import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import { z } from 'zod'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
-import getPartFormData from '@/lib/admin/get-part-form-data'
+import getPartFormData from '@/lib/server/form-data/get-part-form-data'
 
 /**
  * Update Part Action

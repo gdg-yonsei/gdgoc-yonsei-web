@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/fetcher/get-session'
+import { getSession } from '@/lib/server/fetcher/get-session'
 import SessionPageContent from '@/app/(home)/[lang]/session/[sessionId]/session-page-content'
 import Modal from '@/app/(home)/[lang]/@modal/(.)session/[sessionId]/modal'
 

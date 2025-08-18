@@ -1,17 +1,17 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
 import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { eq } from 'drizzle-orm'
 import { revalidateTag } from 'next/cache'
-import r2Client from '@/lib/admin/r2-client'
+import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { sessionValidation } from '@/lib/validations/session'
-import getSessionFormData from '@/lib/admin/get-session-form-data'
+import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { userToSession } from '@/db/schema/user-to-session'
 
 /**

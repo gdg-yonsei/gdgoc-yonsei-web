@@ -1,5 +1,5 @@
 import GenerationButtonGroup from '@/app/components/generation-button-group'
-import { getGenerations } from '@/lib/fetcher/get-generations'
+import { getGenerations } from '@/lib/server/fetcher/get-generations'
 
 export default function StageButtonGroup({
   generationsData,

@@ -1,9 +1,9 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
-import getAcceptMemberFormData from '@/lib/admin/get-accept-member-form-data'
+import getAcceptMemberFormData from '@/lib/server/form-data/get-accept-member-form-data'
 import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { z } from 'zod'
 import db from '@/db'

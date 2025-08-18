@@ -9,10 +9,10 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getGenerations } from '@/lib/fetcher/admin/get-generations'
+import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
-import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
+import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

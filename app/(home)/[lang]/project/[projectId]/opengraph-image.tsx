@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { getProject } from '@/lib/fetcher/get-project'
+import { getProject } from '@/lib/server/fetcher/get-project'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Project'

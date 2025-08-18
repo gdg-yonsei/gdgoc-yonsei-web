@@ -1,8 +1,8 @@
 import { Request } from 'next/dist/compiled/@edge-runtime/primitives'
 import { NextResponse } from 'next/server'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
-import getPreSignedUrl from '@/lib/admin/get-pre-signed-url'
+import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 
 export interface PostBody {
   memberId: string

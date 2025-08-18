@@ -1,6 +1,6 @@
 'use client'
 
-import { getSessions } from '@/lib/fetcher/get-sessions'
+import { getSessions } from '@/lib/server/fetcher/get-sessions'
 import { useAtom } from 'jotai'
 import { generationState } from '@/lib/atoms'
 import Link from 'next/link'

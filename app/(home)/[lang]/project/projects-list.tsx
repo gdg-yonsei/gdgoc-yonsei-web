@@ -2,7 +2,7 @@
 
 import { useAtom } from 'jotai'
 import { generationState } from '@/lib/atoms'
-import { getProjects } from '@/lib/fetcher/get-projects'
+import { getProjects } from '@/lib/server/fetcher/get-projects'
 import Image from 'next/image'
 import Link from 'next/link'
 import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'

@@ -2,14 +2,14 @@
  * @file This file contains a server-side function for handling user permissions.
  */
 
-import 'server-only';
-import getUserRole from '@/lib/fetcher/admin/get-user-role';
-import checkPermission from '@/lib/admin/check-permission';
+import 'server-only'
+import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import checkPermission from '@/lib/server/permission/check-permission'
 
 /**
  * Defines the types of actions a user can perform.
  */
-export type ActionType = 'get' | 'post' | 'put' | 'delete';
+export type ActionType = 'get' | 'post' | 'put' | 'delete'
 
 /**
  * Defines the types of resources a user can interact with.
@@ -27,7 +27,7 @@ export type ResourceType =
   | 'sessionsPage'
   | 'adminPage'
   | 'generationsPage'
-  | 'partsPage';
+  | 'partsPage'
 
 /**
  * Checks if a user has permission to perform a specific action on a resource.
@@ -44,16 +44,16 @@ export default async function handlePermission(
   userId: string | undefined | null,
   action: ActionType,
   resource: ResourceType,
-  dataOwnerId?: string,
+  dataOwnerId?: string
 ): Promise<boolean> {
   // If there is no user ID, deny permission immediately.
   if (!userId) {
-    return false;
+    return false
   }
 
   // Fetch the user's role from the database.
-  const userRole = await getUserRole(userId);
+  const userRole = await getUserRole(userId)
 
   // Determine permission based on the user's role, the action, and the resource.
-  return checkPermission(userId, dataOwnerId)[userRole][action][resource];
+  return checkPermission(userId, dataOwnerId)[userRole][action][resource]
 }

@@ -1,7 +1,9 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
+import handlePermission, {
+  ResourceType,
+} from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
@@ -10,7 +12,7 @@ import { sessions } from '@/db/schema/sessions'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { revalidateTag } from 'next/cache'
-import deleteR2Images from '@/lib/delete-r2-images'
+import deleteR2Images from '@/lib/server/delete-r2-images'
 
 export default async function dataDeleteAction(
   prev: { error: string },

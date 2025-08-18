@@ -1,6 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import SessionsTable from '@/app/(admin)/admin/sessions/sessions-table'

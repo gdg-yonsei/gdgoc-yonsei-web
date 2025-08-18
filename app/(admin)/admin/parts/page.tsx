@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { Suspense } from 'react'
 import PartsTable from '@/app/(admin)/admin/parts/parts-table'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'

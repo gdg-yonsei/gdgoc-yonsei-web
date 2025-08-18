@@ -1,11 +1,11 @@
-import { getProject } from '@/lib/fetcher/get-project'
+import { getProject } from '@/lib/server/fetcher/get-project'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
-import { getProjects } from '@/lib/fetcher/get-projects'
+import { getProjects } from '@/lib/server/fetcher/get-projects'
 
 export async function generateStaticParams() {
   const projectsData = await getProjects()

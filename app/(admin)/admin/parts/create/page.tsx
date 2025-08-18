@@ -7,8 +7,8 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
-import { getGenerations } from '@/lib/fetcher/admin/get-generations'
-import { getMembers } from '@/lib/fetcher/admin/get-members'
+import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

@@ -1,4 +1,6 @@
-import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
+import handlePermission, {
+  ResourceType,
+} from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
 import { Session } from 'next-auth'
 

@@ -11,8 +11,7 @@
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
-    "test": "vitest run"
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
@@ -55,8 +54,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5.9.2",
-    "vitest": "^1.6.1"
+    "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">=20.0.0 <=22"
