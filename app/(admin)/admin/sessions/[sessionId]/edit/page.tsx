@@ -84,12 +84,20 @@ export default async function EditSessionPage({
           placeholder={'Location (Korean)'}
         />
         <DataInput
-          title={'Open Session'}
-          name={'openSession'}
-          placeholder={'Location (Korean)'}
+          title={'Internal Open'}
+          name={'internalOpen'}
+          placeholder={'Internal Open'}
           type={'checkbox'}
           defaultValue={'true'}
-          isChecked={sessionData.openSession!}
+          isChecked={sessionData.internalOpen!}
+        />
+        <DataInput
+          title={'Public Open'}
+          name={'publicOpen'}
+          placeholder={'Public Open'}
+          type={'checkbox'}
+          defaultValue={'true'}
+          isChecked={sessionData.publicOpen!}
         />
         <DataInput
           title={'Max Capacity'}
@@ -99,11 +107,18 @@ export default async function EditSessionPage({
           type={'number'}
         />
         <DataInput
-          defaultValue={sessionData.eventDate}
-          name={'eventDate'}
+          defaultValue={String(sessionData.startAt)}
+          name={'startAt'}
           placeholder={'YYYY-MM-DD'}
-          title={'Event Date'}
-          type={'date'}
+          title={'Start Time'}
+          type={'datetime-local'}
+        />
+        <DataInput
+          defaultValue={String(sessionData.startAt)}
+          name={'endAt'}
+          placeholder={'YYYY-MM-DD'}
+          title={'End Time'}
+          type={'datetime-local'}
         />
         <SessionPartParticipantsInput
           generationData={generationData}

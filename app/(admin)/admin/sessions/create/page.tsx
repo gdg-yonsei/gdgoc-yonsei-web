@@ -87,10 +87,18 @@ export default async function CreateSessionPage() {
           placeholder={'Location (Korean)'}
         />
         <DataInput
-          title={'Open Session'}
+          title={'Internal Open'}
           defaultValue={'true'}
-          name={'openSession'}
-          placeholder={'Location (Korean)'}
+          name={'internalOpen'}
+          placeholder={'Internal Open'}
+          type={'checkbox'}
+          isChecked={true}
+        />
+        <DataInput
+          title={'Public Open'}
+          defaultValue={'true'}
+          name={'publicOpen'}
+          placeholder={'Public Open'}
           type={'checkbox'}
           isChecked={true}
         />
@@ -102,11 +110,18 @@ export default async function CreateSessionPage() {
           type={'number'}
         />
         <DataInput
-          title={'Event Date'}
+          title={'Start time'}
           defaultValue={''}
-          name={'eventDate'}
+          name={'startAt'}
           placeholder={'YYYY-MM-DD'}
-          type={'date'}
+          type={'datetime-local'}
+        />
+        <DataInput
+          title={'End time'}
+          defaultValue={''}
+          name={'endAt'}
+          placeholder={'YYYY-MM-DD'}
+          type={'datetime-local'}
         />
         <SessionPartParticipantsInput generationData={generationData} />
 

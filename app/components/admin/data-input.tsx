@@ -1,3 +1,5 @@
+import { HTMLInputTypeAttribute } from 'react'
+
 /**
  * Data input component
  * @param defaultValue - 기본값
@@ -20,7 +22,7 @@ export default function DataInput({
   name: string
   placeholder: string
   title: string
-  type?: 'checkbox' | 'link' | 'date' | 'number'
+  type?: HTMLInputTypeAttribute
   isChecked?: boolean
 }) {
   return (

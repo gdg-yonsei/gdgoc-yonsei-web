@@ -99,7 +99,10 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Participants</div>
+          <div className={'member-data-title'}>
+            Participants {sessionData.userToSession.length}/
+            {sessionData.maxCapacity}
+          </div>
           <div className={'member-data-content'}>
             {sessionData.userToSession.map((user) => (
               <div key={user.userId}>{user.user.name}</div>
@@ -107,19 +110,39 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Open Session</div>
+          <div className={'member-data-title'}>Internal Open</div>
           <div className={'member-data-content'}>
-            {sessionData.openSession ? 'Open' : 'Close'}
+            {sessionData.internalOpen ? 'True' : 'False'}
           </div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Event Date</div>
+          <div className={'member-data-title'}>Public Open</div>
           <div className={'member-data-content'}>
-            {new Intl.DateTimeFormat('ko-KR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }).format(new Date(sessionData.eventDate))}
+            {sessionData.publicOpen ? 'True' : 'False'}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Start Time</div>
+          <div className={'member-data-content'}>
+            {sessionData?.startAt
+              ? new Intl.DateTimeFormat('ko-KR', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }).format(new Date(sessionData.startAt))
+              : 'TBD'}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>End Time</div>
+          <div className={'member-data-content'}>
+            {sessionData?.endAt
+              ? new Intl.DateTimeFormat('ko-KR', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }).format(new Date(sessionData.endAt))
+              : 'TBD'}
           </div>
         </div>
         <div className={'member-data-box'}>

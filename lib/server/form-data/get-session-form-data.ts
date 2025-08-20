@@ -17,10 +17,12 @@ export default function getSessionFormData(formData: FormData): {
   mainImage: string | null
   contentImages: string[]
   generationId: string | null
-  eventDate: string | null
+  startAt: Date | null
+  endAt: Date | null
   location: string | null
   locationKo: string | null
-  openSession: boolean
+  internalOpen: boolean
+  publicOpen: boolean
   maxCapacity: number
   partId: string | null
   participantId: string[]
@@ -32,7 +34,8 @@ export default function getSessionFormData(formData: FormData): {
   const mainImage = formData.get('mainImage') as string | null
   const location = formData.get('location') as string | null
   const locationKo = formData.get('locationKo') as string | null
-  const openSession = formData.get('openSession') === 'true'
+  const internalOpen = formData.get('internalOpen') === 'true'
+  const publicOpen = formData.get('publicOpen') === 'true'
   const maxCapacity = Number(formData.get('maxCapacity'))
   const partId = formData.get('partId') as string | null
   const participantId = JSON.parse(
@@ -54,7 +57,8 @@ export default function getSessionFormData(formData: FormData): {
   }
 
   const generationId = formData.get('generationId') as string | null
-  const eventDate = formData.get('eventDate') as string | null
+  const startAt = new Date(formData.get('startAt') as string)
+  const endAt = new Date(formData.get('endAt') as string)
 
   return {
     name,
@@ -64,12 +68,14 @@ export default function getSessionFormData(formData: FormData): {
     mainImage,
     contentImages: contentImagesArray,
     generationId,
-    eventDate,
     location,
     locationKo,
     partId,
     participantId,
     maxCapacity,
-    openSession,
+    internalOpen,
+    publicOpen,
+    startAt,
+    endAt,
   }
 }

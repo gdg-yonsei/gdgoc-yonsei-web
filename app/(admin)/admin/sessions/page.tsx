@@ -3,9 +3,10 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
-import SessionsTable from '@/app/(admin)/admin/sessions/sessions-table'
+import SessionsTable from '@/app/(admin)/admin/sessions/sessionsTable'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
+import UpcomingSessions from '@/app/(admin)/admin/sessions/upcomingSessions'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -22,6 +23,9 @@ export default async function SessionsPage() {
 
   return (
     <AdminDefaultLayout className={'p-4'}>
+      <Suspense>
+        <UpcomingSessions />
+      </Suspense>
       <div className={'flex items-center gap-2 pb-2'}>
         <div className={'admin-title'}>Sessions</div>
         {canCreate && (

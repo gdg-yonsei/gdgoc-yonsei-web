@@ -19,7 +19,7 @@ export async function getSessions() {
       parts: {
         with: {
           sessions: {
-            orderBy: desc(sessions.eventDate),
+            orderBy: desc(sessions.startAt),
           },
         },
       },

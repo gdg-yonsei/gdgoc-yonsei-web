@@ -2,7 +2,7 @@ import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
 
-function SessionCard({
+export default function SessionCard({
   session,
 }: {
   session: Awaited<ReturnType<typeof getSessions>>[0]['parts'][0]['sessions'][0]
@@ -29,38 +29,15 @@ function SessionCard({
           <div className={'pb-2 text-xl font-semibold'}>{session.nameKo}</div>
         </div>
         <div className={'flex flex-col text-sm'}>
-          {new Intl.DateTimeFormat('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          }).format(new Date(session.eventDate))}
+          {session.startAt
+            ? new Intl.DateTimeFormat('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }).format(new Date(session.startAt))
+            : 'TBD'}
         </div>
       </div>
     </Link>
-  )
-}
-
-export default async function SessionsTable() {
-  const sessionsData = await getSessions()
-
-  return (
-    <div className={'flex w-full flex-col gap-2'}>
-      {sessionsData?.map((generation) => (
-        <div key={generation.id}>
-          <div
-            className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
-          >
-            Generation: {generation.name}
-          </div>
-          <div className={'member-data-grid w-full gap-2 pt-2'}>
-            {generation?.parts?.map((part) =>
-              part.sessions.map((session) => (
-                <SessionCard session={session} key={session.id} />
-              ))
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
   )
 }
