@@ -7,6 +7,7 @@ import SessionsTable from '@/app/(admin)/admin/sessions/sessionsTable'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import UpcomingSessions from '@/app/(admin)/admin/sessions/upcomingSessions'
+import JoinSession from '@/app/(admin)/admin/sessions/joinSession'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -23,8 +24,23 @@ export default async function SessionsPage() {
 
   return (
     <AdminDefaultLayout className={'p-4'}>
-      <Suspense>
+      <Suspense
+        fallback={
+          <div
+            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
+          />
+        }
+      >
         <UpcomingSessions />
+      </Suspense>
+      <Suspense
+        fallback={
+          <div
+            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
+          />
+        }
+      >
+        <JoinSession />
       </Suspense>
       <div className={'flex items-center gap-2 pb-2'}>
         <div className={'admin-title'}>Sessions</div>

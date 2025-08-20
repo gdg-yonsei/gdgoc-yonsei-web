@@ -1,19 +1,19 @@
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import db from '@/db'
-import { and, asc, eq } from 'drizzle-orm'
-import { userToSession } from '@/db/schema/user-to-session'
 import { sessions } from '@/db/schema/sessions'
+import { userToSession } from '@/db/schema/user-to-session'
+import { and, asc, eq, ne } from 'drizzle-orm'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
 
-export default async function UpcomingSessions() {
+export default async function JoinSession() {
   const session = await auth()
   if (!session || !session.user?.id) {
     return forbidden()
   }
 
-  const enrolledSessions = await db
-    .select({
+  const notEnrolledSessions = await db
+    .selectDistinct({
       id: sessions.id,
       name: sessions.name,
       nameKo: sessions.nameKo,
@@ -35,14 +35,14 @@ export default async function UpcomingSessions() {
     })
     .from(userToSession)
     .innerJoin(sessions, eq(userToSession.sessionId, sessions.id))
-    .where(and(eq(userToSession.userId, session.user.id)))
+    .where(and(ne(userToSession.userId, session.user.id)))
     .orderBy(asc(sessions.startAt))
 
   return (
     <div className={'pb-8'}>
-      <h2 className={'admin-title'}>Upcoming Sessions</h2>
+      <div className={'admin-title'}>Join Session</div>
       <div className={'member-data-grid w-full gap-2 pt-2'}>
-        {enrolledSessions.map((session) => (
+        {notEnrolledSessions.map((session) => (
           <SessionCard key={session.id} session={session} />
         ))}
       </div>
