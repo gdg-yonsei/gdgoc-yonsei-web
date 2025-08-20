@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { dateRegex } from '@/lib/yyyy-mm-dd-regex'
 
 export const sessionValidation = z.object({
   name: z.string().nonempty('Name is required'),
