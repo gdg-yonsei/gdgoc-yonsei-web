@@ -5,11 +5,10 @@
 
 import { sessions } from '@/db/schema/sessions'
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
-import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads all sessions data, grouped by generation, into the cache.
@@ -27,7 +26,7 @@ export const preload = () => {
  *
  * @returns A promise that resolves to an array of generation objects, each containing its sessions.
  */
-export const getSessions = unstable_cache(
+export const getSessions = dbCache(
   async () => {
     console.log(new Date(), 'Fetch Sessions Data')
     return db.query.generations.findMany({
@@ -43,7 +42,7 @@ export const getSessions = unstable_cache(
       orderBy: desc(generations.id),
     })
   },
-  ['getSessions'], // Unique key for this cache entry
+  [], // Unique key for this cache entry
   {
     tags: ['sessions', 'generations'], // Cache tags for revalidation
   }

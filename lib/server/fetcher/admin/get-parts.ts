@@ -4,11 +4,11 @@
  */
 
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { asc, desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for all parts into the cache.
@@ -27,7 +27,7 @@ export const preload = () => {
  *
  * @returns A promise that resolves to an array of generation objects, each with nested parts and user data.
  */
-export const getParts = unstable_cache(
+export const getParts = dbCache(
   async () => {
     console.log(new Date(), 'Fetch Parts Data')
     return db.query.generations.findMany({

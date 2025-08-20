@@ -1,12 +1,12 @@
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import db from '@/db'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 export const preload = () => {
   void getSessions()
 }
 
-export const getSessions = unstable_cache(
+export const getSessions = dbCache(
   async () =>
     db.query.sessions.findMany({
       with: {

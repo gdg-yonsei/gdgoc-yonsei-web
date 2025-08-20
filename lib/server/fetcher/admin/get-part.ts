@@ -3,11 +3,11 @@
  * It uses Next.js's unstable_cache for caching.
  */
 
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { desc, eq } from 'drizzle-orm';
-import { parts } from '@/db/schema/parts';
+import 'server-only'
+import db from '@/db'
+import { desc, eq } from 'drizzle-orm'
+import { parts } from '@/db/schema/parts'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for a specific part into the cache.
@@ -15,8 +15,8 @@ import { parts } from '@/db/schema/parts';
  * @param partId - The ID of the part to preload.
  */
 export const preload = (partId: number) => {
-  void getPart(partId);
-};
+  void getPart(partId)
+}
 
 /**
  * Fetches data for a single part from the database, including the list of users associated with it.
@@ -25,9 +25,9 @@ export const preload = (partId: number) => {
  * @param partId - The ID of the part to fetch.
  * @returns A promise that resolves to the part object with its members, or undefined if not found.
  */
-export const getPart = unstable_cache(
+export const getPart = dbCache(
   async (partId: number) => {
-    console.log(new Date(), 'Fetch Part Data', partId);
+    console.log(new Date(), 'Fetch Part Data', partId)
     return db.query.parts.findFirst({
       where: eq(parts.id, partId),
       with: {
@@ -38,10 +38,10 @@ export const getPart = unstable_cache(
         },
       },
       orderBy: desc(parts.createdAt),
-    });
+    })
   },
   ['getPart'], // Unique key for this cache entry
   {
     tags: ['parts'], // Cache tag for revalidation
-  },
-);
+  }
+)

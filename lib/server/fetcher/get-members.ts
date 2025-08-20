@@ -3,7 +3,7 @@ import db from '@/db'
 import { asc, desc } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
-import { fetcher } from '@/lib/server/fetcher/fetcher'
+import { fetcher } from '@/lib/server/fetcher/db-cache'
 
 export const preloadMembers = () => {
   void getMembers()

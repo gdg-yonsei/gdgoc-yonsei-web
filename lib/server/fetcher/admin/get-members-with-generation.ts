@@ -3,16 +3,16 @@
  * It uses Next.js's unstable_cache for efficient data fetching.
  */
 
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
+import db from '@/db'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for all generations and their members into the cache.
  * This can be used to warm up the cache for pages that display this information.
  */
 export const preload = () => {
-  void getMembersWithGeneration();
-};
+  void getMembersWithGeneration()
+}
 
 /**
  * Fetches all generations and, for each generation, includes its parts and the members within those parts.
@@ -21,7 +21,7 @@ export const preload = () => {
  *
  * @returns A promise that resolves to an array of generation objects, each containing nested parts and user information.
  */
-export const getMembersWithGeneration = unstable_cache(
+export const getMembersWithGeneration = dbCache(
   async () =>
     db.query.generations.findMany({
       with: {
@@ -36,8 +36,8 @@ export const getMembersWithGeneration = unstable_cache(
         },
       },
     }),
-  ['getMembersWithGeneration'], // Unique key for this cache entry
+  [], // Unique key for this cache entry
   {
-    tags: ['generations', 'members'], // Cache tags for revalidation
-  },
-);
+    tags: ['generations', 'users'], // Cache tags for revalidation
+  }
+)

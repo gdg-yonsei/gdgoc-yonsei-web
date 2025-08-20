@@ -7,7 +7,7 @@ import 'server-only'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { eq } from 'drizzle-orm'
-import { fetcher } from '@/lib/server/fetcher/fetcher'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for a specific generation into the cache.
@@ -30,7 +30,7 @@ export const preloadGeneration = (generationId: number) => {
  * @param generationId - The ID of the generation to fetch.
  * @returns A promise that resolves to the generation object with its relations, or undefined if not found.
  */
-export const getGeneration = fetcher(
+export const getGeneration = dbCache(
   async (generationId: number) => {
     console.log(new Date(), 'Fetch Generation Data', generationId)
     return db.query.generations.findFirst({
@@ -48,7 +48,7 @@ export const getGeneration = fetcher(
       },
     })
   },
-  ['getGeneration'], // Unique key for this cache entry
+  [],
   {
     tags: ['generations'], // Cache tag for revalidation
   }

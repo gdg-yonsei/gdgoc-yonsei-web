@@ -4,11 +4,11 @@
  */
 
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { users } from '@/db/schema/users'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for a specific session into the cache.
@@ -27,7 +27,7 @@ export const preload = (sessionId: string) => {
  * @param sessionId - The ID of the session to fetch.
  * @returns A promise that resolves to the session object with its generation and author, or null if the session is not found.
  */
-export const getSession = unstable_cache(
+export const getSession = dbCache(
   async (sessionId: string) => {
     console.log(new Date(), 'Fetch Session Data', sessionId)
 
@@ -59,7 +59,7 @@ export const getSession = unstable_cache(
     // Combine the session data with the author data.
     return { ...sessionData, author: authorData }
   },
-  ['sessions'], // Unique key for this cache entry
+  [], // Unique key for this cache entry
   {
     tags: ['sessions'], // Cache tag for revalidation
   }

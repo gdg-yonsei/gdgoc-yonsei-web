@@ -3,11 +3,11 @@
  * It uses Next.js's unstable_cache for caching.
  */
 
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { eq } from 'drizzle-orm';
-import { projects } from '@/db/schema/projects';
+import 'server-only'
+import db from '@/db'
+import { eq } from 'drizzle-orm'
+import { projects } from '@/db/schema/projects'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for a specific project into the cache.
@@ -15,8 +15,8 @@ import { projects } from '@/db/schema/projects';
  * @param projectId - The ID of the project to preload.
  */
 export const preload = (projectId: string) => {
-  void getProject(projectId);
-};
+  void getProject(projectId)
+}
 
 /**
  * Fetches data for a single project from the database, including its participants and associated generation.
@@ -25,9 +25,9 @@ export const preload = (projectId: string) => {
  * @param projectId - The ID of the project to fetch.
  * @returns A promise that resolves to the project object with its relations, or undefined if not found.
  */
-export const getProject = unstable_cache(
+export const getProject = dbCache(
   async (projectId: string) => {
-    console.log(new Date(), 'Fetch Project Data', projectId);
+    console.log(new Date(), 'Fetch Project Data', projectId)
     // Although findMany is used, the query is filtered by a unique ID, so it will return at most one project.
     const result = await db.query.projects.findMany({
       where: eq(projects.id, projectId),
@@ -39,11 +39,11 @@ export const getProject = unstable_cache(
         },
         generation: true, // Include the generation object
       },
-    });
-    return result[0];
+    })
+    return result[0]
   },
   ['getProject'], // Unique key for this cache entry
   {
     tags: ['projects'], // Cache tag for revalidation
-  },
-);
+  }
+)

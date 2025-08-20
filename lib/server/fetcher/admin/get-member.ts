@@ -3,14 +3,14 @@
  * It uses Next.js's unstable_cache for caching.
  */
 
-import 'server-only';
-import { unstable_cache } from 'next/cache';
-import db from '@/db';
-import { users } from '@/db/schema/users';
-import { desc, eq } from 'drizzle-orm';
-import { usersToParts } from '@/db/schema/users-to-parts';
-import { parts } from '@/db/schema/parts';
-import { generations } from '@/db/schema/generations';
+import 'server-only'
+import db from '@/db'
+import { users } from '@/db/schema/users'
+import { desc, eq } from 'drizzle-orm'
+import { usersToParts } from '@/db/schema/users-to-parts'
+import { parts } from '@/db/schema/parts'
+import { generations } from '@/db/schema/generations'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 /**
  * Preloads the data for a specific member into the cache.
@@ -18,8 +18,8 @@ import { generations } from '@/db/schema/generations';
  * @param userId - The ID of the user to preload.
  */
 export const preload = (userId: string) => {
-  void getMember(userId);
-};
+  void getMember(userId)
+}
 
 /**
  * Fetches detailed information for a single member by their user ID.
@@ -30,9 +30,9 @@ export const preload = (userId: string) => {
  * @param userId - The ID of the user to fetch.
  * @returns A promise that resolves to an object containing the member's detailed information, or undefined if not found.
  */
-export const getMember = unstable_cache(
+export const getMember = dbCache(
   async (userId: string) => {
-    console.log(new Date(), 'Fetch Member Data:', userId);
+    console.log(new Date(), 'Fetch Member Data:', userId)
     // The query joins users with their parts and generations, then selects the most recent record.
     const result = await db
       .select({
@@ -63,12 +63,12 @@ export const getMember = unstable_cache(
       .leftJoin(parts, eq(parts.id, usersToParts.partId))
       .leftJoin(generations, eq(generations.id, parts.generationsId))
       .orderBy(desc(generations.id), desc(parts.id), desc(users.updatedAt))
-      .limit(1);
+      .limit(1)
 
-    return result[0];
+    return result[0]
   },
-  ['getMember'], // Unique key for this cache entry
+  [], // Unique key for this cache entry
   {
-    tags: ['members'], // Cache tag for revalidation
-  },
-);
+    tags: ['users'], // Cache tag for revalidation
+  }
+)

@@ -1,15 +1,15 @@
 import 'server-only'
-import { unstable_cache } from 'next/cache'
 import db from '@/db'
 import { asc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
+import { dbCache } from '@/lib/server/fetcher/db-cache'
 
 export const preload = () => {
   void getGenerations()
 }
 
-export const getGenerations = unstable_cache(
+export const getGenerations = dbCache(
   async () =>
     db.query.generations.findMany({
       columns: {
@@ -30,5 +30,5 @@ export const getGenerations = unstable_cache(
       },
     }),
   [],
-  { tags: ['generations', 'parts', 'members'] }
+  { tags: ['generations', 'parts', 'users'] }
 )

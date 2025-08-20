@@ -43,8 +43,6 @@ function SessionCard({
 export default async function SessionsTable() {
   const sessionsData = await getSessions()
 
-  console.log(sessionsData)
-
   return (
     <div className={'flex w-full flex-col gap-2'}>
       {sessionsData?.map((generation) => (
