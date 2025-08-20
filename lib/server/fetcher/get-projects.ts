@@ -1,20 +1,17 @@
 import 'server-only'
 import db from '@/db'
-import { dbCache } from '@/lib/server/fetcher/db-cache'
+import cacheTag from '@/lib/server/cacheTag'
 
 export const preload = () => {
   void getProjects()
 }
 
-export const getProjects = dbCache(
-  async () =>
-    db.query.projects.findMany({
-      with: {
-        generation: true,
-      },
-    }),
-  [],
-  {
-    tags: ['projects'],
-  }
-)
+export async function getProjects() {
+  'use cache'
+  cacheTag('projects', 'generations')
+  return db.query.projects.findMany({
+    with: {
+      generation: true,
+    },
+  })
+}

@@ -39,7 +39,7 @@ async function UserProfile() {
       </div>
       <SignOutButton
         className={
-          'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-1 px-2 text-sm text-white transition-all hover:bg-neutral-800 disabled:bg-neutral-600'
+          'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-1 px-2 text-sm transition-all hover:bg-neutral-800 hover:text-white disabled:bg-neutral-600'
         }
         spinnerClassName={'size-4 border-2 border-t-white border-neutral-700'}
       />

@@ -1,49 +1,29 @@
-/**
- * @file This file contains a server-side function for fetching all sessions, grouped by generation.
- * It uses Next.js's unstable_cache for caching.
- */
-
 import { sessions } from '@/db/schema/sessions'
 import 'server-only'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
-import { dbCache } from '@/lib/server/fetcher/db-cache'
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 
-/**
- * Preloads all sessions data, grouped by generation, into the cache.
- * This can be used to warm up the cache for pages displaying session information.
- */
 export const preload = () => {
   void getSessions()
 }
 
-/**
- * Fetches all generations and their associated sessions from the database.
- * The sessions within each generation are ordered by their event date in descending order.
- * The generations themselves are ordered by their ID in descending order.
- * The result is cached and tagged with both 'sessions' and 'generations' for revalidation.
- *
- * @returns A promise that resolves to an array of generation objects, each containing its sessions.
- */
-export const getSessions = dbCache(
-  async () => {
-    console.log(new Date(), 'Fetch Sessions Data')
-    return db.query.generations.findMany({
-      with: {
-        parts: {
-          with: {
-            sessions: {
-              orderBy: desc(sessions.eventDate),
-            },
+export async function getSessions() {
+  'use cache'
+  console.log(new Date(), 'Fetch Sessions Data')
+  cacheTag('generations', 'sessions')
+
+  return db.query.generations.findMany({
+    with: {
+      parts: {
+        with: {
+          sessions: {
+            orderBy: desc(sessions.eventDate),
           },
         },
       },
-      orderBy: desc(generations.id),
-    })
-  },
-  [], // Unique key for this cache entry
-  {
-    tags: ['sessions', 'generations'], // Cache tags for revalidation
-  }
-)
+    },
+    orderBy: desc(generations.id),
+  })
+}

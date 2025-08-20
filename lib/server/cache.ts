@@ -1,13 +1,7 @@
 import { revalidateTag } from 'next/cache'
+import { CacheTag } from '@/lib/types/cacheTag'
 
-export type TagType =
-  | 'sessions'
-  | 'projects'
-  | 'members'
-  | 'generations'
-  | 'parts'
-
-export function revalidateCache(tagList: TagType[] | TagType) {
+export function revalidateCache(tagList: CacheTag[] | CacheTag) {
   if (typeof tagList === 'string') {
     return revalidateTag(tagList)
   }
