@@ -27,9 +27,9 @@ export default function SessionsList({
     >
       {sortedSessions.map((session, i) => (
         <Link
-          href={`/sessions/${session.id}`}
+          href={`/session/${session.id}`}
           key={i}
-          className={`flex rounded-xl bg-white shadow-xl`}
+          className={`flex rounded-xl bg-white`}
         >
           <Image
             src={session.mainImage}
@@ -42,9 +42,9 @@ export default function SessionsList({
                   : ''
                 : session.name
             }
-            className={'aspect-5/4 w-2/3 rounded-l-xl object-cover'}
+            className={'aspect-5/4 w-1/2 rounded-l-xl object-cover'}
           />
-          <div className={'flex w-1/3 flex-col justify-between p-2'}>
+          <div className={'flex w-1/2 flex-col justify-between p-2'}>
             <h2 className={'text-2xl font-semibold'}>
               {lang === 'ko' ? session.nameKo : session.name}
             </h2>
