@@ -4,12 +4,18 @@ import Image from 'next/image'
 
 export default function SessionCard({
   session,
+  register = false,
 }: {
   session: Awaited<ReturnType<typeof getSessions>>[0]['parts'][0]['sessions'][0]
+  register?: boolean
 }) {
   return (
     <Link
-      href={`/admin/sessions/${session.id}`}
+      href={
+        register
+          ? `/admin/sessions/${session.id}/register`
+          : `/admin/sessions/${session.id}`
+      }
       className={'flex flex-col rounded-xl bg-white'}
     >
       <Image

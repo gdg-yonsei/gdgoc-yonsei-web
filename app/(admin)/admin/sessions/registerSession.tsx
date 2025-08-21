@@ -6,7 +6,7 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, ne } from 'drizzle-orm'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
 
-export default async function JoinSession() {
+export default async function RegisterSession() {
   const session = await auth()
   if (!session || !session.user?.id) {
     return forbidden()
@@ -40,10 +40,10 @@ export default async function JoinSession() {
 
   return (
     <div className={'pb-8'}>
-      <div className={'admin-title'}>Join Session</div>
+      <div className={'admin-title'}>Register Session</div>
       <div className={'member-data-grid w-full gap-2 pt-2'}>
         {notEnrolledSessions.map((session) => (
-          <SessionCard key={session.id} session={session} />
+          <SessionCard key={session.id} session={session} register={true} />
         ))}
       </div>
     </div>
