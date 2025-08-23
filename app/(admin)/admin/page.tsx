@@ -42,7 +42,7 @@ export default async function AdminPage() {
           }
         >
           <p className={'text-center text-2xl font-semibold'}>
-            Subscribe GDGoC Yonsei Calendar
+            Subscribe to Calendar
           </p>
           <div className={'flex w-full flex-col gap-2'}>
             <div className={'flex w-full items-center justify-between gap-2'}>
@@ -73,11 +73,10 @@ export default async function AdminPage() {
               <div className={'rounded-lg bg-neutral-200 p-1 break-all'}>
                 https://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics
               </div>
-              <p className={'pt-1'}>1. Copy the address.</p>
-              <p>2. Open the Calendar app.</p>
-              <p>
-                3. Paste the address in the app to subscribe to the calendar.
+              <p className={'pt-1'}>
+                1. Copy the calendar address above.
               </p>
+              <p>2. Open the Calendar app and paste the address to subscribe.</p>
             </div>
           </div>
         </div>
@@ -87,8 +86,8 @@ export default async function AdminPage() {
             'flex w-full items-center justify-center place-self-start rounded-xl bg-neutral-900 p-4 text-center text-xl font-semibold text-white transition-colors hover:bg-neutral-800'
           }
         >
-          Information Accessible
-          <br /> by Permission Level
+          Permission Level
+          <br /> Information
         </Link>
       </div>
     </AdminDefaultLayout>

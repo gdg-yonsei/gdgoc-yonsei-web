@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CreateGenerationPage() {
   return (
     <AdminDefaultLayout>
-      <div className={'admin-title'}>Create New Generation</div>
+      <div className={'admin-title'}>Create Generation</div>
       <DataForm
         action={createGenerationAction}
         className={'member-data-grid gap-2'}
@@ -22,7 +22,7 @@ export default function CreateGenerationPage() {
           title={'Generation Name'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Generation Name'}
+          placeholder={'e.g. 1st, 2nd, ...'}
         />
         <DataInput
           title={'Start Date'}

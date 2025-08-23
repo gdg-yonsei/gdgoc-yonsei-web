@@ -23,7 +23,7 @@ export default async function CreateSessionPage() {
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Sessions</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>Create New Session</div>
+      <div className={'admin-title'}>Create Session</div>
       <DataForm
         action={createSessionAction}
         className={'member-data-grid gap-2'}
@@ -53,52 +53,52 @@ export default async function CreateSessionPage() {
         {/*  </div>*/}
         {/*</div>*/}
         <DataInput
-          title={'Name (English)'}
+          title={'English Name'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Name (English)'}
+          placeholder={'English Name'}
         />
         <DataInput
-          title={'Name (Korean)'}
+          title={'Korean Name'}
           defaultValue={''}
           name={'nameKo'}
-          placeholder={'Name (Korean)'}
+          placeholder={'Korean Name'}
         />
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'Description (English)'}
+          placeholder={'English Description'}
         />
         <DataTextarea
           defaultValue={''}
           name={'descriptionKo'}
-          placeholder={'Description (Korean)'}
+          placeholder={'Korean Description'}
         />
         <DataInput
-          title={'Location (English)'}
+          title={'English Location'}
           defaultValue={''}
           name={'location'}
-          placeholder={'Location (English)'}
+          placeholder={'English Location'}
         />
         <DataInput
-          title={'Location (Korean)'}
+          title={'Korean Location'}
           defaultValue={''}
           name={'locationKo'}
-          placeholder={'Location (Korean)'}
+          placeholder={'Korean Location'}
         />
         <DataInput
-          title={'Internal Open'}
+          title={'Internal Session'}
           defaultValue={'true'}
           name={'internalOpen'}
-          placeholder={'Internal Open'}
+          placeholder={'Internal Session'}
           type={'checkbox'}
           isChecked={true}
         />
         <DataInput
-          title={'Public Open'}
+          title={'Public Session'}
           defaultValue={'true'}
           name={'publicOpen'}
-          placeholder={'Public Open'}
+          placeholder={'Public Session'}
           type={'checkbox'}
           isChecked={true}
         />
@@ -106,21 +106,21 @@ export default async function CreateSessionPage() {
           title={'Max Capacity'}
           defaultValue={0}
           name={'maxCapacity'}
-          placeholder={'Max Capacity'}
+          placeholder={'Enter a number'}
           type={'number'}
         />
         <DataInput
           title={'Start time'}
           defaultValue={''}
           name={'startAt'}
-          placeholder={'YYYY-MM-DD'}
+          placeholder={'YYYY-MM-DDTHH:MM'}
           type={'datetime-local'}
         />
         <DataInput
           title={'End time'}
           defaultValue={''}
           name={'endAt'}
-          placeholder={'YYYY-MM-DD'}
+          placeholder={'YYYY-MM-DDTHH:MM'}
           type={'datetime-local'}
         />
         <SessionPartParticipantsInput generationData={generationData} />

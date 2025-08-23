@@ -1,6 +1,11 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Permission Details',
+}
 
 export default function PermissionsPage() {
   return (
@@ -9,9 +14,7 @@ export default function PermissionsPage() {
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Home</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>
-        Information Accessible by Permission Level
-      </div>
+      <div className={'admin-title'}>Permission Details</div>
       <div className={'flex w-full flex-col gap-4 pt-4'}>
         {/*GET*/}
         <div className={'w-full overflow-x-scroll rounded-lg bg-white p-2'}>

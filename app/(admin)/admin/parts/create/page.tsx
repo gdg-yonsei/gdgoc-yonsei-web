@@ -29,18 +29,18 @@ export default async function CreatePartPage() {
 
   return (
     <AdminDefaultLayout>
-      <div className={'admin-title'}>Create New Part</div>
+      <div className={'admin-title'}>Create Part</div>
       <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
         <DataInput
           title={'Name'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Name'}
+          placeholder={'e.g. Android, iOS, ...'}
         />
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'Description'}
+          placeholder={'e.g. This is a part for Android developers.'}
         />
         <DataSelectInput
           title={'Generation'}

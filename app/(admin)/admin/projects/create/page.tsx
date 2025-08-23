@@ -35,7 +35,7 @@ export default async function CreateProjectPage() {
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Projects</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>Create New Project</div>
+      <div className={'admin-title'}>Create Project</div>
       <DataForm
         action={createProjectAction}
         className={'member-data-grid gap-2'}
@@ -65,26 +65,26 @@ export default async function CreateProjectPage() {
           </div>
         </div>
         <DataInput
-          title={'Name (English)'}
+          title={'English Name'}
           defaultValue={''}
           name={'name'}
-          placeholder={'Name (English)'}
+          placeholder={'English Name'}
         />
         <DataInput
-          title={'Name (Korean)'}
+          title={'Korean Name'}
           defaultValue={''}
           name={'nameKo'}
-          placeholder={'Name (Korean)'}
+          placeholder={'Korean Name'}
         />
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'Description (English)'}
+          placeholder={'English Description'}
         />
         <DataTextarea
           defaultValue={''}
           name={'descriptionKo'}
-          placeholder={'Description (Korean)'}
+          placeholder={'Korean Description'}
         />
         <DataSelectInput
           title={'Generation'}
@@ -94,14 +94,14 @@ export default async function CreateProjectPage() {
         />
         <MembersSelectInput membersList={membersList} defaultValue={[]} />
         <MDXEditor
-          title={'Project Content (English)'}
+          title={'English Content'}
           name={'content'}
-          placeholder={'Please write content'}
+          placeholder={'Write the project content in English.'}
         />
         <MDXEditor
-          title={'Project Content (Korean)'}
+          title={'Korean Content'}
           name={'contentKo'}
-          placeholder={'Please write content with Korean'}
+          placeholder={'Write the project content in Korean.'}
         />
         <SubmitButton />
       </DataForm>

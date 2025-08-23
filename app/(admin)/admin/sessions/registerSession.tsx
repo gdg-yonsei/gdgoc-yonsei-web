@@ -61,7 +61,7 @@ export default async function RegisterSession() {
 
   return (
     <div className={'pb-8'}>
-      <div className={'admin-title'}>Register Session</div>
+      <div className={'admin-title'}>Join a Session</div>
       <div className={'member-data-grid w-full gap-2 pt-2'}>
         {notEnrolledSessions.map((session) => (
           <RegisterSessionCard
@@ -78,7 +78,7 @@ export default async function RegisterSession() {
         {notEnrolledSessions.length === 0 && (
           <div className={'col-span-2'}>
             <p className={'text-neutral-800'}>
-              There are no sessions available to register.
+              No sessions available to join.
             </p>
           </div>
         )}

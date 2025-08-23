@@ -56,80 +56,80 @@ export default async function EditProfilePage() {
           />
 
           <DataInput
-            title={'Github Name*'}
+            title={'Github Name'}
             defaultValue={memberData.name}
             name={'name'}
             placeholder={'Github Name'}
           />
           <DataInput
-            title={'First Name* (English)'}
+            title={'First Name (English)'}
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'Yonsei'}
           />
           <DataInput
-            title={'First Name* (Korean)'}
+            title={'First Name (Korean)'}
             defaultValue={memberData.firstNameKo}
             name={'firstNameKo'}
             placeholder={'연세'}
           />
           <DataInput
-            title={'Last Name* (English)'}
+            title={'Last Name (English)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Kim'}
           />
           <DataInput
-            title={'Last Name* (Korean)'}
+            title={'Last Name (Korean)'}
             defaultValue={memberData.lastNameKo}
             name={'lastNameKo'}
             placeholder={'김'}
           />
           <DataInput
-            title={'E-Mail (Public)'}
+            title={'Public E-Mail'}
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
           />
           <DataInput
-            title={'Github ID (Public)'}
+            title={'Public Github ID'}
             defaultValue={memberData.githubId}
             name={'githubId'}
             placeholder={'Github ID'}
           />
           <DataInput
-            title={'Instagram ID (Public)'}
+            title={'Public Instagram ID'}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
             placeholder={'Instagram ID'}
           />
           <DataInput
-            title={'Linked In Profile URL (Public)'}
+            title={'Public Linked In Profile URL'}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In Profile URL'}
             type={'link'}
           />
           <DataInput
-            title={'Major (Private)'}
+            title={'Major'}
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'Major'}
           />
           <DataInput
-            title={'Student ID (Private)'}
+            title={'Student ID'}
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
           />
           <DataInput
-            title={'Telephone (Private)'}
+            title={'Telephone'}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
           />
           <DataInput
-            title={'Foreigner (Used only for displaying the name.)'}
+            title={'Foreigner'}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}
@@ -139,11 +139,9 @@ export default async function EditProfilePage() {
           <div>
             <p className={'text-lg font-semibold'}>Notification</p>
             <p>
-              Please leave the fields blank for any information you do not wish
-              to disclose.{' '}
+              Please leave the fields blank for any information you do not wish to disclose. 
               <strong>
-                Your major, student ID number, and phone number will not be made
-                public.
+                Your major, student ID, and phone number are private and will not be disclosed to the public.
               </strong>
             </p>
           </div>

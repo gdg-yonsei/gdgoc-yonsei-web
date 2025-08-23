@@ -32,7 +32,7 @@ export default async function MembersPage() {
             }
           >
             <UsersIcon className={'size-5'} />
-            <p>Accept Member</p>
+            <p>Approve Member</p>
           </Link>
         )}
       </div>
