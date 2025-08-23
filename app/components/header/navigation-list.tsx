@@ -45,7 +45,7 @@ export default function NavigationList({ lang }: { lang: string }) {
     >
       <MotionLink state={isMenuOpen}>
         <Link
-          href={'/projects'}
+          href={`/${lang}/project`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
@@ -54,7 +54,7 @@ export default function NavigationList({ lang }: { lang: string }) {
       </MotionLink>
       <MotionLink state={isMenuOpen}>
         <Link
-          href={'/sessions'}
+          href={`/${lang}/session`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
@@ -63,7 +63,7 @@ export default function NavigationList({ lang }: { lang: string }) {
       </MotionLink>
       <MotionLink state={isMenuOpen}>
         <Link
-          href={'/calendar'}
+          href={`/${lang}/calendar`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
@@ -72,7 +72,7 @@ export default function NavigationList({ lang }: { lang: string }) {
       </MotionLink>
       <MotionLink state={isMenuOpen}>
         <Link
-          href={'/members'}
+          href={`/${lang}/member`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
