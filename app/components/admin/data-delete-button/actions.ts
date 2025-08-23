@@ -1,7 +1,9 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission, { ResourceType } from '@/lib/admin/handle-permission'
+import handlePermission, {
+  ResourceType,
+} from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
@@ -9,8 +11,8 @@ import { eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
-import { revalidateTag } from 'next/cache'
-import deleteR2Images from '@/lib/delete-r2-images'
+import deleteR2Images from '@/lib/server/delete-r2-images'
+import { revalidateCache } from '@/lib/server/cache'
 
 export default async function dataDeleteAction(
   prev: { error: string },
@@ -66,7 +68,7 @@ export default async function dataDeleteAction(
           return { error: 'R2 Image Delete Error' }
         }
         await db.delete(sessions).where(eq(sessions.id, dataId))
-        revalidateTag('sessions')
+        revalidateCache('sessions')
         break
       case 'projects':
         const projectImageList = await db.query.projects.findFirst({
@@ -96,18 +98,15 @@ export default async function dataDeleteAction(
         }
 
         await db.delete(projects).where(eq(projects.id, dataId))
-        revalidateTag('projects')
+        revalidateCache('projects')
         break
       case 'generations':
         await db.delete(generations).where(eq(generations.id, Number(dataId)))
-        revalidateTag('generations')
-        revalidateTag('parts')
-        revalidateTag('members')
+        revalidateCache(['generations', 'parts', 'members'])
         break
       case 'parts':
         await db.delete(parts).where(eq(parts.id, Number(dataId)))
-        revalidateTag('parts')
-        revalidateTag('members')
+        revalidateCache(['members', 'parts'])
         break
       default:
         return { error: 'Data type not found' }

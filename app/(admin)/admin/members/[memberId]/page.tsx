@@ -1,4 +1,4 @@
-import { getMember } from '@/lib/fetcher/admin/get-member'
+import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import formatUserName from '@/lib/format-user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'

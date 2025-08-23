@@ -1,20 +1,23 @@
 import {
-  date,
+  boolean,
   integer,
   jsonb,
   pgTable,
+  serial,
   text,
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core'
 import { users } from '@/db/schema/users'
-import { generations } from '@/db/schema/generations'
 import { relations } from 'drizzle-orm'
+import { parts } from '@/db/schema/parts'
+import { externalParticipants } from '@/db/schema/external-participants'
+import { userToSession } from '@/db/schema/user-to-session'
 
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   name: text('name').notNull(),
-  nameKo: text('nameKo'),
+  nameKo: text('nameKo').notNull(),
   description: text('description'),
   descriptionKo: text('descriptionKo'),
   mainImage: text('mainImage').notNull().default('/session-default.png'),
@@ -22,15 +25,23 @@ export const sessions = pgTable('sessions', {
   authorId: text('authorId')
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
-  generationId: integer('generationId').notNull(),
-  eventDate: date('eventDate').defaultNow().notNull(),
+  partId: serial('sessionId'),
+  internalOpen: boolean('internalOpen').default(false),
+  publicOpen: boolean('publicOpen').default(false),
+  maxCapacity: integer('maxCapacity').default(0),
+  location: text('location'),
+  locationKo: text('locationKo'),
+  startAt: timestamp(),
+  endAt: timestamp(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })
 
-export const sessionRelations = relations(sessions, ({ one }) => ({
-  generation: one(generations, {
-    fields: [sessions.generationId],
-    references: [generations.id],
+export const sessionRelations = relations(sessions, ({ one, many }) => ({
+  part: one(parts, {
+    fields: [sessions.partId],
+    references: [parts.id],
   }),
+  externalParticipants: many(externalParticipants),
+  userToSession: many(userToSession),
 }))

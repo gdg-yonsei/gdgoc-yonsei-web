@@ -1,4 +1,4 @@
-import { getMembers } from '@/lib/fetcher/admin/get-members'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import Link from 'next/link'
 import formatUserName from '@/lib/format-user-name'
 import UserProfileImage from '@/app/components/user-profile-image'

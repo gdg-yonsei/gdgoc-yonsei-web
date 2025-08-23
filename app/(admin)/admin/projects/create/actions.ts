@@ -1,15 +1,15 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
-import { revalidateTag } from 'next/cache'
-import getProjectFormData from '@/lib/admin/get-project-form-data'
+import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { usersToProjects } from '@/db/schema/users-to-projects'
+import { revalidateCache } from '@/lib/server/cache'
 /**
  * Create Project Action
  * @param prev - previous state for form error
@@ -98,7 +98,7 @@ export async function createProjectAction(
     }
 
     // 캐시 업데이트
-    revalidateTag('projects')
+    revalidateCache('projects')
   } catch (e) {
     // DB 에러 처리
     console.error(e)

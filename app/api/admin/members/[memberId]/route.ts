@@ -1,10 +1,10 @@
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { NextResponse } from 'next/server'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
-import { revalidateTag } from 'next/cache'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * 사용자의 프로필 이미지 URL 을 업데이트 하는 API
@@ -32,7 +32,7 @@ export async function PUT(
       .where(eq(users.id, (await params).memberId))
 
     // 캐시 업데이트
-    revalidateTag('members')
+    revalidateCache('members')
     return NextResponse.json({ success: true })
   } catch (e) {
     // 오류 처리

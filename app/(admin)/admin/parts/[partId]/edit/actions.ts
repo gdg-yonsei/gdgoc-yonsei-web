@@ -1,16 +1,16 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
 import db from '@/db'
 import { forbidden, redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import { z } from 'zod'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
-import getPartFormData from '@/lib/admin/get-part-form-data'
+import getPartFormData from '@/lib/server/form-data/get-part-form-data'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * Update Part Action
@@ -68,8 +68,7 @@ export async function updatePartAction(
     }
 
     // 캐시 업데이트
-    revalidateTag('parts')
-    revalidateTag('members')
+    revalidateCache(['parts', 'members'])
   } catch (e) {
     // DB 업데이트 오류 처리
     console.error(e)

@@ -1,3 +1,5 @@
+import { HTMLInputTypeAttribute } from 'react'
+
 /**
  * Data input component
  * @param defaultValue - 기본값
@@ -6,6 +8,7 @@
  * @param title - input title
  * @param type - input type
  * @param isChecked - input checked 여부
+ * @param required - is Essential
  * @constructor
  */
 export default function DataInput({
@@ -15,13 +18,15 @@ export default function DataInput({
   title,
   type,
   isChecked,
+  required = false,
 }: {
   defaultValue: string | number | undefined | null
   name: string
   placeholder: string
   title: string
-  type?: string
+  type?: HTMLInputTypeAttribute
   isChecked?: boolean
+  required?: boolean
 }) {
   return (
     <div className={'flex flex-col'}>
@@ -33,6 +38,7 @@ export default function DataInput({
         name={name}
         placeholder={placeholder}
         defaultChecked={isChecked}
+        required={required}
       />
     </div>
   )

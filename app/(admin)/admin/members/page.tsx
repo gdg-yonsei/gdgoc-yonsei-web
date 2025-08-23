@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { UsersIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 
 import { Metadata } from 'next'
 
@@ -32,7 +32,7 @@ export default async function MembersPage() {
             }
           >
             <UsersIcon className={'size-5'} />
-            <p>Accept Member</p>
+            <p>Approve Member</p>
           </Link>
         )}
       </div>

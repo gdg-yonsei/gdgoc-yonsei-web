@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { forbidden } from 'next/navigation'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 
 export default async function EditProfileLayout({

@@ -1,12 +1,8 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateCache } from '@/lib/server/cache'
 
 export default async function refresh() {
   console.log('Refresh All Data')
-  revalidateTag('generations')
-  revalidateTag('parts')
-  revalidateTag('projects')
-  revalidateTag('members')
-  revalidateTag('sessions')
+  revalidateCache(['generations', 'parts', 'projects', 'members', 'sessions'])
 }

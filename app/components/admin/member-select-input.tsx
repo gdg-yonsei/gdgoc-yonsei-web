@@ -1,6 +1,6 @@
 'use client'
 
-import { getMembersWithGeneration } from '@/lib/fetcher/admin/get-members-with-generation'
+import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import { useEffect, useState } from 'react'
 
 export default function MembersSelectInput({

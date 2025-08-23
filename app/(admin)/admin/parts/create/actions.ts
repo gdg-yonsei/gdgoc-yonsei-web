@@ -1,15 +1,15 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import db from '@/db'
 import { parts } from '@/db/schema/parts'
 import { forbidden, redirect } from 'next/navigation'
 import { z } from 'zod'
-import { revalidateTag } from 'next/cache'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
-import getPartFormData from '@/lib/admin/get-part-form-data'
+import getPartFormData from '@/lib/server/form-data/get-part-form-data'
+import { revalidateCache } from '@/lib/server/cache'
 
 /**
  * Create Part Action
@@ -63,8 +63,7 @@ export async function createPartAction(
     }
 
     // 캐시 업데이트
-    revalidateTag('parts')
-    revalidateTag('members')
+    revalidateCache(['parts', 'members'])
   } catch (e) {
     // DB 에러 처리
     console.error(e)

@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
     optimizePackageImports: ['motion', 'jotai', 'next-auth'],
+    cacheComponents: true,
+    useCache: true,
   },
   images: {
     remotePatterns: [

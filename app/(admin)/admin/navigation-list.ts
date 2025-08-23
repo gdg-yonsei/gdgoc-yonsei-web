@@ -1,6 +1,6 @@
-import getUserRole from '@/lib/fetcher/admin/get-user-role'
-import checkPermission from '@/lib/admin/check-permission'
-import { ResourceType } from '@/lib/admin/handle-permission'
+import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import checkPermission from '@/lib/server/permission/check-permission'
+import { ResourceType } from '@/lib/server/permission/handle-permission'
 
 export interface NavigationItem {
   name: string
@@ -39,7 +39,7 @@ export default async function navigationList(userId: string | undefined) {
     },
     {
       name: '📚 Sessions',
-      path: '/admin/session',
+      path: '/admin/sessions',
       dataResource: 'sessionsPage',
     },
     {
@@ -51,11 +51,6 @@ export default async function navigationList(userId: string | undefined) {
       name: '🧑‍💻 Profile',
       path: '/admin/profile',
       dataResource: 'profilePage',
-    },
-    {
-      name: '🛜 Performance',
-      path: '/admin/performance',
-      dataResource: 'performancePage',
     },
   ]
 

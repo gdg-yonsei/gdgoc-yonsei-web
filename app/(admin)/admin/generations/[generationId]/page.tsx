@@ -1,5 +1,5 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import { getGeneration } from '@/lib/fetcher/admin/get-generation'
+import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'

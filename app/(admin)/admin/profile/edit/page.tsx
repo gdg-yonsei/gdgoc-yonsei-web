@@ -1,8 +1,8 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getMember } from '@/lib/fetcher/admin/get-member'
-import handlePermission from '@/lib/admin/handle-permission'
+import { getMember } from '@/lib/server/fetcher/admin/get-member'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-upload'
@@ -56,80 +56,87 @@ export default async function EditProfilePage() {
           />
 
           <DataInput
-            title={'Github Name*'}
+            title={'Github Name'}
             defaultValue={memberData.name}
             name={'name'}
             placeholder={'Github Name'}
           />
           <DataInput
-            title={'First Name* (English)'}
+            title={'First Name (English)'}
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'Yonsei'}
+            required={true}
           />
           <DataInput
-            title={'First Name* (Korean)'}
+            title={'First Name (Korean)'}
             defaultValue={memberData.firstNameKo}
             name={'firstNameKo'}
             placeholder={'연세'}
+            required={true}
           />
           <DataInput
-            title={'Last Name* (English)'}
+            title={'Last Name (English)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Kim'}
+            required={true}
           />
           <DataInput
-            title={'Last Name* (Korean)'}
+            title={'Last Name (Korean)'}
             defaultValue={memberData.lastNameKo}
             name={'lastNameKo'}
             placeholder={'김'}
+            required={true}
           />
           <DataInput
-            title={'E-Mail (Public)'}
+            title={'E-Mail'}
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
           />
           <DataInput
-            title={'Github ID (Public)'}
+            title={'Public Github ID'}
             defaultValue={memberData.githubId}
             name={'githubId'}
             placeholder={'Github ID'}
           />
           <DataInput
-            title={'Instagram ID (Public)'}
+            title={'Public Instagram ID'}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
             placeholder={'Instagram ID'}
           />
           <DataInput
-            title={'Linked In Profile URL (Public)'}
+            title={'Public Linked In Profile URL'}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
             placeholder={'Linked In Profile URL'}
             type={'link'}
           />
           <DataInput
-            title={'Major (Private)'}
+            title={'Major'}
             defaultValue={memberData.major}
             name={'major'}
-            placeholder={'Major'}
+            placeholder={'컴퓨터과학과'}
+            required={true}
           />
           <DataInput
-            title={'Student ID (Private)'}
+            title={'Student ID'}
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
+            required={true}
           />
           <DataInput
-            title={'Telephone (Private)'}
+            title={'Telephone'}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
+            required={true}
           />
           <DataInput
-            title={'Foreigner (Used only for displaying the name.)'}
+            title={'Foreigner'}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}
@@ -140,10 +147,10 @@ export default async function EditProfilePage() {
             <p className={'text-lg font-semibold'}>Notification</p>
             <p>
               Please leave the fields blank for any information you do not wish
-              to disclose.{' '}
+              to disclose.
               <strong>
-                Your major, student ID number, and phone number will not be made
-                public.
+                Your major, student ID, and phone number are private and will
+                not be disclosed to the public.
               </strong>
             </p>
           </div>

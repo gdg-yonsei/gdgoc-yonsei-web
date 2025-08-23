@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { auth } from '@/auth'
-import handlePermission from '@/lib/admin/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden } from 'next/navigation'
 
 export default async function EditProjectLayout({

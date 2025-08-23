@@ -1,6 +1,7 @@
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 import { Metadata } from 'next'
+import ErrorNotification from '@/app/(admin)/auth/sign-in/error-notification'
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -36,6 +37,7 @@ export default function SignInPage() {
           </div>
           <SignInOptions />
         </div>
+        <ErrorNotification />
         <p className={'text-xs'}>
           To log in using a passkey, you must first sign in with GitHub and then
           register a passkey.

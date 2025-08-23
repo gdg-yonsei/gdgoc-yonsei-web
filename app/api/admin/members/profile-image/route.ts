@@ -1,8 +1,7 @@
-import { Request } from 'next/dist/compiled/@edge-runtime/primitives'
-import { NextResponse } from 'next/server'
-import handlePermission from '@/lib/admin/handle-permission'
+import { NextRequest, NextResponse } from 'next/server'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
-import getPreSignedUrl from '@/lib/admin/get-pre-signed-url'
+import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 
 export interface PostBody {
   memberId: string
@@ -15,7 +14,7 @@ export interface PostBody {
  * @param request
  * @constructor
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await auth()
   // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'members'))) {
