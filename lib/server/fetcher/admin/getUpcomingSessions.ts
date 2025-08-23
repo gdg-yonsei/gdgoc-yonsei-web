@@ -1,7 +1,7 @@
 import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
-import { and, asc, eq } from 'drizzle-orm'
+import { and, asc, eq, gte } from 'drizzle-orm'
 import cacheTag from '@/lib/server/cacheTag'
 
 export default async function getUpcomingSessions(userId: string) {
@@ -31,6 +31,8 @@ export default async function getUpcomingSessions(userId: string) {
     })
     .from(userToSession)
     .innerJoin(sessions, eq(userToSession.sessionId, sessions.id))
-    .where(and(eq(userToSession.userId, userId)))
+    .where(
+      and(eq(userToSession.userId, userId), gte(sessions.startAt, new Date()))
+    )
     .orderBy(asc(sessions.startAt))
 }
