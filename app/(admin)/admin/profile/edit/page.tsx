@@ -66,27 +66,31 @@ export default async function EditProfilePage() {
             defaultValue={memberData.firstName}
             name={'firstName'}
             placeholder={'Yonsei'}
+            required={true}
           />
           <DataInput
             title={'First Name (Korean)'}
             defaultValue={memberData.firstNameKo}
             name={'firstNameKo'}
             placeholder={'연세'}
+            required={true}
           />
           <DataInput
             title={'Last Name (English)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Kim'}
+            required={true}
           />
           <DataInput
             title={'Last Name (Korean)'}
             defaultValue={memberData.lastNameKo}
             name={'lastNameKo'}
             placeholder={'김'}
+            required={true}
           />
           <DataInput
-            title={'Public E-Mail'}
+            title={'E-Mail'}
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
@@ -114,19 +118,22 @@ export default async function EditProfilePage() {
             title={'Major'}
             defaultValue={memberData.major}
             name={'major'}
-            placeholder={'Major'}
+            placeholder={'컴퓨터과학과'}
+            required={true}
           />
           <DataInput
             title={'Student ID'}
             defaultValue={memberData.studentId}
             name={'studentId'}
             placeholder={'Student ID'}
+            required={true}
           />
           <DataInput
             title={'Telephone'}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'Telephone (only numbers)'}
+            required={true}
           />
           <DataInput
             title={'Foreigner'}
@@ -139,9 +146,11 @@ export default async function EditProfilePage() {
           <div>
             <p className={'text-lg font-semibold'}>Notification</p>
             <p>
-              Please leave the fields blank for any information you do not wish to disclose. 
+              Please leave the fields blank for any information you do not wish
+              to disclose.
               <strong>
-                Your major, student ID, and phone number are private and will not be disclosed to the public.
+                Your major, student ID, and phone number are private and will
+                not be disclosed to the public.
               </strong>
             </p>
           </div>
