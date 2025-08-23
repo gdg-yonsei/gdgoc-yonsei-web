@@ -1,6 +1,8 @@
 import 'server-only'
 import db from '@/db'
 import cacheTag from '@/lib/server/cacheTag'
+import { lte } from 'drizzle-orm'
+import { sessions } from '@/db/schema/sessions'
 
 export const preload = () => {
   void getSessions()
@@ -18,5 +20,6 @@ export async function getSessions() {
         },
       },
     },
+    where: lte(sessions.endAt, new Date()),
   })
 }
