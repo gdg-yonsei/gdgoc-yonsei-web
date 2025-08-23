@@ -75,6 +75,13 @@ export default async function RegisterSession() {
             maxCapacity={session.maxCapacity}
           />
         ))}
+        {notEnrolledSessions.length === 0 && (
+          <div className={'col-span-2'}>
+            <p className={'text-neutral-800'}>
+              There are no sessions available to register.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
