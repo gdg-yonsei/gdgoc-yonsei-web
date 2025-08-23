@@ -23,25 +23,30 @@ export async function registerSessionAction(
     return forbidden()
   }
 
-  await db.transaction(async (tx) => {
-    const sessionData = await tx.query.sessions.findFirst({
-      where: eq(sessions.id, sessionId),
-      with: {
-        userToSession: true,
-      },
+  try {
+    await db.transaction(async (tx) => {
+      const sessionData = await tx.query.sessions.findFirst({
+        where: eq(sessions.id, sessionId),
+        with: {
+          userToSession: true,
+        },
+      })
+      if (
+        !sessionData?.maxCapacity ||
+        sessionData.maxCapacity <= sessionData.userToSession.length
+      ) {
+        tx.rollback()
+      }
+      await tx.insert(userToSession).values({
+        userId: session.user?.id as string,
+        sessionId: sessionId,
+      })
     })
-    if (
-      !sessionData?.maxCapacity ||
-      sessionData.maxCapacity <= sessionData.userToSession.length
-    ) {
-      tx.rollback()
-      return { error: 'Not enough capacity' }
-    }
-    await tx.insert(userToSession).values({
-      userId: session.user?.id as string,
-      sessionId: sessionId,
-    })
-  })
+  } catch (e) {
+    console.error(e)
+    revalidateTag('sessions')
+    return { error: 'Overcapacity' }
+  }
 
   revalidateTag('sessions')
 

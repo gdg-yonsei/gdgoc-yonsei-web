@@ -109,7 +109,7 @@ export default async function RegisterSessionPage({
           >
             <SubmitButton
               className={
-                'flex w-full items-center justify-center rounded-xl bg-neutral-900 p-1 text-xl text-white'
+                'flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 p-1 text-xl text-white'
               }
             >
               Register
