@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 import { forbidden, redirect } from 'next/navigation'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import db from '@/db'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { revalidateTag } from 'next/cache'
@@ -21,6 +21,19 @@ export async function registerSessionAction(
     !(await handlePermission(session.user.id, 'get', 'sessionsPage'))
   ) {
     return forbidden()
+  }
+
+  const checkAlreadyRegistered = await db.query.userToSession.findFirst({
+    where: and(
+      eq(userToSession.sessionId, sessionId),
+      eq(userToSession.userId, session.user.id)
+    ),
+  })
+
+  if (checkAlreadyRegistered) {
+    return {
+      error: 'Already registered',
+    }
   }
 
   try {
