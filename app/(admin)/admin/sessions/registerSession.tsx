@@ -3,8 +3,9 @@ import { forbidden } from 'next/navigation'
 import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
-import { and, asc, eq, ne } from 'drizzle-orm'
-import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
+import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
+import RegisterSessionCard from '@/app/(admin)/admin/sessions/registerSessionCard'
+import { parts } from '@/db/schema/parts'
 
 export default async function RegisterSession() {
   const session = await auth()
@@ -12,30 +13,50 @@ export default async function RegisterSession() {
     return forbidden()
   }
 
-  const notEnrolledSessions = await db
-    .selectDistinct({
-      id: sessions.id,
-      name: sessions.name,
-      nameKo: sessions.nameKo,
-      description: sessions.description,
-      descriptionKo: sessions.descriptionKo,
-      startAt: sessions.startAt,
-      endAt: sessions.endAt,
-      location: sessions.location,
-      locationKo: sessions.locationKo,
-      maxCapacity: sessions.maxCapacity,
-      authorId: sessions.authorId,
-      createdAt: sessions.createdAt,
-      updatedAt: sessions.updatedAt,
-      internalOpen: sessions.internalOpen,
-      publicOpen: sessions.publicOpen,
-      partId: sessions.partId,
-      mainImage: sessions.mainImage,
-      images: sessions.images,
+  const participantsSub = db
+    .select({
+      sessionId: userToSession.sessionId,
+      participantCount: sql<number>`COUNT(${userToSession.userId})`.as(
+        'participantCount'
+      ),
     })
     .from(userToSession)
-    .innerJoin(sessions, eq(userToSession.sessionId, sessions.id))
-    .where(and(ne(userToSession.userId, session.user.id)))
+    .groupBy(userToSession.sessionId)
+    .as('participants')
+
+  const now = new Date()
+
+  const notEnrolledSessions = await db
+    .select({
+      id: sessions.id,
+      name: sessions.nameKo,
+      startAt: sessions.startAt,
+      endAt: sessions.endAt,
+      location: sessions.locationKo,
+      maxCapacity: sessions.maxCapacity,
+      partId: sessions.partId,
+      part: parts.name,
+      mainImage: sessions.mainImage,
+      images: sessions.images,
+      participantCount: participantsSub.participantCount,
+    })
+    .from(sessions)
+    .innerJoin(parts, eq(sessions.partId, parts.id))
+    .leftJoin(participantsSub, eq(sessions.id, participantsSub.sessionId))
+    .leftJoin(
+      userToSession,
+      and(
+        eq(userToSession.sessionId, sessions.id),
+        eq(userToSession.userId, session.user.id)
+      )
+    )
+    .where(
+      and(
+        eq(sessions.internalOpen, true),
+        gt(sessions.startAt, now),
+        isNull(userToSession.userId)
+      )
+    )
     .orderBy(asc(sessions.startAt))
 
   return (
@@ -43,7 +64,16 @@ export default async function RegisterSession() {
       <div className={'admin-title'}>Register Session</div>
       <div className={'member-data-grid w-full gap-2 pt-2'}>
         {notEnrolledSessions.map((session) => (
-          <SessionCard key={session.id} session={session} register={true} />
+          <RegisterSessionCard
+            key={session.id}
+            sessionId={session.id}
+            sessionName={session.name}
+            part={session.part}
+            startAt={session.startAt}
+            endAt={session.endAt}
+            participants={session.participantCount}
+            maxCapacity={session.maxCapacity}
+          />
         ))}
       </div>
     </div>

@@ -75,7 +75,7 @@ export default function SessionPartParticipantsInput({
       </div>
       <div className={'h-full w-full rounded-lg bg-white p-2'}>
         <p>Members</p>
-        <div>
+        <div className={'flex flex-col gap-1'}>
           {partMembers.map((member) => (
             <button
               key={member.id}

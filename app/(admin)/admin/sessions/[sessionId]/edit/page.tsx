@@ -107,14 +107,14 @@ export default async function EditSessionPage({
           type={'number'}
         />
         <DataInput
-          defaultValue={String(sessionData.startAt)}
+          defaultValue={sessionData.startAt?.toISOString().slice(0, 16)}
           name={'startAt'}
           placeholder={'YYYY-MM-DD'}
           title={'Start Time'}
           type={'datetime-local'}
         />
         <DataInput
-          defaultValue={String(sessionData.startAt)}
+          defaultValue={sessionData.endAt?.toISOString().slice(0, 16)}
           name={'endAt'}
           placeholder={'YYYY-MM-DD'}
           title={'End Time'}

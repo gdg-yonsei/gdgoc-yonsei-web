@@ -17,7 +17,7 @@ import { userToSession } from '@/db/schema/user-to-session'
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   name: text('name').notNull(),
-  nameKo: text('nameKo'),
+  nameKo: text('nameKo').notNull(),
   description: text('description'),
   descriptionKo: text('descriptionKo'),
   mainImage: text('mainImage').notNull().default('/session-default.png'),
