@@ -79,7 +79,7 @@ export default function SessionPartParticipantsInput({
                   }}
                   className={`${partId === part.id ? 'bg-neutral-950 text-white' : ''} rounded-lg p-1`}
                 >
-                  {part.name}
+                  {generation.name} {part.name}
                 </button>
               ))
             )}
