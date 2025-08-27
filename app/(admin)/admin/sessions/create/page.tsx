@@ -86,22 +86,34 @@ export default async function CreateSessionPage() {
           name={'locationKo'}
           placeholder={'Korean Location'}
         />
-        <DataInput
-          title={'Internal Session'}
-          defaultValue={'true'}
-          name={'internalOpen'}
-          placeholder={'Internal Session'}
-          type={'checkbox'}
-          isChecked={true}
-        />
-        <DataInput
-          title={'Public Session'}
-          defaultValue={'true'}
-          name={'publicOpen'}
-          placeholder={'Public Session'}
-          type={'checkbox'}
-          isChecked={true}
-        />
+        <div className={'flex flex-col gap-1'}>
+          <DataInput
+            title={'Internal Session'}
+            defaultValue={'true'}
+            name={'internalOpen'}
+            placeholder={'Internal Session'}
+            type={'checkbox'}
+            isChecked={true}
+          />
+          <p className={'text-xs'}>
+            An internal session can also be attended by members from other GDG
+            parts.
+          </p>
+        </div>
+        <div className={'flex flex-col gap-1'}>
+          <DataInput
+            title={'Public Session'}
+            defaultValue={'true'}
+            name={'publicOpen'}
+            placeholder={'Public Session'}
+            type={'checkbox'}
+            isChecked={false}
+          />
+          <p className={'text-xs'}>
+            A public session can also be attended by people who are not part of
+            GDG.
+          </p>
+        </div>
         <DataInput
           title={'Max Capacity'}
           defaultValue={0}
