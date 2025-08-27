@@ -2,6 +2,7 @@ import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 import { Metadata } from 'next'
 import ErrorNotification from '@/app/(admin)/auth/sign-in/error-notification'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -41,6 +42,17 @@ export default function SignInPage() {
         <p className={'text-xs'}>
           To log in using a passkey, you must first sign in with GitHub and then
           register a passkey.
+        </p>
+        <p className={'pt-2 text-xs'}>
+          By signing up, you agree to our{' '}
+          <Link href={'/privacy-policy'} className={'hover:underline'}>
+            Privacy Policy
+          </Link>{' '}
+          and{' '}
+          <Link href={'/terms-of-service'} className={'hover:underline'}>
+            Terms of Service
+          </Link>
+          .
         </p>
       </div>
     </div>

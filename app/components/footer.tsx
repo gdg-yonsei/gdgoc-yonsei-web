@@ -4,7 +4,7 @@ import Instagram from '@/app/components/svg/instagram'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Mail from '@/app/components/svg/mail'
 
-export default function Footer() {
+export default function Footer({ lang }: { lang: string }) {
   return (
     <div className={'flex w-full bg-neutral-300 p-4'}>
       <div className={'mx-auto w-full max-w-4xl md:flex'}>
@@ -53,6 +53,20 @@ export default function Footer() {
             Copyright ⓒ 2025. GDG on Campus Yonsei <br />
             All rights reserved.
           </p>
+          <div className={'flex flex-col gap-1 pt-4 text-sm'}>
+            <Link
+              href={`/${lang}/terms-of-service`}
+              className={'hover:underline'}
+            >
+              이용 약관
+            </Link>
+            <Link
+              href={`/${lang}/privacy-policy`}
+              className={'hover:underline'}
+            >
+              개인정보처리방침
+            </Link>
+          </div>
         </div>
       </div>
     </div>

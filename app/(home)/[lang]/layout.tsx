@@ -39,7 +39,7 @@ export default async function RootLayout({
         <Header lang={(await params).lang} />
         {modal}
         {children}
-        <Footer />
+        <Footer lang={(await params).lang} />
       </body>
       <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
