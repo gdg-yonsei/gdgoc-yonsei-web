@@ -77,9 +77,7 @@ export default async function RegisterSession() {
         ))}
         {notEnrolledSessions.length === 0 && (
           <div className={'col-span-2'}>
-            <p className={'text-neutral-800'}>
-              No sessions available to join.
-            </p>
+            <p className={'text-neutral-800'}>No sessions available to join.</p>
           </div>
         )}
       </div>

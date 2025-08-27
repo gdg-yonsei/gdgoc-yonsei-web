@@ -10,11 +10,11 @@
  * @returns An object containing the userId and role.
  */
 export default function getAcceptMemberFormData(formData: FormData): {
-  userId: string;
-  role: string;
+  userId: string
+  role: string
 } {
-  const userId = formData.get('userId') as string;
-  const role = formData.get('role') as string;
+  const userId = formData.get('userId') as string
+  const role = formData.get('role') as string
 
-  return { userId, role };
+  return { userId, role }
 }

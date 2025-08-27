@@ -73,10 +73,10 @@ export default async function AdminPage() {
               <div className={'rounded-lg bg-neutral-200 p-1 break-all'}>
                 https://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics
               </div>
-              <p className={'pt-1'}>
-                1. Copy the calendar address above.
+              <p className={'pt-1'}>1. Copy the calendar address above.</p>
+              <p>
+                2. Open the Calendar app and paste the address to subscribe.
               </p>
-              <p>2. Open the Calendar app and paste the address to subscribe.</p>
             </div>
           </div>
         </div>
