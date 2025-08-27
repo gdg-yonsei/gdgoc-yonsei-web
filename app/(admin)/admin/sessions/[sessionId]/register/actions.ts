@@ -10,7 +10,7 @@ import { revalidateTag } from 'next/cache'
 
 export async function registerSessionAction(
   sessionId: string,
-  prev: { error: string },
+  prevState: { error: string },
   formData: FormData
 ) {
   const session = await auth()

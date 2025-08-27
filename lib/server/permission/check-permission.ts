@@ -10,15 +10,15 @@
  * - ALUMNUS: Graduated member.
  * - UNVERIFIED: User who has not yet been verified.
  */
-type Role = 'MEMBER' | 'CORE' | 'LEAD' | 'ALUMNUS' | 'UNVERIFIED';
+type Role = 'MEMBER' | 'CORE' | 'LEAD' | 'ALUMNUS' | 'UNVERIFIED'
 
 /**
  * Defines the structure for permissions, mapping actions to resources.
  */
 interface Permission {
   [action: string]: {
-    [resource: string]: boolean;
-  };
+    [resource: string]: boolean
+  }
 }
 
 /**
@@ -32,9 +32,9 @@ interface Permission {
  */
 export default function checkPermission(
   userId: string,
-  dataOwnerId?: string,
+  dataOwnerId?: string
 ): {
-  [role in Role]: Permission;
+  [role in Role]: Permission
 } {
   return {
     // Permissions for regular members
@@ -221,5 +221,5 @@ export default function checkPermission(
         parts: false,
       },
     },
-  };
+  }
 }

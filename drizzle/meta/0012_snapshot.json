@@ -81,12 +81,8 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -94,10 +90,7 @@
       "compositePrimaryKeys": {
         "account_provider_providerAccountId_pk": {
           "name": "account_provider_providerAccountId_pk",
-          "columns": [
-            "provider",
-            "providerAccountId"
-          ]
+          "columns": ["provider", "providerAccountId"]
         }
       },
       "uniqueConstraints": {},
@@ -134,12 +127,8 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -209,12 +198,8 @@
           "name": "authenticator_userId_user_id_fk",
           "tableFrom": "authenticator",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -222,19 +207,14 @@
       "compositePrimaryKeys": {
         "authenticator_userId_credentialID_pk": {
           "name": "authenticator_userId_credentialID_pk",
-          "columns": [
-            "userId",
-            "credentialID"
-          ]
+          "columns": ["userId", "credentialID"]
         }
       },
       "uniqueConstraints": {
         "authenticator_credentialID_unique": {
           "name": "authenticator_credentialID_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "credentialID"
-          ]
+          "columns": ["credentialID"]
         }
       },
       "policies": {},
@@ -435,12 +415,8 @@
           "name": "projects_to_tags_project_id_projects_id_fk",
           "tableFrom": "projects_to_tags",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -448,12 +424,8 @@
           "name": "projects_to_tags_tag_id_tags_id_fk",
           "tableFrom": "projects_to_tags",
           "tableTo": "tags",
-          "columnsFrom": [
-            "tag_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tag_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -561,12 +533,8 @@
           "name": "projects_authorId_user_id_fk",
           "tableFrom": "projects",
           "tableTo": "user",
-          "columnsFrom": [
-            "authorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["authorId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "cascade"
         },
@@ -574,12 +542,8 @@
           "name": "projects_generationId_generations_id_fk",
           "tableFrom": "projects",
           "tableTo": "generations",
-          "columnsFrom": [
-            "generationId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["generationId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -705,12 +669,8 @@
           "name": "sessions_authorId_user_id_fk",
           "tableFrom": "sessions",
           "tableTo": "user",
-          "columnsFrom": [
-            "authorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["authorId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "cascade"
         }
@@ -745,9 +705,7 @@
         "tags_name_unique": {
           "name": "tags_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -777,12 +735,8 @@
           "name": "userToSession_user_id_user_id_fk",
           "tableFrom": "userToSession",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -790,12 +744,8 @@
           "name": "userToSession_sessionId_sessions_id_fk",
           "tableFrom": "userToSession",
           "tableTo": "sessions",
-          "columnsFrom": [
-            "sessionId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sessionId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -803,10 +753,7 @@
       "compositePrimaryKeys": {
         "userToSession_user_id_sessionId_pk": {
           "name": "userToSession_user_id_sessionId_pk",
-          "columns": [
-            "user_id",
-            "sessionId"
-          ]
+          "columns": ["user_id", "sessionId"]
         }
       },
       "uniqueConstraints": {},
@@ -837,12 +784,8 @@
           "name": "users_to_parts_user_id_user_id_fk",
           "tableFrom": "users_to_parts",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -850,12 +793,8 @@
           "name": "users_to_parts_part_id_parts_id_fk",
           "tableFrom": "users_to_parts",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -863,10 +802,7 @@
       "compositePrimaryKeys": {
         "users_to_parts_user_id_part_id_pk": {
           "name": "users_to_parts_user_id_part_id_pk",
-          "columns": [
-            "user_id",
-            "part_id"
-          ]
+          "columns": ["user_id", "part_id"]
         }
       },
       "uniqueConstraints": {},
@@ -897,12 +833,8 @@
           "name": "users_to_projects_user_id_user_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -910,12 +842,8 @@
           "name": "users_to_projects_project_id_projects_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -923,10 +851,7 @@
       "compositePrimaryKeys": {
         "users_to_projects_user_id_project_id_pk": {
           "name": "users_to_projects_user_id_project_id_pk",
-          "columns": [
-            "user_id",
-            "project_id"
-          ]
+          "columns": ["user_id", "project_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1072,9 +997,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1109,10 +1032,7 @@
       "compositePrimaryKeys": {
         "verificationToken_identifier_token_pk": {
           "name": "verificationToken_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {},
@@ -1125,13 +1045,7 @@
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "MEMBER",
-        "CORE",
-        "LEAD",
-        "ALUMNUS",
-        "UNVERIFIED"
-      ]
+      "values": ["MEMBER", "CORE", "LEAD", "ALUMNUS", "UNVERIFIED"]
     }
   },
   "schemas": {},
