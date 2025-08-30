@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/server/fetcher/get-session'
-import SessionPageContent from '@/app/(home)/[lang]/session/[sessionId]/session-page-content'
+import SessionPageContent from '@/app/(home)/[lang]/session/[generation]/[sessionId]/session-page-content'
 import { getSessions } from '@/lib/server/fetcher/get-sessions'
 
 export async function generateStaticParams() {

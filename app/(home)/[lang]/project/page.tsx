@@ -1,34 +1,18 @@
-import { getGenerations } from '@/lib/server/fetcher/get-generations'
-import StageButtonGroup from '@/app/components/stage-button-group'
-import PageTitle from '@/app/components/page-title'
-import { getProjects } from '@/lib/server/fetcher/get-projects'
-import ProjectsList from '@/app/(home)/[lang]/project/projects-list'
-import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
 
-export const metadata: Metadata = {
-  title: 'Projects',
-  description:
-    'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
-}
-
-export default async function ProjectsPage({
+export default async function ProjectRedirect({
   params,
 }: {
   params: Promise<{ lang: string }>
 }) {
-  const [generationsData, projectsData, paramsData] = await Promise.all([
-    getGenerations(),
-    getProjects(),
+  const [lastGeneration, paramsData] = await Promise.all([
+    getLastGeneration(),
     params,
   ])
 
-  return (
-    <div className={'min-h-screen w-full pt-20'}>
-      <PageTitle>
-        {paramsData.lang === 'ko' ? '프로젝트' : 'Projects'}
-      </PageTitle>
-      <StageButtonGroup generationsData={generationsData} />
-      <ProjectsList lang={paramsData.lang} projectsData={projectsData} />
-    </div>
-  )
+  if (lastGeneration) {
+    redirect(`/${paramsData.lang}/project/${lastGeneration.name}`)
+  }
+  return <></>
 }

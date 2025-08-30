@@ -1,11 +1,17 @@
 import GenerationButtonGroup from '@/app/components/generation-button-group'
-import { getGenerations } from '@/lib/server/fetcher/get-generations'
+import getGenerationList from '@/app/(home)/[lang]/member/[generation]/getGenerationList'
 
-export default function StageButtonGroup({
-  generationsData,
+export default async function StageButtonGroup({
+  generation,
+  lang,
+  basePath,
 }: {
-  generationsData: Awaited<ReturnType<typeof getGenerations>>
+  generation: string
+  lang: string
+  basePath: string
 }) {
+  const generationList = await getGenerationList()
+
   return (
     <div className={'flex w-full'}>
       <div
@@ -15,7 +21,10 @@ export default function StageButtonGroup({
       >
         <p className={'pr-2 text-2xl font-semibold'}>Stage</p>
         <GenerationButtonGroup
-          generations={generationsData.reverse().map((data) => data.name)}
+          generationList={generationList.reverse().map((data) => data.name)}
+          generation={generation}
+          lang={lang}
+          basePath={basePath}
         />
       </div>
     </div>

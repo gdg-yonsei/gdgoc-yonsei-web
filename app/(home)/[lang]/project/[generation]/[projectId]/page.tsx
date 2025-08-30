@@ -26,7 +26,7 @@ export default async function ProjectPage({
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <NavigationButton href={'/projects'}>
+      <NavigationButton href={`/${lang}/project`}>
         <p>Projects</p>
       </NavigationButton>
       <PageTitle>

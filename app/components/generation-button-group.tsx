@@ -1,37 +1,30 @@
-'use client'
-
-import { generationState } from '@/lib/atoms'
-import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function GenerationButtonGroup({
-  generations,
+  generationList,
+  generation,
+  lang,
+  basePath,
 }: {
-  generations: string[]
+  generationList: string[]
+  generation: string
+  lang: string
+  basePath: string
 }) {
-  const [generation, setGeneration] = useAtom(generationState)
-
-  useEffect(() => {
-    if (generations.length > 0) {
-      setGeneration(generations[0])
-    }
-  }, [generations, setGeneration])
-
   return (
     <div
       className={
         'flex h-24 items-center gap-3 overflow-x-scroll px-2 text-xl whitespace-nowrap'
       }
     >
-      {generations.map((data, i) => (
-        <button
-          type={'button'}
+      {generationList.map((generationName, i) => (
+        <Link
+          href={`/${lang}/${basePath}/${generationName}`}
           key={i}
-          className={`rounded-full p-2 px-4 ${generation === data ? 'border-4 border-green-700' : 'border-2'} text-sm transition-all`}
-          onClick={() => setGeneration(data)}
+          className={`rounded-full p-2 px-4 ${generationName === generation ? 'border-4 border-green-700' : 'border-2'} text-sm transition-all`}
         >
-          {data}
-        </button>
+          {generationName}
+        </Link>
       ))}
     </div>
   )
