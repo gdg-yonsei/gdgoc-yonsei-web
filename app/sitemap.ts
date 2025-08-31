@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import db from '@/db'
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
 function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
   const langs = ['ko', 'en']
@@ -16,17 +17,23 @@ function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const generationList = await getGenerationList()
+
   const projectsList: MetadataRoute.Sitemap = (
     await db.query.projects.findMany({
       columns: {
         id: true,
         updatedAt: true,
         createdAt: true,
+        generationId: true,
       },
     })
   ).map((project) => {
+    const generationName = generationList.filter(
+      (item) => item.id === project.generationId
+    )[0].name
     return {
-      url: `/projects/${project.id}`,
+      url: `/projects/${generationName}/${project.id}`,
       lastModified:
         project.updatedAt > project.createdAt
           ? project.updatedAt
@@ -38,15 +45,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const sessionsList: MetadataRoute.Sitemap = (
     await db.query.sessions.findMany({
-      columns: {
-        id: true,
-        updatedAt: true,
-        createdAt: true,
+      with: {
+        part: {
+          with: {
+            generation: true,
+          },
+        },
       },
     })
   ).map((session) => {
+    const generationName = generationList.filter(
+      (item) => item.id === session.part.generationsId
+    )[0].name
     return {
-      url: `/sessions/${session.id}`,
+      url: `/sessions/${generationName}/${session.id}`,
       lastModified:
         session.updatedAt > session.createdAt
           ? session.updatedAt
@@ -56,30 +68,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   })
 
+  const centralPages: MetadataRoute.Sitemap = generationList.flatMap(
+    (generation) => [
+      {
+        url: `/members/${generation.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.9,
+      },
+      {
+        url: `/sessions/${generation.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.9,
+      },
+      {
+        url: `/projects/${generation.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.9,
+      },
+    ]
+  )
+
   const sitemapList: MetadataRoute.Sitemap = [
     {
       url: '',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 1,
-    },
-    {
-      url: `/projects`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `/sessions`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `/members`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
     },
     {
       url: `/calendar`,
@@ -99,6 +116,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.7,
     },
+    ...centralPages,
     ...projectsList,
     ...sessionsList,
   ]
