@@ -2,8 +2,10 @@ import GDGLogoLinkButton from '@/app/components/header/gdg-logo-link-button'
 import MenuBarButton from './menu-bar-button'
 import DesktopNavigationList from '@/app/components/header/desktop-navigation-list'
 import NavigationList from '@/app/components/header/navigation-list'
+import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
 
-export default function Header({ lang }: { lang: string }) {
+export default async function Header({ lang }: { lang: string }) {
+  const lastGeneration = await getLastGeneration()
   return (
     <div className={'fixed top-0 left-0 z-10 w-full bg-neutral-100'}>
       <div className={'flex items-center justify-between p-4'}>
@@ -11,7 +13,7 @@ export default function Header({ lang }: { lang: string }) {
         <MenuBarButton />
         <DesktopNavigationList lang={lang} />
       </div>
-      <NavigationList lang={lang} />
+      <NavigationList lang={lang} lastGeneration={lastGeneration?.name} />
     </div>
   )
 }

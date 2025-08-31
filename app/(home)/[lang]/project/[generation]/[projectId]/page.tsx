@@ -15,9 +15,9 @@ export async function generateStaticParams() {
 export default async function ProjectPage({
   params,
 }: {
-  params: Promise<{ projectId: string; lang: string }>
+  params: Promise<{ projectId: string; lang: string; generation: string }>
 }) {
-  const { projectId, lang } = await params
+  const { projectId, lang, generation } = await params
   const projectData = await getProject(projectId)
 
   if (!projectData) {
@@ -26,7 +26,7 @@ export default async function ProjectPage({
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
-      <NavigationButton href={'/projects'}>
+      <NavigationButton href={`/${lang}/project/${generation}`}>
         <p>Projects</p>
       </NavigationButton>
       <PageTitle>

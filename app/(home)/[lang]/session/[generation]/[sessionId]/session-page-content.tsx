@@ -7,10 +7,12 @@ import NavigationButton from '@/app/components/navigation-button'
 export default function SessionPageContent({
   sessionData,
   lang,
+  generation,
   isModal = false,
 }: {
   sessionData: Awaited<ReturnType<typeof getSession>>
   lang: string
+  generation: string
   isModal?: boolean
 }) {
   if (!sessionData) {
@@ -20,7 +22,7 @@ export default function SessionPageContent({
   return (
     <div className={'w-full pb-4'}>
       {!isModal && (
-        <NavigationButton href={'/sessions'}>
+        <NavigationButton href={`/${lang}/session/${generation}`}>
           <p>Sessions</p>
         </NavigationButton>
       )}
