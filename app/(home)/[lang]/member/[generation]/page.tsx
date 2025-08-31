@@ -6,11 +6,17 @@ import { generations } from '@/db/schema/generations'
 import cacheTag from '@/lib/server/cacheTag'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
 export const metadata: Metadata = {
   title: 'Members',
   description:
     'Meet the past members of GDGoC Yonsei who have contributed to our community with their skills and passion. Explore their journeys and achievements.',
+}
+
+export async function generateStaticParams() {
+  const generationList = await getGenerationList()
+  return generationList.map((generation) => ({ generation: generation.name }))
 }
 
 export default async function MembersPage({

@@ -7,11 +7,17 @@ import { eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
 export const metadata: Metadata = {
   title: 'Sessions',
   description:
     'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
+}
+
+export async function generateStaticParams() {
+  const generationList = await getGenerationList()
+  return generationList.map((generation) => ({ generation: generation.name }))
 }
 
 export default async function SessionPage({
