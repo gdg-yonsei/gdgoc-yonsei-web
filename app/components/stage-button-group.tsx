@@ -19,7 +19,7 @@ export default async function StageButtonGroup({
           'mx-auto flex w-full max-w-4xl items-center justify-between p-4'
         }
       >
-        <p className={'pr-2 text-2xl font-semibold'}>Stage</p>
+        <p className={'pr-2 text-2xl font-semibold'}>Generation</p>
         <GenerationButtonGroup
           generationList={generationList.reverse().map((data) => data.name)}
           generation={generation}

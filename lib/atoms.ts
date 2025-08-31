@@ -55,12 +55,6 @@ export const uploadProfileImageState = atom(false)
 export const homeMenuBarState = atom(false)
 
 /**
- * Atom to store the currently selected generation ID or name.
- * @returns {string} - The identifier of the selected generation.
- */
-export const generationState = atom('')
-
-/**
  * Atom to manage the state of a generic modal dialog.
  * It holds the text to be displayed and the action to be executed on confirmation.
  * @returns {{text: string, action: () => void}} - An object with the modal's text and action.
