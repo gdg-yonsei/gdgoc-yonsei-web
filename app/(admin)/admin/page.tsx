@@ -80,15 +80,6 @@ export default async function AdminPage() {
             </div>
           </div>
         </div>
-        <Link
-          href={'/admin/permissions'}
-          className={
-            'flex w-full items-center justify-center place-self-start rounded-xl bg-neutral-900 p-4 text-center text-xl font-semibold text-white transition-colors hover:bg-neutral-800'
-          }
-        >
-          Permission Level
-          <br /> Information
-        </Link>
       </div>
     </AdminDefaultLayout>
   )
