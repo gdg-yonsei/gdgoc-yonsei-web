@@ -30,7 +30,13 @@ function MotionLink({
   )
 }
 
-export default function NavigationList({ lang }: { lang: string }) {
+export default function NavigationList({
+  lang,
+  lastGeneration,
+}: {
+  lang: string
+  lastGeneration: string | undefined
+}) {
   const [isMenuOpen, setIsMenuOpen] = useAtom(homeMenuBarState)
 
   return (
@@ -45,7 +51,7 @@ export default function NavigationList({ lang }: { lang: string }) {
     >
       <MotionLink state={isMenuOpen}>
         <Link
-          href={`/${lang}/project`}
+          href={`/${lang}/project${lastGeneration ? '/' + lastGeneration : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
@@ -54,7 +60,7 @@ export default function NavigationList({ lang }: { lang: string }) {
       </MotionLink>
       <MotionLink state={isMenuOpen}>
         <Link
-          href={`/${lang}/session`}
+          href={`/${lang}/session${lastGeneration ? '/' + lastGeneration : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
@@ -72,7 +78,7 @@ export default function NavigationList({ lang }: { lang: string }) {
       </MotionLink>
       <MotionLink state={isMenuOpen}>
         <Link
-          href={`/${lang}/member`}
+          href={`/${lang}/member${lastGeneration ? '/' + lastGeneration : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
