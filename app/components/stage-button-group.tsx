@@ -1,5 +1,5 @@
 import GenerationButtonGroup from '@/app/components/generation-button-group'
-import getGenerationList from '@/app/(home)/[lang]/member/[generation]/getGenerationList'
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
 export default async function StageButtonGroup({
   generation,
