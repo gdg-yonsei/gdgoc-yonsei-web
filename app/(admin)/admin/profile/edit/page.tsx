@@ -94,6 +94,7 @@ export default async function EditProfilePage() {
             defaultValue={memberData.email}
             name={'email'}
             placeholder={'E-Mail'}
+            required={true}
           />
           <DataInput
             title={'Public Github ID'}
@@ -115,7 +116,7 @@ export default async function EditProfilePage() {
             type={'link'}
           />
           <DataInput
-            title={'Major'}
+            title={'Major (Korean)'}
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'컴퓨터과학과'}
@@ -129,10 +130,10 @@ export default async function EditProfilePage() {
             required={true}
           />
           <DataInput
-            title={'Telephone'}
+            title={'Telephone (only numbers)'}
             defaultValue={memberData.telephone}
             name={'telephone'}
-            placeholder={'Telephone (only numbers)'}
+            placeholder={'01012341234'}
             required={true}
           />
           <DataInput
