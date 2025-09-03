@@ -136,7 +136,7 @@ export default function SessionPartParticipantsInput({
       </div>
       <div
         className={
-          'col-span-4 flex h-48 w-full items-start justify-between gap-4'
+          'col-span-4 flex h-80 w-full items-start justify-between gap-4'
         }
       >
         {/* Members 섹션 */}
