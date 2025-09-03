@@ -13,6 +13,7 @@ import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
+import DataTextarea from '@/app/components/admin/data-textarea'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -61,17 +62,15 @@ export default async function EditSessionPage({
           placeholder={'Session Name (Korean)'}
           title={'Session Name (Korean)'}
         />
-        <DataInput
+        <DataTextarea
           defaultValue={sessionData.description}
           name={'description'}
           placeholder={'Session Description (English)'}
-          title={'Session Description (English)'}
         />
-        <DataInput
+        <DataTextarea
           defaultValue={sessionData.descriptionKo}
           name={'descriptionKo'}
           placeholder={'Session Description (Korean)'}
-          title={'Session Description (Korean)'}
         />
         <DataInput
           title={'Location (English)'}
