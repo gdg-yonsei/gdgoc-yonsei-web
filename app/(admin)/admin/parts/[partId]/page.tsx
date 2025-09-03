@@ -78,13 +78,20 @@ export default async function PartPage({
             {partData.usersToParts.map((user) => (
               <div key={user.user.id} className={'member-data-box'}>
                 <div className={'member-data-content'}>
-                  {formatUserName(
-                    user.user.name,
-                    user.user.firstName,
-                    user.user.lastName,
-                    user.user.isForeigner,
-                    !user.user.isForeigner
-                  )}
+                  {user.user.firstNameKo
+                    ? formatUserName(
+                        user.user.name,
+                        user.user.firstNameKo,
+                        user.user.lastNameKo,
+                        user.user.isForeigner,
+                        !user.user.isForeigner
+                      )
+                    : formatUserName(
+                        user.user.name,
+                        user.user.firstName,
+                        user.user.lastName,
+                        user.user.isForeigner
+                      )}
                 </div>
               </div>
             ))}
