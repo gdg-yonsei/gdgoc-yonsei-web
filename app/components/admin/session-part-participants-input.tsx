@@ -160,20 +160,25 @@ export default function SessionPartParticipantsInput({
                     }
                   }}
                 >
-                  {member.firstNameKo
-                    ? formatUserName(
-                        member.name,
-                        member.firstNameKo,
-                        member.lastNameKo,
-                        member.isForeigner,
-                        !member.isForeigner
-                      )
-                    : formatUserName(
-                        member.name,
-                        member.firstName,
-                        member.lastName,
-                        member.isForeigner
-                      )}
+                  <p className={'text-sm'}>
+                    {member.generation} {member.part}
+                  </p>
+                  <p className={'pb-1'}>
+                    {member.firstNameKo
+                      ? formatUserName(
+                          member.name,
+                          member.firstNameKo,
+                          member.lastNameKo,
+                          member.isForeigner,
+                          !member.isForeigner
+                        )
+                      : formatUserName(
+                          member.name,
+                          member.firstName,
+                          member.lastName,
+                          member.isForeigner
+                        )}
+                  </p>
                 </button>
               ))}
             </div>
