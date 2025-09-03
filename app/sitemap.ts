@@ -33,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       (item) => item.id === project.generationId
     )[0].name
     return {
-      url: `/projects/${generationName}/${project.id}`,
+      url: `/project/${generationName}/${project.id}`,
       lastModified:
         project.updatedAt > project.createdAt
           ? project.updatedAt
@@ -58,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       (item) => item.id === session.part.generationsId
     )[0].name
     return {
-      url: `/sessions/${generationName}/${session.id}`,
+      url: `/session/${generationName}/${session.id}`,
       lastModified:
         session.updatedAt > session.createdAt
           ? session.updatedAt
@@ -71,19 +71,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const centralPages: MetadataRoute.Sitemap = generationList.flatMap(
     (generation) => [
       {
-        url: `/members/${generation.name}`,
+        url: `/member/${generation.name}`,
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.9,
       },
       {
-        url: `/sessions/${generation.name}`,
+        url: `/session/${generation.name}`,
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.9,
       },
       {
-        url: `/projects/${generation.name}`,
+        url: `/project/${generation.name}`,
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.9,
