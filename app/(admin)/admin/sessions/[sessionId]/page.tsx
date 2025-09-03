@@ -103,7 +103,7 @@ export default async function SessionPage({
             Participants {sessionData.userToSession.length}/
             {sessionData.maxCapacity}
           </div>
-          <div className={'member-data-content max-h-48'}>
+          <div className={'member-data-content max-h-48 overflow-y-auto'}>
             {sessionData.userToSession.map((user) => (
               <div key={user.userId}>
                 {user.user.firstNameKo
