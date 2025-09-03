@@ -47,7 +47,7 @@ export default function SessionPartParticipantsInput({
     <>
       <div
         className={
-          'col-span-3 flex h-48 w-full items-start justify-between gap-4'
+          'col-span-1 flex h-48 w-full items-start justify-between gap-4 sm:col-span-3 md:col-span-4 xl:col-span-5'
         }
       >
         {/* Parts 섹션 */}
@@ -136,7 +136,7 @@ export default function SessionPartParticipantsInput({
       </div>
       <div
         className={
-          'col-span-4 flex h-80 w-full items-start justify-between gap-4'
+          'col-span-1 flex h-80 w-full items-start justify-between gap-4 sm:col-span-3 md:col-span-4 xl:col-span-5'
         }
       >
         {/* Members 섹션 */}
@@ -144,7 +144,11 @@ export default function SessionPartParticipantsInput({
           <p>Members</p>
           {/* 이 div가 스크롤 영역이 됩니다. */}
           <div className={'flex-1 overflow-y-auto'}>
-            <div className={'grid grid-cols-4 gap-1 pt-2'}>
+            <div
+              className={
+                'grid grid-cols-2 gap-1 pt-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+              }
+            >
               {membersData.map((member) => (
                 <button
                   key={member.id}
