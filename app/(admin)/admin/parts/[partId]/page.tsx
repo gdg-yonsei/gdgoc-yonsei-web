@@ -82,7 +82,8 @@ export default async function PartPage({
                     user.user.name,
                     user.user.firstName,
                     user.user.lastName,
-                    user.user.isForeigner
+                    user.user.isForeigner,
+                    !user.user.isForeigner
                   )}
                 </div>
               </div>
