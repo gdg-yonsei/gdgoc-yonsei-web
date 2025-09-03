@@ -103,9 +103,24 @@ export default async function SessionPage({
             Participants {sessionData.userToSession.length}/
             {sessionData.maxCapacity}
           </div>
-          <div className={'member-data-content'}>
+          <div className={'member-data-content max-h-48'}>
             {sessionData.userToSession.map((user) => (
-              <div key={user.userId}>{user.user.name}</div>
+              <div key={user.userId}>
+                {user.user.firstNameKo
+                  ? formatUserName(
+                      user.user.name,
+                      user.user.firstNameKo,
+                      user.user.lastNameKo,
+                      user.user.isForeigner,
+                      true
+                    )
+                  : formatUserName(
+                      user.user.name,
+                      user.user.firstName,
+                      user.user.lastName,
+                      user.user.isForeigner
+                    )}
+              </div>
             ))}
           </div>
         </div>
