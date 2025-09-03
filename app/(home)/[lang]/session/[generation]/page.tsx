@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
@@ -86,7 +85,16 @@ export default async function SessionPage({
                 {paramsData.lang === 'ko' ? session.nameKo : session.name}
               </h2>
               <p className={'ml-auto'}>
-                {formatDateYYYYMMDD(new Date(session.updatedAt))}
+                {session.startAt
+                  ? new Intl.DateTimeFormat('ko-KR', {
+                      year: '2-digit',
+                      month: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      hour12: false,
+                    }).format(new Date(session.startAt))
+                  : 'TBD'}
               </p>
             </div>
           </Link>

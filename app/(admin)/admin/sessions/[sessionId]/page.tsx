@@ -143,8 +143,10 @@ export default async function SessionPage({
               ? new Intl.DateTimeFormat('ko-KR', {
                   year: 'numeric',
                   month: 'long',
+                  hour: 'numeric',
+                  minute: 'numeric',
                   day: 'numeric',
-                }).format(new Date(sessionData.startAt))
+                }).format(new Date(sessionData.updatedAt))
               : 'TBD'}
           </div>
         </div>
@@ -155,8 +157,10 @@ export default async function SessionPage({
               ? new Intl.DateTimeFormat('ko-KR', {
                   year: 'numeric',
                   month: 'long',
+                  hour: 'numeric',
+                  minute: 'numeric',
                   day: 'numeric',
-                }).format(new Date(sessionData.endAt))
+                }).format(new Date(sessionData.updatedAt))
               : 'TBD'}
           </div>
         </div>
