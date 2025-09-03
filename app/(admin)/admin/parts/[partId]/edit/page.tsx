@@ -80,8 +80,10 @@ export default async function EditGenerationPage({
           data={membersData.map((member) => ({
             name: formatUserName(
               member.name,
-              member.firstName,
-              member.lastName
+              member.firstNameKo,
+              member.lastNameKo,
+              member.isForeigner,
+              !member.isForeigner
             ),
             value: member.id,
           }))}
