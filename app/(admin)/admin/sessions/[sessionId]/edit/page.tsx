@@ -12,6 +12,7 @@ import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -35,6 +36,7 @@ export default async function EditSessionPage({
 
   // 기수 정보 가져오기
   const generationData = await getParts()
+  const membersData = await getMembers()
 
   return (
     <AdminDefaultLayout>
@@ -128,6 +130,7 @@ export default async function EditSessionPage({
               (user) => user.userId
             ),
           }}
+          membersData={membersData}
         />
 
         <div

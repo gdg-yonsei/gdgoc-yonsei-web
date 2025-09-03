@@ -9,6 +9,7 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
 
 export default async function CreateSessionPage() {
   const generationData = await getParts()
+
+  const membersData = await getMembers()
 
   return (
     <AdminDefaultLayout>
@@ -135,8 +138,10 @@ export default async function CreateSessionPage() {
           placeholder={'YYYY-MM-DDTHH:MM'}
           type={'datetime-local'}
         />
-        <SessionPartParticipantsInput generationData={generationData} />
-
+        <SessionPartParticipantsInput
+          generationData={generationData}
+          membersData={membersData}
+        />
         <SubmitButton />
       </DataForm>
     </AdminDefaultLayout>
