@@ -2,11 +2,12 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import db from '@/db'
-import { eq } from 'drizzle-orm'
+import { eq, lte } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import { sessions } from '@/db/schema/sessions'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -31,7 +32,9 @@ export default async function SessionPage({
     with: {
       parts: {
         with: {
-          sessions: true,
+          sessions: {
+            where: lte(sessions.endAt, new Date()),
+          },
         },
       },
     },
