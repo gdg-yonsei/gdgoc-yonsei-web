@@ -8,6 +8,7 @@ import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 import { sessions } from '@/db/schema/sessions'
+import cacheTag from '@/lib/server/cacheTag'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -25,6 +26,8 @@ export default async function SessionPage({
 }: {
   params: Promise<{ lang: string; generation: string }>
 }) {
+  'use cache'
+  cacheTag('sessions', 'generations')
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({
