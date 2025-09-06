@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import db from '@/db'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
 function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
   const langs = ['ko', 'en']
@@ -43,30 +44,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   })
 
-  const sessionsList: MetadataRoute.Sitemap = (
-    await db.query.sessions.findMany({
-      with: {
-        part: {
-          with: {
-            generation: true,
-          },
-        },
-      },
-    })
-  ).map((session) => {
-    const generationName = generationList.filter(
-      (item) => item.id === session.part.generationsId
-    )[0].name
-    return {
-      url: `/session/${generationName}/${session.id}`,
-      lastModified:
-        session.updatedAt > session.createdAt
-          ? session.updatedAt
-          : session.createdAt,
-      changeFrequency: 'monthly',
-      priority: 0.8,
+  const sessionsList: MetadataRoute.Sitemap = []
+
+  for (const generation of generationList) {
+    const sessions = await getSessionList(generation.name)
+    if (sessions) {
+      for (const session of sessions) {
+        sessionsList.push({
+          url: `/session/${generation.name}/${session.id}`,
+          lastModified:
+            session.updatedAt > session.createdAt
+              ? session.updatedAt
+              : session.createdAt,
+          changeFrequency: 'monthly',
+          priority: 0.8,
+        })
+      }
     }
-  })
+  }
 
   const centralPages: MetadataRoute.Sitemap = generationList.flatMap(
     (generation) => [
