@@ -146,7 +146,7 @@ export default async function SessionPage({
                   hour: 'numeric',
                   minute: 'numeric',
                   day: 'numeric',
-                }).format(new Date(sessionData.updatedAt))
+                }).format(new Date(sessionData.startAt))
               : 'TBD'}
           </div>
         </div>
@@ -160,7 +160,7 @@ export default async function SessionPage({
                   hour: 'numeric',
                   minute: 'numeric',
                   day: 'numeric',
-                }).format(new Date(sessionData.updatedAt))
+                }).format(new Date(sessionData.endAt))
               : 'TBD'}
           </div>
         </div>
