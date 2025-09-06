@@ -2,7 +2,6 @@ import { sessions } from '@/db/schema/sessions'
 import 'server-only'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
-import { generations } from '@/db/schema/generations'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 
 export const preload = () => {
@@ -24,6 +23,5 @@ export async function getSessions() {
         },
       },
     },
-    orderBy: desc(generations.id),
   })
 }
