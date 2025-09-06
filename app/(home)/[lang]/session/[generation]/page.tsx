@@ -1,14 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import db from '@/db'
-import { eq, lte } from 'drizzle-orm'
-import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-import { sessions } from '@/db/schema/sessions'
-import cacheTag from '@/lib/server/cacheTag'
+import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -26,26 +22,9 @@ export default async function SessionPage({
 }: {
   params: Promise<{ lang: string; generation: string }>
 }) {
-  'use cache'
-  cacheTag('sessions', 'generations')
   const paramsData = await params
 
-  const generationData = await db.query.generations.findFirst({
-    where: eq(generations.name, paramsData.generation),
-    with: {
-      parts: {
-        with: {
-          sessions: {
-            where: lte(sessions.endAt, new Date()),
-          },
-        },
-      },
-    },
-  })
-
-  const sessionList = generationData?.parts
-    .map((part) => part.sessions)
-    .flatMap((session) => session)
+  const sessionList = await getSessionList(paramsData.generation)
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
