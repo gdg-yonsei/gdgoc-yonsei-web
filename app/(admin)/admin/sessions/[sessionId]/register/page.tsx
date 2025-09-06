@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { registerSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/register/actions'
+import formatUserName from '@/lib/format-user-name'
 
 const formatter = new Intl.DateTimeFormat('ko-KR', {
   year: '2-digit',
@@ -81,17 +82,30 @@ export default async function RegisterSessionPage({
             <p className={'text-sm text-neutral-700'}>Participants</p>
             <div
               className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                'grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
               }
             >
               {sessionData.userToSession.map((user) => (
                 <p
                   key={user.userId}
                   className={
-                    'rounded-lg bg-neutral-900 p-1 px-2 text-center text-white'
+                    'rounded-lg border-2 border-neutral-500 bg-white p-1 px-2 text-center'
                   }
                 >
-                  {user.user.name}
+                  {user.user.firstNameKo
+                    ? formatUserName(
+                        user.user.name,
+                        user.user.firstNameKo,
+                        user.user.lastNameKo,
+                        user.user.isForeigner,
+                        true
+                      )
+                    : formatUserName(
+                        user.user.name,
+                        user.user.firstName,
+                        user.user.lastName,
+                        user.user.isForeigner
+                      )}
                 </p>
               ))}
             </div>
