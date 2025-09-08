@@ -1,6 +1,7 @@
 'use client' // Error boundaries must be Client Components
 
 import './globals.css'
+import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 
 export default function GlobalError({
   error,
@@ -9,7 +10,7 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  console.log(error)
+  console.error(error)
 
   return (
     <html>
@@ -23,13 +24,16 @@ export default function GlobalError({
       >
         <div
           className={
-            'w-full max-w-4xl rounded-xl border-2 border-neutral-300 bg-white p-4'
+            'flex w-full max-w-4xl flex-col gap-2 rounded-xl border-2 border-neutral-300 bg-white p-4'
           }
         >
+          <GDGoCYonseiLogo />
           <h2 className={'text-4xl font-bold'}>Something went wrong!</h2>
           <button
             onClick={() => reset()}
-            className={'rounded-lg bg-neutral-950 p-2 text-center text-white'}
+            className={
+              'w-full rounded-lg bg-neutral-950 p-2 text-center text-white'
+            }
           >
             Try again
           </button>
