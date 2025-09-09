@@ -1,5 +1,5 @@
 import db from '@/db'
-import { eq, lte } from 'drizzle-orm'
+import { desc, eq, lte } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { sessions } from '@/db/schema/sessions'
 import cacheTag from '@/lib/server/cacheTag'
@@ -15,6 +15,7 @@ export default async function getSessionList(generationName: string) {
         with: {
           sessions: {
             where: lte(sessions.endAt, new Date()),
+            orderBy: desc(sessions.endAt),
           },
         },
       },
