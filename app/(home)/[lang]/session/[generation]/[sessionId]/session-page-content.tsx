@@ -74,7 +74,7 @@ export default function SessionPageContent({
         <p className={'px-4 text-xl font-semibold'}>
           {lang === 'ko' ? '세션 내용' : 'Contents'}
         </p>
-        <div className={'prose px-4'}>
+        <div className={'prose max-w-none px-4'}>
           <SafeMDX
             source={
               lang === 'ko'

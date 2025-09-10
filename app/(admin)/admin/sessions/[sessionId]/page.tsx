@@ -70,22 +70,6 @@ export default async function SessionPage({
           <div className={'member-data-title'}>Name (Korean)</div>
           <div className={'member-data-content'}>{sessionData.nameKo}</div>
         </div>
-        <div
-          className={
-            'member-data-box prose sm:col-span-2 lg:col-span-3 xl:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>Description</div>
-          <SafeMDX source={sessionData.description!} />
-        </div>
-        <div
-          className={
-            'member-data-box prose sm:col-span-2 lg:col-span-3 xl:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>Description (Korean)</div>
-          <SafeMDX source={sessionData.descriptionKo!} />
-        </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Part</div>
           <div className={'member-data-content'}>{sessionData.part.name}</div>
@@ -194,6 +178,22 @@ export default async function SessionPage({
               day: 'numeric',
             }).format(new Date(sessionData.updatedAt))}
           </div>
+        </div>
+        <div
+          className={
+            'member-data-box prose col-span-1 max-w-none sm:col-span-2 lg:col-span-3 xl:col-span-4'
+          }
+        >
+          <div className={'member-data-title'}>Description</div>
+          <SafeMDX source={sessionData.description!} />
+        </div>
+        <div
+          className={
+            'member-data-box prose col-span-1 max-w-none sm:col-span-2 lg:col-span-3 xl:col-span-4'
+          }
+        >
+          <div className={'member-data-title'}>Description (Korean)</div>
+          <SafeMDX source={sessionData.descriptionKo!} />
         </div>
       </div>
 
