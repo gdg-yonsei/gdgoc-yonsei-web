@@ -67,16 +67,6 @@ export default async function CreateSessionPage() {
           name={'nameKo'}
           placeholder={'Korean Name'}
         />
-        <DataTextarea
-          defaultValue={''}
-          name={'description'}
-          placeholder={'English Description'}
-        />
-        <DataTextarea
-          defaultValue={''}
-          name={'descriptionKo'}
-          placeholder={'Korean Description'}
-        />
         <DataInput
           title={'English Location'}
           defaultValue={''}
@@ -88,6 +78,16 @@ export default async function CreateSessionPage() {
           defaultValue={''}
           name={'locationKo'}
           placeholder={'Korean Location'}
+        />
+        <DataTextarea
+          defaultValue={''}
+          name={'description'}
+          placeholder={'English Description'}
+        />
+        <DataTextarea
+          defaultValue={''}
+          name={'descriptionKo'}
+          placeholder={'Korean Description'}
         />
         <div className={'flex flex-col gap-1'}>
           <DataInput
