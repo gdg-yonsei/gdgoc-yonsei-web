@@ -69,11 +69,19 @@ export default async function SessionPage({
           <div className={'member-data-title'}>Name (Korean)</div>
           <div className={'member-data-content'}>{sessionData.nameKo}</div>
         </div>
-        <div className={'member-data-box'}>
+        <div
+          className={
+            'member-data-box sm:col-span-2 lg:col-span-3 xl:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>Description</div>
           <div className={'member-data-content'}>{sessionData.description}</div>
         </div>
-        <div className={'member-data-box'}>
+        <div
+          className={
+            'member-data-box sm:col-span-2 lg:col-span-3 xl:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>Description (Korean)</div>
           <div className={'member-data-content'}>
             {sessionData.descriptionKo}
