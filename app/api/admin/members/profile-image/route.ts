@@ -16,12 +16,13 @@ export interface PostBody {
  */
 export async function POST(request: NextRequest) {
   const session = await auth()
+  const res = (await request.json()) as PostBody
   // 사용자 권한 확인
-  if (!(await handlePermission(session?.user?.id, 'post', 'members'))) {
+  if (
+    !(await handlePermission(session?.user?.id, 'put', 'members', res.memberId))
+  ) {
     return NextResponse.error()
   }
-
-  const res = (await request.json()) as PostBody
 
   // 파일 업로드 경로
   const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${res.fileName.split('.').pop()}`
