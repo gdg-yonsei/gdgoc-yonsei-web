@@ -12,7 +12,7 @@ export default function MDXEditor({
   title: string
   name: string
   placeholder: string
-  defaultValue?: string
+  defaultValue?: string | null
 }) {
   const [content, setContent] = useState<string>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -30,7 +30,7 @@ export default function MDXEditor({
   return (
     <div
       className={
-        'col-span-1 flex w-full flex-col gap-2 sm:col-span-3 lg:col-span-3 xl:col-span-4'
+        'col-span-1 flex w-full flex-col gap-2 sm:col-span-4 lg:col-span-4 xl:col-span-5'
       }
     >
       <div className={'member-data-title'}>{title}</div>

@@ -3,13 +3,13 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataForm from '@/app/components/data-form'
 import DataInput from '@/app/components/admin/data-input'
-import DataTextarea from '@/app/components/admin/data-textarea'
 import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
+import MDXEditor from '@/app/components/admin/mdx-editor'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -79,15 +79,15 @@ export default async function CreateSessionPage() {
           name={'locationKo'}
           placeholder={'Korean Location'}
         />
-        <DataTextarea
-          defaultValue={''}
+        <MDXEditor
+          title={'English Description'}
           name={'description'}
-          placeholder={'English Description'}
+          placeholder={'Write the session description in English.'}
         />
-        <DataTextarea
-          defaultValue={''}
+        <MDXEditor
+          title={'Korean Description'}
           name={'descriptionKo'}
-          placeholder={'Korean Description'}
+          placeholder={'Write the session description in Korean.'}
         />
         <div className={'flex flex-col gap-1'}>
           <DataInput

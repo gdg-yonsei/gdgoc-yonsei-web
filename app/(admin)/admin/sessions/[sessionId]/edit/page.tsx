@@ -13,7 +13,7 @@ import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
-import DataTextarea from '@/app/components/admin/data-textarea'
+import MDXEditor from '@/app/components/admin/mdx-editor'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -62,16 +62,6 @@ export default async function EditSessionPage({
           placeholder={'Session Name (Korean)'}
           title={'Session Name (Korean)'}
         />
-        <DataTextarea
-          defaultValue={sessionData.description}
-          name={'description'}
-          placeholder={'Session Description (English)'}
-        />
-        <DataTextarea
-          defaultValue={sessionData.descriptionKo}
-          name={'descriptionKo'}
-          placeholder={'Session Description (Korean)'}
-        />
         <DataInput
           title={'Location (English)'}
           defaultValue={sessionData.location}
@@ -84,6 +74,19 @@ export default async function EditSessionPage({
           name={'locationKo'}
           placeholder={'Location (Korean)'}
         />
+        <MDXEditor
+          title={'English Description'}
+          name={'description'}
+          placeholder={'Write the session description in English.'}
+          defaultValue={sessionData.description}
+        />
+        <MDXEditor
+          title={'Korean Description'}
+          name={'descriptionKo'}
+          placeholder={'Write the session description in Korean.'}
+          defaultValue={sessionData.descriptionKo}
+        />
+
         <DataInput
           title={'Internal Open'}
           name={'internalOpen'}

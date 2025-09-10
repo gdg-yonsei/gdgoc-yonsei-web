@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import NavigationButton from '@/app/components/navigation-button'
+import SafeMDX from '@/app/components/safe-mdx'
 
 export default function SessionPageContent({
   sessionData,
@@ -73,9 +74,15 @@ export default function SessionPageContent({
         <p className={'px-4 text-xl font-semibold'}>
           {lang === 'ko' ? '세션 내용' : 'Contents'}
         </p>
-        <p className={'px-4'}>
-          {lang === 'ko' ? sessionData.descriptionKo : sessionData.description}
-        </p>
+        <div className={'prose px-4'}>
+          <SafeMDX
+            source={
+              lang === 'ko'
+                ? sessionData.descriptionKo
+                : sessionData.description
+            }
+          />
+        </div>
       </div>
     </div>
   )
