@@ -20,7 +20,7 @@ export default function DataTextarea({
         {placeholder}
       </p>
       <textarea
-        className={'member-data-input'}
+        className={'member-data-input h-60'}
         defaultValue={defaultValue ? defaultValue : ''}
         name={name}
         placeholder={placeholder}
