@@ -39,6 +39,8 @@ export default async function SessionPage({
     notFound()
   }
 
+  console.log(sessionData)
+
   const session = await auth()
 
   return (
@@ -80,7 +82,7 @@ export default async function SessionPage({
         </div>
         <div
           className={
-            'member-data-box sm:col-span-2 lg:col-span-3 xl:col-span-4'
+            'member-data-box prose sm:col-span-2 lg:col-span-3 xl:col-span-4'
           }
         >
           <div className={'member-data-title'}>Description (Korean)</div>
