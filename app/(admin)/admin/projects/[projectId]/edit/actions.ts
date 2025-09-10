@@ -109,8 +109,10 @@ export async function updateProjectAction(
         nameKo: nameKo!,
         description: description!,
         descriptionKo: descriptionKo!,
-        content: content!,
-        contentKo: contentKo!,
+        content: content ? content.replaceAll('<', '').replaceAll('>', '') : '',
+        contentKo: contentKo
+          ? contentKo.replaceAll('<', '').replaceAll('>', '')
+          : '',
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),

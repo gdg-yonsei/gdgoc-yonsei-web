@@ -39,8 +39,6 @@ export default async function SessionPage({
     notFound()
   }
 
-  console.log(sessionData)
-
   const session = await auth()
 
   return (

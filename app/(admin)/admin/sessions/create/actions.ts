@@ -85,8 +85,10 @@ export async function createSessionAction(
       .values({
         name: name,
         nameKo: nameKo!,
-        description: description,
-        descriptionKo: descriptionKo!,
+        description: description.replaceAll('<', '').replaceAll('>', ''),
+        descriptionKo: descriptionKo
+          ? descriptionKo.replaceAll('<', '').replaceAll('>', '')
+          : '',
         authorId: session.user.id,
         images: contentImages,
         ...(mainImage ? { mainImage: mainImage } : {}),
