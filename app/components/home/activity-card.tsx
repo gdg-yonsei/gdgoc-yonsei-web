@@ -63,7 +63,9 @@ export default function ActivityCard({
       >
         <motion.h3
           layoutId={`activity-title-${title}`}
-          className={'text-3xl font-semibold break-words text-white'}
+          className={
+            'text-center text-3xl font-semibold break-words text-white'
+          }
         >
           {title}
         </motion.h3>
