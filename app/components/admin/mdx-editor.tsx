@@ -14,7 +14,7 @@ export default function MDXEditor({
   placeholder: string
   defaultValue?: string | null
 }) {
-  const [content, setContent] = useState<string>(defaultValue)
+  const [content, setContent] = useState<string | null>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const handleTextareaHeight = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -44,7 +44,7 @@ export default function MDXEditor({
             onChange={(event) => {
               handleTextareaHeight(event)
             }}
-            defaultValue={defaultValue}
+            defaultValue={defaultValue ? defaultValue : ''}
             className={
               'member-data-input h-auto min-h-96 resize-none overflow-hidden'
             }
