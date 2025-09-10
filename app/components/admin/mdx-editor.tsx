@@ -12,9 +12,9 @@ export default function MDXEditor({
   title: string
   name: string
   placeholder: string
-  defaultValue?: string
+  defaultValue?: string | null
 }) {
-  const [content, setContent] = useState<string>(defaultValue)
+  const [content, setContent] = useState<string | null>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const handleTextareaHeight = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -30,7 +30,7 @@ export default function MDXEditor({
   return (
     <div
       className={
-        'col-span-1 flex w-full flex-col gap-2 sm:col-span-3 lg:col-span-3 xl:col-span-4'
+        'col-span-1 flex w-full flex-col gap-2 sm:col-span-4 lg:col-span-4 xl:col-span-5'
       }
     >
       <div className={'member-data-title'}>{title}</div>
@@ -44,7 +44,7 @@ export default function MDXEditor({
             onChange={(event) => {
               handleTextareaHeight(event)
             }}
-            defaultValue={defaultValue}
+            defaultValue={defaultValue ? defaultValue : ''}
             className={
               'member-data-input h-auto min-h-96 resize-none overflow-hidden'
             }

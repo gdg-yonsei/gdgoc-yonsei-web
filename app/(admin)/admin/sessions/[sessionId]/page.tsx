@@ -9,6 +9,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
+import SafeMDX from '@/app/components/safe-mdx'
 
 export async function generateMetadata({
   params,
@@ -71,11 +72,11 @@ export default async function SessionPage({
         </div>
         <div
           className={
-            'member-data-box sm:col-span-2 lg:col-span-3 xl:col-span-4'
+            'member-data-box prose sm:col-span-2 lg:col-span-3 xl:col-span-4'
           }
         >
           <div className={'member-data-title'}>Description</div>
-          <div className={'member-data-content'}>{sessionData.description}</div>
+          <SafeMDX source={sessionData.description!} />
         </div>
         <div
           className={
@@ -83,9 +84,7 @@ export default async function SessionPage({
           }
         >
           <div className={'member-data-title'}>Description (Korean)</div>
-          <div className={'member-data-content'}>
-            {sessionData.descriptionKo}
-          </div>
+          <SafeMDX source={sessionData.descriptionKo!} />
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Part</div>
