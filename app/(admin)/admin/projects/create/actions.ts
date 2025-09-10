@@ -82,8 +82,12 @@ export async function createProjectAction(
           generationId: Number(generationId),
           images: contentImages,
           mainImage: mainImage!,
-          content: content!,
-          contentKo: contentKo!,
+          content: content
+            ? content.replaceAll('<', '').replaceAll('>', '')
+            : '',
+          contentKo: contentKo
+            ? contentKo.replaceAll('<', '').replaceAll('>', '')
+            : '',
         })
         .returning({ id: projects.id })
     )[0]

@@ -119,8 +119,12 @@ export async function updateSessionAction(
       .set({
         name: name!,
         nameKo: nameKo!,
-        description: description!,
-        descriptionKo: descriptionKo!,
+        description: description
+          ? description.replaceAll('<', '').replaceAll('>', '')
+          : '',
+        descriptionKo: descriptionKo
+          ? descriptionKo.replaceAll('<', '').replaceAll('>', '')
+          : '',
         images: contentImages,
         mainImage: mainImage!,
         updatedAt: new Date(),
