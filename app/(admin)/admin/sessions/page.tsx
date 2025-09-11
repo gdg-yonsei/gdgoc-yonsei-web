@@ -23,7 +23,7 @@ export default async function SessionsPage() {
   )
 
   return (
-    <AdminDefaultLayout className={'p-4'}>
+    <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
       <Suspense
         fallback={
           <div
