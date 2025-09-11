@@ -7,6 +7,8 @@ import { motion } from 'motion/react'
 import { ReactNode } from 'react'
 import UserAuthControlPanelClient from '@/app/components/admin/user-auth-control-panel-client'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
+import HomePageButton from '@/app/components/admin/home-page-button'
+import RefreshAllDataButton from '@/app/components/admin/refresh-all-data-button'
 
 /**
  * 모바일 화면 상단 바에서 보이는 네비게이터
@@ -59,6 +61,8 @@ export default function MenuBar({
               </MenuBarNavigator>
             ))}
             <UserAuthControlPanelClient />
+            <HomePageButton />
+            <RefreshAllDataButton />
           </div>
         )}
       </div>
