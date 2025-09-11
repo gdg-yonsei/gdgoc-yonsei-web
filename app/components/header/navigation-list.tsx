@@ -33,9 +33,11 @@ function MotionLink({
 export default function NavigationList({
   lang,
   lastGeneration,
+  isMember,
 }: {
   lang: string
   lastGeneration: string | undefined
+  isMember: boolean
 }) {
   const [isMenuOpen, setIsMenuOpen] = useAtom(homeMenuBarState)
 
@@ -85,6 +87,17 @@ export default function NavigationList({
           {lang === 'ko' ? '구성원' : 'Members'}
         </Link>
       </MotionLink>
+      {isMember && (
+        <MotionLink state={isMenuOpen}>
+          <Link
+            href={'/admin'}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={'w-full'}
+          >
+            GYMS
+          </Link>
+        </MotionLink>
+      )}
       {/*<MotionLink state={isMenuOpen}>*/}
       {/*  <Link*/}
       {/*    href={'/recruit'}*/}
