@@ -14,6 +14,7 @@ import SessionPartParticipantsInput from '@/app/components/admin/session-part-pa
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
+import DataSelectInput from '@/app/components/admin/data-select-input'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -73,6 +74,23 @@ export default async function EditSessionPage({
           defaultValue={sessionData.locationKo}
           name={'locationKo'}
           placeholder={'Location (Korean)'}
+        />
+        <DataSelectInput
+          data={[
+            { name: 'T19', value: 'T19' },
+            { name: 'Part Session', value: 'Part Session' },
+          ]}
+          name={'type'}
+          title={'Session Type'}
+          defaultValue={sessionData.type ? sessionData.type : 'Part Session'}
+        />
+        <DataInput
+          title={'Display on Website'}
+          defaultValue={'true'}
+          name={'displayOnWebsite'}
+          placeholder={'Display on Website'}
+          type={'checkbox'}
+          isChecked={sessionData.displayOnWebsite!}
         />
         <MDXEditor
           title={'English Description'}

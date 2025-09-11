@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+const SessionTypeEnum = z.enum(['Part Session', 'T19'])
+
 export const sessionValidation = z.object({
   name: z.string().nonempty('Name is required'),
   nameKo: z.string().nonempty('Name (Korean) is required'),
@@ -16,4 +18,6 @@ export const sessionValidation = z.object({
   endAt: z.date(),
   partId: z.string().nonempty('PartId is required'),
   participantId: z.array(z.string()).nonempty('Participant is required'),
+  type: SessionTypeEnum,
+  displayOnWebsite: z.boolean(),
 })

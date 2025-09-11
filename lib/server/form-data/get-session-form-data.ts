@@ -26,6 +26,8 @@ export default function getSessionFormData(formData: FormData): {
   maxCapacity: number
   partId: string | null
   participantId: string[]
+  type: 'Part Session' | 'T19'
+  displayOnWebsite: boolean
 } {
   const name = formData.get('name') as string | null
   const nameKo = formData.get('nameKo') as string | null
@@ -41,8 +43,13 @@ export default function getSessionFormData(formData: FormData): {
   const participantId = JSON.parse(
     formData.get('participantId') as string
   ) as string[]
+  const type = formData.get('type') as string
+  const displayOnWebsite = formData.get('displayOnWebsite') === 'true'
 
-  console.log(formData.get('openSession'))
+  let sessionType: 'Part Session' | 'T19' = 'Part Session'
+  if (type === 'T19') {
+    sessionType = 'T19'
+  }
 
   // Safely parse contentImages JSON string
   const contentImages = formData.get('contentImages') as string
@@ -77,5 +84,7 @@ export default function getSessionFormData(formData: FormData): {
     publicOpen,
     startAt,
     endAt,
+    type: sessionType,
+    displayOnWebsite,
   }
 }

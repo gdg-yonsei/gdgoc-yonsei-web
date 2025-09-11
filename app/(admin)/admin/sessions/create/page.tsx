@@ -10,6 +10,7 @@ import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
+import DataSelectInput from '@/app/components/admin/data-select-input'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -31,30 +32,6 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
-        {/*<div*/}
-        {/*  className={*/}
-        {/*    'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  <div>*/}
-        {/*    <DataImageInput*/}
-        {/*      title={'Main Image'}*/}
-        {/*      name={'mainImage'}*/}
-        {/*      baseUrl={'/api/admin/sessions/main-image'}*/}
-        {/*    >*/}
-        {/*      Select Main Image*/}
-        {/*    </DataImageInput>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <DataMultipleImageInput*/}
-        {/*      baseUrl={'/api/admin/sessions/content-image'}*/}
-        {/*      name={'contentImages'}*/}
-        {/*      title={'Images'}*/}
-        {/*    >*/}
-        {/*      Select Images*/}
-        {/*    </DataMultipleImageInput>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
         <DataInput
           title={'English Name'}
           defaultValue={''}
@@ -78,6 +55,23 @@ export default async function CreateSessionPage() {
           defaultValue={''}
           name={'locationKo'}
           placeholder={'Korean Location'}
+        />
+        <DataSelectInput
+          data={[
+            { name: 'T19', value: 'T19' },
+            { name: 'Part Session', value: 'Part Session' },
+          ]}
+          name={'type'}
+          title={'Session Type'}
+          defaultValue={'Part Session'}
+        />
+        <DataInput
+          title={'Display on Website'}
+          defaultValue={'true'}
+          name={'displayOnWebsite'}
+          placeholder={'Display on Website'}
+          type={'checkbox'}
+          isChecked={true}
         />
         <MDXEditor
           title={'English Description'}
