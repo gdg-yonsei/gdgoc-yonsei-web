@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
+import GYMSNavigation from '@/app/components/header/gyms-navigation'
+import { Suspense } from 'react'
 
 export default async function DesktopNavigationList({
   lang,
@@ -13,6 +15,9 @@ export default async function DesktopNavigationList({
         'flex items-center gap-2 text-lg *:p-1 *:px-4 not-md:hidden *:hover:underline'
       }
     >
+      <Suspense>
+        <GYMSNavigation />
+      </Suspense>
       <Link
         href={`/${lang}/project${lastGeneration ? '/' + lastGeneration.name : ''}`}
       >
