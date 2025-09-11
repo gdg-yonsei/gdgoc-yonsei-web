@@ -28,6 +28,8 @@ export default async function getUpcomingSessions(userId: string) {
       partId: sessions.partId,
       mainImage: sessions.mainImage,
       images: sessions.images,
+      type: sessions.type,
+      displayOnWebsite: sessions.displayOnWebsite,
     })
     .from(userToSession)
     .innerJoin(sessions, eq(userToSession.sessionId, sessions.id))

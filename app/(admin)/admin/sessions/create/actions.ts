@@ -46,6 +46,8 @@ export async function createSessionAction(
     publicOpen,
     partId,
     participantId,
+    type,
+    displayOnWebsite,
   } = getSessionFormData(formData)
 
   try {
@@ -66,6 +68,8 @@ export async function createSessionAction(
       publicOpen,
       partId,
       participantId,
+      type,
+      displayOnWebsite,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -100,6 +104,8 @@ export async function createSessionAction(
         internalOpen: internalOpen,
         publicOpen: publicOpen,
         partId: Number(partId),
+        displayOnWebsite: displayOnWebsite,
+        type: type,
       })
       .returning({ id: sessions.id })
 

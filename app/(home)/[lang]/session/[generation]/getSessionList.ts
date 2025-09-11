@@ -1,5 +1,5 @@
 import db from '@/db'
-import { desc, eq, lte } from 'drizzle-orm'
+import { and, desc, eq, lte } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { sessions } from '@/db/schema/sessions'
 import cacheTag from '@/lib/server/cacheTag'
@@ -14,7 +14,10 @@ export default async function getSessionList(generationName: string) {
       parts: {
         with: {
           sessions: {
-            where: lte(sessions.endAt, new Date()),
+            where: and(
+              eq(sessions.displayOnWebsite, true),
+              lte(sessions.endAt, new Date())
+            ),
             orderBy: desc(sessions.endAt),
           },
         },

@@ -51,6 +51,8 @@ export async function updateSessionAction(
     maxCapacity,
     partId,
     participantId,
+    type,
+    displayOnWebsite,
   } = getSessionFormData(formData)
 
   try {
@@ -72,6 +74,8 @@ export async function updateSessionAction(
       publicOpen,
       partId,
       participantId,
+      type,
+      displayOnWebsite,
     })
   } catch (err) {
     // zod validation 에러 처리
@@ -136,6 +140,8 @@ export async function updateSessionAction(
         partId: Number(partId)!,
         startAt: startAt!,
         endAt: endAt!,
+        type: type,
+        displayOnWebsite: displayOnWebsite,
       })
       .where(eq(sessions.id, sessionId))
 

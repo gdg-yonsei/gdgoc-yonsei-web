@@ -128,6 +128,16 @@ export default async function SessionPage({
           </div>
         </div>
         <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Session Type</div>
+          <div className={'member-data-content'}>{sessionData.type}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Display on Website</div>
+          <div className={'member-data-content'}>
+            {sessionData.displayOnWebsite ? 'True' : 'False'}
+          </div>
+        </div>
+        <div className={'member-data-box'}>
           <div className={'member-data-title'}>Start Time</div>
           <div className={'member-data-content'}>
             {sessionData?.startAt
