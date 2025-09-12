@@ -1,4 +1,3 @@
-import PopUpDiv from '@/app/components/pop-up-div'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 
 const contents = {
@@ -32,14 +31,14 @@ export default function AboutPage({ lang }: { lang: string }) {
           'flex w-full max-w-4xl flex-col-reverse items-center gap-4 md:flex-row'
         }
       >
-        <PopUpDiv className={'flex w-full max-w-4xl flex-col gap-4 md:w-1/2'}>
+        <div className={'flex w-full max-w-4xl flex-col gap-4 md:w-1/2'}>
           <h2 className={'text-2xl font-semibold md:text-4xl'}>
             Google Developer Group
           </h2>
           <p className={'rounded-lg bg-white p-4'}>
             {contents.gdg[lang as keyof typeof contents.gdg] ?? contents.gdg.en}
           </p>
-        </PopUpDiv>
+        </div>
         <div className={'flex w-1/2 items-center justify-center'}>
           <GDGLogo className={'w-36 md:w-64'} />
         </div>
