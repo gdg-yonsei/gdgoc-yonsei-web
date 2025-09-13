@@ -28,7 +28,6 @@ export function generateStaticParams() {
 export default async function RootLayout({
   children,
   params,
-  modal,
 }: LayoutProps<'/[lang]'>) {
   return (
     <html
@@ -37,7 +36,6 @@ export default async function RootLayout({
     >
       <body>
         <Header lang={(await params).lang} />
-        {modal}
         {children}
         <Footer lang={(await params).lang} />
       </body>
