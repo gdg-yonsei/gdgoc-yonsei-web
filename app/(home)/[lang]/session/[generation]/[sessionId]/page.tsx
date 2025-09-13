@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
+import NavigationButton from '@/app/components/navigation-button'
 
 // import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 // import getGenerationList from '@/lib/server/fetcher/getGenerationList'
@@ -33,7 +34,7 @@ export default async function SessionPage({
 }: {
   params: Promise<{ sessionId: string; lang: string; generation: string }>
 }) {
-  const { sessionId, lang } = await params
+  const { sessionId, lang, generation } = await params
   const sessionData = await getSession(sessionId)
 
   if (!sessionData) {
@@ -43,6 +44,9 @@ export default async function SessionPage({
   return (
     <div className={'min-h-screen w-full pt-20'}>
       <div className={'w-full pb-4'}>
+        <NavigationButton href={`/${lang}/session/${generation}`}>
+          <p>Sessions</p>
+        </NavigationButton>
         <PageTitle>
           {lang === 'ko' ? sessionData.nameKo : sessionData.name}
         </PageTitle>
