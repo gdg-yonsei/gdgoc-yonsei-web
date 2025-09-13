@@ -37,24 +37,28 @@ export default async function CreateSessionPage() {
           defaultValue={''}
           name={'name'}
           placeholder={'English Name'}
+          required={true}
         />
         <DataInput
           title={'Korean Name'}
           defaultValue={''}
           name={'nameKo'}
           placeholder={'Korean Name'}
+          required={true}
         />
         <DataInput
           title={'English Location'}
           defaultValue={''}
           name={'location'}
           placeholder={'English Location'}
+          required={true}
         />
         <DataInput
           title={'Korean Location'}
           defaultValue={''}
           name={'locationKo'}
           placeholder={'Korean Location'}
+          required={true}
         />
         <DataSelectInput
           data={[
@@ -71,7 +75,7 @@ export default async function CreateSessionPage() {
           name={'displayOnWebsite'}
           placeholder={'Display on Website'}
           type={'checkbox'}
-          isChecked={true}
+          isChecked={false}
         />
         <MDXEditor
           title={'English Description'}
@@ -117,6 +121,7 @@ export default async function CreateSessionPage() {
           name={'maxCapacity'}
           placeholder={'Enter a number'}
           type={'number'}
+          required={true}
         />
         <DataInput
           title={'Start time'}
@@ -124,6 +129,7 @@ export default async function CreateSessionPage() {
           name={'startAt'}
           placeholder={'YYYY-MM-DDTHH:MM'}
           type={'datetime-local'}
+          required={true}
         />
         <DataInput
           title={'End time'}
@@ -131,6 +137,7 @@ export default async function CreateSessionPage() {
           name={'endAt'}
           placeholder={'YYYY-MM-DDTHH:MM'}
           type={'datetime-local'}
+          required={true}
         />
         <SessionPartParticipantsInput
           generationData={generationData}
