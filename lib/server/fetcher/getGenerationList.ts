@@ -7,6 +7,7 @@ import cacheTag from '@/lib/server/cacheTag'
 
 export default async function getGenerationList() {
   cacheTag('generations')
+
   return db
     .select({ id: generations.id, name: generations.name })
     .from(generations)
