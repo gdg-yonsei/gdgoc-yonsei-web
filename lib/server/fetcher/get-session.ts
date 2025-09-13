@@ -10,6 +10,7 @@ export const preload = (sessionId: string) => {
 export async function getSession(sessionId: string) {
   'use cache'
   cacheTag('sessions')
+
   return db.query.sessions.findFirst({
     where: and(eq(sessions.id, sessionId), lte(sessions.endAt, new Date())),
   })

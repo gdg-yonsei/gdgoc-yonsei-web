@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
-    "@aws-sdk/client-s3": "^3.887.0",
-    "@aws-sdk/s3-request-presigner": "^3.887.0",
+    "@aws-sdk/client-s3": "^3.888.0",
+    "@aws-sdk/s3-request-presigner": "^3.888.0",
     "@formatjs/intl-localematcher": "^0.6.1",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^15.5.3",
@@ -42,8 +42,8 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
     "@types/negotiator": "^0.6.4",
-    "@types/node": "^22.18.1",
-    "@types/react": "^19.1.12",
+    "@types/node": "^22.18.3",
+    "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
