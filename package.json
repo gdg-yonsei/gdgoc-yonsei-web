@@ -11,7 +11,8 @@
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "email:dev": "email dev"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
@@ -20,6 +21,7 @@
     "@formatjs/intl-localematcher": "^0.6.1",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^15.5.3",
+    "@react-email/components": "0.5.3",
     "@simplewebauthn/browser": "9.0.1",
     "@simplewebauthn/server": "9.0.3",
     "@tailwindcss/postcss": "^4.1.13",
@@ -36,10 +38,12 @@
     "react-markdown": "^10.1.0",
     "react-qr-code": "^2.0.18",
     "rehype-sanitize": "^5.0.1",
+    "resend": "^6.1.0",
     "server-only": "^0.0.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@react-email/preview-server": "4.2.11",
     "@tailwindcss/typography": "^0.5.16",
     "@types/negotiator": "^0.6.4",
     "@types/node": "^22.18.3",
@@ -52,11 +56,12 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "react-email": "4.2.11",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">=20.0.0 <=22"
   },
-  "packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67"
+  "packageManager": "pnpm@10.16.1+sha512.0e155aa2629db8672b49e8475da6226aa4bdea85fdcdfdc15350874946d4f3c91faaf64cbdc4a5d1ab8002f473d5c3fcedcd197989cf0390f9badd3c04678706"
 }
