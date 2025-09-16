@@ -10,6 +10,12 @@ import { sessionValidation } from '@/lib/validations/session'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { revalidateCache } from '@/lib/server/cache'
+import { CreateEmailResponse, Resend } from 'resend'
+import NewSession from '@/emails/new-session'
+import { eq } from 'drizzle-orm'
+import { parts } from '@/db/schema/parts'
+import { generations } from '@/db/schema/generations'
+
 /**
  * Create Session Action
  * @param prev - previous state for form error
@@ -79,6 +85,7 @@ export async function createSessionAction(
     }
   }
 
+  let sessionId = ''
   try {
     if (!name || !description) {
       return { error: 'Name and Description are required' }
@@ -117,12 +124,80 @@ export async function createSessionAction(
       }))
     )
 
+    sessionId = createSession[0].id
+
     // 캐시 업데이트
     revalidateCache('sessions')
   } catch (e) {
     // DB 에러 처리
     console.error(e)
     return { error: 'DB Update Error' }
+  }
+
+  if (internalOpen) {
+    const partGeneration = await db.query.parts.findFirst({
+      where: eq(parts.id, Number(partId)),
+      with: {
+        generation: true,
+      },
+    })
+
+    if (!partGeneration?.generationsId) {
+      return { error: 'Email Error: Cannot found Part' }
+    }
+
+    const generationUsers = await db.query.generations.findFirst({
+      where: eq(generations.id, Number(partGeneration.generationsId)),
+      with: {
+        parts: {
+          with: {
+            usersToParts: {
+              with: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
+    const userEmailList: string[] = []
+    generationUsers?.parts.forEach((part) => {
+      part.usersToParts.forEach((userToPart) => {
+        if (
+          !participantId.includes(userToPart.userId) &&
+          userToPart.user.email
+        ) {
+          userEmailList.push(userToPart.user.email)
+        }
+      })
+    })
+
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    const SendEmailPromise: Promise<CreateEmailResponse>[] = []
+    userEmailList.forEach((email) => {
+      SendEmailPromise.push(
+        resend.emails.send({
+          from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
+          to: email,
+          subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
+          react: NewSession({
+            session: {
+              name: name,
+              location: location!,
+              startAt: startAt ? startAt?.toISOString() : 'TBD',
+              endAt: endAt ? endAt?.toISOString() : 'TBD',
+              leftCapacity: maxCapacity - participantId.length,
+            },
+            part: partGeneration.name,
+            generation: generationUsers?.name || '',
+            registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
+          }),
+        })
+      )
+    })
+
+    await Promise.all(SendEmailPromise)
   }
 
   redirect(`/admin/sessions`)
