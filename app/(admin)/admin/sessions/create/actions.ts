@@ -166,7 +166,8 @@ export async function createSessionAction(
       part.usersToParts.forEach((userToPart) => {
         if (
           !participantId.includes(userToPart.userId) &&
-          userToPart.user.email
+          userToPart.user.email &&
+          userToPart.user.sessionNotiEmail
         ) {
           userEmailList.push(userToPart.user.email)
         }

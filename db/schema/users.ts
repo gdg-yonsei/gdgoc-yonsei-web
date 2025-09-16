@@ -50,6 +50,7 @@ export const users = pgTable('user', {
   major: text('major'),
   studentId: integer('studentId'),
   telephone: text('telephone'),
+  sessionNotiEmail: boolean('sessionNotiEmail').default(true).notNull(),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
