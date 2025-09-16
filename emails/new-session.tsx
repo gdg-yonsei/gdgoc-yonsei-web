@@ -55,7 +55,10 @@ const NewSession = ({
           <Preview>[GDGoC Yonsei] 새로운 세션이 생성되었습니다.</Preview>
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
-              <Img src={'https://gdgoc.yonsei.ac.kr/gdgoc-logo.png'}></Img>
+              <Img
+                src={'https://gdgoc.yonsei.ac.kr/gdgoc-logo.png'}
+                className={'mx-auto size-24'}
+              ></Img>
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
               GDGoC Yonsei
