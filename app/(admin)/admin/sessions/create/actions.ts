@@ -146,6 +146,8 @@ export async function createSessionAction(
       return { error: 'Email Error: Cannot found Part' }
     }
 
+    console.log(partGeneration)
+
     const generationUsers = await db.query.generations.findFirst({
       where: eq(generations.id, Number(partGeneration.generationsId)),
       with: {
@@ -161,6 +163,8 @@ export async function createSessionAction(
       },
     })
 
+    console.log(generationUsers)
+
     const userEmailList: string[] = []
     generationUsers?.parts.forEach((part) => {
       part.usersToParts.forEach((userToPart) => {
@@ -173,6 +177,8 @@ export async function createSessionAction(
         }
       })
     })
+
+    console.log(userEmailList)
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     const SendEmailPromise: Promise<CreateEmailResponse>[] = []
@@ -198,7 +204,8 @@ export async function createSessionAction(
       )
     })
 
-    await Promise.all(SendEmailPromise)
+    const result = await Promise.all(SendEmailPromise)
+    console.log('Email Send Result: ', result)
   }
 
   redirect(`/admin/sessions`)
