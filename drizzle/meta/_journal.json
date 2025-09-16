@@ -134,6 +134,13 @@
       "when": 1757564295860,
       "tag": "0018_spotty_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1757998974792,
+      "tag": "0019_long_living_mummy",
+      "breakpoints": true
     }
   ]
 }

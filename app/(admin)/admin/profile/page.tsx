@@ -5,6 +5,7 @@ import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button
 import Link from 'next/link'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
+import UnsubscribeSessionNotiEmailPage from '@/app/(admin)/admin/profile/unsubscribe-session-noti-email'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -47,6 +48,7 @@ export default function ProfilePage() {
         <UserProfile />
       </Suspense>
       <RegisterPasskeyButton />
+      <UnsubscribeSessionNotiEmailPage />
     </AdminDefaultLayout>
   )
 }

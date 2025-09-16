@@ -37,6 +37,7 @@ export async function getMember(userId: string) {
       major: users.major,
       studentId: users.studentId,
       telephone: users.telephone,
+      sessionNotiEmail: users.sessionNotiEmail,
     })
     .from(users)
     .where(eq(users.id, userId))
