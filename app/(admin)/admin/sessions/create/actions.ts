@@ -13,6 +13,8 @@ import { revalidateCache } from '@/lib/server/cache'
 import { eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
+import { Resend } from 'resend'
+import NewSession from '@/emails/new-session'
 
 /**
  * Create Session Action
@@ -144,8 +146,6 @@ export async function createSessionAction(
       return { error: 'Email Error: Cannot found Part' }
     }
 
-    console.log(partGeneration)
-
     const generationUsers = await db.query.generations.findFirst({
       where: eq(generations.id, Number(partGeneration.generationsId)),
       with: {
@@ -160,8 +160,6 @@ export async function createSessionAction(
         },
       },
     })
-
-    console.log(generationUsers)
 
     const userEmailList: string[] = []
     generationUsers?.parts.forEach((part) => {
@@ -178,31 +176,28 @@ export async function createSessionAction(
 
     console.log(userEmailList)
 
-    // const resend = new Resend(process.env.RESEND_API_KEY)
-    // const SendEmailPromise: Promise<CreateEmailResponse>[] = []
-    // userEmailList.forEach((email) => {
-    //   SendEmailPromise.push(
-    //     resend.emails.send({
-    //       from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-    //       to: email,
-    //       subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
-    //       react: NewSession({
-    //         session: {
-    //           name: name,
-    //           location: location!,
-    //           startAt: startAt ? startAt?.toISOString() : 'TBD',
-    //           endAt: endAt ? endAt?.toISOString() : 'TBD',
-    //           leftCapacity: maxCapacity - participantId.length,
-    //         },
-    //         part: partGeneration.name,
-    //         generation: generationUsers?.name || '',
-    //         registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
-    //       }),
-    //     })
-    //   )
-    // })
-    //
-    // const result = await Promise.all(SendEmailPromise)
+    const resend = new Resend(process.env.RESEND_API_KEY)
+
+    for (let i = 0; i < userEmailList.length; i++) {
+      await resend.emails.send({
+        from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
+        to: userEmailList[i],
+        subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
+        react: NewSession({
+          session: {
+            name: name,
+            location: location!,
+            startAt: startAt ? startAt?.toISOString() : 'TBD',
+            endAt: endAt ? endAt?.toISOString() : 'TBD',
+            leftCapacity: maxCapacity - participantId.length,
+          },
+          part: partGeneration.name,
+          generation: generationUsers?.name || '',
+          registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
+        }),
+      })
+    }
+
     console.log('Email Send Result: ')
   }
 
