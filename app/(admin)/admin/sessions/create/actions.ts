@@ -134,7 +134,7 @@ export async function createSessionAction(
     return { error: 'DB Update Error' }
   }
 
-  if (internalOpen) {
+  if (internalOpen && endAt && endAt > new Date()) {
     const partGeneration = await db.query.parts.findFirst({
       where: eq(parts.id, Number(partId)),
       with: {
