@@ -10,8 +10,6 @@ import { sessionValidation } from '@/lib/validations/session'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { revalidateCache } from '@/lib/server/cache'
-import { CreateEmailResponse, Resend } from 'resend'
-import NewSession from '@/emails/new-session'
 import { eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
@@ -180,32 +178,32 @@ export async function createSessionAction(
 
     console.log(userEmailList)
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const SendEmailPromise: Promise<CreateEmailResponse>[] = []
-    userEmailList.forEach((email) => {
-      SendEmailPromise.push(
-        resend.emails.send({
-          from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-          to: email,
-          subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
-          react: NewSession({
-            session: {
-              name: name,
-              location: location!,
-              startAt: startAt ? startAt?.toISOString() : 'TBD',
-              endAt: endAt ? endAt?.toISOString() : 'TBD',
-              leftCapacity: maxCapacity - participantId.length,
-            },
-            part: partGeneration.name,
-            generation: generationUsers?.name || '',
-            registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
-          }),
-        })
-      )
-    })
-
-    const result = await Promise.all(SendEmailPromise)
-    console.log('Email Send Result: ', result)
+    // const resend = new Resend(process.env.RESEND_API_KEY)
+    // const SendEmailPromise: Promise<CreateEmailResponse>[] = []
+    // userEmailList.forEach((email) => {
+    //   SendEmailPromise.push(
+    //     resend.emails.send({
+    //       from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
+    //       to: email,
+    //       subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
+    //       react: NewSession({
+    //         session: {
+    //           name: name,
+    //           location: location!,
+    //           startAt: startAt ? startAt?.toISOString() : 'TBD',
+    //           endAt: endAt ? endAt?.toISOString() : 'TBD',
+    //           leftCapacity: maxCapacity - participantId.length,
+    //         },
+    //         part: partGeneration.name,
+    //         generation: generationUsers?.name || '',
+    //         registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
+    //       }),
+    //     })
+    //   )
+    // })
+    //
+    // const result = await Promise.all(SendEmailPromise)
+    console.log('Email Send Result: ')
   }
 
   redirect(`/admin/sessions`)
