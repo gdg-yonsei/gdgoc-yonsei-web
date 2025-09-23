@@ -38,6 +38,23 @@ export default async function RegisterSessionPage({
     sessionId
   )
 
+  if (
+    !sessionData.internalOpen ||
+    (sessionData.endAt && sessionData?.endAt < new Date())
+  ) {
+    return (
+      <AdminDefaultLayout>
+        <AdminNavigationButton href={'/admin/sessions'}>
+          <ChevronLeftIcon className={'size-8'} />
+          <p className={'text-lg'}>Sessions</p>
+        </AdminNavigationButton>
+        <div className={'flex items-center gap-2'}>
+          <div className={'admin-title'}>Session Registration is end</div>
+        </div>
+      </AdminDefaultLayout>
+    )
+  }
+
   return (
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/sessions'}>
