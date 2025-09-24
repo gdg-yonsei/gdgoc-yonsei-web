@@ -186,7 +186,7 @@ export async function createSessionAction(
         react: NewSession({
           session: {
             name: name,
-            location: location!,
+            location: locationKo!,
             startAt: startAt ? startAt?.toISOString() : 'TBD',
             endAt: endAt ? endAt?.toISOString() : 'TBD',
             leftCapacity: maxCapacity - participantId.length,
