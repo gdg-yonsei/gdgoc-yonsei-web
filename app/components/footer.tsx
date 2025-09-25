@@ -3,8 +3,9 @@ import LinkedIn from '@/app/components/svg/linked-in'
 import Instagram from '@/app/components/svg/instagram'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Mail from '@/app/components/svg/mail'
+import { Locale } from '@/i18n-config'
 
-export default function Footer({ lang }: { lang: string }) {
+export default function Footer({ lang }: { lang: Locale }) {
   return (
     <div className={'flex w-full bg-neutral-300 p-4'}>
       <div className={'mx-auto w-full max-w-4xl md:flex'}>

@@ -28,6 +28,7 @@ interface NewSessionProps {
   registerUrl: string
 }
 
+// 세션 날짜 포맷을 위한 options
 const formatOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -37,6 +38,15 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   minute: '2-digit',
 }
 
+/**
+ * 새로운 세션이 생성될 때 참여 등록 되지 않은 같은 기수 멤버에게 보내는 메일
+ *
+ * @param session - 세션 이름
+ * @param part - 세션 개최하는 파트
+ * @param generation - 세션 개최하는 기수
+ * @param registerUrl - 세션 등록 url
+ * @constructor
+ */
 const NewSession = ({
   session,
   part,
@@ -115,6 +125,7 @@ const NewSession = ({
   )
 }
 
+// 테스트 데이터
 NewSession.PreviewProps = {
   session: {
     name: 'Front-End 세션',
@@ -127,4 +138,5 @@ NewSession.PreviewProps = {
   generation: '25-26',
   registerUrl: 'https://gdgoc.yonsei.ac.kr/admin/sessions/ddd/register',
 } as NewSessionProps
+
 export default NewSession

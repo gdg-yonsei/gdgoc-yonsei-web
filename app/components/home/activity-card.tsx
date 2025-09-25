@@ -2,40 +2,22 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { motion } from 'motion/react'
+import { ModalType } from '@/app/components/home/activities-list'
 
 export default function ActivityCard({
   title,
   content,
   className,
-  modalOpen,
-  setModalOpen,
+  modal,
+  setModal,
 }: {
   title: string
   content: { en: string; ko: string }
   className?: string
-  modalOpen:
-    | false
-    | {
-        title: string
-        content: {
-          en: string
-          ko: string
-        }
-      }
-  setModalOpen: Dispatch<
-    SetStateAction<
-      | false
-      | {
-          title: string
-          content: {
-            en: string
-            ko: string
-          }
-        }
-    >
-  >
+  modal: ModalType
+  setModal: Dispatch<SetStateAction<ModalType>>
 }) {
-  const isThisCardOpen = modalOpen && modalOpen.title === title
+  const isThisCardOpen = modal && modal.title === title
 
   return (
     <motion.div
@@ -47,7 +29,7 @@ export default function ActivityCard({
       <motion.div
         layoutId={`activity-card-${title}`}
         className={`flex aspect-4/5 h-full w-64 cursor-pointer items-center justify-center rounded-xl p-4 transition-opacity ${className}`}
-        onClick={() => setModalOpen({ title, content })}
+        onClick={() => setModal({ title, content })}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         animate={{

@@ -2,11 +2,12 @@ import Link from 'next/link'
 import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
 import GYMSNavigation from '@/app/components/header/gyms-navigation'
 import { Suspense } from 'react'
+import { Locale } from '@/i18n-config'
 
 export default async function DesktopNavigationList({
   lang,
 }: {
-  lang: string
+  lang: Locale
 }) {
   const lastGeneration = await getLastGeneration()
   return (
