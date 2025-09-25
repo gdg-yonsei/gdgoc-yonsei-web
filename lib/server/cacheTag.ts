@@ -1,4 +1,4 @@
-import { CacheTag } from '@/lib/types/cacheTag'
+import { CacheTag } from '@/types/cacheTag'
 import { unstable_cacheTag } from 'next/cache'
 
 export default function cacheTag(...args: CacheTag[]) {

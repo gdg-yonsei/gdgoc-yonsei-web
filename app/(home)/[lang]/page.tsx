@@ -1,7 +1,7 @@
 import WelcomePage from '@/app/(home)/[lang]/welcome-page'
-import AboutPage from '@/app/components/home/about-page'
-import ActivitiesPage from '@/app/components/home/activities-page'
-import PartsPage from '@/app/components/home/parts-page'
+import AboutPage from '@/app/(home)/[lang]/about-page'
+import ActivitiesPage from '@/app/(home)/[lang]/activities-page'
+import PartsPage from '@/app/(home)/[lang]/parts-page'
 import languageParamChecker from '@/lib/language-param-checker'
 
 export default async function HomePage({

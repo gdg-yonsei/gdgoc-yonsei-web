@@ -1,5 +1,5 @@
 import { revalidateTag } from 'next/cache'
-import { CacheTag } from '@/lib/types/cacheTag'
+import { CacheTag } from '@/types/cacheTag'
 
 export function revalidateCache(tagList: CacheTag[] | CacheTag) {
   if (typeof tagList === 'string') {
