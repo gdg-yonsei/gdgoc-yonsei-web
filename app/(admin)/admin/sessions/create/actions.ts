@@ -174,8 +174,6 @@ export async function createSessionAction(
       })
     })
 
-    console.log(userEmailList)
-
     const resend = new Resend(process.env.RESEND_API_KEY)
 
     for (let i = 0; i < userEmailList.length; i++) {
@@ -197,8 +195,6 @@ export async function createSessionAction(
         }),
       })
     }
-
-    console.log('Email Send Result: ')
   }
 
   redirect(`/admin/sessions`)
