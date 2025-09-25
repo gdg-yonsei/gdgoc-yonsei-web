@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { useAtom } from 'jotai'
 import { homeMenuBarState } from '@/lib/atoms'
 import { ReactNode } from 'react'
+import { Locale } from '@/i18n-config'
 
 /**
  * Link 컴포넌트에 애니메이션을 주기 위한 컴포넌트
@@ -35,7 +36,7 @@ export default function NavigationList({
   lastGeneration,
   isMember,
 }: {
-  lang: string
+  lang: Locale
   lastGeneration: string | undefined
   isMember: boolean
 }) {

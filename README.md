@@ -1,91 +1,79 @@
-# Google Developer Group on Campus Yonsei University Website
+# GDGoC Yonsei Official Website 🌐
 
-## Description
+This is the official website of Google Developer Groups on Campus Yonsei (GDGoC Yonsei).
+It is built with Next.js 15 (App Router), powered by Drizzle ORM with PostgreSQL, and integrates modern web technologies to ensure scalability, performance, and maintainability.
 
-This project is a website created to introduce the Google Developer Group on Campus Yonsei University and manage its projects and activities.
+GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 
-## TODO List
+⸻
 
-- [x] i18n support
-- [ ] Recruit Page Refactoring
-- [x] Home Page Refactoring
-- [x] Project Page Refactoring
-- [x] Session Page Refactoring
+🚀 Tech Stack
+- Framework: Next.js 15 (App Router)
+- Language: TypeScript, React 19
+- Styling: Tailwind CSS 4, Typography Plugin
+- Database: PostgreSQL + Drizzle ORM
+- Authentication: NextAuth.js v5 + Drizzle Adapter + WebAuthn
+- Email: Resend + React Email
+- Storage: AWS S3 (with presigned URLs for uploads)
+- Markdown & MDX: next-mdx-remote, react-markdown, rehype-sanitize
+- Animation: Motion
+- Utilities: Zod (validation), Jotai (state management)
 
-## Tech Stack
+⸻
 
-### Front End
+🛠️ Setup & Development
 
-- React 19
-- Next.js 15
-- Tailwind CSS
-- Jotai
+1. Clone the Repository
 
-### Back End
+    ```bash
+    git clone https://github.com/gdgoc-yonsei/gdgoc-yonsei-web.git
+    cd gdgoc-yonsei-web
+    ```
 
-- Next.js Route Handler
-- Next.js Actions
-- Drizzle ORM
-- Auth.js
-- PostgreSQL
-- Cloudflare R2 (for image storage)
+2. Install Dependencies
 
-## Commands
+    ```bash
+    pnpm install
+    ```
 
-1. Install Packages
+3. Configure Environment Variables
+    ```bash
+    cp .env.example .env
+    ```
 
-```bash
-pnpm i
-```
+4. Run Database Migration
 
-2. Dev Mode
+    ```
+    pnpm db:push
+    ```
 
-```bash
-pnpm dev
-```
+5. Start Development Server
 
-3. Build
+    ```
+    pnpm dev
+    ```
 
-```bash
-pnpm build
-```
+Your app will be available at http://localhost:3000.
 
-4. Start Project
+⸻
 
-```bash
-pnpm start
-```
+📦 NPM Scripts
+- pnpm dev → Run development server (Next.js + Turbopack)
+- pnpm build → Run DB migration & build the project
+- pnpm start → Run production server
+- pnpm db:studio → Open Drizzle Studio
+- pnpm format → Format code with Prettier
+- pnpm lint → Run ESLint checks
 
-5. DB Push (drizzle generate & drizzle migrate)
+⸻
 
-```bash
-pnpm db:push
-```
+🤝 Contributing
 
-6. DB Studio
+We welcome contributions via issues and pull requests.
+For external contributors, please open an issue before submitting a PR.
 
-```bash
-pnpm db:studio
-```
+⸻
 
-# How to Deploy
+📜 License
 
-1. Copy .env.example to .env and fill in the required environment variables.
-2. Create a PostgreSQL database and set the connection string in the .env file.
-3. Run the following command to push the database schema:
-
-```bash
-pnpm db:push
-```
-
-4. Build the project:
-
-```bash
-pnpm build
-```
-
-5. Start the project:
-
-```bash
-pnpm start
-```
+This project is licensed under the MIT License.

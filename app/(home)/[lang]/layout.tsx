@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import '../../globals.css'
-import type LayoutProps from 'next' // 👈 추가
+import type LayoutProps from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
+import languageParamChecker from '@/lib/language-param-checker'
 
 export const metadata: Metadata = {
   title: {
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   description: 'Google Developer Group on Campus Yonsei University',
 }
 
+// Google Product Sans 폰트
 const googleSans = localFont({
   src: '../../fonts/google-sans.woff2',
   display: 'swap',
@@ -21,6 +23,7 @@ const googleSans = localFont({
   weight: '100 900',
 })
 
+// SSG를 위해 params 값 지정
 export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
 }
@@ -29,15 +32,18 @@ export default async function RootLayout({
   children,
   params,
 }: LayoutProps<'/[lang]'>) {
+  // 언어 설정
+  const lang = languageParamChecker((await params).lang)
+
   return (
     <html
-      lang={(await params).lang}
+      lang={lang}
       className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
     >
       <body>
-        <Header lang={(await params).lang} />
+        <Header lang={lang} />
         {children}
-        <Footer lang={(await params).lang} />
+        <Footer lang={lang} />
       </body>
       <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>

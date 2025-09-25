@@ -1,6 +1,7 @@
 import ActivitiesList from '@/app/components/home/activities-list'
+import { Locale } from '@/i18n-config'
 
-export default function ActivitiesPage({ lang }: { lang: string }) {
+export default function ActivitiesPage({ lang }: { lang: Locale }) {
   return (
     <section
       className={

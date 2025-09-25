@@ -1,4 +1,5 @@
 import { PartCard } from '@/app/components/home/part-card'
+import { Locale } from '@/i18n-config'
 
 const partsData = [
   {
@@ -45,7 +46,7 @@ const partsData = [
   },
 ]
 
-export default function PartsPage({ lang }: { lang: string }) {
+export default function PartsPage({ lang }: { lang: Locale }) {
   return (
     <section
       className={
