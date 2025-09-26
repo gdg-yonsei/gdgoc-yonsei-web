@@ -1,15 +1,22 @@
 'use client'
 
-import ActivityCard from '@/app/components/home/activity-card'
+import ActivityCard from '@/app/(home)/[lang]/activity-card'
 import { AnimatePresence, motion } from 'motion/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, MouseEvent } from 'react'
 import { Locale } from '@/i18n-config'
 import activitySectionContents from '@/lib/contents/activity-section'
+import { ModalType } from '@/types/modal'
+import ActivityCardRightSvg from '@/app/components/svg/activity-card-right-svg'
+import ActivityCardLeftSvg from '@/app/components/svg/activity-card-left-svg'
+import ActivityCardCloseSvg from '@/app/components/svg/activity-card-close-svg'
 
-export type ModalType =
-  | false
-  | { title: string; content: { en: string; ko: string } }
-
+/**
+ * 주요 활동을 가로 스크롤로 보여주는 컴포넌트
+ *
+ * 클릭 하면 화면 전체가 Modal을 통해 자세한 내용을 보여줌
+ * @param lang
+ * @constructor
+ */
 export default function ActivitiesList({ lang }: { lang: Locale }) {
   const [modal, setModal] = useState<ModalType>(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -36,6 +43,23 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
     })
   }
 
+  /**
+   * Modal을 닫는 함수
+   */
+  function closeModal() {
+    setModal(false)
+  }
+
+  /**
+   * Modal의 배경을 클릭했을 때 모달을 닫는 함수
+   * @param e
+   */
+  function modalBackgroundClickHandler(e: MouseEvent<HTMLDivElement>) {
+    if (e.target === e.currentTarget) {
+      closeModal()
+    }
+  }
+
   return (
     <div className="flex flex-col items-center gap-6">
       <div
@@ -58,11 +82,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className={`fixed top-0 left-0 z-50 flex h-screen w-screen items-center justify-center bg-black/60 p-4 backdrop-blur-sm`}
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                    setModal(false)
-                  }
-                }}
+                onClick={modalBackgroundClickHandler}
               >
                 <motion.div
                   layoutId={`activity-card-${modal.title}`}
@@ -85,21 +105,11 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ delay: 0.1 }}
-                    onClick={() => setModal(false)}
+                    onClick={closeModal}
                     className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
                     aria-label="Close modal"
                   >
-                    <svg
-                      className="h-6 w-6 text-gray-600"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+                    <ActivityCardCloseSvg />
                   </motion.button>
 
                   <motion.h3
@@ -121,8 +131,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
                       'overflow-y-auto text-lg leading-relaxed text-gray-700 md:text-xl'
                     }
                   >
-                    {modal.content[lang as keyof typeof modal.content] ??
-                      modal.content.en}
+                    {modal.content[lang]}
                   </motion.p>
                 </motion.div>
               </motion.div>
@@ -156,17 +165,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
           whileTap={{ scale: 0.95 }}
           aria-label="Previous card"
         >
-          <svg
-            className="h-6 w-6 text-gray-700 transition-colors group-hover:text-gray-900"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M15 18l-6-6 6-6"></path>
-          </svg>
+          <ActivityCardLeftSvg />
         </motion.button>
 
         <motion.button
@@ -176,17 +175,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
           whileTap={{ scale: 0.95 }}
           aria-label="Next card"
         >
-          <svg
-            className="h-6 w-6 text-gray-700 transition-colors group-hover:text-gray-900"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M9 18l6-6-6-6"></path>
-          </svg>
+          <ActivityCardRightSvg />
         </motion.button>
       </motion.div>
     </div>

@@ -1,10 +1,11 @@
+import languageParamChecker from '@/lib/language-param-checker'
+
 export default async function PrivacyPolicyPage({
   params,
 }: {
   params: Promise<{ lang: string }>
 }) {
-  const { lang } = await params
-
+  const lang = languageParamChecker((await params).lang)
   const isKorean = lang === 'ko'
 
   return (

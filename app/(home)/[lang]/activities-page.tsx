@@ -1,4 +1,4 @@
-import ActivitiesList from '@/app/components/home/activities-list'
+import ActivitiesList from '@/app/(home)/[lang]/activities-list'
 import { Locale } from '@/i18n-config'
 
 export default function ActivitiesPage({ lang }: { lang: Locale }) {

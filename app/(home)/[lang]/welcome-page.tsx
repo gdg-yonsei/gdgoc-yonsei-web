@@ -1,4 +1,4 @@
-import HomePageBackground from '@/app/components/home/home-page-background'
+import HomePageBackground from '@/app/(home)/[lang]/home-page-background'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 
 export default function WelcomePage() {
@@ -13,7 +13,6 @@ export default function WelcomePage() {
         <GDGLogo svgKey={'main'} className={'w-40 md:w-64'} />
         <h1 className={'flex flex-col gap-4'}>
           <span className={'text-2xl md:text-4xl'}>Welcome to</span>
-
           <span
             className={
               'flex flex-col gap-3 text-4xl font-semibold md:text-6xl lg:flex-row'
