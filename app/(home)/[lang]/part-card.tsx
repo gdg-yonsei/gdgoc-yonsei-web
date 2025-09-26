@@ -3,6 +3,14 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 
+/**
+ * 파트 설명을 담는 카드 컴포넌트
+ *
+ * 버튼을 누르면 파트 소개를 표시함
+ * @param title
+ * @param content
+ * @constructor
+ */
 export function PartCard({
   title,
   content,
@@ -10,6 +18,7 @@ export function PartCard({
   title: string
   content: string
 }) {
+  // 파트 소개를 열고 닫는 state
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -23,18 +32,8 @@ export function PartCard({
       }}
     >
       <AnimatePresence mode="wait">
-        {!isOpen ? (
-          <motion.div
-            key="title"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col items-center justify-center text-center"
-          >
-            <h3 className={'text-3xl font-semibold md:text-4xl'}>{title}</h3>
-          </motion.div>
-        ) : (
+        {/*열리면 파트 소개를 보여줌*/}
+        {isOpen ? (
           <motion.div
             key="content"
             initial={{ opacity: 0 }}
@@ -47,6 +46,17 @@ export function PartCard({
             <p className="text-sm leading-relaxed text-gray-700 md:text-base">
               {content}
             </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="title"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="flex flex-col items-center justify-center text-center"
+          >
+            <h3 className={'text-3xl font-semibold md:text-4xl'}>{title}</h3>
           </motion.div>
         )}
       </AnimatePresence>

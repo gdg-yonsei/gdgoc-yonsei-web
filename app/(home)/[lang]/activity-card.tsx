@@ -1,8 +1,6 @@
-'use client'
-
 import { Dispatch, SetStateAction } from 'react'
 import { motion } from 'motion/react'
-import { ModalType } from '@/app/components/home/activities-list'
+import { ModalType } from '@/types/modal'
 
 export default function ActivityCard({
   title,

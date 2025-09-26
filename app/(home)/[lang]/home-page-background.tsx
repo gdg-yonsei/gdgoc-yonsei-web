@@ -1,6 +1,15 @@
 import { TargetAndTransition, VariantLabels } from 'motion'
 import * as motion from 'motion/react-client'
 
+/**
+ * 여러 색상의 별동별을 생성하는 컴포넌트
+ * @param className
+ * @param repeatDelay
+ * @param animate
+ * @param initial
+ * @param duration
+ * @constructor
+ */
 function ShootingStar({
   className,
   repeatDelay = 0,
@@ -35,6 +44,10 @@ function ShootingStar({
   )
 }
 
+/**
+ * 첫 화면 배경을 만드는 컴포넌트
+ * @constructor
+ */
 export default function HomePageBackground() {
   return (
     <>
