@@ -7,6 +7,9 @@ import { and, eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { revalidateTag } from 'next/cache'
+import { Resend } from 'resend'
+import { users } from '@/db/schema/users'
+import NewParticipant from '@/emails/new-participant'
 
 export async function registerSessionAction(
   sessionId: string,
@@ -42,6 +45,7 @@ export async function registerSessionAction(
         where: eq(sessions.id, sessionId),
         with: {
           userToSession: true,
+          author: true,
         },
       })
       if (
@@ -54,6 +58,33 @@ export async function registerSessionAction(
         userId: session.user?.id as string,
         sessionId: sessionId,
       })
+      if (sessionData?.author.email && session?.user?.id) {
+        const userData = await db.query.users.findFirst({
+          where: eq(users.id, session.user?.id),
+        })
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        await resend.emails.send({
+          from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
+          to: sessionData?.author.email,
+          subject: `[GDGoC Yonsei] 새로운 참가자가 등록했습니다.`,
+          react: NewParticipant({
+            session: {
+              name: sessionData.nameKo,
+              location: sessionData.locationKo!,
+              startAt: sessionData.startAt
+                ? sessionData.startAt?.toISOString()
+                : 'TBD',
+              endAt: sessionData.endAt
+                ? sessionData.endAt?.toISOString()
+                : 'TBD',
+              leftCapacity: sessionData.maxCapacity
+                ? sessionData.maxCapacity - sessionData.userToSession.length - 1
+                : 0,
+            },
+            participantName: userData?.name ? userData?.name : '',
+          }),
+        })
+      }
     })
   } catch (e) {
     console.error(e)
