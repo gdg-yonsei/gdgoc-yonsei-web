@@ -49,4 +49,8 @@ export const sessionRelations = relations(sessions, ({ one, many }) => ({
   }),
   externalParticipants: many(externalParticipants),
   userToSession: many(userToSession),
+  author: one(users, {
+    fields: [sessions.authorId],
+    references: [users.id],
+  }),
 }))
