@@ -7,6 +7,21 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
 import { uploadMultipleImagesState } from '@/lib/atoms'
 
+function readFilesAsDataURLs(files: FileList): Promise<string[]> {
+  const arr = Array.from(files)
+  return Promise.all(
+    arr.map(
+      (file) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = () => reject(reader.error)
+          reader.readAsDataURL(file)
+        })
+    )
+  )
+}
+
 export default function DataMultipleImageInput({
   children,
   name,
@@ -30,46 +45,56 @@ export default function DataMultipleImageInput({
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
    */
   const saveImgFile = async () => {
-    const fileData = inputRef?.current?.files
-    if (fileData) {
-      setIsLoading(true)
-      for (let i = 0; i < fileData.length; i++) {
-        const reader = new FileReader()
-        reader.readAsDataURL(fileData[i])
-        reader.onloadend = () => {
-          setPrevImageUrls((prev) => [...prev, reader.result as string])
-        }
-      }
-      const requestUploadUrl = await fetch(baseUrl, {
+    const files = inputRef.current?.files
+    if (!files || files.length === 0) return
+
+    setIsLoading(true)
+    try {
+      // 1) 프리뷰용 dataURL을 "파일 순서대로" 모두 읽어서 한 번에 set
+      const previews = await readFilesAsDataURLs(files)
+      setPrevImageUrls((prev) => [...prev, ...previews])
+
+      // 2) 업로드 URL 발급
+      const res = await fetch(baseUrl, {
         method: 'POST',
         body: JSON.stringify({
-          images: Array.from(fileData).map((file) => ({
+          images: Array.from(files).map((file) => ({
             fileName: file.name,
             type: file.type,
           })),
         } as ProjectContentImagePostRequest),
       })
-      const uploadUrls = (await requestUploadUrl.json()) as {
-        uploadUrls: { fileName: string; uploadUrl: string }[]
-      }
-      const uploadPromise = []
-      for (let i = 0; i < fileData.length; i++) {
-        uploadPromise.push(
-          fetch(uploadUrls.uploadUrls[i].uploadUrl, {
+
+      const {
+        uploadUrls,
+      }: { uploadUrls: { fileName: string; uploadUrl: string }[] } =
+        await res.json()
+
+      // 3) 업로드 (인덱스 매핑 유지)
+      const filesArr = Array.from(files)
+      await Promise.all(
+        filesArr.map((file, i) =>
+          fetch(uploadUrls[i].uploadUrl, {
             method: 'PUT',
-            body: fileData[i],
+            body: file,
           })
         )
-      }
+      )
 
-      await Promise.all(uploadPromise)
+      // 4) 최종 접근 URL도 순서대로 추가
       setImageUrls((prev) => [
         ...prev,
-        ...uploadUrls.uploadUrls.map(
-          (url) => process.env.NEXT_PUBLIC_IMAGE_URL + url.fileName
+        ...uploadUrls.map(
+          (u) => `${process.env.NEXT_PUBLIC_IMAGE_URL}${u.fileName}`
         ),
       ])
+    } catch (e) {
+      console.error(e)
+      // 필요하면 토스트/알림 처리
+    } finally {
       setIsLoading(false)
+      // 같은 파일을 다시 선택해도 onChange가 동작하도록 리셋
+      if (inputRef.current) inputRef.current.value = ''
     }
   }
 
@@ -88,7 +113,7 @@ export default function DataMultipleImageInput({
       <input
         ref={inputRef}
         type={'file'}
-        accept={'image'}
+        accept="image/*"
         multiple={true}
         hidden={true}
         onChange={saveImgFile}

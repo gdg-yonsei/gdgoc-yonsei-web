@@ -72,7 +72,7 @@ export default async function SessionPage({
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Part</div>
-          <div className={'member-data-content'}>{sessionData.part.name}</div>
+          <div className={'member-data-content'}>{sessionData?.part?.name}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Max Capacity</div>
