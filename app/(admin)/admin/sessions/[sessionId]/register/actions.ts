@@ -1,4 +1,5 @@
 'use server'
+
 import { auth } from '@/auth'
 import { forbidden, redirect } from 'next/navigation'
 import handlePermission from '@/lib/server/permission/handle-permission'
@@ -23,6 +24,15 @@ export async function registerSessionAction(
     !session?.user?.id ||
     !(await handlePermission(session.user.id, 'get', 'sessionsPage'))
   ) {
+    return forbidden()
+  }
+
+  // check internal open or public open session
+  const sessionData = await db.query.sessions.findFirst({
+    where: eq(sessions.id, sessionId),
+  })
+
+  if (!sessionData || !(sessionData.internalOpen || sessionData.publicOpen)) {
     return forbidden()
   }
 
