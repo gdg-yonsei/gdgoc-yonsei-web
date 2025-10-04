@@ -6,7 +6,7 @@
 import 'server-only'
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { desc, eq, ne } from 'drizzle-orm'
+import { and, desc, eq, ne } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
@@ -38,10 +38,16 @@ export async function getMembers() {
     })
     .from(users)
     .where(ne(users.role, 'UNVERIFIED'))
-    .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
+    .leftJoin(
+      usersToParts,
+      and(
+        eq(usersToParts.userId, users.id),
+        eq(usersToParts.partType, 'Primary')
+      )
+    )
     .leftJoin(parts, eq(parts.id, usersToParts.partId))
     .leftJoin(generations, eq(generations.id, parts.generationsId))
-    .orderBy(desc(generations.id), desc(parts.id), desc(users.updatedAt))
+    .orderBy(desc(generations.name), desc(parts.id), desc(users.updatedAt))
 
   const uniqueUsersId: string[] = []
   const uniqueUsers = []

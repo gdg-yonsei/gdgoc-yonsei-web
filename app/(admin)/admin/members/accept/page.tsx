@@ -7,6 +7,7 @@ import { users } from '@/db/schema/users'
 import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
 import Image from 'next/image'
 import { Metadata } from 'next'
+import DeleteForm from '@/app/(admin)/admin/members/accept/delete-form'
 
 export const metadata: Metadata = {
   title: 'Approve Members',
@@ -47,7 +48,10 @@ export default async function AcceptMemberPage() {
               />
               <div>{member.name}</div>
             </div>
-            <AcceptForm userId={member.id} />
+            <div className={'flex items-center gap-2'}>
+              <AcceptForm userId={member.id} />
+              <DeleteForm userId={member.id} />
+            </div>
           </div>
         ))}
       </div>

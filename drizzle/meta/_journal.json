@@ -141,6 +141,13 @@
       "when": 1757998974792,
       "tag": "0019_long_living_mummy",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1759555968350,
+      "tag": "0020_wealthy_darwin",
+      "breakpoints": true
     }
   ]
 }
