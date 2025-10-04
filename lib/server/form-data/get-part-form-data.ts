@@ -15,6 +15,7 @@ export default function getPartFormData(formData: FormData): {
   description: string | null
   generationId: number
   membersList: string[]
+  doubleBoardMembersList: string[]
 } {
   const name = formData.get('name') as string | null
   const description = formData.get('description') as string | null
@@ -22,6 +23,15 @@ export default function getPartFormData(formData: FormData): {
   const membersList = JSON.parse(
     formData.get('membersList') as string
   ) as string[]
+  const doubleBoardMembersList = JSON.parse(
+    formData.get('doubleBoardMembersList') as string
+  ) as string[]
 
-  return { name, description, generationId, membersList }
+  return {
+    name,
+    description,
+    generationId,
+    membersList,
+    doubleBoardMembersList,
+  }
 }

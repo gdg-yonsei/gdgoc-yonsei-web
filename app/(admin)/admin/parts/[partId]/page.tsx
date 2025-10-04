@@ -75,26 +75,55 @@ export default async function PartPage({
         <div className={'col-span-4'}>
           <div className={'member-data-title'}>Members</div>
           <div className={'member-data-grid gap-2'}>
-            {partData.usersToParts.map((user) => (
-              <div key={user.user.id} className={'member-data-box'}>
-                <div className={'member-data-content'}>
-                  {user.user.firstNameKo
-                    ? formatUserName(
-                        user.user.name,
-                        user.user.firstNameKo,
-                        user.user.lastNameKo,
-                        user.user.isForeigner,
-                        !user.user.isForeigner
-                      )
-                    : formatUserName(
-                        user.user.name,
-                        user.user.firstName,
-                        user.user.lastName,
-                        user.user.isForeigner
-                      )}
+            {partData.usersToParts
+              .filter((userToPart) => userToPart.partType === 'Primary')
+              .map((user) => (
+                <div key={user.user.id} className={'member-data-box'}>
+                  <div className={'member-data-content'}>
+                    {user.user.firstNameKo
+                      ? formatUserName(
+                          user.user.name,
+                          user.user.firstNameKo,
+                          user.user.lastNameKo,
+                          user.user.isForeigner,
+                          !user.user.isForeigner
+                        )
+                      : formatUserName(
+                          user.user.name,
+                          user.user.firstName,
+                          user.user.lastName,
+                          user.user.isForeigner
+                        )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
+        </div>
+        <div className={'col-span-4'}>
+          <div className={'member-data-title'}>Double Board Members</div>
+          <div className={'member-data-grid gap-2'}>
+            {partData.usersToParts
+              .filter((userToPart) => userToPart.partType === 'Secondary')
+              .map((user) => (
+                <div key={user.user.id} className={'member-data-box'}>
+                  <div className={'member-data-content'}>
+                    {user.user.firstNameKo
+                      ? formatUserName(
+                          user.user.name,
+                          user.user.firstNameKo,
+                          user.user.lastNameKo,
+                          user.user.isForeigner,
+                          !user.user.isForeigner
+                        )
+                      : formatUserName(
+                          user.user.name,
+                          user.user.firstName,
+                          user.user.lastName,
+                          user.user.isForeigner
+                        )}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>

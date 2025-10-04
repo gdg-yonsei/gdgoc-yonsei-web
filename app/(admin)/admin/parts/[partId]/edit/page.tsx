@@ -29,7 +29,15 @@ export default async function EditGenerationPage({
   const partData = await getPart(Number(partId))
   // 파트에 속한 멤버 정보 리스트
   const membersIdList = partData
-    ? partData.usersToParts.map((user) => user.user.id)
+    ? partData.usersToParts
+        .filter((userToPart) => userToPart.partType === 'Primary')
+        .map((user) => user.user.id)
+    : []
+
+  const doubleBoardMembersIdList = partData
+    ? partData.usersToParts
+        .filter((userToPart) => userToPart.partType === 'Secondary')
+        .map((user) => user.user.id)
     : []
 
   // 파트 정보가 없다면 404 페이지로 이동
@@ -90,6 +98,21 @@ export default async function EditGenerationPage({
           name={'membersList'}
           title={'Members'}
           defaultValue={membersIdList}
+        />
+        <DataSelectMultipleInput
+          data={membersData.map((member) => ({
+            name: formatUserName(
+              member.name,
+              member.firstNameKo,
+              member.lastNameKo,
+              member.isForeigner,
+              !member.isForeigner
+            ),
+            value: member.id,
+          }))}
+          name={'doubleBoardMembersList'}
+          title={'Double Board Members'}
+          defaultValue={doubleBoardMembersIdList}
         />
         <SubmitButton />
       </DataForm>

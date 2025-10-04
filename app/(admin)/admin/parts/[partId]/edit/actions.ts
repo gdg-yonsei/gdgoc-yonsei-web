@@ -30,12 +30,23 @@ export async function updatePartAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, generationId, membersList } =
-    getPartFormData(formData)
+  const {
+    name,
+    description,
+    generationId,
+    membersList,
+    doubleBoardMembersList,
+  } = getPartFormData(formData)
 
   try {
     // zod validation
-    partValidation.parse({ name, description, generationId, membersList })
+    partValidation.parse({
+      name,
+      description,
+      generationId,
+      membersList,
+      doubleBoardMembersList,
+    })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -45,6 +56,7 @@ export async function updatePartAction(
   }
 
   try {
+    const partIdNumber = Number(partId)
     // part 정보 업데이트 쿼리
     await db
       .update(parts)
@@ -54,17 +66,35 @@ export async function updatePartAction(
         generationsId: generationId,
         updatedAt: new Date(),
       })
-      .where(eq(parts.id, Number(partId)))
+      .where(eq(parts.id, partIdNumber))
     // 파트에 연결된 모든 멤버 정보 삭제
-    await db.delete(usersToParts).where(eq(usersToParts.partId, Number(partId)))
+    await db.delete(usersToParts).where(eq(usersToParts.partId, partIdNumber))
+
+    const userToPartData: {
+      userId: string
+      partId: number
+      partType: 'Primary' | 'Secondary'
+    }[] = []
+
+    for (const member of membersList) {
+      userToPartData.push({
+        userId: member,
+        partId: partIdNumber,
+        partType: 'Primary',
+      })
+    }
+
+    for (const doubleMember of doubleBoardMembersList) {
+      userToPartData.push({
+        userId: doubleMember,
+        partId: partIdNumber,
+        partType: 'Secondary',
+      })
+    }
+
     // 파트에 멤버 정보 새로 추가
     if (membersList.length > 0) {
-      await db.insert(usersToParts).values(
-        membersList.map((memberId) => ({
-          userId: memberId,
-          partId: Number(partId),
-        }))
-      )
+      await db.insert(usersToParts).values(userToPartData)
     }
 
     // 캐시 업데이트
