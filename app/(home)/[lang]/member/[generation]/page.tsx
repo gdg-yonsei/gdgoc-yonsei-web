@@ -8,10 +8,24 @@ import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
-export const metadata: Metadata = {
-  title: 'Members',
-  description:
-    'Meet the past members of GDGoC Yonsei who have contributed to our community with their skills and passion. Explore their journeys and achievements.',
+type Props = {
+  params: Promise<{ lang: string; generation: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang, generation } = await params
+
+  if (lang === 'ko') {
+    return {
+      title: `${generation} 구성원`,
+      description: `GDGoC Yonsei ${generation} 구성원`,
+    }
+  }
+
+  return {
+    title: `${generation} Members`,
+    description: `GDGoC Yonsei ${generation} Members`,
+  }
 }
 
 export async function generateStaticParams() {
@@ -19,11 +33,7 @@ export async function generateStaticParams() {
   return generationList.map((generation) => ({ generation: generation.name }))
 }
 
-export default async function MembersPage({
-  params,
-}: {
-  params: Promise<{ lang: string; generation: string }>
-}) {
+export default async function MembersPage({ params }: Props) {
   'use cache'
   cacheTag('parts', 'members')
   const paramsData = await params

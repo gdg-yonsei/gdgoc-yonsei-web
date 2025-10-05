@@ -6,17 +6,50 @@ import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import { getProjects } from '@/lib/server/fetcher/get-projects'
+import { Metadata } from 'next'
 
 export async function generateStaticParams() {
   const projectsData = await getProjects()
   return projectsData.map((project) => ({ projectId: project.id }))
 }
 
-export default async function ProjectPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang, generation, projectId } = await params
+
+  const projectData = await getProject(projectId)
+
+  if (!projectData) {
+    if (lang === 'ko') {
+      return {
+        title: `${generation} 프로젝트`,
+        description: `GDGoC Yonsei ${generation} 프로젝트`,
+      }
+    } else {
+      return {
+        title: `${generation} Projects`,
+        description: `GDGoC Yonsei ${generation} Projects`,
+      }
+    }
+  }
+
+  if (lang === 'ko') {
+    return {
+      title: `${projectData.nameKo}`,
+      description: `${projectData.descriptionKo}`,
+    }
+  }
+
+  return {
+    title: `${projectData.name}`,
+    description: `${projectData.description}`,
+  }
+}
+
+export default async function ProjectPage({ params }: Props) {
   const { projectId, lang, generation } = await params
   const projectData = await getProject(projectId)
 
