@@ -7,12 +7,28 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import languageParamChecker from '@/lib/language-param-checker'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'GDGoC Yonsei',
-    template: '%s | GDGoC Yonsei',
-  },
-  description: 'Google Developer Group on Campus Yonsei University',
+export async function generateMetadata({
+  params,
+}: LayoutProps<'/[lang]'>): Promise<Metadata> {
+  const lang = (await params).lang
+
+  if (lang === 'ko') {
+    return {
+      title: {
+        default: 'GDGoC Yonsei',
+        template: '%s | GDGoC Yonsei',
+      },
+      description: 'Google Developer Group on Campus 연세대학교',
+    }
+  }
+
+  return {
+    title: {
+      default: 'GDGoC Yonsei',
+      template: '%s | GDGoC Yonsei',
+    },
+    description: 'Google Developer Group on Campus Yonsei University',
+  }
 }
 
 // Google Product Sans 폰트

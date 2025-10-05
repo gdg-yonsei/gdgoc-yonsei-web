@@ -9,10 +9,25 @@ import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 
-export const metadata: Metadata = {
-  title: 'Projects',
-  description:
-    'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
+type Props = {
+  params: Promise<{ lang: string; generation: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang, generation } = await params
+
+  if (lang === 'ko') {
+    return {
+      title: `${generation} 프로젝트`,
+      description: `GDGoC Yonsei에서 개발자들이 최첨단 기술을 활용해 임팩트 있는 솔루션을 만드는 혁신적인 프로젝트들을 만나보세요.`,
+    }
+  }
+
+  return {
+    title: `${generation} Projects`,
+    description:
+      'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
+  }
 }
 
 export async function generateStaticParams() {
@@ -20,11 +35,7 @@ export async function generateStaticParams() {
   return generationList.map((generation) => ({ generation: generation.name }))
 }
 
-export default async function ProjectsPage({
-  params,
-}: {
-  params: Promise<{ lang: string; generation: string }>
-}) {
+export default async function ProjectsPage({ params }: Props) {
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({

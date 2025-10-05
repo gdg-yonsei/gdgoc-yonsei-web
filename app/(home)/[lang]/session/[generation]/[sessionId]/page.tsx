@@ -4,36 +4,68 @@ import PageTitle from '@/app/components/page-title'
 import ImagesSliders from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
+import { Metadata } from 'next'
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
-// import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
-// import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+export async function generateStaticParams(): Promise<{ sessionId: string }[]> {
+  const generationList = await getGenerationList()
+  const sessionsData: Awaited<ReturnType<typeof getSessionList>>[] = []
 
-// export async function generateStaticParams(): Promise<{ sessionId: string }[]> {
-//   const generationList = await getGenerationList()
-//   const sessionsData: Awaited<ReturnType<typeof getSessionList>>[] = []
-//
-//   for (const generation of generationList) {
-//     sessionsData.push(await getSessionList(generation.name))
-//   }
-//
-//   const sessionIdList: { sessionId: string }[] = []
-//
-//   for (const sessions of sessionsData) {
-//     if (sessions) {
-//       for (const session of sessions) {
-//         sessionIdList.push({ sessionId: session.id })
-//       }
-//     }
-//   }
-//
-//   return sessionIdList
-// }
+  for (const generation of generationList) {
+    sessionsData.push(await getSessionList(generation.name))
+  }
 
-export default async function SessionPage({
-  params,
-}: {
-  params: Promise<{ sessionId: string; lang: string; generation: string }>
-}) {
+  const sessionIdList: { sessionId: string }[] = []
+
+  for (const sessions of sessionsData) {
+    if (sessions) {
+      for (const session of sessions) {
+        sessionIdList.push({ sessionId: session.id })
+      }
+    }
+  }
+
+  return sessionIdList
+}
+
+type Props = {
+  params: Promise<{ lang: string; generation: string; sessionId: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang, generation, sessionId } = await params
+  const sessionData = await getSession(sessionId)
+
+  if (!sessionData) {
+    if (lang === 'ko') {
+      return {
+        title: `${generation} 세션`,
+        description: `GDGoC Yonsei에서 최첨단 기술을 소개하고 자신의 경험을 나누는 세션을 만나보세요.`,
+      }
+    }
+
+    return {
+      title: `${generation} Sessions`,
+      description:
+        'Discover innovative projects by GDGoC Yonsei, where developers collaborate to build impactful solutions using cutting-edge technologies. Explore our work and get inspired!',
+    }
+  }
+
+  if (lang === 'ko') {
+    return {
+      title: `${sessionData.nameKo}`,
+      description: `${sessionData.descriptionKo}`,
+    }
+  }
+
+  return {
+    title: `${sessionData.name}`,
+    description: `${sessionData.description}`,
+  }
+}
+
+export default async function SessionPage({ params }: Props) {
   const { sessionId, lang, generation } = await params
   const sessionData = await getSession(sessionId)
 

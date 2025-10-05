@@ -1,10 +1,27 @@
 import languageParamChecker from '@/lib/language-param-checker'
+import { Metadata } from 'next'
 
-export default async function PrivacyPolicyPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ lang: string }>
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { lang } = await params
+
+  if (lang === 'ko') {
+    return {
+      title: `개인정보처리방침`,
+      description: `GDGoC Yonsei 개인정보처리방침`,
+    }
+  }
+
+  return {
+    title: `Privacy Policy`,
+    description: `GDGoC Yonsei Privacy Policy`,
+  }
+}
+
+export default async function PrivacyPolicyPage({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
   const isKorean = lang === 'ko'
 
