@@ -83,7 +83,7 @@ export default async function SessionPage({ params }: Props) {
               <div className={'flex flex-col items-end'}>
                 <p
                   className={
-                    'rounded-lg bg-neutral-900 p-1 px-3 text-sm text-neutral-50'
+                    'rounded-lg border-2 border-neutral-800 p-1 px-3 text-sm'
                   }
                 >
                   {session.type}
