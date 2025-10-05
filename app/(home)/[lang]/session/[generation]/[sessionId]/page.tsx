@@ -5,29 +5,29 @@ import ImagesSliders from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import { Metadata } from 'next'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
-
-export async function generateStaticParams(): Promise<{ sessionId: string }[]> {
-  const generationList = await getGenerationList()
-  const sessionsData: Awaited<ReturnType<typeof getSessionList>>[] = []
-
-  for (const generation of generationList) {
-    sessionsData.push(await getSessionList(generation.name))
-  }
-
-  const sessionIdList: { sessionId: string }[] = []
-
-  for (const sessions of sessionsData) {
-    if (sessions) {
-      for (const session of sessions) {
-        sessionIdList.push({ sessionId: session.id })
-      }
-    }
-  }
-
-  return sessionIdList
-}
+// import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+// import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+//
+// export async function generateStaticParams(): Promise<{ sessionId: string }[]> {
+//   const generationList = await getGenerationList()
+//   const sessionsData: Awaited<ReturnType<typeof getSessionList>>[] = []
+//
+//   for (const generation of generationList) {
+//     sessionsData.push(await getSessionList(generation.name))
+//   }
+//
+//   const sessionIdList: { sessionId: string }[] = []
+//
+//   for (const sessions of sessionsData) {
+//     if (sessions) {
+//       for (const session of sessions) {
+//         sessionIdList.push({ sessionId: session.id })
+//       }
+//     }
+//   }
+//
+//   return sessionIdList
+// }
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
