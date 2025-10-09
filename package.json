@@ -15,9 +15,9 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.10.0",
-    "@aws-sdk/client-s3": "^3.901.0",
-    "@aws-sdk/s3-request-presigner": "^3.901.0",
+    "@auth/drizzle-adapter": "^1.11.0",
+    "@aws-sdk/client-s3": "^3.906.0",
+    "@aws-sdk/s3-request-presigner": "^3.906.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "^15.5.4",
@@ -47,8 +47,8 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/negotiator": "^0.6.4",
     "@types/node": "^22.18.8",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.37.0",
