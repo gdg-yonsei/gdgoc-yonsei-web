@@ -178,6 +178,13 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
           <ActivityCardRightSvg />
         </motion.button>
       </motion.div>
+      <div>
+        <p className={'text-sm text-neutral-700'}>
+          {lang === 'ko'
+            ? '카드를 클릭하면 자세한 정보를 확인할 수 있습니다.'
+            : 'You can check detailed information by clicking the card.'}
+        </p>
+      </div>
     </div>
   )
 }
