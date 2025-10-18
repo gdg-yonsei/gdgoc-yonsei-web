@@ -54,20 +54,20 @@ export default function NavigationList({
     >
       <MotionLink state={isMenuOpen}>
         <Link
-          href={`/${lang}/project${lastGeneration ? '/' + lastGeneration : ''}`}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={'w-full'}
-        >
-          {lang === 'ko' ? '프로젝트' : 'Projects'}
-        </Link>
-      </MotionLink>
-      <MotionLink state={isMenuOpen}>
-        <Link
           href={`/${lang}/session${lastGeneration ? '/' + lastGeneration : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={'w-full'}
         >
           {lang === 'ko' ? '세션' : 'Sessions'}
+        </Link>
+      </MotionLink>
+      <MotionLink state={isMenuOpen}>
+        <Link
+          href={`/${lang}/project${lastGeneration ? '/' + lastGeneration : ''}`}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={'w-full'}
+        >
+          {lang === 'ko' ? '프로젝트' : 'Projects'}
         </Link>
       </MotionLink>
       <MotionLink state={isMenuOpen}>
