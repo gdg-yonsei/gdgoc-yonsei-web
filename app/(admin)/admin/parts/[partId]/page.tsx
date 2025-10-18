@@ -8,12 +8,13 @@ import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import formatUserName from '@/lib/format-user-name'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
+import { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ partId: string }>
-}) {
+}): Promise<Metadata> {
   const { partId } = await params
   // Part 데이터 가져오기
   const partData = await getPart(Number(partId))
@@ -76,7 +77,7 @@ export default async function PartPage({
           <div className={'member-data-title'}>Members</div>
           <div className={'member-data-grid gap-2'}>
             {partData.usersToParts
-              .filter((userToPart) => userToPart.partType === 'Primary')
+              .filter((userToPart) => userToPart.userType === 'Primary')
               .map((user) => (
                 <div key={user.user.id} className={'member-data-box'}>
                   <div className={'member-data-content'}>
@@ -103,7 +104,7 @@ export default async function PartPage({
           <div className={'member-data-title'}>Double Board Members</div>
           <div className={'member-data-grid gap-2'}>
             {partData.usersToParts
-              .filter((userToPart) => userToPart.partType === 'Secondary')
+              .filter((userToPart) => userToPart.userType === 'Secondary')
               .map((user) => (
                 <div key={user.user.id} className={'member-data-box'}>
                   <div className={'member-data-content'}>

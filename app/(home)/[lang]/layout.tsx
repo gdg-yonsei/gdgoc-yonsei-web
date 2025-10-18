@@ -59,7 +59,7 @@ export default async function RootLayout({
       <body>
         <Header lang={lang} />
         {children}
-        <Footer lang={lang} />
+        <Footer />
       </body>
       <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
