@@ -20,14 +20,14 @@ export default async function DesktopNavigationList({
         <GYMSNavigation />
       </Suspense>
       <Link
-        href={`/${lang}/project${lastGeneration ? '/' + lastGeneration.name : ''}`}
-      >
-        {lang === 'ko' ? '프로젝트' : 'Project'}
-      </Link>
-      <Link
         href={`/${lang}/session${lastGeneration ? '/' + lastGeneration.name : ''}`}
       >
         {lang === 'ko' ? '세션' : 'Session'}
+      </Link>
+      <Link
+        href={`/${lang}/project${lastGeneration ? '/' + lastGeneration.name : ''}`}
+      >
+        {lang === 'ko' ? '프로젝트' : 'Project'}
       </Link>
       <Link href={`/${lang}/calendar`}>
         {lang === 'ko' ? '캘린더' : 'Calendar'}
