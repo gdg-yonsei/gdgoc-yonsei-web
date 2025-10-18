@@ -42,7 +42,7 @@ export async function getMembers() {
       usersToParts,
       and(
         eq(usersToParts.userId, users.id),
-        eq(usersToParts.partType, 'Primary')
+        eq(usersToParts.userType, 'Primary')
       )
     )
     .leftJoin(parts, eq(parts.id, usersToParts.partId))

@@ -73,14 +73,14 @@ export async function updatePartAction(
     const userToPartData: {
       userId: string
       partId: number
-      partType: 'Primary' | 'Secondary'
+      userType: 'Core' | 'Primary' | 'Secondary'
     }[] = []
 
     for (const member of membersList) {
       userToPartData.push({
         userId: member,
         partId: partIdNumber,
-        partType: 'Primary',
+        userType: 'Primary',
       })
     }
 
@@ -88,7 +88,7 @@ export async function updatePartAction(
       userToPartData.push({
         userId: doubleMember,
         partId: partIdNumber,
-        partType: 'Secondary',
+        userType: 'Secondary',
       })
     }
 

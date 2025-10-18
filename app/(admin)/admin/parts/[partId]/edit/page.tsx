@@ -30,13 +30,13 @@ export default async function EditGenerationPage({
   // 파트에 속한 멤버 정보 리스트
   const membersIdList = partData
     ? partData.usersToParts
-        .filter((userToPart) => userToPart.partType === 'Primary')
+        .filter((userToPart) => userToPart.userType === 'Primary')
         .map((user) => user.user.id)
     : []
 
   const doubleBoardMembersIdList = partData
     ? partData.usersToParts
-        .filter((userToPart) => userToPart.partType === 'Secondary')
+        .filter((userToPart) => userToPart.userType === 'Secondary')
         .map((user) => user.user.id)
     : []
 
