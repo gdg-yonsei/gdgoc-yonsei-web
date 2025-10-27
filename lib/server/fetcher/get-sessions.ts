@@ -1,6 +1,6 @@
 import 'server-only'
 import db from '@/db'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 import { lte } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 
@@ -10,7 +10,7 @@ export const preload = () => {
 
 export async function getSessions() {
   'use cache'
-  cacheTag('sessions')
+  cacheTagT('sessions')
 
   return db.query.sessions.findMany({
     with: {

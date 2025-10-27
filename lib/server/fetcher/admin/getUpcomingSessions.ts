@@ -2,11 +2,11 @@ import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gte } from 'drizzle-orm'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export default async function getUpcomingSessions(userId: string) {
   'use cache'
-  cacheTag('sessions')
+  cacheTagT('sessions')
 
   return db
     .select({
