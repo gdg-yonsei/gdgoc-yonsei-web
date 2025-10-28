@@ -3,11 +3,11 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export default async function getNotEnrolledSessions(userId: string) {
   'use cache'
-  cacheTag('sessions')
+  cacheTagT('sessions')
   const participantsSub = db
     .select({
       sessionId: userToSession.sessionId,

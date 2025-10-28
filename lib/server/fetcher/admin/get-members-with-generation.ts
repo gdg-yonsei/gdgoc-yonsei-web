@@ -1,5 +1,5 @@
 import db from '@/db'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export const preload = () => {
   void getMembersWithGeneration()
@@ -7,7 +7,7 @@ export const preload = () => {
 
 export async function getMembersWithGeneration() {
   'use cache'
-  cacheTag('members', 'generations')
+  cacheTagT('members', 'generations')
 
   return db.query.generations.findMany({
     with: {

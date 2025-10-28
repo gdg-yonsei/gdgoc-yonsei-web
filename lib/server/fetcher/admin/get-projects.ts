@@ -7,7 +7,7 @@ import 'server-only'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export const preload = () => {
   void getProjects()
@@ -15,7 +15,7 @@ export const preload = () => {
 
 export async function getProjects() {
   'use cache'
-  cacheTag('projects')
+  cacheTagT('projects')
 
   console.log(new Date(), 'Fetch Projects Data')
   return db.query.projects.findMany({

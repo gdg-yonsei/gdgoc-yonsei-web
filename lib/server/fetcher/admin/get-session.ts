@@ -3,7 +3,7 @@ import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { users } from '@/db/schema/users'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 /**
  * Preloads the data for a specific session into the cache.
@@ -16,7 +16,7 @@ export const preload = (sessionId: string) => {
 
 export async function getSession(sessionId: string) {
   'use cache'
-  cacheTag('sessions')
+  cacheTagT('sessions')
 
   console.log(new Date(), 'Fetch Session Data', sessionId)
 

@@ -3,7 +3,7 @@ import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profil
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
@@ -35,7 +35,7 @@ export async function generateStaticParams() {
 
 export default async function MembersPage({ params }: Props) {
   'use cache'
-  cacheTag('parts', 'members')
+  cacheTagT('parts', 'members')
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({

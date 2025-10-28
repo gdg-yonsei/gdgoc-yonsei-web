@@ -98,11 +98,11 @@ export async function registerSessionAction(
     })
   } catch (e) {
     console.error(e)
-    revalidateTag('sessions')
+    revalidateTag('sessions', 'max')
     return { error: 'Overcapacity' }
   }
 
-  revalidateTag('sessions')
+  revalidateTag('sessions', 'max')
 
   return redirect(`/admin/sessions/${sessionId}`)
 }

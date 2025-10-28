@@ -1,6 +1,6 @@
 import 'server-only'
 import db from '@/db'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export const preload = () => {
   void getProjects()
@@ -8,7 +8,7 @@ export const preload = () => {
 
 export async function getProjects() {
   'use cache'
-  cacheTag('projects', 'generations')
+  cacheTagT('projects', 'generations')
   return db.query.projects.findMany({
     with: {
       generation: true,

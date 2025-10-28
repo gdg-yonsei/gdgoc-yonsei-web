@@ -15,30 +15,30 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.11.0",
-    "@aws-sdk/client-s3": "^3.913.0",
-    "@aws-sdk/s3-request-presigner": "^3.913.0",
+    "@auth/drizzle-adapter": "^1.11.1",
+    "@aws-sdk/client-s3": "^3.918.0",
+    "@aws-sdk/s3-request-presigner": "^3.918.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
-    "@next/third-parties": "^15.5.6",
+    "@next/third-parties": "16.0.0",
     "@react-email/components": "0.5.3",
     "@simplewebauthn/browser": "9.0.1",
     "@simplewebauthn/server": "9.0.3",
-    "@tailwindcss/postcss": "^4.1.15",
+    "@tailwindcss/postcss": "^4.1.16",
     "drizzle-orm": "^0.41.0",
     "jotai": "^2.15.0",
     "motion": "^12.23.24",
     "negotiator": "^1.0.0",
-    "next": "^15.5.6",
+    "next": "16.0.0",
     "next-auth": "5.0.0-beta.29",
     "next-mdx-remote": "^5.0.0",
     "postgres": "^3.4.7",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-markdown": "^10.1.0",
     "react-qr-code": "^2.0.18",
     "rehype-sanitize": "^5.0.1",
-    "resend": "^6.2.0",
+    "resend": "^6.3.0",
     "server-only": "^0.0.1",
     "zod": "^3.25.76"
   },
@@ -47,21 +47,27 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/negotiator": "^0.6.4",
     "@types/node": "^22.18.12",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.38.0",
-    "eslint-config-next": "^15.5.6",
+    "eslint-config-next": "16.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-email": "4.2.11",
-    "tailwindcss": "^4.1.15",
+    "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20.0.0 <=22"
   },
-  "packageManager": "pnpm@10.17.0+sha512.fce8a3dd29a4ed2ec566fb53efbb04d8c44a0f05bc6f24a73046910fb9c3ce7afa35a0980500668fa3573345bd644644fa98338fa168235c80f4aa17aa17fbef"
+  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
+  }
 }

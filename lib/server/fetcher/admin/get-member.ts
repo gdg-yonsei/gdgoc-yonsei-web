@@ -5,14 +5,14 @@ import { desc, eq } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import cacheTag from '@/lib/server/cacheTag'
+import cacheTagT from '@/lib/server/cacheTagT'
 
 export const preload = (userId: string) => {
   void getMember(userId)
 }
 export async function getMember(userId: string) {
   'use cache'
-  cacheTag('members', 'generations', 'parts')
+  cacheTagT('members', 'generations', 'parts')
 
   console.log(new Date(), 'Fetch Member Data:', userId)
   const result = await db
