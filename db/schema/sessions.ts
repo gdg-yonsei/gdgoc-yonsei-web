@@ -15,7 +15,10 @@ import { parts } from '@/db/schema/parts'
 import { externalParticipants } from '@/db/schema/external-participants'
 import { userToSession } from '@/db/schema/user-to-session'
 
-export const sessionTypeEnum = pgEnum('sessionType', ['T19', 'Part Session'])
+export const sessionTypeEnum = pgEnum('sessionType', [
+  'General Session',
+  'Part Session',
+])
 
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
