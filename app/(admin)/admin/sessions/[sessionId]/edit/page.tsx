@@ -77,7 +77,7 @@ export default async function EditSessionPage({
         />
         <DataSelectInput
           data={[
-            { name: 'T19', value: 'T19' },
+            { name: 'General Session', value: 'General Session' },
             { name: 'Part Session', value: 'Part Session' },
           ]}
           name={'type'}
