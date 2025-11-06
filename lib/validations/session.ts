@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const SessionTypeEnum = z.enum(['Part Session', 'T19'])
+const SessionTypeEnum = z.enum(['Part Session', 'General Session'])
 
 export const sessionValidation = z
   .object({
