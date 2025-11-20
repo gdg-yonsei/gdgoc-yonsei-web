@@ -81,24 +81,22 @@ export default async function SessionPage({ params }: Props) {
                 {paramsData.lang === 'ko' ? session.nameKo : session.name}
               </h2>
               <div className={'flex flex-col items-end'}>
-                <p
-                  className={
-                    'rounded-lg border-2 border-neutral-800 p-1 px-3 text-sm'
-                  }
-                >
-                  {session.type}
-                </p>
                 <p>
                   {session.startAt
                     ? new Intl.DateTimeFormat('ko-KR', {
-                        year: '2-digit',
-                        month: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        day: '2-digit',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
                         hour12: false,
                       }).format(new Date(session.startAt))
                     : 'TBD'}
+                </p>
+                <p
+                  className={
+                    'rounded-lg bg-green-700 p-1 px-3 text-xs text-neutral-50'
+                  }
+                >
+                  {session.type}
                 </p>
               </div>
             </div>
