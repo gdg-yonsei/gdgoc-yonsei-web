@@ -91,13 +91,6 @@ export default async function SessionPage({ params }: Props) {
                       }).format(new Date(session.startAt))
                     : 'TBD'}
                 </p>
-                <p
-                  className={
-                    'rounded-lg bg-green-700 p-1 px-3 text-xs text-neutral-50'
-                  }
-                >
-                  {session.type}
-                </p>
               </div>
             </div>
           </Link>
