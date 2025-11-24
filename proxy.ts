@@ -58,6 +58,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   // Matcher ignoring `/_next/` and `/api/`
   matcher: [
-    '/((?!api|sitemap.xml|auth|robots.txt|googleda69d559d3e8d484.html/|admin|_next/static|_next/image|default-image.png|default-user-profile.png|gdgoc-logo.png|session-default.png|favicon.ico).*)',
+    '/((?!api|sitemap.xml|auth|robots.txt|admin|_next/static|_next/image|default-image.png|default-user-profile.png|gdgoc-logo.png|session-default.png|favicon.ico|googleda69d559d3e8d484.html).*)',
   ],
 }
