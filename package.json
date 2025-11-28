@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
-    "@aws-sdk/client-s3": "^3.937.0",
-    "@aws-sdk/s3-request-presigner": "^3.937.0",
+    "@aws-sdk/client-s3": "^3.940.0",
+    "@aws-sdk/s3-request-presigner": "^3.940.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "16.0.0",
@@ -30,7 +30,7 @@
     "motion": "^12.23.24",
     "negotiator": "^1.0.0",
     "next": "16.0.0",
-    "next-auth": "5.0.0-beta.29",
+    "next-auth": "5.0.0-beta.30",
     "next-mdx-remote": "^5.0.0",
     "postgres": "^3.4.7",
     "react": "19.2.0",
@@ -49,12 +49,13 @@
     "@types/node": "^22.19.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "baseline-browser-mapping": "^2.8.32",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "react-email": "4.2.11",
     "tailwindcss": "^4.1.17",
@@ -63,7 +64,7 @@
   "engines": {
     "node": ">=20.0.0 <=22"
   },
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "pnpm": {
     "overrides": {
       "@types/react": "19.2.2",
