@@ -30,7 +30,7 @@ export default function GlobalError({
           <GDGoCYonseiLogo />
           <h2 className={'text-4xl font-bold'}>Something went wrong!</h2>
           <button
-            onClick={() => reset()}
+            onClick={reset}
             className={
               'w-full rounded-lg bg-neutral-950 p-2 text-center text-white'
             }
