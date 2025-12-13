@@ -1,12 +1,13 @@
 import { Metadata } from 'next'
 import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profile-card'
 import db from '@/db'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import cacheTagT from '@/lib/server/cacheTagT'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import { parts } from '@/db/schema/parts'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -49,6 +50,7 @@ export default async function MembersPage({ params }: Props) {
             },
           },
         },
+        orderBy: desc(parts.id),
       },
     },
   })
