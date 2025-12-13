@@ -1,0 +1,1 @@
+ALTER TABLE "parts" ADD COLUMN "displayOrder" integer DEFAULT 10 NOT NULL;

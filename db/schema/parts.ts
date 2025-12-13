@@ -11,6 +11,7 @@ export const parts = pgTable('parts', {
   generationsId: integer('generationId'),
   createdAt: timestamp('createdAt').defaultNow(),
   updatedAt: timestamp('updatedAt').defaultNow(),
+  displayOrder: integer('displayOrder').notNull().default(10),
 })
 
 export const partsRelations = relations(parts, ({ one, many }) => ({
