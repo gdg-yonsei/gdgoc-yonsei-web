@@ -19,11 +19,7 @@ export default function UserProfileCard({
   lang: string
 }) {
   return (
-    <div
-      className={
-        'flex w-full items-center gap-2 rounded-2xl bg-white p-4 shadow-md'
-      }
-    >
+    <div className={'flex w-full items-center gap-2 rounded-2xl bg-white p-4'}>
       {userData.image ? (
         <Image
           src={userData.image}
