@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profile-card'
 import db from '@/db'
-import { desc, eq } from 'drizzle-orm'
+import { asc, eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import cacheTagT from '@/lib/server/cacheTagT'
 import PageTitle from '@/app/components/page-title'
@@ -50,7 +50,7 @@ export default async function MembersPage({ params }: Props) {
             },
           },
         },
-        orderBy: desc(parts.id),
+        orderBy: asc(parts.displayOrder),
       },
     },
   })

@@ -176,6 +176,13 @@
       "when": 1762433491880,
       "tag": "0024_cultured_wrecker",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1765598495668,
+      "tag": "0025_slim_emma_frost",
+      "breakpoints": true
     }
   ]
 }
