@@ -30,7 +30,7 @@ export default function MDXEditor({
   return (
     <div
       className={
-        'col-span-1 flex w-full flex-col gap-2 sm:col-span-4 lg:col-span-4 xl:col-span-5'
+        'col-span-1 flex w-full flex-col gap-2 sm:col-span-2 lg:col-span-4 xl:col-span-5'
       }
     >
       <div className={'member-data-title'}>{title}</div>

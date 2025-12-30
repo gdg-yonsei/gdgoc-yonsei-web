@@ -36,7 +36,7 @@ export default function DataSelectInput({
   return (
     <div
       className={
-        'col-span-1 flex flex-col gap-2 sm:col-span-2 lg:col-span-3 xl:col-span-4'
+        'col-span-1 flex flex-col gap-2 md:col-span-2 lg:col-span-4 xl:col-span-5'
       }
     >
       <div className={'member-data-title'}>{title}</div>
