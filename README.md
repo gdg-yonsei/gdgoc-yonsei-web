@@ -14,7 +14,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 - Database: PostgreSQL + Drizzle ORM
 - Authentication: NextAuth.js v5 + Drizzle Adapter + WebAuthn
 - Email: Resend + React Email
-- Storage: AWS S3 (with presigned URLs for uploads)
+- Storage: Cloudflare R2 (with presigned URLs for uploads)
 - Markdown & MDX: next-mdx-remote, react-markdown, rehype-sanitize
 - Animation: Motion
 - Utilities: Zod (validation), Jotai (state management)
