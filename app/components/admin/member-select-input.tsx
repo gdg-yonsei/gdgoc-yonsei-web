@@ -2,6 +2,7 @@
 
 import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import { useEffect, useState } from 'react'
+import formatUserName from '@/lib/format-user-name'
 
 export default function MembersSelectInput({
   membersList,
@@ -73,7 +74,15 @@ export default function MembersSelectInput({
                     onClick={() => handleSelectMember(user.user.id)}
                   >
                     <div className={'text-sm'}>{part.name}</div>
-                    <div>{user.user.name}</div>
+                    <div>
+                      {formatUserName(
+                        user.user.name,
+                        user.user.firstNameKo,
+                        user.user.lastNameKo,
+                        user.user.isForeigner,
+                        !user.user.isForeigner
+                      )}
+                    </div>
                   </button>
                 ))
               )}
