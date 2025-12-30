@@ -79,12 +79,12 @@ export default async function CreateProjectPage() {
         <DataTextarea
           defaultValue={''}
           name={'description'}
-          placeholder={'English Description'}
+          placeholder={'One-line English description'}
         />
         <DataTextarea
           defaultValue={''}
           name={'descriptionKo'}
-          placeholder={'Korean Description'}
+          placeholder={'한국어 한 줄 설명'}
         />
         <DataSelectInput
           title={'Generation'}
