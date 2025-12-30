@@ -8,7 +8,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 ⸻
 
 🚀 Tech Stack
-- Framework: Next.js 15 (App Router)
+- Framework: Next.js 16 (App Router)
 - Language: TypeScript, React 19
 - Styling: Tailwind CSS 4, Typography Plugin
 - Database: PostgreSQL + Drizzle ORM
