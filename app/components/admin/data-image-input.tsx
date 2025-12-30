@@ -63,7 +63,7 @@ export default function DataImageInput({
 
   return (
     <div
-      className={'col-span-1 flex flex-col gap-2 sm:col-span-3 lg:col-span-4'}
+      className={'col-span-1 flex flex-col gap-2 sm:col-span-2 lg:col-span-3'}
     >
       <div className={'px-1 text-sm font-semibold text-neutral-700'}>
         {title}

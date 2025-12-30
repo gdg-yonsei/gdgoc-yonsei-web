@@ -46,33 +46,37 @@ export default async function ProjectPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>Projects</p>
       </AdminNavigationButton>
-      <div className={'flex items-center gap-2'}>
-        <div className={'admin-title'}>{projectData.name}</div>
-        <DataEditLink
-          session={session}
-          dataId={projectId}
-          dataType={'projects'}
-          href={`/admin/projects/${projectId}/edit`}
-        />
-        <DataDeleteButton
-          session={session}
-          dataType={'projects'}
-          dataId={projectId}
-        />
-        <Link
-          href={`/ko/project/${projectData.generation.name}/${projectId}`}
-          target={'_blank'}
-          className={'rounded-lg bg-sky-700 p-1 px-3 text-white'}
-        >
-          View Published (KO)
-        </Link>
-        <Link
-          href={`/en/project/${projectData.generation.name}/${projectId}`}
-          target={'_blank'}
-          className={'rounded-lg bg-sky-700 p-1 px-3 text-white'}
-        >
-          View Published (EN)
-        </Link>
+      <div className={'flex flex-col gap-2 md:flex-row'}>
+        <div className={'flex items-center gap-2'}>
+          <div className={'admin-title'}>{projectData.name}</div>
+          <DataEditLink
+            session={session}
+            dataId={projectId}
+            dataType={'projects'}
+            href={`/admin/projects/${projectId}/edit`}
+          />
+          <DataDeleteButton
+            session={session}
+            dataType={'projects'}
+            dataId={projectId}
+          />
+        </div>
+        <div className={'flex items-center justify-start gap-2'}>
+          <Link
+            href={`/ko/project/${projectData.generation.name}/${projectId}`}
+            target={'_blank'}
+            className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
+          >
+            View Published (KO)
+          </Link>
+          <Link
+            href={`/en/project/${projectData.generation.name}/${projectId}`}
+            target={'_blank'}
+            className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
+          >
+            View Published (EN)
+          </Link>
+        </div>
       </div>
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>

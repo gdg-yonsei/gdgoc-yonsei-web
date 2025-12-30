@@ -35,7 +35,11 @@ export default function MembersSelectInput({
   }, [defaultValue])
 
   return (
-    <div className={'col-span-4'}>
+    <div
+      className={
+        'col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 xl:col-span-5'
+      }
+    >
       <input
         readOnly={true}
         value={JSON.stringify(participants)}
