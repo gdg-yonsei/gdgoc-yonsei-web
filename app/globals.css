@@ -24,7 +24,7 @@
     @apply w-full rounded-lg border-sky-500 bg-white p-2 px-3 text-lg font-semibold focus:border-2 focus:outline-none;
   }
   .member-data-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
   .member-data-col-span {
     @apply col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4;
