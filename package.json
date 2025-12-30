@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
-    "@aws-sdk/client-s3": "^3.948.0",
-    "@aws-sdk/s3-request-presigner": "^3.948.0",
+    "@aws-sdk/client-s3": "^3.958.0",
+    "@aws-sdk/s3-request-presigner": "^3.958.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "16.0.0",
@@ -26,10 +26,10 @@
     "@simplewebauthn/server": "9.0.3",
     "@tailwindcss/postcss": "^4.1.18",
     "drizzle-orm": "^0.41.0",
-    "jotai": "^2.16.0",
+    "jotai": "^2.16.1",
     "motion": "^12.23.26",
     "negotiator": "^1.0.0",
-    "next": "^16.0.10",
+    "next": "^16.1.1",
     "next-auth": "5.0.0-beta.30",
     "next-mdx-remote": "^5.0.0",
     "postgres": "^3.4.7",
@@ -46,10 +46,10 @@
     "@react-email/preview-server": "4.2.11",
     "@tailwindcss/typography": "^0.5.19",
     "@types/negotiator": "^0.6.4",
-    "@types/node": "^22.19.2",
+    "@types/node": "^22.19.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
-    "baseline-browser-mapping": "^2.9.7",
+    "baseline-browser-mapping": "^2.9.11",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.39.2",
@@ -62,9 +62,9 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=20.0.0 <=22"
+    "node": ">=20.0.0 <=24"
   },
-  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
+  "packageManager": "pnpm@10.26.2+sha512.0e308ff2005fc7410366f154f625f6631ab2b16b1d2e70238444dd6ae9d630a8482d92a451144debc492416896ed16f7b114a86ec68b8404b2443869e68ffda6",
   "pnpm": {
     "overrides": {
       "@types/react": "19.2.2",

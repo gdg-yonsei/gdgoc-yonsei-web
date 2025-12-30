@@ -9,6 +9,7 @@ import SafeMDX from '@/app/components/safe-mdx'
 import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
+import Link from 'next/link'
 
 export async function generateMetadata({
   params,
@@ -58,8 +59,28 @@ export default async function ProjectPage({
           dataType={'projects'}
           dataId={projectId}
         />
+        <Link
+          href={`/ko/project/${projectData.generation.name}/${projectId}`}
+          target={'_blank'}
+          className={'rounded-lg bg-sky-700 p-1 px-3 text-white'}
+        >
+          View Published (KO)
+        </Link>
+        <Link
+          href={`/en/project/${projectData.generation.name}/${projectId}`}
+          target={'_blank'}
+          className={'rounded-lg bg-sky-700 p-1 px-3 text-white'}
+        >
+          View Published (EN)
+        </Link>
       </div>
       <div className={'member-data-grid gap-2'}>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>Generation</div>
+          <div className={'member-data-content'}>
+            {projectData.generation?.name}
+          </div>
+        </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>Name (English)</div>
           <div className={'member-data-content'}>{projectData.name}</div>
@@ -68,22 +89,18 @@ export default async function ProjectPage({
           <div className={'member-data-title'}>Name (Korean)</div>
           <div className={'member-data-content'}>{projectData.nameKo}</div>
         </div>
-        <div className={'member-data-box'}>
+
+        <div className={'member-data-box col-span-1 md:col-span-2'}>
           <div className={'member-data-title'}>Description (English)</div>
           <div className={'member-data-content'}>{projectData.description}</div>
         </div>
-        <div className={'member-data-box'}>
+        <div className={'member-data-box col-span-1 md:col-span-2'}>
           <div className={'member-data-title'}>Description (Korean)</div>
           <div className={'member-data-content'}>
             {projectData.descriptionKo}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Generation</div>
-          <div className={'member-data-content'}>
-            {projectData.generation?.name}
-          </div>
-        </div>
+
         <div className={'member-data-col-span'}>
           <div className={'member-data-title'}>Participants</div>
           <div className={'member-data-grid gap-2'}>
@@ -133,7 +150,7 @@ export default async function ProjectPage({
           </div>
         </div>
         <div className={'prose member-data-col-span w-full py-8'}>
-          <div className={'member-data-title'}>Content</div>
+          <div className={'member-data-title'}>Content (English)</div>
           <SafeMDX source={projectData.content} />
         </div>
         <div className={'prose member-data-col-span w-full py-8'}>
