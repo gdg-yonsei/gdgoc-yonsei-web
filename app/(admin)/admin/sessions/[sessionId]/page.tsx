@@ -51,7 +51,7 @@ export default async function SessionPage({
         <div className={'admin-title'}>{sessionData.name}</div>
         <DataEditLink
           session={session}
-          dataId={sessionId}
+          dataOwnerId={sessionData.authorId}
           dataType={'sessions'}
           href={`/admin/sessions/${sessionId}/edit`}
         />

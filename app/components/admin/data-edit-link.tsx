@@ -21,7 +21,7 @@ export default async function DataEditLink({
   dataType,
 }: {
   session: Session | null
-  dataOwnerId: string
+  dataOwnerId?: string
   href: string
   dataType: ResourceType
 }) {

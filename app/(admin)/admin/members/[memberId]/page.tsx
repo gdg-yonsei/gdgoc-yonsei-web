@@ -52,7 +52,7 @@ export default async function MemberPage({
 
         <DataEditLink
           session={session}
-          dataId={memberId}
+          dataOwnerId={memberId}
           dataType={'members'}
           href={`/admin/members/${memberId}/edit`}
         />

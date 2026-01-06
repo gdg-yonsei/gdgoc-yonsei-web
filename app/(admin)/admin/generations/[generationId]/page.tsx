@@ -47,7 +47,6 @@ export default async function GenerationPage({
         <div className={'admin-title'}>Generation: {generationData.name}</div>
         <DataEditLink
           session={session}
-          dataId={generationId}
           dataType={'generations'}
           href={`/admin/generations/${generationId}/edit`}
         />
