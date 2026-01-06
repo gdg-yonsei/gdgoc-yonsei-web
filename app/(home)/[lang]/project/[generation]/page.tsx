@@ -87,7 +87,11 @@ export default async function ProjectsPage({ params }: Props) {
               <p className={'text-sm'}>
                 {formatDateYYYYMMDD(new Date(data?.updatedAt))}
               </p>
-              <p className={'text-sm'}>{data?.description}</p>
+              <p className={'text-sm'}>
+                {paramsData.lang === 'ko'
+                  ? data?.descriptionKo
+                  : data?.description}
+              </p>
             </div>
           </Link>
         ))}
