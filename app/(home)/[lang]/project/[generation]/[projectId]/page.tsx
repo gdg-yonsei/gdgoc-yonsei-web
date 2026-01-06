@@ -5,13 +5,7 @@ import ImagesSliders from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
-import { getProjects } from '@/lib/server/fetcher/get-projects'
 import { Metadata } from 'next'
-
-export async function generateStaticParams() {
-  const projectsData = await getProjects()
-  return projectsData.map((project) => ({ projectId: project.id }))
-}
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
