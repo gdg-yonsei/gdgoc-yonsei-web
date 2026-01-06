@@ -51,7 +51,7 @@ export default async function ProjectPage({
           <div className={'admin-title'}>{projectData.name}</div>
           <DataEditLink
             session={session}
-            dataId={projectId}
+            dataOwnerId={projectData.authorId}
             dataType={'projects'}
             href={`/admin/projects/${projectId}/edit`}
           />

@@ -9,19 +9,19 @@ import { Session } from 'next-auth'
  *
  * 사용자가 수정 권한이 있으면 네비게이션 버튼을 보여줌
  * @param session - 사용자 session
- * @param dataId - 수정하는 data id
+ * @param dataOwnerId - 수정하는 프로젝트의 소유자 ID
  * @param href - 수정 페이지 링크
  * @param dataType - 수정하는 데이터 종류
  * @constructor
  */
 export default async function DataEditLink({
   session,
-  dataId,
+  dataOwnerId,
   href,
   dataType,
 }: {
   session: Session | null
-  dataId: string
+  dataOwnerId: string
   href: string
   dataType: ResourceType
 }) {
@@ -30,7 +30,7 @@ export default async function DataEditLink({
     session?.user?.id,
     'put',
     dataType,
-    dataId
+    dataOwnerId
   )
 
   return (
