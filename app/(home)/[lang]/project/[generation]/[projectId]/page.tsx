@@ -6,9 +6,29 @@ import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import { Metadata } from 'next'
+import { getProjects } from '@/lib/server/fetcher/get-projects'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
+}
+
+export async function generateStaticParams() {
+  const projects = await getProjects()
+  const projectIdAndGenerationId = projects.map((project) => ({
+    generation: project.generation.name,
+    projectId: String(project.id),
+  }))
+  const langs = ['ko', 'en']
+  let paramsList: { generation: string; projectId: string; lang: string }[] = []
+  for (const lang of langs) {
+    for (const projectAndGeneration of projectIdAndGenerationId) {
+      paramsList.push({
+        ...projectAndGeneration,
+        lang: lang,
+      })
+    }
+  }
+  return paramsList
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

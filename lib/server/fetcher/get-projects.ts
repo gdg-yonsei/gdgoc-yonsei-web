@@ -9,6 +9,7 @@ export const preload = () => {
 export async function getProjects() {
   'use cache'
   cacheTagT('projects', 'generations')
+
   return db.query.projects.findMany({
     with: {
       generation: true,
