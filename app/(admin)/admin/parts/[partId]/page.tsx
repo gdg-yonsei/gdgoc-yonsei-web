@@ -54,7 +54,6 @@ export default async function PartPage({
         <div className={'admin-title'}>{partData.name}</div>
         <DataEditLink
           session={session}
-          dataId={partId}
           dataType={'parts'}
           href={`/admin/parts/${partId}/edit`}
         />
