@@ -61,8 +61,7 @@ export default function checkPermission(
         members: userId === dataOwnerId, // Can only edit their own profile
         membersRole: false,
         generations: false,
-        // projects: userId === dataOwnerId, // Can only edit their own projects
-        projects: true,
+        projects: userId === dataOwnerId, // Can only edit their own projects
         sessions: false,
         parts: false,
       },
