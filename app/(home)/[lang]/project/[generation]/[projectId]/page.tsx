@@ -12,6 +12,9 @@ type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
 }
 
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
 export async function generateStaticParams() {
   const projects = await getProjects()
   const projectIdAndGenerationId = projects.map((project) => ({

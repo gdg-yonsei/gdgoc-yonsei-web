@@ -39,11 +39,6 @@ const googleSans = localFont({
   weight: '100 900',
 })
 
-// SSG를 위해 params 값 지정
-export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
-}
-
 export default async function RootLayout({
   children,
   params,

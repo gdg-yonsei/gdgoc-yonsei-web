@@ -24,6 +24,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+// SSG를 위해 params 값 지정
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
 export default async function CalendarPage({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
 

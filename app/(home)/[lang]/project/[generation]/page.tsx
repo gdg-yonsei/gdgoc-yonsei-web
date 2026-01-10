@@ -8,6 +8,11 @@ import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import addLangParams from '@/lib/server/add-lang-params'
+import cacheTagT from '@/lib/server/cacheTagT'
+
+export const dynamicParams = true
+export const dynamic = 'force-static'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -32,10 +37,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const generationList = await getGenerationList()
-  return generationList.map((generation) => ({ generation: generation.name }))
+  return addLangParams(
+    generationList.map((generation) => ({ generation: generation.name })),
+    ['en', 'ko']
+  )
 }
 
 export default async function ProjectsPage({ params }: Props) {
+  'use cache'
+  cacheTagT('projects', 'generations')
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({

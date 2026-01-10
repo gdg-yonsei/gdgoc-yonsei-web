@@ -4,6 +4,14 @@ import ActivitiesPage from '@/app/(home)/[lang]/activities-page'
 import PartsPage from '@/app/(home)/[lang]/parts-page'
 import languageParamChecker from '@/lib/language-param-checker'
 
+// SSG를 위해 params 값 지정
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
 /**
  * GDGoC Yonsei 웹사이트 첫 페이지
  * @param params

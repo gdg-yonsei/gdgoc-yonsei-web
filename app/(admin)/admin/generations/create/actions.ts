@@ -49,6 +49,20 @@ export async function createGenerationAction(
 
     // 캐시 업데이트
     revalidateCache(['generations', 'parts'])
+
+    // Warm up cache for the new generation member page
+    const paths = [
+      `${process.env.NEXT_PUBLIC_SITE_URL}/ko/member/${name}`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/en/member/${name}`,
+    ]
+
+    await Promise.allSettled(
+      paths.map((path) =>
+        fetch(path, {
+          cache: 'no-store',
+        })
+      )
+    )
   } catch (e) {
     // DB 업데이트 오류
     console.error(e)

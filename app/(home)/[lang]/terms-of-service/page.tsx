@@ -1,5 +1,12 @@
 import languageParamChecker from '@/lib/language-param-checker'
 
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
 export default async function TermsOfServicePage({
   params,
 }: {

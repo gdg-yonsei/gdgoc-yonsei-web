@@ -128,6 +128,30 @@ export async function createSessionAction(
 
     // 캐시 업데이트
     revalidateCache('sessions')
+
+    // Start Cache Warming
+    const part = await db.query.parts.findFirst({
+      where: eq(parts.id, Number(partId)),
+      with: {
+        generation: true,
+      },
+    })
+
+    if (part?.generation) {
+       const paths = [
+        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/session/${part.generation.name}/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_SITE_URL}/en/session/${part.generation.name}/${sessionId}`,
+      ]
+
+      await Promise.allSettled(
+        paths.map((path) =>
+          fetch(path, {
+            cache: 'no-store',
+          })
+        )
+      )
+    }
+    // End Cache Warming
   } catch (e) {
     // DB 에러 처리
     console.error(e)

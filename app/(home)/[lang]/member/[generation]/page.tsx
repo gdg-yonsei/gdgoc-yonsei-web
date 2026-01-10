@@ -8,10 +8,14 @@ import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import getGenerationList from '@/lib/server/fetcher/getGenerationList'
 import { parts } from '@/db/schema/parts'
+import addLangParams from '@/lib/server/add-lang-params'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
+
+export const dynamicParams = true
+export const dynamic = 'force-static'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
@@ -31,7 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const generationList = await getGenerationList()
-  return generationList.map((generation) => ({ generation: generation.name }))
+  return addLangParams(
+    generationList.map((generation) => ({ generation: generation.name })),
+    ['ko', 'en']
+  )
 }
 
 export default async function MembersPage({ params }: Props) {
