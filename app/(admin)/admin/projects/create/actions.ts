@@ -7,7 +7,9 @@ import { z } from 'zod'
 import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
 import db from '@/db'
+import { eq } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
+import { generations } from '@/db/schema/generations'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import { revalidateCache } from '@/lib/server/cache'
 /**
@@ -103,6 +105,26 @@ export async function createProjectAction(
 
     // 캐시 업데이트
     revalidateCache('projects')
+
+    // Generation 정보 가져오기 (URL 생성용)
+    const generation = await db.query.generations.findFirst({
+      where: eq(generations.id, Number(generationId)),
+    })
+
+    if (generation) {
+      const paths = [
+        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/project/${generation.name}/${createProject.id}`,
+        `${process.env.NEXT_PUBLIC_SITE_URL}/en/project/${generation.name}/${createProject.id}`,
+      ]
+
+      await Promise.allSettled(
+        paths.map((path) =>
+          fetch(path, {
+            cache: 'no-store',
+          })
+        )
+      )
+    }
   } catch (e) {
     // DB 에러 처리
     console.error(e)

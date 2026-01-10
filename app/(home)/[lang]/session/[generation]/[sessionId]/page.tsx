@@ -5,29 +5,40 @@ import ImagesSliders from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import { Metadata } from 'next'
-// import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-// import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
-//
-// export async function generateStaticParams(): Promise<{ sessionId: string }[]> {
-//   const generationList = await getGenerationList()
-//   const sessionsData: Awaited<ReturnType<typeof getSessionList>>[] = []
-//
-//   for (const generation of generationList) {
-//     sessionsData.push(await getSessionList(generation.name))
-//   }
-//
-//   const sessionIdList: { sessionId: string }[] = []
-//
-//   for (const sessions of sessionsData) {
-//     if (sessions) {
-//       for (const session of sessions) {
-//         sessionIdList.push({ sessionId: session.id })
-//       }
-//     }
-//   }
-//
-//   return sessionIdList
-// }
+import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
+export async function generateStaticParams() {
+  const generationList = await getGenerationList()
+  const sessionsData = await Promise.all(
+    generationList.map(async (generation) => {
+      const sessions = await getSessionList(generation.name)
+      return { generation: generation.name, sessions }
+    })
+  )
+
+  const params: { sessionId: string; generation: string; lang: string }[] = []
+  const langs = ['ko', 'en']
+
+  for (const data of sessionsData) {
+    if (data.sessions) {
+      for (const session of data.sessions) {
+        for (const lang of langs) {
+          params.push({
+            sessionId: session.id,
+            generation: data.generation,
+            lang,
+          })
+        }
+      }
+    }
+  }
+
+  return params
+}
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>

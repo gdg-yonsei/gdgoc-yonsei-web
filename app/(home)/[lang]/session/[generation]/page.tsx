@@ -10,6 +10,9 @@ type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
+export const dynamicParams = true
+export const dynamic = 'force-static'
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
 
