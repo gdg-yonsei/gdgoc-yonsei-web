@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import QRCode from 'react-qr-code'
 import Link from 'next/link'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import { Locale } from '@/i18n-config'
+
+const QRCode = lazy(() => import('react-qr-code'))
 
 const SITE_URL = 'https://gdgoc.yonsei.ac.kr'
 const SLIDE_COUNT = 9
@@ -1153,14 +1154,20 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
             <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
               Homepage
             </p>
-            <QRCode
-              value={`${SITE_URL}/${lang}`}
-              size={160}
-              bgColor="transparent"
-              fgColor="#1e1e1e"
-              level="M"
-              className="h-[160px] w-[160px] md:h-[180px] md:w-[180px]"
-            />
+            <Suspense
+              fallback={
+                <div className="h-[160px] w-[160px] animate-pulse rounded-lg bg-neutral-200 md:h-[180px] md:w-[180px]" />
+              }
+            >
+              <QRCode
+                value={`${SITE_URL}/${lang}`}
+                size={160}
+                bgColor="transparent"
+                fgColor="#1e1e1e"
+                level="M"
+                className="h-[160px] w-[160px] md:h-[180px] md:w-[180px]"
+              />
+            </Suspense>
             <p className="text-sm text-neutral-400">gdgoc.yonsei.ac.kr</p>
           </div>
         </motion.div>

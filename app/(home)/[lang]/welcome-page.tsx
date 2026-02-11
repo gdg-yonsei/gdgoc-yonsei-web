@@ -36,7 +36,7 @@ export default function WelcomePage({ lang }: { lang?: Locale }) {
           <p className="text-center text-base font-medium text-neutral-600 md:text-lg">
             {lang === 'ko'
               ? '첨단컴퓨팅학부 26학번 신입생 여러분 모두 환영합니다!'
-              : 'Welcome, Class of 2026 School of Advanced Computing freshmen!'}
+              : 'Welcome, Class of 2026 School of Computing freshmen!'}
           </p>
           <Link
             href={`/${lang}/2026-freshman-ot`}
