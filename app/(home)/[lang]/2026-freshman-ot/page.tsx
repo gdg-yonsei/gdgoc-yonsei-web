@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import QRCode from 'react-qr-code'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 
-const SLIDE_COUNT = 8
+const SITE_URL = 'https://gdgoc.yonsei.ac.kr'
+
+const SLIDE_COUNT = 9
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Animation Variants
@@ -415,91 +418,206 @@ function GDGoCYonseiSlide() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Slide 4 — Activities
+   Slide 4 — Activities: Session & Project
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function ActivitiesSlide() {
-  const activities = [
-    {
-      title: 'Session',
-      subtitle: '기술 세션',
-      description:
-        '파트별 기술 세션을 통해 깊이 있는 학습을 진행합니다. 실무에서 활용 가능한 기술을 함께 배웁니다.',
-      accent: 'bg-gdg-blue-300',
-      badge: 'bg-gdg-blue-100 text-gdg-blue-300',
-    },
-    {
-      title: 'Project',
-      subtitle: '팀 프로젝트',
-      description:
-        '팀을 이루어 실제 서비스를 기획하고 개발합니다. 아이디어를 현실로 만드는 경험을 제공합니다.',
-      accent: 'bg-gdg-red-300',
-      badge: 'bg-gdg-red-100 text-gdg-red-300',
-    },
-    {
-      title: 'Networking',
-      subtitle: '네트워킹',
-      description:
-        'Google 및 국내외 다양한 GDGoC 챕터들과 교류하며 글로벌 네트워크를 구축합니다.',
-      accent: 'bg-gdg-green-300',
-      badge: 'bg-gdg-green-100 text-gdg-green-300',
-    },
-    {
-      title: 'Hackathon',
-      subtitle: '해커톤',
-      description:
-        '다양한 해커톤에 참가하고 주최하며, 짧은 시간 안에 창의적인 솔루션을 만들어냅니다.',
-      accent: 'bg-gdg-yellow-300',
-      badge: 'bg-gdg-yellow-100 text-gdg-yellow-300',
-    },
-  ]
+function ActivityBullet({
+  label,
+  text,
+  color,
+}: {
+  label: string
+  text: string
+  color: string
+}) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <div
+        className={`mt-2 h-2 w-2 flex-shrink-0 rounded-full ${color}`}
+      />
+      <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
+        <span className="font-semibold text-neutral-800">{label}</span>{' '}
+        {text}
+      </p>
+    </div>
+  )
+}
 
+function ActivitiesSessionProjectSlide() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-5xl flex-col items-center gap-8 px-8 md:gap-12"
+        className="relative z-10 flex max-w-5xl flex-col gap-8 px-8 md:gap-10"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={fadeUp} className="text-center">
+        <motion.div variants={fadeUp}>
           <h2 className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
             주요 활동
           </h2>
-          <div className="flex justify-center">
+          <div className="flex">
             <ColorBar color="bg-gdg-red-300" />
           </div>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-          {activities.map((a, i) => (
-            <motion.div
-              key={i}
-              variants={i % 2 === 0 ? fadeInLeft : fadeInRight}
-              className="group relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm transition-shadow hover:shadow-md md:p-8"
-            >
-              <div
-                className={`absolute top-0 left-0 h-full w-1.5 ${a.accent}`}
-              />
-              <div className="pl-4">
-                <div className="mb-2 flex items-center gap-3">
-                  <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
-                    {a.title}
-                  </h3>
-                  <span
-                    className={`rounded-full ${a.badge} px-3 py-0.5 text-sm font-semibold`}
-                  >
-                    {a.subtitle}
-                  </span>
-                </div>
-                <p className="text-base leading-relaxed text-neutral-600 md:text-lg">
-                  {a.description}
-                </p>
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Session */}
+          <motion.div
+            variants={fadeInLeft}
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+          >
+            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-blue-300" />
+            <div className="flex flex-col gap-3 pl-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                  Session
+                </h3>
+                <span className="bg-gdg-blue-100 text-gdg-blue-300 rounded-full px-3 py-0.5 text-sm font-semibold">
+                  기술 세션
+                </span>
               </div>
-            </motion.div>
-          ))}
+              <div className="flex flex-col gap-2">
+                <ActivityBullet
+                  label="T19 —"
+                  text="매주 화요일 7시에 진행하는 테크 세션으로 관심 있는 기술에 대한 발제를 진행합니다."
+                  color="bg-gdg-blue-300"
+                />
+                <ActivityBullet
+                  label="Part Session —"
+                  text="파트별로 스터디 또는 논문 리뷰를 진행합니다."
+                  color="bg-gdg-blue-200"
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Project */}
+          <motion.div
+            variants={fadeInRight}
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+          >
+            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-red-300" />
+            <div className="flex flex-col gap-3 pl-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                  Project
+                </h3>
+                <span className="bg-gdg-red-100 text-gdg-red-300 rounded-full px-3 py-0.5 text-sm font-semibold">
+                  팀 프로젝트
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <ActivityBullet
+                  label="oTP (open Tech Project) —"
+                  text="여러 파트의 멤버들과 팀을 이루어 서비스 개발, 연말 연고대 합동 Demo Day에서 발표"
+                  color="bg-gdg-red-300"
+                />
+                <ActivityBullet
+                  label="PLP (Production Level Project) —"
+                  text="실제 배포 수준의 서비스를 개발·출시하는 겨울 방학 집중 프로젝트"
+                  color="bg-gdg-red-200"
+                />
+                <ActivityBullet
+                  label="Solution Challenge —"
+                  text="Google 주최 국제대회, 사회 문제 해결 솔루션 개발"
+                  color="bg-gdg-red-100"
+                />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Slide 5 — Activities: Networking & Hackathon
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function ActivitiesNetworkingHackathonSlide() {
+  return (
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+      <GoogleDots />
+
+      <motion.div
+        className="relative z-10 flex max-w-5xl flex-col gap-8 px-8 md:gap-10"
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={fadeUp}>
+          <h2 className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
+            주요 활동
+          </h2>
+          <div className="flex">
+            <ColorBar color="bg-gdg-red-300" />
+          </div>
+        </motion.div>
+
+        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Networking */}
+          <motion.div
+            variants={fadeInLeft}
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+          >
+            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-green-300" />
+            <div className="flex flex-col gap-3 pl-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                  Networking
+                </h3>
+                <span className="bg-gdg-green-100 text-gdg-green-300 rounded-full px-3 py-0.5 text-sm font-semibold">
+                  네트워킹
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <ActivityBullet
+                  label="연고대 합동 —"
+                  text="GDGoC KU와 함께 Demo Day, Networking Party 등 다양한 합동 행사 진행"
+                  color="bg-gdg-green-300"
+                />
+                <ActivityBullet
+                  label="타 챕터 교류 —"
+                  text="다른 학교 GDGoC 챕터들과 해커톤 및 다양한 행사를 함께 진행"
+                  color="bg-gdg-green-200"
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Hackathon */}
+          <motion.div
+            variants={fadeInRight}
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+          >
+            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-yellow-300" />
+            <div className="flex flex-col gap-3 pl-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                  Hackathon
+                </h3>
+                <span className="bg-gdg-yellow-100 text-gdg-yellow-300 rounded-full px-3 py-0.5 text-sm font-semibold">
+                  해커톤
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <ActivityBullet
+                  label="GDGoC 연합 해커톤 —"
+                  text="여러 학교 GDGoC 챕터들이 모여 함께 진행하는 연합 해커톤"
+                  color="bg-gdg-yellow-300"
+                />
+                <ActivityBullet
+                  label="The Bridge Hackathon —"
+                  text="한국·일본 4개 대학(연세대, 고려대, 와세다대, 도쿄대)이 함께하는 국제 해커톤"
+                  color="bg-gdg-yellow-200"
+                />
+              </div>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
     </div>
@@ -577,7 +695,7 @@ function FuturePlansSlide() {
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-2xl font-bold text-white md:text-3xl">
-                  2026 한일연합해커톤
+                  2026 The Bridge Hackathon
                 </h3>
                 <span className="bg-gdg-blue-300/20 text-gdg-blue-200 rounded-full px-3 py-1 text-sm font-medium">
                   5월 예정
@@ -587,8 +705,8 @@ function FuturePlansSlide() {
                 한국 서울에서 개최되는 한일 대학생 개발자 연합 해커톤
               </p>
               <p className="text-base text-neutral-500">
-                한국과 일본의 대학생 개발자들이 함께 모여 혁신적인 솔루션을
-                만들어내는 특별한 경험
+                연세대학교 · 고려대학교 · 와세다대학교 · 도쿄대학교 4개 대학이
+                함께 혁신적인 솔루션을 만들어내는 국제 해커톤
               </p>
             </div>
           </div>
@@ -856,13 +974,13 @@ function ThankYouSlide() {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-6 px-4 md:gap-8"
+        className="relative z-10 flex flex-col items-center gap-5 px-4 md:gap-6"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={scaleIn}>
-          <GDGLogo className="w-28 md:w-40" svgKey="ot-thanks" />
+          <GDGLogo className="w-24 md:w-32" svgKey="ot-thanks" />
         </motion.div>
 
         <motion.h2
@@ -874,49 +992,63 @@ function ThankYouSlide() {
 
         <motion.div
           variants={fadeUp}
-          className="flex flex-col items-center gap-1"
+          className="flex flex-col items-center gap-0.5"
         >
-          <p className="text-lg text-neutral-600 md:text-xl">
+          <p className="text-base text-neutral-600 md:text-lg">
             Google Developer Group on Campus
           </p>
-          <p className="text-logo-blue text-base font-medium md:text-lg">
+          <p className="text-logo-blue text-sm font-medium md:text-base">
             Yonsei University
           </p>
         </motion.div>
 
-        <motion.p
-          variants={fadeUp}
-          className="text-base text-neutral-400 md:text-lg"
-        >
-          함께 성장해요!
-        </motion.p>
-
-        {/* Organizer Contact */}
+        {/* Organizer + QR */}
         <motion.div
           variants={fadeUp}
-          className="mt-2 flex flex-col items-center gap-4 rounded-2xl bg-neutral-50 px-10 py-6 md:mt-4 md:px-14 md:py-8"
+          className="mt-2 flex flex-col items-center gap-6 md:mt-4 md:flex-row md:items-start md:gap-10"
         >
-          <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
-            Organizer
-          </p>
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-xl font-bold text-neutral-800 md:text-2xl">
-              {/* TODO: Organizer 이름을 입력하세요 */}
-              홍길동
+          {/* Organizer Contact */}
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-neutral-50 px-12 py-7 md:px-16 md:py-9">
+            <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
+              Organizer
             </p>
-            <p className="text-base text-neutral-500 md:text-lg">
-              {/* TODO: Organizer 역할을 입력하세요 */}
-              GDGoC Yonsei Organizer
-            </p>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-xl font-bold text-neutral-800 md:text-2xl">
+                {/* TODO: Organizer 이름을 입력하세요 */}
+                전현우
+              </p>
+              <p className="text-base text-neutral-500 md:text-lg">
+                {/* TODO: Organizer 역할을 입력하세요 */}
+                GDGoC Yonsei Organizer
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-1 text-base text-neutral-500 md:text-lg">
+              <p>
+                {/* TODO: 이메일을 입력하세요 */}
+                jhyunwoo@yonsei.ac.kr
+              </p>
+              <p>
+                {/* TODO: Instagram 등 SNS를 입력하세요 */}
+                @gdg.yonseiuniv
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1 text-sm text-neutral-500 md:text-base">
-            <p>
-              {/* TODO: 이메일을 입력하세요 */}
-              organizer@gdgoc-yonsei.com
+
+          {/* QR Code */}
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-neutral-50 px-10 py-7 md:px-12 md:py-9">
+            <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
+              Homepage
             </p>
-            <p>
-              {/* TODO: Instagram 등 SNS를 입력하세요 */}
-              @gdgoc_yonsei
+            <QRCode
+              value={`${SITE_URL}/ko`}
+              size={160}
+              bgColor="transparent"
+              fgColor="#1e1e1e"
+              level="M"
+              className="h-[160px] w-[160px] md:h-[180px] md:w-[180px]"
+            />
+            <p className="text-sm text-neutral-400">
+              gdgoc.yonsei.ac.kr
             </p>
           </div>
         </motion.div>
@@ -938,7 +1070,8 @@ export default function FreshmanOTPage() {
     <CoverSlide key="cover" />,
     <WhatIsGDGoCSlide key="what" />,
     <GDGoCYonseiSlide key="yonsei" />,
-    <ActivitiesSlide key="activities" />,
+    <ActivitiesSessionProjectSlide key="activities-1" />,
+    <ActivitiesNetworkingHackathonSlide key="activities-2" />,
     <FuturePlansSlide key="plans" />,
     <RecruitmentDevSlide key="recruit-dev" />,
     <RecruitmentDesignSlide key="recruit-design" />,
