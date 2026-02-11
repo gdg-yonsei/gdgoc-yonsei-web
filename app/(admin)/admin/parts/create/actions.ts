@@ -27,12 +27,12 @@ export async function createPartAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, generationId, membersList } =
+  const { name, description, generationId, membersList, doubleBoardMembersList } =
     getPartFormData(formData)
 
   try {
     // zod validation
-    partValidation.parse({ name, description, generationId, membersList })
+    partValidation.parse({ name, description, generationId, membersList, doubleBoardMembersList })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -52,16 +52,32 @@ export async function createPartAction(
       })
       .returning({ id: parts.id })
 
-    // 파트에 멤버가 있을 경우 멤버와 파트 연결 쿼리
-    if (membersList.length > 0) {
-      await db.insert(usersToParts).values(
-        membersList.map((memberId) => ({
-          userId: memberId,
+      const userToPartData: {
+        userId: string
+        partId: number
+        userType: 'Core' | 'Primary' | 'Secondary'
+      }[] = []
+  
+      for (const member of membersList) {
+        userToPartData.push({
+          userId: member,
           partId: createPart[0].id,
-        }))
-      )
-    }
-
+          userType: 'Primary',
+        })
+      }
+  
+      for (const doubleMember of doubleBoardMembersList) {
+        userToPartData.push({
+          userId: doubleMember,
+          partId: createPart[0].id,
+          userType: 'Secondary',
+        })
+      }
+  
+      // 파트에 멤버 정보 새로 추가
+      if (membersList.length > 0) {
+        await db.insert(usersToParts).values(userToPartData)
+      }
     // 캐시 업데이트
     revalidateCache(['parts', 'members'])
   } catch (e) {
