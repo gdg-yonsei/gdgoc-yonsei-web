@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
-    optimizePackageImports: ['motion', 'jotai', 'next-auth'],
+    optimizePackageImports: ['motion', 'jotai', 'next-auth', 'react-qr-code'],
     useCache: true,
   },
   images: {
