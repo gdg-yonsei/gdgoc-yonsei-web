@@ -119,7 +119,7 @@ function GoogleDots() {
     'bg-gdg-green-300',
   ]
   return (
-    <div className="absolute top-8 left-8 flex gap-3">
+    <div className="absolute top-4 left-4 flex gap-2 md:top-8 md:left-8 md:gap-3">
       {colors.map((c, i) => (
         <motion.div
           key={i}
@@ -146,7 +146,7 @@ function GoogleDotsLight() {
     'bg-gdg-green-200',
   ]
   return (
-    <div className="absolute top-8 left-8 flex gap-3">
+    <div className="absolute top-4 left-4 flex gap-2 md:top-8 md:left-8 md:gap-3">
       {colors.map((c, i) => (
         <motion.div
           key={i}
@@ -171,7 +171,7 @@ function GoogleDotsLight() {
 
 function CoverSlide({ lang }: { lang: Locale }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+    <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <FloatingCircle
         color="bg-gdg-blue-300/15"
         size={500}
@@ -209,7 +209,7 @@ function CoverSlide({ lang }: { lang: Locale }) {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-6 px-4 md:gap-8"
+        className="relative z-10 flex w-full flex-col items-center gap-4 px-4 md:gap-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
@@ -238,7 +238,7 @@ function CoverSlide({ lang }: { lang: Locale }) {
         </motion.p>
 
         <motion.div variants={fadeUp} className="mt-2 md:mt-4">
-          <p className="rounded-full bg-neutral-100 px-6 py-2.5 text-base text-neutral-500 md:px-8 md:py-3 md:text-lg">
+          <p className="rounded-full bg-neutral-100 px-4 py-2 text-xs text-neutral-500 md:px-8 md:py-3 md:text-lg">
             {t(lang, {
               ko: '2026 첨단컴퓨팅학부 신입생 OT',
               en: '2026 School of Advanced Computing Freshman Orientation',
@@ -287,17 +287,17 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
   ]
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+    <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-4xl flex-col gap-8 px-8 md:gap-12"
+        className="relative z-10 flex w-full max-w-4xl flex-col gap-4 px-5 md:gap-12 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={fadeUp}>
-          <h2 className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
+          <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
             {t(lang, { ko: 'GDGoC란?', en: 'What is GDGoC?' })}
           </h2>
           <ColorBar color="bg-gdg-blue-300" />
@@ -305,15 +305,14 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
 
         <motion.p
           variants={fadeUp}
-          className="text-xl leading-relaxed text-neutral-600 md:text-2xl"
+          className="text-sm leading-relaxed text-neutral-600 md:text-2xl"
         >
           {lang === 'ko' ? (
             <>
               <span className="font-semibold text-neutral-800">
                 Google Developer Group on Campus
               </span>
-              는{' '}
-              <span className="text-logo-blue font-semibold">Google</span>이
+              는 <span className="text-logo-blue font-semibold">Google</span>이
               지원하는 전 세계 대학 개발자 커뮤니티입니다.
             </>
           ) : (
@@ -327,7 +326,7 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
           )}
         </motion.p>
 
-        <div className="flex flex-col gap-4 md:gap-5">
+        <div className="flex flex-col gap-2 md:gap-5">
           {points.map((point, i) => (
             <motion.div
               key={i}
@@ -344,7 +343,7 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
                   stiffness: 300,
                 }}
               />
-              <p className="text-lg text-neutral-700 md:text-xl">
+              <p className="text-sm text-neutral-700 md:text-xl">
                 {t(lang, point.text)}
               </p>
             </motion.div>
@@ -394,11 +393,11 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
   ]
 
   return (
-    <div className="bg-gdg-white relative flex h-full w-full items-center justify-center overflow-hidden">
+    <div className="bg-gdg-white relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-5xl flex-col items-center gap-10 px-8 md:gap-14"
+        className="relative z-10 flex w-full max-w-5xl flex-col items-center gap-4 px-5 md:gap-14 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
@@ -420,7 +419,7 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
 
         <motion.p
           variants={fadeUp}
-          className="text-center text-lg text-neutral-600 md:text-xl"
+          className="text-center text-sm text-neutral-600 md:text-xl"
         >
           {t(lang, {
             ko: '연세대학교에서 활동하는 Google Developer Group on Campus입니다.',
@@ -428,15 +427,15 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
           })}
         </motion.p>
 
-        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-3 md:gap-6">
           {values.map((v, i) => (
             <motion.div
               key={i}
               variants={scaleIn}
-              className={`rounded-2xl border-2 ${v.borderColor} ${v.bg} p-6 md:p-8`}
+              className={`rounded-2xl border-2 ${v.borderColor} ${v.bg} p-4 md:p-8`}
             >
               <motion.div
-                className={`mb-4 h-3 w-3 rounded-full ${v.dot}`}
+                className={`mb-2 h-3 w-3 rounded-full ${v.dot} md:mb-4`}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{
@@ -445,10 +444,10 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
                   stiffness: 300,
                 }}
               />
-              <h3 className="mb-3 text-xl font-bold text-neutral-800 md:text-2xl">
+              <h3 className="mb-2 text-base font-bold text-neutral-800 md:mb-3 md:text-2xl">
                 {v.title}
               </h3>
-              <p className="text-base leading-relaxed text-neutral-600 md:text-lg">
+              <p className="text-xs leading-relaxed text-neutral-600 md:text-lg">
                 {t(lang, v.description)}
               </p>
             </motion.div>
@@ -474,12 +473,9 @@ function ActivityBullet({
 }) {
   return (
     <div className="flex items-start gap-2.5">
-      <div
-        className={`mt-2 h-2 w-2 flex-shrink-0 rounded-full ${color}`}
-      />
+      <div className={`mt-2 h-2 w-2 flex-shrink-0 rounded-full ${color}`} />
       <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
-        <span className="font-semibold text-neutral-800">{label}</span>{' '}
-        {text}
+        <span className="font-semibold text-neutral-800">{label}</span> {text}
       </p>
     </div>
   )
@@ -487,17 +483,17 @@ function ActivityBullet({
 
 function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+    <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-5xl flex-col gap-8 px-8 md:gap-10"
+        className="relative z-10 flex w-full max-w-5xl flex-col gap-4 px-5 md:gap-10 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={fadeUp}>
-          <h2 className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
+          <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
             {t(lang, { ko: '주요 활동', en: 'Key Activities' })}
           </h2>
           <div className="flex">
@@ -505,16 +501,16 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
           </div>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 md:gap-6">
           {/* Session */}
           <motion.div
             variants={fadeInLeft}
-            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-4 shadow-sm md:p-7"
           >
-            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-blue-300" />
+            <div className="bg-gdg-blue-300 absolute top-0 left-0 h-full w-1.5" />
             <div className="flex flex-col gap-3 pl-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                <h3 className="text-base font-bold text-neutral-800 md:text-2xl">
                   Session
                 </h3>
                 <span className="bg-gdg-blue-100 text-gdg-blue-300 rounded-full px-3 py-0.5 text-sm font-semibold">
@@ -545,12 +541,12 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
           {/* Project */}
           <motion.div
             variants={fadeInRight}
-            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-4 shadow-sm md:p-7"
           >
-            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-red-300" />
+            <div className="bg-gdg-red-300 absolute top-0 left-0 h-full w-1.5" />
             <div className="flex flex-col gap-3 pl-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                <h3 className="text-base font-bold text-neutral-800 md:text-2xl">
                   Project
                 </h3>
                 <span className="bg-gdg-red-100 text-gdg-red-300 rounded-full px-3 py-0.5 text-sm font-semibold">
@@ -597,17 +593,17 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
 
 function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+    <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-5xl flex-col gap-8 px-8 md:gap-10"
+        className="relative z-10 flex w-full max-w-5xl flex-col gap-4 px-5 md:gap-10 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={fadeUp}>
-          <h2 className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
+          <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
             {t(lang, { ko: '주요 활동', en: 'Key Activities' })}
           </h2>
           <div className="flex">
@@ -615,16 +611,16 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
           </div>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 md:gap-6">
           {/* Networking */}
           <motion.div
             variants={fadeInLeft}
-            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-4 shadow-sm md:p-7"
           >
-            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-green-300" />
+            <div className="bg-gdg-green-300 absolute top-0 left-0 h-full w-1.5" />
             <div className="flex flex-col gap-3 pl-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                <h3 className="text-base font-bold text-neutral-800 md:text-2xl">
                   Networking
                 </h3>
                 <span className="bg-gdg-green-100 text-gdg-green-300 rounded-full px-3 py-0.5 text-sm font-semibold">
@@ -661,12 +657,12 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
           {/* Hackathon */}
           <motion.div
             variants={fadeInRight}
-            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-6 shadow-sm md:p-7"
+            className="relative overflow-hidden rounded-2xl bg-neutral-50 p-4 shadow-sm md:p-7"
           >
-            <div className="absolute top-0 left-0 h-full w-1.5 bg-gdg-yellow-300" />
+            <div className="bg-gdg-yellow-300 absolute top-0 left-0 h-full w-1.5" />
             <div className="flex flex-col gap-3 pl-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-bold text-neutral-800 md:text-2xl">
+                <h3 className="text-base font-bold text-neutral-800 md:text-2xl">
                   Hackathon
                 </h3>
                 <span className="bg-gdg-yellow-100 text-gdg-yellow-300 rounded-full px-3 py-0.5 text-sm font-semibold">
@@ -708,7 +704,7 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
 
 function FuturePlansSlide({ lang }: { lang: Locale }) {
   return (
-    <div className="bg-gdg-black relative flex h-full w-full items-center justify-center overflow-hidden">
+    <div className="bg-gdg-black relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
       <FloatingCircle
         color="bg-gdg-blue-300/10"
         size={400}
@@ -734,13 +730,13 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
       <GoogleDotsLight />
 
       <motion.div
-        className="relative z-10 flex max-w-4xl flex-col gap-10 px-8 md:gap-14"
+        className="relative z-10 flex w-full max-w-4xl flex-col gap-4 px-5 md:gap-14 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={fadeUp}>
-          <h2 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+          <h2 className="text-2xl font-bold text-white md:text-5xl lg:text-6xl">
             {t(lang, { ko: '향후 계획', en: "What's Ahead" })}
           </h2>
           <ColorBar color="bg-gdg-yellow-300" />
@@ -749,7 +745,7 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
         {/* The Bridge Hackathon */}
         <motion.div
           variants={fadeInLeft}
-          className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
+          className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm md:p-8"
         >
           <div className="flex items-start gap-4">
             <div className="flex flex-col items-center">
@@ -772,20 +768,20 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-3">
-                <h3 className="text-2xl font-bold text-white md:text-3xl">
+                <h3 className="text-lg font-bold text-white md:text-3xl">
                   2026 The Bridge Hackathon
                 </h3>
                 <span className="bg-gdg-blue-300/20 text-gdg-blue-200 rounded-full px-3 py-1 text-sm font-medium">
                   {t(lang, { ko: '5월 예정', en: 'May 2026' })}
                 </span>
               </div>
-              <p className="text-lg text-neutral-300 md:text-xl">
+              <p className="text-sm text-neutral-300 md:text-xl">
                 {t(lang, {
                   ko: '한국 서울에서 개최되는 한일 대학생 개발자 연합 해커톤',
                   en: 'A Korea-Japan joint hackathon for university developers, hosted in Seoul',
                 })}
               </p>
-              <p className="text-base text-neutral-500">
+              <p className="text-xs text-neutral-500 md:text-base">
                 {t(lang, {
                   ko: '연세대학교 · 고려대학교 · 와세다대학교 · 도쿄대학교 4개 대학이 함께 혁신적인 솔루션을 만들어내는 국제 해커톤',
                   en: 'An international hackathon uniting Yonsei, Korea, Waseda, and University of Tokyo to build innovative solutions together',
@@ -798,7 +794,7 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
         {/* Core Member & Member Recruitment */}
         <motion.div
           variants={fadeInLeft}
-          className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm md:p-8"
+          className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm md:p-8"
         >
           <div className="flex items-start gap-4">
             <div className="flex flex-col items-center">
@@ -815,7 +811,7 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-3">
-                <h3 className="text-2xl font-bold text-white md:text-3xl">
+                <h3 className="text-lg font-bold text-white md:text-3xl">
                   {t(lang, {
                     ko: '26-27 Core Member & Member 선발',
                     en: '26-27 Core Member & Member Recruitment',
@@ -828,13 +824,13 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
                   })}
                 </span>
               </div>
-              <p className="text-lg text-neutral-300 md:text-xl">
+              <p className="text-sm text-neutral-300 md:text-xl">
                 {t(lang, {
                   ko: '2026 2학기 전, 26-27 Core Member 및 Member 선발 예정',
                   en: 'Recruiting 26-27 Core Members and Members before Fall 2026',
                 })}
               </p>
-              <p className="text-base text-neutral-500">
+              <p className="text-xs text-neutral-500 md:text-base">
                 {t(lang, {
                   ko: '함께 GDGoC Yonsei를 이끌어갈 열정적인 멤버를 찾고 있습니다',
                   en: 'Looking for passionate members to help lead GDGoC Yonsei',
@@ -899,11 +895,11 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
   ]
 
   return (
-    <div className="bg-gdg-white relative flex h-full w-full items-center justify-center overflow-hidden">
+    <div className="bg-gdg-white relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-6xl flex-col gap-8 px-8 md:gap-10"
+        className="relative z-10 flex w-full max-w-6xl flex-col gap-3 px-5 md:gap-10 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
@@ -918,26 +914,26 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
           <ColorBar color="bg-gdg-green-300" />
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-3 md:gap-5">
           {parts.map((p, i) => (
             <motion.div
               key={i}
               variants={scaleIn}
-              className="relative overflow-hidden rounded-2xl bg-white p-5 shadow-sm md:p-6"
+              className="relative overflow-hidden rounded-2xl bg-white p-3 shadow-sm md:p-6"
             >
               <div
                 className={`absolute top-0 right-0 left-0 h-1 ${p.accent}`}
               />
               <div className="flex flex-col gap-3">
                 <h3
-                  className={`text-xl font-bold ${p.textAccent} md:text-2xl`}
+                  className={`text-base font-bold ${p.textAccent} md:text-2xl`}
                 >
                   {p.name}
                 </h3>
                 <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
                   {t(lang, p.description)}
                 </p>
-                <div className={`rounded-xl ${p.accentLight} p-3`}>
+                <div className={`rounded-xl ${p.accentLight} p-2 md:p-3`}>
                   <p className="text-xs font-semibold text-neutral-500 md:text-sm">
                     Ideal Candidate
                   </p>
@@ -1005,11 +1001,11 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
   ]
 
   return (
-    <div className="bg-gdg-white relative flex h-full w-full items-center justify-center overflow-hidden">
+    <div className="bg-gdg-white relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
       <GoogleDots />
 
       <motion.div
-        className="relative z-10 flex max-w-6xl flex-col gap-8 px-8 md:gap-10"
+        className="relative z-10 flex w-full max-w-6xl flex-col gap-3 px-5 md:gap-10 md:px-8"
         variants={stagger}
         initial="hidden"
         animate="visible"
@@ -1024,26 +1020,26 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
           <ColorBar color="bg-gdg-blue-300" />
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-3 md:gap-5">
           {parts.map((p, i) => (
             <motion.div
               key={i}
               variants={scaleIn}
-              className="relative overflow-hidden rounded-2xl bg-white p-5 shadow-sm md:p-6"
+              className="relative overflow-hidden rounded-2xl bg-white p-3 shadow-sm md:p-6"
             >
               <div
                 className={`absolute top-0 right-0 left-0 h-1 ${p.accent}`}
               />
               <div className="flex flex-col gap-3">
                 <h3
-                  className={`text-xl font-bold ${p.textAccent} md:text-2xl`}
+                  className={`text-base font-bold ${p.textAccent} md:text-2xl`}
                 >
                   {p.name}
                 </h3>
                 <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
                   {t(lang, p.description)}
                 </p>
-                <div className={`rounded-xl ${p.accentLight} p-3`}>
+                <div className={`rounded-xl ${p.accentLight} p-2 md:p-3`}>
                   <p className="text-xs font-semibold text-neutral-500 md:text-sm">
                     Ideal Candidate
                   </p>
@@ -1066,7 +1062,7 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
 
 function ThankYouSlide({ lang }: { lang: Locale }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-white">
+    <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <FloatingCircle
         color="bg-gdg-blue-300/12"
         size={380}
@@ -1097,18 +1093,18 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-5 px-4 md:gap-6"
+        className="relative z-10 flex w-full flex-col items-center gap-3 px-4 md:gap-6"
         variants={stagger}
         initial="hidden"
         animate="visible"
       >
         <motion.div variants={scaleIn}>
-          <GDGLogo className="w-24 md:w-32" svgKey="ot-thanks" />
+          <GDGLogo className="w-16 md:w-32" svgKey="ot-thanks" />
         </motion.div>
 
         <motion.h2
           variants={fadeUp}
-          className="text-4xl font-bold text-neutral-800 md:text-5xl lg:text-6xl"
+          className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl"
         >
           {t(lang, { ko: '감사합니다', en: 'Thank You' })}
         </motion.h2>
@@ -1117,10 +1113,10 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
           variants={fadeUp}
           className="flex flex-col items-center gap-0.5"
         >
-          <p className="text-base text-neutral-600 md:text-lg">
+          <p className="text-sm text-neutral-600 md:text-lg">
             Google Developer Group on Campus
           </p>
-          <p className="text-logo-blue text-sm font-medium md:text-base">
+          <p className="text-logo-blue text-xs font-medium md:text-base">
             Yonsei University
           </p>
         </motion.div>
@@ -1128,35 +1124,35 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
         {/* Organizer + QR */}
         <motion.div
           variants={fadeUp}
-          className="mt-2 flex flex-col items-center gap-6 md:mt-4 md:flex-row md:items-start md:gap-10"
+          className="mt-1 flex flex-col items-center gap-4 md:mt-4 md:flex-row md:items-start md:gap-10"
         >
           {/* Organizer Contact */}
-          <div className="flex flex-col items-center gap-4 rounded-2xl bg-neutral-50 px-12 py-7 md:px-16 md:py-9">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-neutral-50 px-6 py-4 md:px-16 md:py-9">
             <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
               Organizer
             </p>
             <div className="flex flex-col items-center gap-1">
-              <p className="text-xl font-bold text-neutral-800 md:text-2xl">
+              <p className="text-base font-bold text-neutral-800 md:text-2xl">
                 {t(lang, { ko: '전현우', en: 'Hyunwoo Jeon' })}
               </p>
-              <p className="text-base text-neutral-500 md:text-lg">
+              <p className="text-sm text-neutral-500 md:text-lg">
                 GDGoC Yonsei Organizer
               </p>
             </div>
-            <div className="flex flex-col items-center gap-1 text-base text-neutral-500 md:text-lg">
+            <div className="flex flex-col items-center gap-0.5 text-xs text-neutral-500 md:text-lg">
               <p>jhyunwoo@yonsei.ac.kr</p>
               <p>@gdg.yonseiuniv</p>
             </div>
           </div>
 
           {/* QR Code */}
-          <div className="flex flex-col items-center gap-4 rounded-2xl bg-neutral-50 px-10 py-7 md:px-12 md:py-9">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-neutral-50 px-6 py-4 md:px-12 md:py-9">
             <p className="text-sm font-semibold tracking-widest text-neutral-400 uppercase">
               Homepage
             </p>
             <Suspense
               fallback={
-                <div className="h-[160px] w-[160px] animate-pulse rounded-lg bg-neutral-200 md:h-[180px] md:w-[180px]" />
+                <div className="h-[120px] w-[120px] animate-pulse rounded-lg bg-neutral-200 md:h-[180px] md:w-[180px]" />
               }
             >
               <QRCode
@@ -1165,7 +1161,7 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
                 bgColor="transparent"
                 fgColor="#1e1e1e"
                 level="M"
-                className="h-[160px] w-[160px] md:h-[180px] md:w-[180px]"
+                className="h-[120px] w-[120px] md:h-[180px] md:w-[180px]"
               />
             </Suspense>
             <p className="text-sm text-neutral-400">gdgoc.yonsei.ac.kr</p>
@@ -1194,11 +1190,7 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
    Main Presentation Component
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export default function FreshmanOTPresentation({
-  lang,
-}: {
-  lang: Locale
-}) {
+export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
   const isAnimating = useRef(false)
@@ -1226,7 +1218,7 @@ export default function FreshmanOTPresentation({
         isAnimating.current = false
       }, 700)
     },
-    [current],
+    [current]
   )
 
   const next = useCallback(() => goTo(current + 1), [current, goTo])
@@ -1313,7 +1305,7 @@ export default function FreshmanOTPresentation({
       if (x > rect.width * 0.5) next()
       else prev()
     },
-    [next, prev],
+    [next, prev]
   )
 
   const slideVariants = {
@@ -1350,12 +1342,12 @@ export default function FreshmanOTPresentation({
           transition={{ duration: 0.5, ease: [0.45, 0, 0.55, 1] }}
           className="absolute inset-0"
         >
-          {slides[current]}
+          <div className="h-full overflow-y-auto">{slides[current]}</div>
         </motion.div>
       </AnimatePresence>
 
       {/* Progress bar */}
-      <div className="absolute right-0 bottom-0 left-0 z-50 flex gap-1.5 px-8 pb-6">
+      <div className="absolute right-0 bottom-0 left-0 z-50 flex gap-1 px-4 pb-4 md:gap-1.5 md:px-8 md:pb-6">
         {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
           <button
             key={i}
@@ -1375,7 +1367,7 @@ export default function FreshmanOTPresentation({
       </div>
 
       {/* Slide number */}
-      <div className="absolute right-8 bottom-10 z-50 font-mono text-xs tracking-widest text-neutral-400">
+      <div className="absolute right-4 bottom-7 z-50 font-mono text-xs tracking-widest text-neutral-400 md:right-8 md:bottom-10">
         {String(current + 1).padStart(2, '0')} /{' '}
         {String(SLIDE_COUNT).padStart(2, '0')}
       </div>
