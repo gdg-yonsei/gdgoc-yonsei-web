@@ -24,6 +24,8 @@ export default function MenuBarButton() {
       type={'button'}
       onClick={() => setIsMenuOpen(!isMenuOpen)}
       className={'md:hidden'}
+      aria-expanded={isMenuOpen}
+      aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
     >
       {isMenuOpen ? (
         <XMarkIcon className={'size-8 text-neutral-950'} />
