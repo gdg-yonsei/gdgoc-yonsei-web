@@ -65,3 +65,88 @@
 .h-home-screen {
   height: calc(100vh - 4.2rem);
 }
+
+/* Home shooting star background (CSS-only to avoid client JS) */
+.shooting-star {
+  position: absolute;
+  z-index: -10;
+  width: 6rem;
+  height: 1rem;
+  border-radius: 9999px;
+  opacity: 0.7;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes shooting-tr {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(135deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(120vmax, -120vmax, 0) rotate(135deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shooting-tl {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-120vmax, -120vmax, 0) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shooting-bl {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(135deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-120vmax, 120vmax, 0) rotate(135deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shooting-br {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(120vmax, 120vmax, 0) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.shooting-star-tr {
+  animation-name: shooting-tr;
+}
+
+.shooting-star-tl {
+  animation-name: shooting-tl;
+}
+
+.shooting-star-bl {
+  animation-name: shooting-bl;
+}
+
+.shooting-star-br {
+  animation-name: shooting-br;
+}
