@@ -2,6 +2,23 @@
  * @file This file contains a function to extract session data from a FormData object.
  */
 
+function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
+  if (typeof value !== 'string' || value.length === 0) {
+    return []
+  }
+
+  try {
+    const parsed = JSON.parse(value)
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+    return parsed.filter((item): item is string => typeof item === 'string')
+  } catch (error) {
+    console.error('Failed to parse array field:', error)
+    return []
+  }
+}
+
 /**
  * Extracts session-related data from a FormData object.
  * This function handles both regular fields and a JSON string for content images.
@@ -40,9 +57,7 @@ export default function getSessionFormData(formData: FormData): {
   const publicOpen = formData.get('publicOpen') === 'true'
   const maxCapacity = Number(formData.get('maxCapacity'))
   const partId = formData.get('partId') as string | null
-  const participantId = JSON.parse(
-    formData.get('participantId') as string
-  ) as string[]
+  const participantId = parseStringArrayFromJson(formData.get('participantId'))
   const type = formData.get('type') as string
   const displayOnWebsite = formData.get('displayOnWebsite') === 'true'
 
@@ -52,16 +67,7 @@ export default function getSessionFormData(formData: FormData): {
   }
 
   // Safely parse contentImages JSON string
-  const contentImages = formData.get('contentImages') as string
-  let contentImagesArray: string[] = []
-  try {
-    if (contentImages) {
-      contentImagesArray = JSON.parse(contentImages) as string[]
-    }
-  } catch (error) {
-    console.error('Failed to parse contentImages:', error)
-    // Default to an empty array in case of an error
-  }
+  const contentImagesArray = parseStringArrayFromJson(formData.get('contentImages'))
 
   const generationId = formData.get('generationId') as string | null
   const startAt = new Date(formData.get('startAt') as string)

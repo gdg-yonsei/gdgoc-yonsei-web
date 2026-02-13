@@ -12,7 +12,19 @@ const SITE_URL = 'https://gdgoc.yonsei.ac.kr'
 const SLIDE_COUNT = 9
 
 type I18nText = { ko: string; en: string }
-const t = (lang: Locale, text: I18nText) => text[lang]
+/**
+ * `getLocalizedText` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`, `Locale`, `text`, `I18nText`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+ * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+ * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+ *
+ * 작동 결과:
+ * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+ * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+ */
+const getLocalizedText = (lang: Locale, text: I18nText) => text[lang]
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Animation Variants
@@ -67,6 +79,18 @@ const fadeInRight = {
    Decorative Components
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FloatingCircle` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function FloatingCircle({
   color,
   size,
@@ -99,6 +123,18 @@ function FloatingCircle({
   )
 }
 
+/**
+ * `ColorBar` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`color`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ColorBar({ color }: { color: string }) {
   return (
     <motion.div
@@ -111,6 +147,18 @@ function ColorBar({ color }: { color: string }) {
   )
 }
 
+/**
+ * `GoogleDots` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GoogleDots() {
   const colors = [
     'bg-gdg-blue-300',
@@ -138,6 +186,18 @@ function GoogleDots() {
   )
 }
 
+/**
+ * `GoogleDotsLight` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GoogleDotsLight() {
   const colors = [
     'bg-gdg-blue-200',
@@ -169,6 +229,18 @@ function GoogleDotsLight() {
    Slide 1 — Cover
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `CoverSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function CoverSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -239,7 +311,7 @@ function CoverSlide({ lang }: { lang: Locale }) {
 
         <motion.div variants={fadeUp} className="mt-2 md:mt-4">
           <p className="rounded-full bg-neutral-100 px-4 py-2 text-xs text-neutral-500 md:px-8 md:py-3 md:text-lg">
-            {t(lang, {
+            {getLocalizedText(lang, {
               ko: '2026 첨단컴퓨팅학부 신입생 OT',
               en: '2026 School of Advanced Computing Freshman Orientation',
             })}
@@ -254,6 +326,18 @@ function CoverSlide({ lang }: { lang: Locale }) {
    Slide 2 — What is GDGoC?
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `WhatIsGDGoCSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
   const points = [
     {
@@ -298,7 +382,7 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
       >
         <motion.div variants={fadeUp}>
           <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
-            {t(lang, { ko: 'GDGoC란?', en: 'What is GDGoC?' })}
+            {getLocalizedText(lang, { ko: 'GDGoC란?', en: 'What is GDGoC?' })}
           </h2>
           <ColorBar color="bg-gdg-blue-300" />
         </motion.div>
@@ -344,7 +428,7 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
                 }}
               />
               <p className="text-sm text-neutral-700 md:text-xl">
-                {t(lang, point.text)}
+                {getLocalizedText(lang, point.text)}
               </p>
             </motion.div>
           ))}
@@ -358,6 +442,18 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
    Slide 3 — GDGoC Yonsei
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `GDGoCYonseiSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
   const values = [
     {
@@ -421,7 +517,7 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
           variants={fadeUp}
           className="text-center text-sm text-neutral-600 md:text-xl"
         >
-          {t(lang, {
+          {getLocalizedText(lang, {
             ko: '연세대학교에서 활동하는 Google Developer Group on Campus입니다.',
             en: 'The Google Developer Group on Campus chapter at Yonsei University.',
           })}
@@ -448,7 +544,7 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
                 {v.title}
               </h3>
               <p className="text-xs leading-relaxed text-neutral-600 md:text-lg">
-                {t(lang, v.description)}
+                {getLocalizedText(lang, v.description)}
               </p>
             </motion.div>
           ))}
@@ -462,6 +558,18 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
    Slide 4 — Activities: Session & Project
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ActivityBullet` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivityBullet({
   label,
   text,
@@ -481,6 +589,18 @@ function ActivityBullet({
   )
 }
 
+/**
+ * `ActivitiesSessionProjectSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -494,7 +614,7 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
       >
         <motion.div variants={fadeUp}>
           <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
-            {t(lang, { ko: '주요 활동', en: 'Key Activities' })}
+            {getLocalizedText(lang, { ko: '주요 활동', en: 'Key Activities' })}
           </h2>
           <div className="flex">
             <ColorBar color="bg-gdg-red-300" />
@@ -514,13 +634,13 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                   Session
                 </h3>
                 <span className="bg-gdg-blue-100 text-gdg-blue-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {t(lang, { ko: '기술 세션', en: 'Tech Sessions' })}
+                  {getLocalizedText(lang, { ko: '기술 세션', en: 'Tech Sessions' })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 <ActivityBullet
                   label="T19 —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '매주 화요일 7시에 진행하는 테크 세션으로 관심 있는 기술에 대한 발제를 진행합니다.',
                     en: 'Weekly Tuesday tech talks where speakers present and share their latest tech interests with all members.',
                   })}
@@ -528,7 +648,7 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                 />
                 <ActivityBullet
                   label="Part Session —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '파트별로 스터디 또는 논문 리뷰를 진행합니다.',
                     en: 'Weekly part-specific sessions for in-depth tech studies and paper reviews.',
                   })}
@@ -550,13 +670,13 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                   Project
                 </h3>
                 <span className="bg-gdg-red-100 text-gdg-red-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {t(lang, { ko: '팀 프로젝트', en: 'Team Projects' })}
+                  {getLocalizedText(lang, { ko: '팀 프로젝트', en: 'Team Projects' })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 <ActivityBullet
                   label="oTP (open Tech Project) —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '여러 파트의 멤버들과 팀을 이루어 서비스 개발, 연말 연고대 합동 Demo Day에서 발표',
                     en: 'Cross-part teams build real services, showcased at the year-end joint Yonsei-Korea Univ. Demo Day.',
                   })}
@@ -564,7 +684,7 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                 />
                 <ActivityBullet
                   label="PLP (Production Level Project) —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '실제 배포 수준의 서비스를 개발·출시하는 겨울 방학 집중 프로젝트',
                     en: 'Intensive winter program to develop and ship production-grade services.',
                   })}
@@ -572,7 +692,7 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                 />
                 <ActivityBullet
                   label="Solution Challenge —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: 'Google 주최 국제대회, 사회 문제 해결 솔루션 개발',
                     en: "Google's international competition for social impact solutions — top results 3 years running.",
                   })}
@@ -591,6 +711,18 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
    Slide 5 — Activities: Networking & Hackathon
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ActivitiesNetworkingHackathonSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -604,7 +736,7 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
       >
         <motion.div variants={fadeUp}>
           <h2 className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl">
-            {t(lang, { ko: '주요 활동', en: 'Key Activities' })}
+            {getLocalizedText(lang, { ko: '주요 활동', en: 'Key Activities' })}
           </h2>
           <div className="flex">
             <ColorBar color="bg-gdg-red-300" />
@@ -624,27 +756,27 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
                   Networking
                 </h3>
                 <span className="bg-gdg-green-100 text-gdg-green-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {t(lang, { ko: '네트워킹', en: 'Networking' })}
+                  {getLocalizedText(lang, { ko: '네트워킹', en: 'Networking' })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 <ActivityBullet
-                  label={t(lang, {
+                  label={getLocalizedText(lang, {
                     ko: '연고대 합동 —',
                     en: 'Joint with Korea Univ. —',
                   })}
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: 'GDGoC KU와 함께 Demo Day, Networking Party 등 다양한 합동 행사 진행',
                     en: 'Joint events with GDGoC KU including Demo Day and Networking Party.',
                   })}
                   color="bg-gdg-green-300"
                 />
                 <ActivityBullet
-                  label={t(lang, {
+                  label={getLocalizedText(lang, {
                     ko: '타 챕터 교류 —',
                     en: 'Inter-chapter —',
                   })}
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '다른 학교 GDGoC 챕터들과 해커톤 및 다양한 행사를 함께 진행',
                     en: 'Expanding our network through hackathons and events with other university GDGoC chapters.',
                   })}
@@ -666,16 +798,16 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
                   Hackathon
                 </h3>
                 <span className="bg-gdg-yellow-100 text-gdg-yellow-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {t(lang, { ko: '해커톤', en: 'Hackathons' })}
+                  {getLocalizedText(lang, { ko: '해커톤', en: 'Hackathons' })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 <ActivityBullet
-                  label={t(lang, {
+                  label={getLocalizedText(lang, {
                     ko: 'GDGoC 연합 해커톤 —',
                     en: 'GDGoC Joint Hackathon —',
                   })}
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '여러 학교 GDGoC 챕터들이 모여 함께 진행하는 연합 해커톤',
                     en: 'Multi-university hackathons bringing together GDGoC chapters from across the country.',
                   })}
@@ -683,7 +815,7 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
                 />
                 <ActivityBullet
                   label="The Bridge Hackathon —"
-                  text={t(lang, {
+                  text={getLocalizedText(lang, {
                     ko: '한국·일본 4개 대학(연세대, 고려대, 와세다대, 도쿄대)이 함께하는 국제 해커톤',
                     en: 'International hackathon uniting 4 universities — Yonsei, Korea, Waseda, and U of Tokyo.',
                   })}
@@ -702,6 +834,18 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
    Slide 6 — Future Plans
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FuturePlansSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function FuturePlansSlide({ lang }: { lang: Locale }) {
   return (
     <div className="bg-gdg-black relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
@@ -737,7 +881,7 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
       >
         <motion.div variants={fadeUp}>
           <h2 className="text-2xl font-bold text-white md:text-5xl lg:text-6xl">
-            {t(lang, { ko: '향후 계획', en: "What's Ahead" })}
+            {getLocalizedText(lang, { ko: '향후 계획', en: "What's Ahead" })}
           </h2>
           <ColorBar color="bg-gdg-yellow-300" />
         </motion.div>
@@ -772,17 +916,17 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
                   2026 The Bridge Hackathon
                 </h3>
                 <span className="bg-gdg-blue-300/20 text-gdg-blue-200 rounded-full px-3 py-1 text-sm font-medium">
-                  {t(lang, { ko: '5월 예정', en: 'May 2026' })}
+                  {getLocalizedText(lang, { ko: '5월 예정', en: 'May 2026' })}
                 </span>
               </div>
               <p className="text-sm text-neutral-300 md:text-xl">
-                {t(lang, {
+                {getLocalizedText(lang, {
                   ko: '한국 서울에서 개최되는 한일 대학생 개발자 연합 해커톤',
                   en: 'A Korea-Japan joint hackathon for university developers, hosted in Seoul',
                 })}
               </p>
               <p className="text-xs text-neutral-500 md:text-base">
-                {t(lang, {
+                {getLocalizedText(lang, {
                   ko: '연세대학교 · 고려대학교 · 와세다대학교 · 도쿄대학교 4개 대학이 함께 혁신적인 솔루션을 만들어내는 국제 해커톤',
                   en: 'An international hackathon uniting Yonsei, Korea, Waseda, and University of Tokyo to build innovative solutions together',
                 })}
@@ -812,26 +956,26 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-lg font-bold text-white md:text-3xl">
-                  {t(lang, {
+                  {getLocalizedText(lang, {
                     ko: '26-27 Core Member & Member 선발',
                     en: '26-27 Core Member & Member Recruitment',
                   })}
                 </h3>
                 <span className="bg-gdg-green-300/20 text-gdg-green-200 rounded-full px-3 py-1 text-sm font-medium">
-                  {t(lang, {
+                  {getLocalizedText(lang, {
                     ko: '2학기 전 예정',
                     en: 'Before Fall 2026',
                   })}
                 </span>
               </div>
               <p className="text-sm text-neutral-300 md:text-xl">
-                {t(lang, {
+                {getLocalizedText(lang, {
                   ko: '2026 2학기 전, 26-27 Core Member 및 Member 선발 예정',
                   en: 'Recruiting 26-27 Core Members and Members before Fall 2026',
                 })}
               </p>
               <p className="text-xs text-neutral-500 md:text-base">
-                {t(lang, {
+                {getLocalizedText(lang, {
                   ko: '함께 GDGoC Yonsei를 이끌어갈 열정적인 멤버를 찾고 있습니다',
                   en: 'Looking for passionate members to help lead GDGoC Yonsei',
                 })}
@@ -848,6 +992,18 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
    Slide 7 — Recruitment: Dev Parts
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `RecruitmentDevSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function RecruitmentDevSlide({ lang }: { lang: Locale }) {
   const parts = [
     {
@@ -909,7 +1065,7 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
             We&apos;re looking for
           </p>
           <h2 className="text-3xl font-bold text-neutral-800 md:text-4xl lg:text-5xl">
-            {t(lang, { ko: '모집 파트 소개', en: 'Our Teams' })}
+            {getLocalizedText(lang, { ko: '모집 파트 소개', en: 'Our Teams' })}
           </h2>
           <ColorBar color="bg-gdg-green-300" />
         </motion.div>
@@ -931,14 +1087,14 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
                   {p.name}
                 </h3>
                 <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
-                  {t(lang, p.description)}
+                  {getLocalizedText(lang, p.description)}
                 </p>
                 <div className={`rounded-xl ${p.accentLight} p-2 md:p-3`}>
                   <p className="text-xs font-semibold text-neutral-500 md:text-sm">
                     Ideal Candidate
                   </p>
                   <p className="mt-1 text-sm leading-snug text-neutral-700 md:text-base">
-                    {t(lang, p.lookingFor)}
+                    {getLocalizedText(lang, p.lookingFor)}
                   </p>
                 </div>
               </div>
@@ -954,6 +1110,18 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
    Slide 8 — Recruitment: Design & Community Parts
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `RecruitmentDesignSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
   const parts = [
     {
@@ -1015,7 +1183,7 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
             We&apos;re looking for
           </p>
           <h2 className="text-3xl font-bold text-neutral-800 md:text-4xl lg:text-5xl">
-            {t(lang, { ko: '모집 파트 소개', en: 'Our Teams' })}
+            {getLocalizedText(lang, { ko: '모집 파트 소개', en: 'Our Teams' })}
           </h2>
           <ColorBar color="bg-gdg-blue-300" />
         </motion.div>
@@ -1037,14 +1205,14 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
                   {p.name}
                 </h3>
                 <p className="text-sm leading-relaxed text-neutral-600 md:text-base">
-                  {t(lang, p.description)}
+                  {getLocalizedText(lang, p.description)}
                 </p>
                 <div className={`rounded-xl ${p.accentLight} p-2 md:p-3`}>
                   <p className="text-xs font-semibold text-neutral-500 md:text-sm">
                     Ideal Candidate
                   </p>
                   <p className="mt-1 text-sm leading-snug text-neutral-700 md:text-base">
-                    {t(lang, p.lookingFor)}
+                    {getLocalizedText(lang, p.lookingFor)}
                   </p>
                 </div>
               </div>
@@ -1060,6 +1228,18 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
    Slide 9 — Thank You
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ThankYouSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ThankYouSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -1106,7 +1286,7 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
           variants={fadeUp}
           className="text-2xl font-bold text-neutral-800 md:text-5xl lg:text-6xl"
         >
-          {t(lang, { ko: '감사합니다', en: 'Thank You' })}
+          {getLocalizedText(lang, { ko: '감사합니다', en: 'Thank You' })}
         </motion.h2>
 
         <motion.div
@@ -1133,7 +1313,7 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
             </p>
             <div className="flex flex-col items-center gap-1">
               <p className="text-base font-bold text-neutral-800 md:text-2xl">
-                {t(lang, { ko: '전현우', en: 'Hyunwoo Jeon' })}
+                {getLocalizedText(lang, { ko: '전현우', en: 'Hyunwoo Jeon' })}
               </p>
               <p className="text-sm text-neutral-500 md:text-lg">
                 GDGoC Yonsei Organizer
@@ -1175,7 +1355,7 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
             className="text-logo-blue flex items-center gap-2 rounded-full border-2 border-current px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-blue-50 md:px-8 md:py-3 md:text-base"
             onClick={(e) => e.stopPropagation()}
           >
-            {t(lang, {
+            {getLocalizedText(lang, {
               ko: 'GDGoC Yonsei 홈페이지 방문하기 →',
               en: 'Visit GDGoC Yonsei Homepage →',
             })}
@@ -1190,6 +1370,18 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
    Main Presentation Component
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FreshmanOTPresentation` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -1234,7 +1426,19 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
 
   // Keyboard navigation
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    /**
+     * `handleKeyDown` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `KeyboardEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
+    const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -1250,14 +1454,26 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
           break
       }
     }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [next, prev])
 
   // Scroll navigation
   useEffect(() => {
     let lastTime = 0
-    const handler = (e: WheelEvent) => {
+    /**
+     * `handleWheel` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `WheelEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
       const now = Date.now()
       if (now - lastTime < 800) return
@@ -1265,19 +1481,43 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
       if (e.deltaY > 0) next()
       else if (e.deltaY < 0) prev()
     }
-    window.addEventListener('wheel', handler, { passive: false })
-    return () => window.removeEventListener('wheel', handler)
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
   }, [next, prev])
 
   // Touch swipe navigation
   useEffect(() => {
     let startX = 0
     let startY = 0
-    const onStart = (e: TouchEvent) => {
+    /**
+     * `handleTouchStart` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `TouchEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
+    const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
     }
-    const onEnd = (e: TouchEvent) => {
+    /**
+     * `handleTouchEnd` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `TouchEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
+    const handleTouchEnd = (e: TouchEvent) => {
       const dx = startX - e.changedTouches[0].clientX
       const dy = startY - e.changedTouches[0].clientY
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
@@ -1288,11 +1528,11 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
         else prev()
       }
     }
-    window.addEventListener('touchstart', onStart, { passive: true })
-    window.addEventListener('touchend', onEnd, { passive: true })
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
-      window.removeEventListener('touchstart', onStart)
-      window.removeEventListener('touchend', onEnd)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchend', handleTouchEnd)
     }
   }, [next, prev])
 

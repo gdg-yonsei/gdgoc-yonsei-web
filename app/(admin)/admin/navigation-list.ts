@@ -11,12 +11,14 @@ export interface NavigationItem {
 /**
  * 사이드 바 및 상단 바에서 표시할 관리자 페이지 목록
  */
-export default async function navigationList(userId: string | undefined) {
+export default async function getAdminNavigationItems(
+  userId: string | undefined
+) {
   if (!userId) {
     return []
   }
   const userRole = await getUserRole(userId)
-  const navigations = [
+  const adminNavigationItems = [
     {
       name: '🏠 Home',
       path: '/admin',
@@ -54,7 +56,7 @@ export default async function navigationList(userId: string | undefined) {
     },
   ]
 
-  return navigations.filter(
+  return adminNavigationItems.filter(
     (item) => checkPermission(userId)[userRole].get[item.dataResource]
   )
 }

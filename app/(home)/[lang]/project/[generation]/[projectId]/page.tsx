@@ -1,7 +1,7 @@
 import { getProject } from '@/lib/server/fetcher/get-project'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
-import ImagesSliders from '@/app/components/images-slider'
+import ImageSliderGallery from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
@@ -15,6 +15,18 @@ type Props = {
 export const dynamicParams = true
 export const dynamic = 'force-static'
 
+/**
+ * `generateStaticParams` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+ * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+ * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+ *
+ * 작동 결과:
+ * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+ * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+ */
 export async function generateStaticParams() {
   const projects = await getProjects()
   const projectIdAndGenerationId = projects.map((project) => ({
@@ -22,7 +34,8 @@ export async function generateStaticParams() {
     projectId: String(project.id),
   }))
   const langs = ['ko', 'en']
-  let paramsList: { generation: string; projectId: string; lang: string }[] = []
+  const paramsList: { generation: string; projectId: string; lang: string }[] =
+    []
   for (const lang of langs) {
     for (const projectAndGeneration of projectIdAndGenerationId) {
       paramsList.push({
@@ -34,6 +47,18 @@ export async function generateStaticParams() {
   return paramsList
 }
 
+/**
+ * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`Props`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+ * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+ * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+ *
+ * 작동 결과:
+ * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+ * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+ */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
 
@@ -66,6 +91,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+/**
+ * `ProjectPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`Props`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 export default async function ProjectPage({ params }: Props) {
   const { projectId, lang, generation } = await params
   const projectData = await getProject(projectId)
@@ -82,7 +119,9 @@ export default async function ProjectPage({ params }: Props) {
       <PageTitle>
         {lang === 'ko' ? projectData.nameKo : projectData.name}
       </PageTitle>
-      <ImagesSliders images={[projectData.mainImage, ...projectData.images]} />
+      <ImageSliderGallery
+        images={[projectData.mainImage, ...projectData.images]}
+      />
       <div className={'flex flex-col gap-8 py-8'}>
         <div className={'flex flex-col'}>
           <div className={'border-gdg-white flex w-full border-b-2'}>

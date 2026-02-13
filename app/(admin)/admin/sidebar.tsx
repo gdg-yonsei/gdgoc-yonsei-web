@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { auth } from '@/auth'
-import navigationList from '@/app/(admin)/admin/navigation-list'
+import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 
 /**
@@ -46,7 +46,7 @@ export default async function Sidebar() {
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       <div className={'flex w-full flex-col gap-4 pt-4'}>
-        {(await navigationList(session?.user?.id)).map((item, i) => (
+        {(await getAdminNavigationItems(session?.user?.id)).map((item, i) => (
           <SidebarNavigator href={item.path} key={i}>
             {item.name}
           </SidebarNavigator>

@@ -1,9 +1,7 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission, {
-  ResourceType,
-} from '@/lib/server/permission/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
@@ -13,19 +11,37 @@ import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import deleteR2Images from '@/lib/server/delete-r2-images'
 import { revalidateCache } from '@/lib/server/cache'
+import { deleteResourceValidation } from '@/lib/validations/admin-api'
 
-export default async function dataDeleteAction(
+/**
+ * `deleteResourceAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+ * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+ * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+ *
+ * 작동 결과:
+ * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+ * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+ */
+export default async function deleteResourceAction(
   prev: { error: string },
   formData: FormData
 ) {
+  void prev
   const session = await auth()
-  const dataType = formData.get('dataType') as ResourceType
-  const dataId = formData.get('dataId') as string | null
 
-  // 삭제할 데이터 id 확인
-  if (!dataId) {
-    return { error: 'Data ID not found' }
+  const validationResult = deleteResourceValidation.safeParse({
+    dataType: formData.get('dataType'),
+    dataId: formData.get('dataId'),
+  })
+
+  if (!validationResult.success) {
+    return { error: validationResult.error.issues[0].message }
   }
+
+  const { dataType, dataId } = validationResult.data
 
   // 데이터를 삭제할 권한이 있는지 확인
   const canDelete = await handlePermission(
@@ -35,7 +51,7 @@ export default async function dataDeleteAction(
   )
 
   if (!canDelete) {
-    forbidden()
+    return forbidden()
   }
 
   try {
