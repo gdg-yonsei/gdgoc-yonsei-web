@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
-import GYMSNavigation from '@/app/components/header/gyms-navigation'
+import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
+import AdminDashboardLink from '@/app/components/header/gyms-navigation'
 import { Suspense } from 'react'
 import { Locale } from '@/i18n-config'
 
@@ -9,7 +9,7 @@ export default async function DesktopNavigationList({
 }: {
   lang: Locale
 }) {
-  const lastGeneration = await getLastGeneration()
+  const lastGeneration = await getLatestGeneration()
   return (
     <div
       className={
@@ -17,7 +17,7 @@ export default async function DesktopNavigationList({
       }
     >
       <Suspense>
-        <GYMSNavigation />
+        <AdminDashboardLink />
       </Suspense>
       <Link
         href={`/${lang}/session${lastGeneration ? '/' + lastGeneration.name : ''}`}

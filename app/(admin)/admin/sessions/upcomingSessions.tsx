@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
-import getUpcomingSessions from '@/lib/server/fetcher/admin/getUpcomingSessions'
+import getUserUpcomingSessions from '@/lib/server/fetcher/admin/getUpcomingSessions'
 
 export default async function UpcomingSessions() {
   const session = await auth()
@@ -9,7 +9,7 @@ export default async function UpcomingSessions() {
     return forbidden()
   }
 
-  const enrolledSessions = await getUpcomingSessions(session.user.id)
+  const enrolledSessions = await getUserUpcomingSessions(session.user.id)
 
   return (
     <div className={'pb-8'}>

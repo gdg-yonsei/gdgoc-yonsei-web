@@ -6,7 +6,7 @@ import JotaiProvider from '@/app/components/jotai-provider'
 import Sidebar from '@/app/components/admin/sidebar'
 import AuthProvider from '@/app/components/auth/auth-provider'
 import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
-import navigationList from '@/app/(admin)/admin/navigation-list'
+import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import { forbidden, redirect } from 'next/navigation'
 import Modal from '@/app/components/admin/modal'
 
@@ -35,7 +35,7 @@ export default async function AdminLayout({
   }
 
   // 사용자의 권한에 따라 네비게이션 목록을 가져옴
-  const navigations = await navigationList(session?.user?.id)
+  const navigations = await getAdminNavigationItems(session?.user?.id)
 
   return (
     <AuthProvider>

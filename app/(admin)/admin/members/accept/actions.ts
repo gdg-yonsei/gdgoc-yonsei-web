@@ -13,7 +13,7 @@ import { revalidateCache } from '@/lib/server/cache'
 import getDeleteMemberFormData from '@/lib/server/form-data/get-delete-member-form-data'
 import { deleteMemberValidation } from '@/lib/validations/delete-member'
 
-export default async function actions(
+export default async function acceptMemberAction(
   prev: { error: string },
   formData: FormData
 ) {

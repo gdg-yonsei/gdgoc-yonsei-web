@@ -3,7 +3,7 @@
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 
-export default function Button() {
+export default function RefreshDataSubmitButton() {
   const { pending } = useFormStatus()
 
   return (

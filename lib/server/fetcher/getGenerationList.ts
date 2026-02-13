@@ -3,10 +3,10 @@
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { asc } from 'drizzle-orm'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
-export default async function getGenerationList() {
-  cacheTagT('generations')
+export default async function getGenerationSummaries() {
+  applyCacheTags('generations')
 
   return db
     .select({ id: generations.id, name: generations.name })

@@ -4,10 +4,10 @@ import Image from 'next/image'
 import { useRef, useState, useEffect } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
-export default function ImagesSliders({ images }: { images: string[] }) {
+export default function ImageSliderGallery({ images }: { images: string[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
-  const [index, setIndex] = useState<number>(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const imageRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Intersection Observer 설정
@@ -25,7 +25,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
             (ref) => ref === entry.target
           )
           if (targetIndex !== -1) {
-            setIndex(targetIndex)
+            setCurrentImageIndex(targetIndex)
           }
         }
       })
@@ -41,11 +41,12 @@ export default function ImagesSliders({ images }: { images: string[] }) {
     }
   }, [images])
 
-  function imagePreviewClick(i: number) {
+  function handlePreviewImageClick(previewIndex: number) {
     if (scrollRef.current) {
       const { current } = scrollRef
-      const scrollAmount = scrollRef.current.clientWidth * (index - i) // 이동 거리 (픽셀 단위)
-      setIndex(i)
+      const scrollAmount =
+        scrollRef.current.clientWidth * (currentImageIndex - previewIndex) // 이동 거리 (픽셀 단위)
+      setCurrentImageIndex(previewIndex)
 
       current.scrollTo({
         left: current.scrollLeft - scrollAmount,
@@ -54,18 +55,18 @@ export default function ImagesSliders({ images }: { images: string[] }) {
     }
   }
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scrollByDirection = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { current } = scrollRef
       const scrollAmount = scrollRef.current.clientWidth // 이동 거리 (픽셀 단위)
 
       if (direction === 'left') {
-        if (index !== 0) {
-          setIndex((prev) => prev - 1)
+        if (currentImageIndex !== 0) {
+          setCurrentImageIndex((prev) => prev - 1)
         }
       } else {
-        if (index !== images.length - 1) {
-          setIndex((prev) => prev + 1)
+        if (currentImageIndex !== images.length - 1) {
+          setCurrentImageIndex((prev) => prev + 1)
         }
       }
 
@@ -114,7 +115,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
         <div className={'flex w-full items-center justify-between p-2 md:w-28'}>
           <button
             type={'button'}
-            onClick={() => scroll('left')}
+            onClick={() => scrollByDirection('left')}
             className={
               'rounded-full p-1 transition-colors hover:bg-neutral-100'
             }
@@ -123,7 +124,7 @@ export default function ImagesSliders({ images }: { images: string[] }) {
           </button>
           <button
             type={'button'}
-            onClick={() => scroll('right')}
+            onClick={() => scrollByDirection('right')}
             className={
               'rounded-full p-1 transition-colors hover:bg-neutral-100'
             }
@@ -144,8 +145,8 @@ export default function ImagesSliders({ images }: { images: string[] }) {
               alt={'Preview'}
               width={100}
               height={100}
-              className={`aspect-square size-24 rounded-lg object-cover transition-all ${index === i && 'brightness-50 grayscale'}`}
-              onClick={() => imagePreviewClick(i)}
+              className={`aspect-square size-24 rounded-lg object-cover transition-all ${currentImageIndex === i && 'brightness-50 grayscale'}`}
+              onClick={() => handlePreviewImageClick(i)}
             />
           ))}
         </div>

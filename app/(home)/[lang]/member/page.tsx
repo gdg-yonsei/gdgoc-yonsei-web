@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
+import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
 import languageParamChecker from '@/lib/language-param-checker'
 
 /**
@@ -13,7 +13,7 @@ export default async function MemberRedirect({
   params: Promise<{ lang: string }>
 }) {
   const [lastGeneration, paramsData] = await Promise.all([
-    getLastGeneration(),
+    getLatestGeneration(),
     params,
   ])
 

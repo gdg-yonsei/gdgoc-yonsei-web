@@ -3,7 +3,7 @@ import db from '@/db'
 import { asc, desc } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
 export const preloadMembers = () => {
   void getMembers()
@@ -11,7 +11,7 @@ export const preloadMembers = () => {
 
 export async function getMembers() {
   'use cache'
-  cacheTagT('members', 'parts', 'generations')
+  applyCacheTags('members', 'parts', 'generations')
   return db.query.users.findMany({
     with: {
       usersToParts: {

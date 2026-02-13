@@ -1,7 +1,7 @@
 import { getProject } from '@/lib/server/fetcher/get-project'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
-import ImagesSliders from '@/app/components/images-slider'
+import ImageSliderGallery from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
@@ -82,7 +82,9 @@ export default async function ProjectPage({ params }: Props) {
       <PageTitle>
         {lang === 'ko' ? projectData.nameKo : projectData.name}
       </PageTitle>
-      <ImagesSliders images={[projectData.mainImage, ...projectData.images]} />
+      <ImageSliderGallery
+        images={[projectData.mainImage, ...projectData.images]}
+      />
       <div className={'flex flex-col gap-8 py-8'}>
         <div className={'flex flex-col'}>
           <div className={'border-gdg-white flex w-full border-b-2'}>

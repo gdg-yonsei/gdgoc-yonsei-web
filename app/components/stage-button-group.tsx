@@ -1,5 +1,5 @@
 import GenerationButtonGroup from '@/app/components/generation-button-group'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
 
 export default async function StageButtonGroup({
   generation,
@@ -10,7 +10,7 @@ export default async function StageButtonGroup({
   lang: string
   basePath: string
 }) {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
 
   return (
     <div className={'flex w-full'}>

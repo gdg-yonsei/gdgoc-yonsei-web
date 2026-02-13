@@ -2,15 +2,15 @@ import 'server-only'
 import db from '@/db'
 import { desc, eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
-export const preload = (partId: number) => {
+export const preloadPartById = (partId: number) => {
   void getPart(partId)
 }
 
 export async function getPart(partId: number) {
   'use cache'
-  cacheTagT('parts', 'members')
+  applyCacheTags('parts', 'members')
 
   console.log(new Date(), 'Fetch Part Data', partId)
   return db.query.parts.findFirst({

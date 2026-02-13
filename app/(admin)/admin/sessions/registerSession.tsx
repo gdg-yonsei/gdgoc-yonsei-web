@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import RegisterSessionCard from '@/app/(admin)/admin/sessions/registerSessionCard'
-import getNotEnrolledSessions from '@/app/(admin)/admin/sessions/getNotEnrolledSessions'
+import getUnenrolledUpcomingSessions from '@/app/(admin)/admin/sessions/getNotEnrolledSessions'
 
 export default async function RegisterSession() {
   const session = await auth()
@@ -9,7 +9,9 @@ export default async function RegisterSession() {
     return forbidden()
   }
 
-  const notEnrolledSessions = await getNotEnrolledSessions(session.user.id)
+  const notEnrolledSessions = await getUnenrolledUpcomingSessions(
+    session.user.id
+  )
 
   return (
     <div className={'pb-8'}>

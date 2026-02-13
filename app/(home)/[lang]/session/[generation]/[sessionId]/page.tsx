@@ -1,21 +1,21 @@
 import { getSession } from '@/lib/server/fetcher/get-session'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
-import ImagesSliders from '@/app/components/images-slider'
+import ImageSliderGallery from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import { Metadata } from 'next'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
+import getPublishedSessionsByGeneration from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
 export const dynamicParams = true
 export const dynamic = 'force-static'
 
 export async function generateStaticParams() {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
   const sessionsData = await Promise.all(
     generationList.map(async (generation) => {
-      const sessions = await getSessionList(generation.name)
+      const sessions = await getPublishedSessionsByGeneration(generation.name)
       return { generation: generation.name, sessions }
     })
   )
@@ -93,7 +93,7 @@ export default async function SessionPage({ params }: Props) {
         <PageTitle>
           {lang === 'ko' ? sessionData.nameKo : sessionData.name}
         </PageTitle>
-        <ImagesSliders
+        <ImageSliderGallery
           images={[sessionData.mainImage, ...sessionData.images]}
         />
 

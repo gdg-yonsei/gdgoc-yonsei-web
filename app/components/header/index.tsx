@@ -2,12 +2,12 @@ import GDGLogoLinkButton from '@/app/components/header/gdg-logo-link-button'
 import MenuBarButton from './menu-bar-button'
 import DesktopNavigationList from '@/app/components/header/desktop-navigation-list'
 import NavigationList from '@/app/components/header/navigation-list'
-import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
+import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
 import { auth } from '@/auth'
 import { Locale } from '@/i18n-config'
 
 export default async function Header({ lang }: { lang: Locale }) {
-  const lastGeneration = await getLastGeneration()
+  const lastGeneration = await getLatestGeneration()
   const isMember = !!(await auth())?.user?.id
 
   return (

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import getLastGeneration from '@/lib/server/fetcher/getLastGeneration'
+import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
 
 export default async function SessionRedirect({
   params,
@@ -7,7 +7,7 @@ export default async function SessionRedirect({
   params: Promise<{ lang: string }>
 }) {
   const [lastGeneration, paramsData] = await Promise.all([
-    getLastGeneration(),
+    getLatestGeneration(),
     params,
   ])
 

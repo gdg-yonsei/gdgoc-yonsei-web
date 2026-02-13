@@ -3,8 +3,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
+import getPublishedSessionsByGeneration from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -31,14 +31,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
   return generationList.map((generation) => ({ generation: generation.name }))
 }
 
 export default async function SessionPage({ params }: Props) {
   const paramsData = await params
 
-  const sessionList = await getSessionList(paramsData.generation)
+  const sessionList = await getPublishedSessionsByGeneration(
+    paramsData.generation
+  )
 
   return (
     <div className={'min-h-screen w-full pt-20'}>

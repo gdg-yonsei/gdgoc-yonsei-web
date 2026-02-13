@@ -2,15 +2,15 @@ import 'server-only'
 import db from '@/db'
 import { and, eq, lte } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
-export const preload = (sessionId: string) => {
+export const preloadSessionById = (sessionId: string) => {
   void getSession(sessionId)
 }
 
 export async function getSession(sessionId: string) {
   'use cache'
-  cacheTagT('sessions')
+  applyCacheTags('sessions')
 
   return db.query.sessions.findFirst({
     where: and(

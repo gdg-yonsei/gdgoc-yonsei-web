@@ -2,12 +2,14 @@ import db from '@/db'
 import { and, desc, eq, lte } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { sessions } from '@/db/schema/sessions'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 import { parts } from '@/db/schema/parts'
 
-export default async function getSessionList(generationName: string) {
+export default async function getPublishedSessionsByGeneration(
+  generationName: string
+) {
   'use cache'
-  cacheTagT('sessions', 'generations')
+  applyCacheTags('sessions', 'generations')
 
   return db
     .select({

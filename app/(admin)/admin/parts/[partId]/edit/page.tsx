@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: 'Edit Part',
 }
 
-export default async function EditGenerationPage({
+export default async function EditPartPage({
   params,
 }: {
   params: Promise<{ partId: string }>
@@ -46,7 +46,7 @@ export default async function EditGenerationPage({
   }
 
   // Part 정보 업데이트 Action
-  const updatePartsActionWithPartId = updatePartAction.bind(null, partId)
+  const updatePartActionWithPartId = updatePartAction.bind(null, partId)
 
   const generations = await getGenerations()
   const generationList = generations.map((generation) => ({
@@ -64,7 +64,7 @@ export default async function EditGenerationPage({
       </AdminNavigationButton>
       <div className={'admin-title py-4'}>Edit {partData.name}</div>
       <DataForm
-        action={updatePartsActionWithPartId}
+        action={updatePartActionWithPartId}
         className={'member-data-grid w-full gap-4'}
       >
         <DataInput

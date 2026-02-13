@@ -3,10 +3,10 @@ import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profil
 import db from '@/db'
 import { asc, eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
 import { parts } from '@/db/schema/parts'
 import addLangParams from '@/lib/server/add-lang-params'
 
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
   return addLangParams(
     generationList.map((generation) => ({ generation: generation.name })),
     ['ko', 'en']
@@ -43,7 +43,7 @@ export async function generateStaticParams() {
 
 export default async function MembersPage({ params }: Props) {
   'use cache'
-  cacheTagT('parts', 'members')
+  applyCacheTags('parts', 'members')
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({

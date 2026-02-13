@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import Link from 'next/link'
 
-export default async function GYMSNavigation() {
+export default async function AdminDashboardLink() {
   const session = await auth()
 
   if (session?.user?.id) {

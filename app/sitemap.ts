@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import db from '@/db'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
-import getSessionList from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
+import getPublishedSessionsByGeneration from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
 function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
   const langs = ['ko', 'en']
@@ -18,7 +18,7 @@ function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
 
   const projectsList: MetadataRoute.Sitemap = (
     await db.query.projects.findMany({
@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sessionsList: MetadataRoute.Sitemap = []
 
   for (const generation of generationList) {
-    const sessions = await getSessionList(generation.name)
+    const sessions = await getPublishedSessionsByGeneration(generation.name)
     if (sessions) {
       for (const session of sessions) {
         sessionsList.push({

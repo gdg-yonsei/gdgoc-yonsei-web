@@ -3,15 +3,15 @@ import db from '@/db'
 import { asc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
-export const preload = () => {
+export const preloadGenerations = () => {
   void getGenerations()
 }
 
 export async function getGenerations() {
   'use cache'
-  cacheTagT('generations', 'parts', 'members')
+  applyCacheTags('generations', 'parts', 'members')
   return db.query.generations.findMany({
     columns: {
       id: false,

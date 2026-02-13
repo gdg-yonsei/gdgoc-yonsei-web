@@ -7,9 +7,9 @@ import { eq } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationList from '@/lib/server/fetcher/getGenerationList'
+import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
 import addLangParams from '@/lib/server/add-lang-params'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
 export const dynamicParams = true
 export const dynamic = 'force-static'
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const generationList = await getGenerationList()
+  const generationList = await getGenerationSummaries()
   return addLangParams(
     generationList.map((generation) => ({ generation: generation.name })),
     ['en', 'ko']
@@ -45,7 +45,7 @@ export async function generateStaticParams() {
 
 export default async function ProjectsPage({ params }: Props) {
   'use cache'
-  cacheTagT('projects', 'generations')
+  applyCacheTags('projects', 'generations')
   const paramsData = await params
 
   const generationData = await db.query.generations.findFirst({

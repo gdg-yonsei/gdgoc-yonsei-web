@@ -10,15 +10,15 @@ import { and, desc, eq, ne } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import cacheTagT from '@/lib/server/cacheTagT'
+import applyCacheTags from '@/lib/server/cacheTagT'
 
-export const preload = () => {
+export const preloadAdminMembers = () => {
   void getMembers()
 }
 
 export async function getMembers() {
   'use cache'
-  cacheTagT('members', 'parts', 'generations')
+  applyCacheTags('members', 'parts', 'generations')
   console.log(new Date(), 'Fetch Members Data')
 
   // Fetch all users (except unverified) with their associated part and generation.

@@ -5,7 +5,7 @@ import { desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 
-export const preload = () => {
+export const preloadAdminSessions = () => {
   void getSessions()
 }
 

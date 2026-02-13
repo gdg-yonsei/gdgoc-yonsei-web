@@ -1,6 +1,6 @@
 'use client'
 
-import actions from '@/app/(admin)/admin/members/accept/actions'
+import acceptMemberAction from '@/app/(admin)/admin/members/accept/actions'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
@@ -31,7 +31,7 @@ export default function AcceptForm({ userId }: { userId: string }) {
   const [role, setRole] = useState('member')
 
   return (
-    <DataForm action={actions} className={'flex items-center gap-2'}>
+    <DataForm action={acceptMemberAction} className={'flex items-center gap-2'}>
       <div className={'text-lg font-semibold'}>Role</div>
       <RoleButton role={role} setRole={setRole} value={'member'}>
         Member
