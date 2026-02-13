@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
@@ -14,14 +15,11 @@ export default function GoogleSubmitButton() {
   const { pending } = useFormStatus()
   const [isAuthenticating, setIsAuthenticating] = useAtom(isAuthenticatingState)
 
-  /**
-   * 로그인 버튼 클릭 처리 함수
-   *
-   * isAuthenticating 상태를 true로 변경해 중복 제출을 방지합니다.
-   */
-  function handleSignInClick() {
-    setIsAuthenticating(true)
-  }
+  useEffect(() => {
+    if (pending) {
+      setIsAuthenticating(true)
+    }
+  }, [pending, setIsAuthenticating])
 
   return (
     <button
@@ -30,7 +28,6 @@ export default function GoogleSubmitButton() {
         'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 transition-all disabled:bg-neutral-100'
       }
       disabled={pending || isAuthenticating}
-      onClick={handleSignInClick}
     >
       {pending ? (
         <LoadingSpinner

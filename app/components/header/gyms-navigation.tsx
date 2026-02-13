@@ -16,6 +16,8 @@ import Link from 'next/link'
 export default async function AdminDashboardLink() {
   const session = await auth()
 
+  console.log(session)
+
   if (session?.user?.id) {
     return <Link href={'/admin'}>GYMS</Link>
   }
