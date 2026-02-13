@@ -49,7 +49,6 @@ export default async function DesktopNavigationList({
       >
         {lang === 'ko' ? '구성원' : 'Member'}
       </Link>
-      {/*<Link href={'/recruit'}>Recruit</Link>*/}
     </div>
   )
 }
