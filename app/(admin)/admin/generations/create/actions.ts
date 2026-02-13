@@ -6,7 +6,6 @@ import { generationValidation } from '@/lib/validations/generation'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { forbidden, redirect } from 'next/navigation'
-import { z } from 'zod'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 import { revalidateCache } from '@/lib/server/cache'
 
@@ -35,25 +34,28 @@ export async function createGenerationAction(
   // form data 에서 generation data 추출
   const { name, startDate, endDate } = getGenerationFormData(formData)
 
-  try {
-    // zod validation
-    generationValidation.parse({ name, startDate, endDate })
-  } catch (err) {
-    // 데이터 형식이 맞지 않을 경우 오류 반환
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0].message }
-    }
+  // zod validation
+  const parsedGenerationDataResult = generationValidation.safeParse({
+    name,
+    startDate,
+    endDate,
+  })
+
+  if (!parsedGenerationDataResult.success) {
+    console.log(parsedGenerationDataResult.error.issues)
+    return { error: parsedGenerationDataResult.error.issues[0].message }
   }
+
+  const parsedGenerationData = parsedGenerationDataResult.data
 
   // generation data 쿼리
   try {
     await db
       .insert(generations)
       .values({
-        name,
-        startDate,
-        endDate,
+        name: parsedGenerationData.name,
+        startDate: parsedGenerationData.startDate,
+        endDate: parsedGenerationData.endDate,
       })
       .returning({
         id: generations.id,
@@ -64,8 +66,8 @@ export async function createGenerationAction(
 
     // Warm up cache for the new generation member page
     const paths = [
-      `${process.env.NEXT_PUBLIC_SITE_URL}/ko/member/${name}`,
-      `${process.env.NEXT_PUBLIC_SITE_URL}/en/member/${name}`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/ko/member/${parsedGenerationData.name}`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/en/member/${parsedGenerationData.name}`,
     ]
 
     await Promise.allSettled(

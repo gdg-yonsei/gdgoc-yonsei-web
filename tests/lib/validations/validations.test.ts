@@ -10,8 +10,11 @@ import { sessionValidation } from '@/lib/validations/session'
 describe('validation schemas', () => {
   it('validates accept member payload', () => {
     expect(
-      acceptMemberValidation.safeParse({ userId: 'u1', role: 'MEMBER' }).success
+      acceptMemberValidation.safeParse({ userId: 'u1', role: 'member' }).success
     ).toBe(true)
+    expect(
+      acceptMemberValidation.safeParse({ userId: 'u1', role: 'MEMBER' }).success
+    ).toBe(false)
     expect(
       acceptMemberValidation.safeParse({ userId: '', role: '' }).success
     ).toBe(false)
@@ -40,6 +43,30 @@ describe('validation schemas', () => {
         endDate: '2025-12-31',
       }).success
     ).toBe(false)
+
+    expect(
+      generationValidation.safeParse({
+        name: '11th/admin',
+        startDate: '2025-01-01',
+        endDate: '2025-12-31',
+      }).success
+    ).toBe(false)
+
+    expect(
+      generationValidation.safeParse({
+        name: '11th',
+        startDate: '2025-01-01',
+        endDate: null,
+      }).success
+    ).toBe(true)
+
+    expect(
+      generationValidation.safeParse({
+        name: '11th',
+        startDate: '2025-01-01',
+        endDate: '',
+      }).success
+    ).toBe(true)
 
     const reversed = generationValidation.safeParse({
       name: '11th',
@@ -103,6 +130,16 @@ describe('validation schemas', () => {
     })
 
     expect(duplicate.success).toBe(false)
+
+    const duplicateInMembers = partValidation.safeParse({
+      name: 'Web',
+      description: 'desc',
+      generationId: 1,
+      membersList: ['u1', 'u1'],
+      doubleBoardMembersList: [],
+    })
+
+    expect(duplicateInMembers.success).toBe(false)
   })
 
   it('validates project payload', () => {
@@ -171,6 +208,13 @@ describe('validation schemas', () => {
       sessionValidation.safeParse({
         ...validSession,
         participantId: [],
+      }).success
+    ).toBe(false)
+
+    expect(
+      sessionValidation.safeParse({
+        ...validSession,
+        participantId: ['u1', 'u1'],
       }).success
     ).toBe(false)
   })

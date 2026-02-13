@@ -110,6 +110,28 @@ describe('form-data parsers', () => {
     })
   })
 
+  it('returns empty member arrays when part json fields are invalid', () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const formData = createFormData({
+      name: 'Web',
+      description: 'Web Part',
+      generationId: '10',
+      membersList: 'invalid-json',
+      doubleBoardMembersList: 'invalid-json',
+    })
+
+    expect(getPartFormData(formData)).toEqual({
+      name: 'Web',
+      description: 'Web Part',
+      generationId: 10,
+      membersList: [],
+      doubleBoardMembersList: [],
+    })
+    expect(errorSpy).toHaveBeenCalledTimes(2)
+
+    errorSpy.mockRestore()
+  })
+
   it('parses project form data', () => {
     const formData = createFormData({
       name: 'Project',
@@ -237,7 +259,8 @@ describe('form-data parsers', () => {
     expect(getSessionFormData(formData).type).toBe('Part Session')
   })
 
-  it('throws when participantId is not a valid json array in session form', () => {
+  it('returns empty participant array when participantId is invalid json', () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const formData = createFormData({
       name: 'Session',
       nameKo: '세션',
@@ -259,6 +282,9 @@ describe('form-data parsers', () => {
       displayOnWebsite: 'false',
     })
 
-    expect(() => getSessionFormData(formData)).toThrow()
+    expect(getSessionFormData(formData).participantId).toEqual([])
+    expect(errorSpy).toHaveBeenCalled()
+
+    errorSpy.mockRestore()
   })
 })

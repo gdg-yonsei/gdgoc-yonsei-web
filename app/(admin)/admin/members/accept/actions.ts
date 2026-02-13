@@ -5,7 +5,6 @@ import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import getAcceptMemberFormData from '@/lib/server/form-data/get-accept-member-form-data'
 import { acceptMemberValidation } from '@/lib/validations/accept-member'
-import { z } from 'zod'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
@@ -34,17 +33,16 @@ export default async function acceptMemberAction(
   if (!(await handlePermission(session?.user?.id, 'put', 'membersRole'))) {
     return forbidden()
   }
-  const { userId, role } = getAcceptMemberFormData(formData)
+  const parsedDataResult = acceptMemberValidation.safeParse(
+    getAcceptMemberFormData(formData)
+  )
 
-  try {
-    acceptMemberValidation.parse({ userId, role })
-  } catch (err) {
-    // 데이터 형식이 맞지 않을 경우 오류 반환
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0].message }
-    }
+  if (!parsedDataResult.success) {
+    console.log(parsedDataResult.error.issues)
+    return { error: parsedDataResult.error.issues[0].message }
   }
+
+  const { userId, role } = parsedDataResult.data
 
   const userRole: 'UNVERIFIED' | 'MEMBER' | 'CORE' | 'ALUMNUS' | 'LEAD' =
     role === 'member'
@@ -90,18 +88,15 @@ export async function deleteUserAction(
   }
   const { userId } = getDeleteMemberFormData(formData)
 
-  try {
-    deleteMemberValidation.parse({ userId })
-  } catch (err) {
-    // 데이터 형식이 맞지 않을 경우 오류 반환
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0].message }
-    }
+  const parsedDataResult = deleteMemberValidation.safeParse({ userId })
+
+  if (!parsedDataResult.success) {
+    console.log(parsedDataResult.error.issues)
+    return { error: parsedDataResult.error.issues[0].message }
   }
 
   try {
-    await db.delete(users).where(eq(users.id, userId))
+    await db.delete(users).where(eq(users.id, parsedDataResult.data.userId))
 
     revalidateCache('members')
   } catch (e) {

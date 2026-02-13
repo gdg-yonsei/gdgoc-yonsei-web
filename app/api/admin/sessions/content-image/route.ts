@@ -2,6 +2,8 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import { NextResponse } from 'next/server'
+import { multipleImageUploadValidation } from '@/lib/validations/admin-api'
+import { getSafeImageExtension } from '@/lib/server/r2-object-key'
 
 export interface SessionContentImagePostRequest {
   images: { fileName: string; type: string }[]
@@ -23,17 +25,34 @@ export async function POST(request: Request) {
   const session = await auth()
   // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'sessions'))) {
-    return NextResponse.error()
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const res = (await request.json()) as SessionContentImagePostRequest
+  const json = await request.json().catch(() => null)
+  const bodyValidationResult = multipleImageUploadValidation.safeParse(json)
+
+  if (!bodyValidationResult.success) {
+    return NextResponse.json(
+      { error: bodyValidationResult.error.issues[0].message },
+      { status: 400 }
+    )
+  }
+
+  const res = bodyValidationResult.data
 
   const uploadUrlsPromise = []
   const fileNames: string[] = []
 
   for (const image of res.images) {
+    const extension = getSafeImageExtension(image.fileName)
+    if (!extension) {
+      return NextResponse.json(
+        { error: 'Invalid file extension' },
+        { status: 400 }
+      )
+    }
     // 파일 업로드 경로
-    const fileName = `sessions/${crypto.randomUUID()}.${image.fileName.split('.').pop()}`
+    const fileName = `sessions/${crypto.randomUUID()}.${extension}`
 
     // R2 Pre Signed URL 생성
     uploadUrlsPromise.push(getPreSignedUrl(fileName, image.type))

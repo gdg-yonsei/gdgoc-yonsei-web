@@ -6,5 +6,6 @@ import { z } from 'zod'
 export const deleteMemberValidation = z.object({
   userId: z
     .string({ message: 'User Id is required' })
+    .trim()
     .nonempty('User Id is required'),
 })

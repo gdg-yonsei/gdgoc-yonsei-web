@@ -110,7 +110,7 @@ export default async function EditProjectPage({
         >
           <div>
             <DataImageInput
-              baseUrl={'/admin/projects/main-image'}
+              baseUrl={'/api/admin/projects/main-image'}
               title={'Main Image'}
               name={'mainImage'}
               defaultValue={projectData.mainImage}

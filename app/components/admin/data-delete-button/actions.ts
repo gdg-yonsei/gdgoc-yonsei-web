@@ -1,9 +1,7 @@
 'use server'
 
 import { auth } from '@/auth'
-import handlePermission, {
-  ResourceType,
-} from '@/lib/server/permission/handle-permission'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, redirect } from 'next/navigation'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
@@ -13,6 +11,7 @@ import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import deleteR2Images from '@/lib/server/delete-r2-images'
 import { revalidateCache } from '@/lib/server/cache'
+import { deleteResourceValidation } from '@/lib/validations/admin-api'
 
 /**
  * `deleteResourceAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -30,14 +29,19 @@ export default async function deleteResourceAction(
   prev: { error: string },
   formData: FormData
 ) {
+  void prev
   const session = await auth()
-  const dataType = formData.get('dataType') as ResourceType
-  const dataId = formData.get('dataId') as string | null
 
-  // 삭제할 데이터 id 확인
-  if (!dataId) {
-    return { error: 'Data ID not found' }
+  const validationResult = deleteResourceValidation.safeParse({
+    dataType: formData.get('dataType'),
+    dataId: formData.get('dataId'),
+  })
+
+  if (!validationResult.success) {
+    return { error: validationResult.error.issues[0].message }
   }
+
+  const { dataType, dataId } = validationResult.data
 
   // 데이터를 삭제할 권한이 있는지 확인
   const canDelete = await handlePermission(
@@ -47,7 +51,7 @@ export default async function deleteResourceAction(
   )
 
   if (!canDelete) {
-    forbidden()
+    return forbidden()
   }
 
   try {
