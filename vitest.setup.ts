@@ -7,7 +7,10 @@ type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   src: string | { src?: string }
 }
 
-type NextLinkMockProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+type NextLinkMockProps = Omit<
+  React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  'href'
+> & {
   href: string | { pathname?: string }
   children?: React.ReactNode
 }

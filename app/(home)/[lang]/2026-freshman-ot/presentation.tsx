@@ -12,6 +12,18 @@ const SITE_URL = 'https://gdgoc.yonsei.ac.kr'
 const SLIDE_COUNT = 9
 
 type I18nText = { ko: string; en: string }
+/**
+ * `getLocalizedText` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`, `Locale`, `text`, `I18nText`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+ * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+ * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+ *
+ * 작동 결과:
+ * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+ * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+ */
 const getLocalizedText = (lang: Locale, text: I18nText) => text[lang]
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -67,6 +79,18 @@ const fadeInRight = {
    Decorative Components
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FloatingCircle` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function FloatingCircle({
   color,
   size,
@@ -99,6 +123,18 @@ function FloatingCircle({
   )
 }
 
+/**
+ * `ColorBar` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`color`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ColorBar({ color }: { color: string }) {
   return (
     <motion.div
@@ -111,6 +147,18 @@ function ColorBar({ color }: { color: string }) {
   )
 }
 
+/**
+ * `GoogleDots` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GoogleDots() {
   const colors = [
     'bg-gdg-blue-300',
@@ -138,6 +186,18 @@ function GoogleDots() {
   )
 }
 
+/**
+ * `GoogleDotsLight` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GoogleDotsLight() {
   const colors = [
     'bg-gdg-blue-200',
@@ -169,6 +229,18 @@ function GoogleDotsLight() {
    Slide 1 — Cover
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `CoverSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function CoverSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -254,6 +326,18 @@ function CoverSlide({ lang }: { lang: Locale }) {
    Slide 2 — What is GDGoC?
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `WhatIsGDGoCSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
   const points = [
     {
@@ -358,6 +442,18 @@ function WhatIsGDGoCSlide({ lang }: { lang: Locale }) {
    Slide 3 — GDGoC Yonsei
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `GDGoCYonseiSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
   const values = [
     {
@@ -462,6 +558,18 @@ function GDGoCYonseiSlide({ lang }: { lang: Locale }) {
    Slide 4 — Activities: Session & Project
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ActivityBullet` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivityBullet({
   label,
   text,
@@ -481,6 +589,18 @@ function ActivityBullet({
   )
 }
 
+/**
+ * `ActivitiesSessionProjectSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -591,6 +711,18 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
    Slide 5 — Activities: Networking & Hackathon
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ActivitiesNetworkingHackathonSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -702,6 +834,18 @@ function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
    Slide 6 — Future Plans
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FuturePlansSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function FuturePlansSlide({ lang }: { lang: Locale }) {
   return (
     <div className="bg-gdg-black relative flex min-h-full w-full items-center justify-center overflow-hidden py-16 md:py-8">
@@ -848,6 +992,18 @@ function FuturePlansSlide({ lang }: { lang: Locale }) {
    Slide 7 — Recruitment: Dev Parts
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `RecruitmentDevSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function RecruitmentDevSlide({ lang }: { lang: Locale }) {
   const parts = [
     {
@@ -954,6 +1110,18 @@ function RecruitmentDevSlide({ lang }: { lang: Locale }) {
    Slide 8 — Recruitment: Design & Community Parts
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `RecruitmentDesignSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
   const parts = [
     {
@@ -1060,6 +1228,18 @@ function RecruitmentDesignSlide({ lang }: { lang: Locale }) {
    Slide 9 — Thank You
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `ThankYouSlide` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 function ThankYouSlide({ lang }: { lang: Locale }) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
@@ -1190,6 +1370,18 @@ function ThankYouSlide({ lang }: { lang: Locale }) {
    Main Presentation Component
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * `FreshmanOTPresentation` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
+ *
+ * 구동 원리:
+ * 1. 입력값(`lang`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
+ * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
+ * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
+ *
+ * 작동 결과:
+ * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
+ * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ */
 export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -1234,6 +1426,18 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
 
   // Keyboard navigation
   useEffect(() => {
+    /**
+     * `handleKeyDown` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `KeyboardEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
@@ -1257,6 +1461,18 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
   // Scroll navigation
   useEffect(() => {
     let lastTime = 0
+    /**
+     * `handleWheel` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `WheelEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
       const now = Date.now()
@@ -1273,10 +1489,34 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
   useEffect(() => {
     let startX = 0
     let startY = 0
+    /**
+     * `handleTouchStart` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `TouchEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
     }
+    /**
+     * `handleTouchEnd` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
+     *
+     * 구동 원리:
+     * 1. 입력값(`e`, `TouchEvent`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
+     * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
+     * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
+     *
+     * 작동 결과:
+     * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
+     * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
+     */
     const handleTouchEnd = (e: TouchEvent) => {
       const dx = startX - e.changedTouches[0].clientX
       const dy = startY - e.changedTouches[0].clientY
