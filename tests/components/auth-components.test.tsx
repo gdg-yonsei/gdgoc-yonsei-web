@@ -13,6 +13,8 @@ vi.mock('@/app/components/auth/sign-out-button/actions', () => ({
 import { signIn } from 'next-auth/webauthn'
 import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
+import GithubSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/github/github-submit-button'
+import GoogleSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/google/google-submit-button'
 
 const mockedSignIn = vi.mocked(signIn)
 
@@ -61,5 +63,41 @@ describe('auth components', () => {
     expect(
       screen.getByRole('button', { name: /Sign Out/i })
     ).toBeInTheDocument()
+  })
+
+  it('disables github sign-in button after click to prevent duplicate submit', async () => {
+    const user = userEvent.setup()
+    render(
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+        }}
+      >
+        <GithubSubmitButton />
+      </form>
+    )
+
+    const button = screen.getByRole('button', { name: /Sign in with Github/i })
+    await user.click(button)
+
+    expect(button).toBeDisabled()
+  })
+
+  it('disables google sign-in button after click to prevent duplicate submit', async () => {
+    const user = userEvent.setup()
+    render(
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+        }}
+      >
+        <GoogleSubmitButton />
+      </form>
+    )
+
+    const button = screen.getByRole('button', { name: /Sign in with Google/i })
+    await user.click(button)
+
+    expect(button).toBeDisabled()
   })
 })

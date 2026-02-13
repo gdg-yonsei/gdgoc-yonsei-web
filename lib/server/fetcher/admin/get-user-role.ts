@@ -1,7 +1,9 @@
 import 'server-only'
 import db from '@/db'
-import { users } from '@/db/schema/users'
+import { roleEnum, users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
+
+type UserRole = (typeof roleEnum.enumValues)[number]
 
 /**
  * `getUserRole` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -15,7 +17,9 @@ import { eq } from 'drizzle-orm'
  * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
-export default async function getUserRole(userId: string | undefined) {
+export default async function getUserRole(
+  userId: string | undefined
+): Promise<UserRole> {
   // If no userId is provided, assume the user is unverified.
   if (!userId) {
     return 'UNVERIFIED'
@@ -28,6 +32,6 @@ export default async function getUserRole(userId: string | undefined) {
     .where(eq(users.id, userId))
     .limit(1)
 
-  // Return the user's role. Assuming a user with a valid ID will always have a role.
-  return result[0].role
+  // 사용자를 찾지 못한 경우에도 안전하게 기본 권한(UNVERIFIED)을 반환합니다.
+  return result[0]?.role ?? 'UNVERIFIED'
 }

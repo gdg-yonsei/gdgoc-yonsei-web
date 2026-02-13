@@ -5,6 +5,9 @@ import { afterEach, vi } from 'vitest'
 
 type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   src: string | { src?: string }
+  blurDataURL?: string
+  fill?: boolean
+  placeholder?: 'blur' | 'empty'
 }
 
 type NextLinkMockProps = Omit<
@@ -16,12 +19,23 @@ type NextLinkMockProps = Omit<
 }
 
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: NextImageMockProps) =>
-    React.createElement('img', {
+  default: ({
+    src,
+    alt,
+    blurDataURL,
+    fill,
+    placeholder,
+    ...props
+  }: NextImageMockProps) => {
+    void blurDataURL
+    void fill
+    void placeholder
+    return React.createElement('img', {
       src: typeof src === 'string' ? src : src?.src,
       alt,
       ...props,
-    }),
+    })
+  },
 }))
 
 vi.mock('next/link', () => ({

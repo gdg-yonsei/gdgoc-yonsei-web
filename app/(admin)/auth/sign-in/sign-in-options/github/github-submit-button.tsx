@@ -4,7 +4,6 @@ import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isAuthenticatingState } from '@/lib/atoms'
-import { MouseEvent } from 'react'
 import Github from '@/app/components/svg/github'
 
 /**
@@ -18,12 +17,10 @@ export default function GithubSubmitButton() {
   /**
    * 로그인 버튼 클릭 처리 함수
    *
-   * isAuthenticating 상태를 true 로 변경하고, 클릭 이벤트 발생
-   * @param e
+   * isAuthenticating 상태를 true로 변경해 중복 제출을 방지합니다.
    */
-  function handleSignInClick(e: MouseEvent<HTMLButtonElement>) {
+  function handleSignInClick() {
     setIsAuthenticating(true)
-    e.currentTarget.click()
   }
 
   return (
