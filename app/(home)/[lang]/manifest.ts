@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-export default function manifest(): MetadataRoute.Manifest {
+export default function generateManifest(): MetadataRoute.Manifest {
   return {
     name: 'Google Developer Group on Campus Yonsei',
     short_name: 'GDGoC Yonsei',

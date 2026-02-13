@@ -11,11 +11,11 @@ import { isAuthenticatingState } from '@/lib/atoms'
  * Passkey 로그인 버튼
  * @constructor
  */
-export default function Passkey() {
+export default function PasskeySignInButton() {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useAtom(isAuthenticatingState)
 
-  function offLoadingState() {
+  function stopLoadingState() {
     setIsLoading(false)
     setIsAuthenticating(false)
   }
@@ -26,7 +26,7 @@ export default function Passkey() {
       onClick={() => {
         setIsLoading(true)
         setIsAuthenticating(true)
-        signIn('passkey').then(offLoadingState).catch(offLoadingState)
+        signIn('passkey').then(stopLoadingState).catch(stopLoadingState)
       }}
       className={'button-white'}
       disabled={isLoading || isAuthenticating}

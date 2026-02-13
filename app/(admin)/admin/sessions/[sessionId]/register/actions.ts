@@ -14,9 +14,11 @@ import NewParticipant from '@/emails/new-participant'
 
 export async function registerSessionAction(
   sessionId: string,
-  prevState: { error: string },
-  formData: FormData
+  _prevState: { error: string },
+  _formData: FormData
 ) {
+  void _prevState
+  void _formData
   const session = await auth()
 
   // 사용자가 session에 등록할 권한이 있는지 확인

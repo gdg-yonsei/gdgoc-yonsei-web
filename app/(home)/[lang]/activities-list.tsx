@@ -25,7 +25,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
    * 활동 카드를 좌우로 스크롤 할 수 있게 하는 함수
    * @param direction - 스크롤 방향
    */
-  const scrollToCard = (direction: 'left' | 'right') => {
+  const scrollCardsByDirection = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return
 
     const container = scrollContainerRef.current
@@ -54,7 +54,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
    * Modal의 배경을 클릭했을 때 모달을 닫는 함수
    * @param e
    */
-  function modalBackgroundClickHandler(e: MouseEvent<HTMLDivElement>) {
+  function handleModalBackdropClick(e: MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) {
       closeModal()
     }
@@ -82,7 +82,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className={`fixed top-0 left-0 z-50 flex h-screen w-screen items-center justify-center bg-black/60 p-4 backdrop-blur-sm`}
-                onClick={modalBackgroundClickHandler}
+                onClick={handleModalBackdropClick}
               >
                 <motion.div
                   layoutId={`activity-card-${modal.title}`}
@@ -159,7 +159,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
         className="flex items-center gap-4"
       >
         <motion.button
-          onClick={() => scrollToCard('left')}
+          onClick={() => scrollCardsByDirection('left')}
           className="group flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -169,7 +169,7 @@ export default function ActivitiesList({ lang }: { lang: Locale }) {
         </motion.button>
 
         <motion.button
-          onClick={() => scrollToCard('right')}
+          onClick={() => scrollCardsByDirection('right')}
           className="group flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

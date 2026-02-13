@@ -22,7 +22,8 @@ export async function generateStaticParams() {
     projectId: String(project.id),
   }))
   const langs = ['ko', 'en']
-  let paramsList: { generation: string; projectId: string; lang: string }[] = []
+  const paramsList: { generation: string; projectId: string; lang: string }[] =
+    []
   for (const lang of langs) {
     for (const projectAndGeneration of projectIdAndGenerationId) {
       paramsList.push({

@@ -1,5 +1,5 @@
 import SignInWithGithub from '@/app/(admin)/auth/sign-in/sign-in-options/github'
-import Passkey from '@/app/(admin)/auth/sign-in/sign-in-options/passkey'
+import PasskeySignInButton from '@/app/(admin)/auth/sign-in/sign-in-options/passkey'
 import SignInWithGoogle from '@/app/(admin)/auth/sign-in/sign-in-options/google'
 
 /**
@@ -11,7 +11,7 @@ export default function SignInOptions() {
     <div className={'flex w-full flex-col items-center gap-2 md:w-1/3'}>
       <SignInWithGithub />
       <SignInWithGoogle />
-      <Passkey />
+      <PasskeySignInButton />
     </div>
   )
 }

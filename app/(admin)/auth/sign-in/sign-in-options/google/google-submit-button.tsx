@@ -21,7 +21,7 @@ export default function GoogleSubmitButton() {
    * isAuthenticating 상태를 true 로 변경하고, 클릭 이벤트 발생
    * @param e
    */
-  function handleClick(e: MouseEvent<HTMLButtonElement>) {
+  function handleSignInClick(e: MouseEvent<HTMLButtonElement>) {
     setIsAuthenticating(true)
     e.currentTarget.click()
   }
@@ -33,7 +33,7 @@ export default function GoogleSubmitButton() {
         'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 transition-all disabled:bg-neutral-100'
       }
       disabled={pending || isAuthenticating}
-      onClick={handleClick}
+      onClick={handleSignInClick}
     >
       {pending ? (
         <LoadingSpinner

@@ -1234,7 +1234,7 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
 
   // Keyboard navigation
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -1250,14 +1250,14 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
           break
       }
     }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [next, prev])
 
   // Scroll navigation
   useEffect(() => {
     let lastTime = 0
-    const handler = (e: WheelEvent) => {
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
       const now = Date.now()
       if (now - lastTime < 800) return
@@ -1265,19 +1265,19 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
       if (e.deltaY > 0) next()
       else if (e.deltaY < 0) prev()
     }
-    window.addEventListener('wheel', handler, { passive: false })
-    return () => window.removeEventListener('wheel', handler)
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
   }, [next, prev])
 
   // Touch swipe navigation
   useEffect(() => {
     let startX = 0
     let startY = 0
-    const onStart = (e: TouchEvent) => {
+    const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
     }
-    const onEnd = (e: TouchEvent) => {
+    const handleTouchEnd = (e: TouchEvent) => {
       const dx = startX - e.changedTouches[0].clientX
       const dy = startY - e.changedTouches[0].clientY
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
@@ -1288,11 +1288,11 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
         else prev()
       }
     }
-    window.addEventListener('touchstart', onStart, { passive: true })
-    window.addEventListener('touchend', onEnd, { passive: true })
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
-      window.removeEventListener('touchstart', onStart)
-      window.removeEventListener('touchend', onEnd)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchend', handleTouchEnd)
     }
   }, [next, prev])
 

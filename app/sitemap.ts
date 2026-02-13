@@ -3,11 +3,13 @@ import db from '@/db'
 import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
 import getPublishedSessionsByGeneration from '@/app/(home)/[lang]/session/[generation]/getSessionList'
 
-function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
+function generateLocalizedSitemapEntries(
+  sitemapEntries: MetadataRoute.Sitemap
+) {
   const langs = ['ko', 'en']
 
   return langs.flatMap((lang) => {
-    return MetadataRoute.map((item) => ({
+    return sitemapEntries.map((item) => ({
       ...item,
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${lang}${item.url}`,
       lastModified: item.lastModified || new Date(),
@@ -17,7 +19,7 @@ function intlSitemapGenerator(MetadataRoute: MetadataRoute.Sitemap) {
   })
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function generateSitemap(): Promise<MetadataRoute.Sitemap> {
   const generationList = await getGenerationSummaries()
 
   const projectsList: MetadataRoute.Sitemap = (
@@ -104,5 +106,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...sessionsList,
   ]
 
-  return intlSitemapGenerator(sitemapList)
+  return generateLocalizedSitemapEntries(sitemapList)
 }

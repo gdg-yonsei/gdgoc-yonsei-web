@@ -22,7 +22,7 @@ describe('handlePermission', () => {
   })
 
   it('returns permission by fetched role', async () => {
-    mockedGetUserRole.mockResolvedValue('LEAD' as any)
+    mockedGetUserRole.mockResolvedValue('LEAD')
 
     const result = await handlePermission('lead-1', 'delete', 'parts')
 
@@ -31,7 +31,7 @@ describe('handlePermission', () => {
   })
 
   it('denies restricted resource for member role', async () => {
-    mockedGetUserRole.mockResolvedValue('MEMBER' as any)
+    mockedGetUserRole.mockResolvedValue('MEMBER')
 
     const result = await handlePermission('member-1', 'get', 'membersPage')
 

@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { ComponentType, SVGProps } from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import ActivityCardCloseSvg from '@/app/components/svg/activity-card-close-svg'
@@ -17,7 +17,7 @@ import LinkedIn from '@/app/components/svg/linked-in'
 import Mail from '@/app/components/svg/mail'
 import Trophy from '@/app/components/svg/trophy'
 
-type SvgComponent = ComponentType<any>
+type SvgComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 const svgComponents: Array<[string, SvgComponent]> = [
   ['ActivityCardCloseSvg', ActivityCardCloseSvg],

@@ -3,8 +3,17 @@ import { cleanup } from '@testing-library/react'
 import React from 'react'
 import { afterEach, vi } from 'vitest'
 
+type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+  src: string | { src?: string }
+}
+
+type NextLinkMockProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href: string | { pathname?: string }
+  children?: React.ReactNode
+}
+
 vi.mock('next/image', () => ({
-  default: ({ src, alt, blurDataURL, fill, placeholder, ...props }: any) =>
+  default: ({ src, alt, ...props }: NextImageMockProps) =>
     React.createElement('img', {
       src: typeof src === 'string' ? src : src?.src,
       alt,
@@ -13,7 +22,7 @@ vi.mock('next/image', () => ({
 }))
 
 vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }: any) =>
+  default: ({ href, children, ...props }: NextLinkMockProps) =>
     React.createElement(
       'a',
       {
@@ -30,7 +39,7 @@ const createMotionProxy = () =>
     {
       get:
         (_, tag: string) =>
-        ({ children, ...props }: any) =>
+        ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
           React.createElement(tag, props, children),
     }
   )

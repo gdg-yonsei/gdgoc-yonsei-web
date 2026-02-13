@@ -7,7 +7,10 @@ import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
 import revalidateAllDataAction from '@/app/components/admin/refresh-all-data-button/actions'
 
-export async function changeSubscribeSessionNotiEmail(formData: FormData) {
+export async function toggleSessionNotificationEmailAction(
+  _formData: FormData
+) {
+  void _formData
   const session = await auth()
 
   if (!session?.user?.id) {

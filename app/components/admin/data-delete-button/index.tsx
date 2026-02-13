@@ -2,7 +2,7 @@ import { Session } from 'next-auth'
 import handlePermission, {
   ResourceType,
 } from '@/lib/server/permission/handle-permission'
-import dataDeleteAction from '@/app/components/admin/data-delete-button/actions'
+import deleteResourceAction from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
 
@@ -24,7 +24,7 @@ export default async function DataDeleteButton({
   return (
     <>
       {canDelete && (
-        <DataForm action={dataDeleteAction}>
+        <DataForm action={deleteResourceAction}>
           <input hidden={true} value={dataId} name={'dataId'} readOnly={true} />
           <input
             hidden={true}

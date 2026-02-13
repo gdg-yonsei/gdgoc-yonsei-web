@@ -14,7 +14,7 @@ import { parts } from '@/db/schema/parts'
 import deleteR2Images from '@/lib/server/delete-r2-images'
 import { revalidateCache } from '@/lib/server/cache'
 
-export default async function dataDeleteAction(
+export default async function deleteResourceAction(
   prev: { error: string },
   formData: FormData
 ) {

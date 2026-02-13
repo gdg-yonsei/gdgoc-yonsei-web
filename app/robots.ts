@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-export default function robots(): MetadataRoute.Robots {
+export default function generateRobots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',

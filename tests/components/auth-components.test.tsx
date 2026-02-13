@@ -23,7 +23,7 @@ describe('auth components', () => {
   })
 
   it('calls signIn and shows success alert on passkey registration', async () => {
-    mockedSignIn.mockResolvedValue(undefined as any)
+    mockedSignIn.mockResolvedValue(undefined)
 
     const user = userEvent.setup()
     render(<RegisterPasskeyButton />)

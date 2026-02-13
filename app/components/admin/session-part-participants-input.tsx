@@ -1,7 +1,7 @@
 'use client'
 
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import formatUserName from '@/lib/format-user-name'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 
@@ -17,31 +17,15 @@ export default function SessionPartParticipantsInput({
   }
   membersData: Awaited<ReturnType<typeof getMembers>>
 }) {
-  const [partId, setPartId] = useState<number>(0)
-  const [partMembers, setPartMembers] = useState<
-    Awaited<
-      ReturnType<typeof getParts>
-    >[0]['parts'][0]['usersToParts'][0]['user'][]
-  >([])
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
-
-  useEffect(() => {
-    if (defaultValue) {
-      setPartId(defaultValue.partId)
-      setSelectedMembers(defaultValue.selectedMembers)
-      const allParts = generationData.flatMap((generation) =>
-        generation.parts.map((part) => part)
-      )
-      const selectedPart = allParts.filter(
-        (part) => part.id === defaultValue.partId
-      )
-      setPartMembers(
-        selectedPart.flatMap((userToPart) =>
-          userToPart.usersToParts.map((user) => user.user)
-        )
-      )
-    }
-  }, [defaultValue, generationData])
+  const [partId, setPartId] = useState<number>(defaultValue?.partId ?? 0)
+  const [selectedMembers, setSelectedMembers] = useState<string[]>(
+    defaultValue?.selectedMembers ?? []
+  )
+  const partMembers = generationData
+    .flatMap((generation) => generation.parts)
+    .find((part) => part.id === partId)
+    ?.usersToParts.map((userToPart) => userToPart.user)
+  const currentPartMembers = partMembers ?? []
 
   return (
     <>
@@ -75,9 +59,6 @@ export default function SessionPartParticipantsInput({
                     type={'button'}
                     onClick={() => {
                       setPartId(part.id)
-                      setPartMembers(
-                        part.usersToParts.map((userToPart) => userToPart.user)
-                      )
                       setSelectedMembers(
                         part.usersToParts.map(
                           (userToPart) => userToPart.user.id
@@ -99,7 +80,7 @@ export default function SessionPartParticipantsInput({
           {/* 이 div가 스크롤 영역이 됩니다. */}
           <div className={'flex-1 overflow-y-auto'}>
             <div className={'flex flex-col gap-1 pt-2'}>
-              {partMembers.map((member) => (
+              {currentPartMembers.map((member) => (
                 <button
                   key={member.id}
                   type={'button'}
