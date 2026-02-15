@@ -1,11 +1,12 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const port = Number(process.env.PORT ?? 3000)
+const port = Number(process.env.PORT ?? 3100)
 const baseURL =
   process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${port.toString()}`
 
 export default defineConfig({
   testDir: './tests/e2e',
+  globalSetup: './tests/e2e/setup/global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -30,7 +31,7 @@ export default defineConfig({
     : {
         command: `pnpm exec next dev --turbopack --port ${port.toString()}`,
         url: baseURL,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 120 * 1000,
       },
 })
