@@ -28,6 +28,7 @@ export default function GoogleSubmitButton() {
         'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 transition-all disabled:bg-neutral-100'
       }
       disabled={pending || isAuthenticating}
+      onClick={() => setIsAuthenticating(true)}
     >
       {pending ? (
         <LoadingSpinner
