@@ -134,9 +134,9 @@ export default function DataMultipleImageInput({
    * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
    * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
    */
-  async function deleteContentImage(url: string) {
-    setPrevImageUrls((prev) => prev.filter((prevUrl) => prevUrl !== url))
-    setImageUrls((imageUrl) => imageUrl.filter((u) => u !== url))
+  async function deleteContentImage(targetIndex: number) {
+    setPrevImageUrls((prev) => prev.filter((_, index) => index !== targetIndex))
+    setImageUrls((prev) => prev.filter((_, index) => index !== targetIndex))
   }
 
   return (
@@ -169,7 +169,7 @@ export default function DataMultipleImageInput({
                 className={
                   'absolute top-1 right-1 cursor-pointer rounded-lg bg-red-500 p-1'
                 }
-                onClick={() => deleteContentImage(url)}
+                onClick={() => deleteContentImage(index)}
               >
                 <TrashIcon className={'size-6 text-white'} />
               </button>
