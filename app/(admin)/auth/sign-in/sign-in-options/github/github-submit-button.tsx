@@ -26,7 +26,6 @@ export default function GithubSubmitButton() {
       type={'submit'}
       className={'button-black'}
       disabled={pending || isAuthenticating}
-      onClick={() => setIsAuthenticating(true)}
     >
       {pending ? (
         <LoadingSpinner
