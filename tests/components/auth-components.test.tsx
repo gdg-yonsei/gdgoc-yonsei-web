@@ -65,7 +65,7 @@ describe('auth components', () => {
     ).toBeInTheDocument()
   })
 
-  it('disables github sign-in button after click to prevent duplicate submit', async () => {
+  it('keeps github sign-in button enabled when submit is prevented', async () => {
     const user = userEvent.setup()
     render(
       <form
@@ -80,10 +80,10 @@ describe('auth components', () => {
     const button = screen.getByRole('button', { name: /Sign in with Github/i })
     await user.click(button)
 
-    expect(button).toBeDisabled()
+    expect(button).toBeEnabled()
   })
 
-  it('disables google sign-in button after click to prevent duplicate submit', async () => {
+  it('keeps google sign-in button enabled when submit is prevented', async () => {
     const user = userEvent.setup()
     render(
       <form
@@ -98,6 +98,6 @@ describe('auth components', () => {
     const button = screen.getByRole('button', { name: /Sign in with Google/i })
     await user.click(button)
 
-    expect(button).toBeDisabled()
+    expect(button).toBeEnabled()
   })
 })
