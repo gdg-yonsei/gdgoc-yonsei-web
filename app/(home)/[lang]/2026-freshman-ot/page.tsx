@@ -45,15 +45,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (lang === 'ko') {
     return {
       title: '2026 신입생 OT | GDGoC Yonsei',
-      description:
-        'GDGoC Yonsei 2026 첨단컴퓨팅학부 신입생 OT 프레젠테이션',
+      description: 'GDGoC Yonsei 2026 첨단컴퓨팅학부 신입생 OT 프레젠테이션',
     }
   }
 
   return {
     title: '2026 Freshman Orientation | GDGoC Yonsei',
-    description:
-      'GDGoC Yonsei 2026 School of Advanced Computing Freshman Orientation',
+    description: 'GDGoC Yonsei 2026 School of Computing Freshman Orientation',
   }
 }
 
