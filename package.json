@@ -28,7 +28,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1002.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
-    "@next/third-parties": "16.0.0",
+    "@next/third-parties": "^16.1.6",
     "@react-email/components": "0.5.3",
     "@simplewebauthn/browser": "9.0.1",
     "@simplewebauthn/server": "9.0.3",
