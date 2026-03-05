@@ -39,7 +39,7 @@ export default async function HomePage({
 
   return (
     <div className={'flex w-full flex-col overflow-x-hidden'}>
-      <WelcomePage lang={lang} />
+      <WelcomePage />
       <AboutPage lang={lang} />
       <ActivitiesPage lang={lang} />
       <PartsPage lang={lang} />

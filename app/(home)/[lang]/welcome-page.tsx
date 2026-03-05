@@ -1,7 +1,5 @@
 import HomePageBackground from '@/app/(home)/[lang]/home-page-background'
 import GDGLogo from '@/app/components/svg/gdg-logo'
-import Link from 'next/link'
-import { Locale } from '@/i18n-config'
 
 /**
  * `WelcomePage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -15,7 +13,7 @@ import { Locale } from '@/i18n-config'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function WelcomePage({ lang }: { lang?: Locale }) {
+export default function WelcomePage() {
   return (
     <section
       className={
@@ -43,23 +41,23 @@ export default function WelcomePage({ lang }: { lang?: Locale }) {
       </div>
 
       {/* 2026 Freshman OT Banner */}
-      {lang && (
-        <div className="relative z-10 flex flex-col items-center gap-3">
-          <p className="text-center text-base font-medium text-neutral-600 md:text-lg">
-            {lang === 'ko'
-              ? '26학번 신입생 여러분 모두 환영합니다!'
-              : 'Welcome, Class of 2026 freshmen!'}
-          </p>
-          <Link
-            href={`/${lang}/2026-freshman-ot`}
-            className="bg-logo-blue rounded-full px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:brightness-110 md:px-8 md:py-3 md:text-base"
-          >
-            {lang === 'ko'
-              ? '2026 신입생 OT 보러가기 →'
-              : '2026 Freshman Orientation →'}
-          </Link>
-        </div>
-      )}
+      {/*{lang && (*/}
+      {/*  <div className="relative z-10 flex flex-col items-center gap-3">*/}
+      {/*    <p className="text-center text-base font-medium text-neutral-600 md:text-lg">*/}
+      {/*      {lang === 'ko'*/}
+      {/*        ? '26학번 신입생 여러분 모두 환영합니다!'*/}
+      {/*        : 'Welcome, Class of 2026 freshmen!'}*/}
+      {/*    </p>*/}
+      {/*    <Link*/}
+      {/*      href={`/${lang}/2026-freshman-ot`}*/}
+      {/*      className="bg-logo-blue rounded-full px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:brightness-110 md:px-8 md:py-3 md:text-base"*/}
+      {/*    >*/}
+      {/*      {lang === 'ko'*/}
+      {/*        ? '2026 신입생 OT 보러가기 →'*/}
+      {/*        : '2026 Freshman Orientation →'}*/}
+      {/*    </Link>*/}
+      {/*  </div>*/}
+      {/*)}*/}
     </section>
   )
 }
