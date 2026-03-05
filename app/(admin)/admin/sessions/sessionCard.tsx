@@ -1,6 +1,12 @@
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
+import {
+  formatAdminDate,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n'
+import { Locale } from '@/i18n-config'
 
 /**
  * `SessionCard` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -16,12 +22,15 @@ import Image from 'next/image'
  */
 export default function SessionCard({
   session,
+  locale,
 }: {
   session: Awaited<ReturnType<typeof getSessions>>[0]['parts'][0]['sessions'][0]
+  locale: Locale
 }) {
+  const t = getAdminMessages(locale)
   return (
     <Link
-      href={`/admin/sessions/${session.id}`}
+      href={localizeAdminHref(`/admin/sessions/${session.id}`, locale)}
       className={'flex flex-col rounded-xl bg-white'}
     >
       <Image
@@ -41,12 +50,12 @@ export default function SessionCard({
         </div>
         <div className={'flex flex-col text-sm'}>
           {session.startAt
-            ? new Intl.DateTimeFormat('ko-KR', {
+            ? formatAdminDate(session.startAt, locale, {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
-              }).format(new Date(session.startAt))
-            : 'TBD'}
+              })
+            : t.tbd}
         </div>
       </div>
     </Link>

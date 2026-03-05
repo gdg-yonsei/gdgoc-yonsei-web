@@ -5,6 +5,7 @@ import { createGenerationAction } from '@/app/(admin)/admin/generations/create/a
 import SubmitButton from '@/app/components/admin/submit-button'
 
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Create Generation',
@@ -22,29 +23,34 @@ export const metadata: Metadata = {
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function CreateGenerationPage() {
+export default async function CreateGenerationPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
+
   return (
     <AdminDefaultLayout>
-      <div className={'admin-title'}>Create Generation</div>
+      <div className={'admin-title'}>
+        {t.create} {t.generation}
+      </div>
       <DataForm
         action={createGenerationAction}
         className={'member-data-grid gap-2'}
       >
         <DataInput
-          title={'Generation Name'}
+          title={t.generation}
           defaultValue={''}
           name={'name'}
           placeholder={'e.g. 1st, 2nd, ...'}
         />
         <DataInput
-          title={'Start Date'}
+          title={t.startTime}
           defaultValue={''}
           name={'startDate'}
           placeholder={'YYYY-MM-DD'}
           type={'date'}
         />
         <DataInput
-          title={'End Date'}
+          title={t.endTime}
           defaultValue={''}
           name={'endDate'}
           placeholder={'YYYY-MM-DD'}

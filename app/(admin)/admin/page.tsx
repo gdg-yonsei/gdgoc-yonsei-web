@@ -6,12 +6,19 @@ import { users } from '@/db/schema/users'
 import db from '@/db'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 /**
  * 관리자 홈페이지
  * @constructor
  */
 export default async function AdminPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
   if (!session?.user?.id) {
     redirect('/auth/sign-in')
@@ -27,12 +34,12 @@ export default async function AdminPage() {
   })
   // 만약 사용자 이름 정보가 없다면 프로필 수정 페이지로 리다이렉트
   if (!userInfo?.firstName || !userInfo?.lastName) {
-    redirect('/admin/profile/edit')
+    redirect(localizeAdminHref('/admin/profile/edit', locale))
   }
 
   return (
     <AdminDefaultLayout className={'flex w-full flex-col gap-4 p-4'}>
-      <div className={'admin-title'}>Home</div>
+      <div className={'admin-title'}>{t.home}</div>
       <div className={'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'}>
         <QRCodeGenerator />
 
@@ -42,7 +49,7 @@ export default async function AdminPage() {
           }
         >
           <p className={'text-center text-2xl font-semibold'}>
-            Subscribe to Calendar
+            {t.subscribeToCalendar}
           </p>
           <div className={'flex w-full flex-col gap-2'}>
             <div className={'flex w-full items-center justify-between gap-2'}>
@@ -55,7 +62,7 @@ export default async function AdminPage() {
                 }
                 target={'_blank'}
               >
-                Google Calendar
+                {t.googleCalendar}
               </Link>
               <Link
                 className={
@@ -65,18 +72,16 @@ export default async function AdminPage() {
                   'webcal://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics'
                 }
               >
-                Apple Calendar
+                {t.appleCalendar}
               </Link>
             </div>
             <div>
-              <p className={'text-lg font-semibold'}>Samsung Galaxy</p>
+              <p className={'text-lg font-semibold'}>{t.calendarUrl}</p>
               <div className={'rounded-lg bg-neutral-200 p-1 break-all'}>
                 https://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics
               </div>
-              <p className={'pt-1'}>1. Copy the calendar address above.</p>
-              <p>
-                2. Open the Calendar app and paste the address to subscribe.
-              </p>
+              <p className={'pt-1'}>1. {t.copyCalendarAddress}</p>
+              <p>2. {t.pasteAddressToSubscribe}</p>
             </div>
           </div>
         </div>

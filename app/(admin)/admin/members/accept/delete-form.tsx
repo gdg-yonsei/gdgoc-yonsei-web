@@ -3,6 +3,7 @@
 import DataForm from '@/app/components/data-form'
 import { deleteUserAction } from '@/app/(admin)/admin/members/accept/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `DeleteForm` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -17,6 +18,7 @@ import SubmitButton from '@/app/components/admin/submit-button'
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default function DeleteForm({ userId }: { userId: string }) {
+  const { t } = useAdminI18n()
   return (
     <DataForm action={deleteUserAction}>
       <input hidden={true} name={'userId'} value={userId} readOnly={true} />
@@ -25,7 +27,7 @@ export default function DeleteForm({ userId }: { userId: string }) {
           'flex items-center gap-1 rounded-lg bg-red-500 p-1 px-3 text-neutral-50 transition-colors hover:bg-red-600'
         }
       >
-        Delete
+        {t('delete')}
       </SubmitButton>
     </DataForm>
   )

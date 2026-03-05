@@ -17,7 +17,7 @@ export default function generateRobots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/admin/',
+      disallow: ['/admin/', '/en/admin/', '/ko/admin/'],
     },
     sitemap: `${process.env.NEXT_PUBLIC_SITE_URL}/sitemap.xml`,
   }

@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
+import { getAdminLocale, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: {
@@ -29,10 +30,11 @@ export default async function AuthLayout({
 }: {
   children: ReactNode
 }) {
+  const locale = await getAdminLocale()
   const session = await auth()
   // 만약 로그인 되어 있다면 어드민 페이지로 이동
   if (session) {
-    return redirect('/admin')
+    return redirect(localizeAdminHref('/admin', locale))
   }
 
   return <>{children}</>

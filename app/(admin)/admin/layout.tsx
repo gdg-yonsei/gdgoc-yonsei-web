@@ -9,6 +9,11 @@ import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
 import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import { forbidden, redirect } from 'next/navigation'
 import Modal from '@/app/components/admin/modal'
+import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
+import {
+  getAdminLocale,
+  getAdminMessages,
+} from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: {
@@ -36,6 +41,9 @@ export default async function AdminLayout({
 }: {
   children: ReactNode
 }) {
+  const locale = await getAdminLocale()
+  const messages = getAdminMessages(locale)
+
   /** 사용자가 로그인 되어 있는지 확인 */
   const session = await auth()
   if (!session?.user?.id) {
@@ -47,16 +55,18 @@ export default async function AdminLayout({
   }
 
   // 사용자의 권한에 따라 네비게이션 목록을 가져옴
-  const navigations = await getAdminNavigationItems(session?.user?.id)
+  const navigations = await getAdminNavigationItems(session?.user?.id, locale)
 
   return (
-    <AuthProvider>
-      <Header navigations={navigations} />
-      <JotaiProvider>
-        <Sidebar navigations={navigations} />
-        {children}
-        <Modal />
-      </JotaiProvider>
-    </AuthProvider>
+    <AdminI18nProvider locale={locale} messages={messages}>
+      <AuthProvider>
+        <Header navigations={navigations} locale={locale} />
+        <JotaiProvider>
+          <Sidebar navigations={navigations} locale={locale} />
+          {children}
+          <Modal />
+        </JotaiProvider>
+      </AuthProvider>
+    </AdminI18nProvider>
   )
 }

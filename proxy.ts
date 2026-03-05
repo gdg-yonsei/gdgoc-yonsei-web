@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { i18n } from './i18n-config'
+import { ADMIN_LOCALE_COOKIE } from '@/lib/admin-i18n'
 
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
@@ -33,6 +34,10 @@ function getLocale(request: NextRequest): string | undefined {
   return matchLocale(languages, locales, i18n.defaultLocale)
 }
 
+function isSupportedLocale(locale: string | undefined): locale is string {
+  return !!locale && i18n.locales.includes(locale as (typeof i18n.locales)[number])
+}
+
 /**
  * `proxy` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
  *
@@ -47,6 +52,53 @@ function getLocale(request: NextRequest): string | undefined {
  */
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+
+  const pathnameSegments = pathname.split('/')
+  const localeFromPath = pathnameSegments[1]
+  const isLocalizedAdminPath =
+    isSupportedLocale(localeFromPath) && pathnameSegments[2] === 'admin'
+
+  if (isLocalizedAdminPath) {
+    const rewritePathname = pathname.replace(`/${localeFromPath}`, '') || '/'
+    const rewriteUrl = request.nextUrl.clone()
+    rewriteUrl.pathname = rewritePathname
+
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-admin-locale', localeFromPath)
+
+    const response = NextResponse.rewrite(rewriteUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    })
+    response.cookies.set(ADMIN_LOCALE_COOKIE, localeFromPath, {
+      path: '/',
+      sameSite: 'lax',
+    })
+
+    return response
+  }
+
+  const isAdminPath =
+    pathname === '/admin' || pathname.startsWith('/admin/')
+
+  if (isAdminPath) {
+    const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
+    const locale = isSupportedLocale(localeFromCookie)
+      ? localeFromCookie
+      : getLocale(request)
+
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = `/${locale}${pathname}`
+
+    const response = NextResponse.redirect(redirectUrl)
+    response.cookies.set(ADMIN_LOCALE_COOKIE, locale ?? i18n.defaultLocale, {
+      path: '/',
+      sameSite: 'lax',
+    })
+
+    return response
+  }
 
   // // `/_next/` and `/api/` are ignored by the watcher, but we need to ignore files in `public` manually.
   // // If you have one
@@ -82,6 +134,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   // Matcher ignoring `/_next/` and `/api/`
   matcher: [
-    '/((?!api|sitemap.xml|auth|robots.txt|admin|_next/static|_next/image|default-image.png|project-default.png|default-user-profile.png|gdgoc-logo.png|session-default.png|favicon.ico|googleda69d559d3e8d484.html).*)',
+    '/((?!api|sitemap.xml|auth|robots.txt|_next/static|_next/image|default-image.png|project-default.png|default-user-profile.png|gdgoc-logo.png|session-default.png|favicon.ico|googleda69d559d3e8d484.html).*)',
   ],
 }

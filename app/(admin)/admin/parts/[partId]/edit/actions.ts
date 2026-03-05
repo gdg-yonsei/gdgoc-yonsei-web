@@ -11,6 +11,7 @@ import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/server/form-data/get-part-form-data'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * Update Part Action
@@ -105,5 +106,5 @@ export async function updatePartAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/parts/${partId}`)
+  redirect(await getLocalizedAdminPath(`/admin/parts/${partId}`))
 }

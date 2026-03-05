@@ -1,6 +1,11 @@
 import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
 import checkPermission from '@/lib/server/permission/check-permission'
 import { ResourceType } from '@/lib/server/permission/handle-permission'
+import { Locale } from '@/i18n-config'
+import {
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n'
 
 export interface NavigationItem {
   name: string
@@ -12,46 +17,48 @@ export interface NavigationItem {
  * 사이드 바 및 상단 바에서 표시할 관리자 페이지 목록
  */
 export default async function getAdminNavigationItems(
-  userId: string | undefined
+  userId: string | undefined,
+  locale: Locale
 ) {
   if (!userId) {
     return []
   }
   const userRole = await getUserRole(userId)
+  const t = getAdminMessages(locale)
   const adminNavigationItems = [
     {
-      name: '🏠 Home',
-      path: '/admin',
+      name: `🏠 ${t.home}`,
+      path: localizeAdminHref('/admin', locale),
       dataResource: 'adminPage',
     },
     {
-      name: '🗓️ Generations',
-      path: '/admin/generations',
+      name: `🗓️ ${t.generations}`,
+      path: localizeAdminHref('/admin/generations', locale),
       dataResource: 'generationsPage',
     },
     {
-      name: '💻 Parts',
-      path: '/admin/parts',
+      name: `💻 ${t.parts}`,
+      path: localizeAdminHref('/admin/parts', locale),
       dataResource: 'partsPage',
     },
     {
-      name: '👥 Members',
-      path: '/admin/members',
+      name: `👥 ${t.members}`,
+      path: localizeAdminHref('/admin/members', locale),
       dataResource: 'membersPage',
     },
     {
-      name: '📚 Sessions',
-      path: '/admin/sessions',
+      name: `📚 ${t.sessions}`,
+      path: localizeAdminHref('/admin/sessions', locale),
       dataResource: 'sessionsPage',
     },
     {
-      name: '📝 Projects',
-      path: '/admin/projects',
+      name: `📝 ${t.projects}`,
+      path: localizeAdminHref('/admin/projects', locale),
       dataResource: 'projectsPage',
     },
     {
-      name: '🧑‍💻 Profile',
-      path: '/admin/profile',
+      name: `🧑‍💻 ${t.profile}`,
+      path: localizeAdminHref('/admin/profile', locale),
       dataResource: 'profilePage',
     },
   ]

@@ -12,6 +12,20 @@ import { projects } from '@/db/schema/projects'
 import { generations } from '@/db/schema/generations'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+
+const CACHE_WARM_TIMEOUT_MS = 3_000
+
+function warmUpPaths(paths: string[]) {
+  void Promise.allSettled(
+    paths.map((path) =>
+      fetch(path, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(CACHE_WARM_TIMEOUT_MS),
+      })
+    )
+  )
+}
 /**
  * Create Project Action
  * @param prev - previous state for form error
@@ -111,19 +125,14 @@ export async function createProjectAction(
       where: eq(generations.id, Number(generationId)),
     })
 
-    if (generation) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    if (generation && siteUrl) {
       const paths = [
-        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/project/${generation.name}/${createProject.id}`,
-        `${process.env.NEXT_PUBLIC_SITE_URL}/en/project/${generation.name}/${createProject.id}`,
+        `${siteUrl}/ko/project/${generation.name}/${createProject.id}`,
+        `${siteUrl}/en/project/${generation.name}/${createProject.id}`,
       ]
 
-      await Promise.allSettled(
-        paths.map((path) =>
-          fetch(path, {
-            cache: 'no-store',
-          })
-        )
-      )
+      warmUpPaths(paths)
     }
   } catch (e) {
     // DB 에러 처리
@@ -131,5 +140,5 @@ export async function createProjectAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/projects`)
+  redirect(await getLocalizedAdminPath('/admin/projects'))
 }

@@ -13,6 +13,7 @@ import { sessionValidation } from '@/lib/validations/session'
 import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { userToSession } from '@/db/schema/user-to-session'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * Update Project Action
@@ -164,5 +165,5 @@ export async function updateSessionAction(
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동
-  redirect(`/admin/sessions/${sessionId}`)
+  redirect(await getLocalizedAdminPath(`/admin/sessions/${sessionId}`))
 }

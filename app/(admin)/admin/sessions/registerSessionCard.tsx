@@ -1,13 +1,10 @@
 import Link from 'next/link'
-
-const formatter = new Intl.DateTimeFormat('ko-KR', {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false, // 24시간제, true로 하면 오전/오후 붙음
-})
+import {
+  formatAdminDate,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n'
+import { Locale } from '@/i18n-config'
 
 /**
  * `RegisterSessionCard` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -29,6 +26,7 @@ export default function RegisterSessionCard({
   endAt,
   maxCapacity,
   participants,
+  locale,
 }: {
   sessionId: string
   sessionName: string
@@ -37,23 +35,49 @@ export default function RegisterSessionCard({
   endAt: Date | null
   maxCapacity: number | null
   participants: number
+  locale: Locale
 }) {
+  const t = getAdminMessages(locale)
   return (
     <Link
-      href={`/admin/sessions/${sessionId}/register`}
+      href={localizeAdminHref(`/admin/sessions/${sessionId}/register`, locale)}
       className={'rounded-xl border-2 border-neutral-950 bg-white'}
     >
       <div
         className={'rounded-t-lg bg-neutral-900 p-1 px-3 text-sm text-white'}
       >
-        {part} Part
+        {part} {t.part}
       </div>
       <div className={'flex flex-col gap-2 p-2'}>
         <h3 className={'mx-auto p-2 text-xl font-bold'}>{sessionName}</h3>
 
         <div className={'ml-auto text-sm'}>
-          <p>Start: {startAt ? formatter.format(startAt) : 'TBD'}</p>
-          <p className={''}>End: {endAt ? formatter.format(endAt) : 'TBD'}</p>
+          <p>
+            {t.start}:{' '}
+            {startAt
+              ? formatAdminDate(startAt, locale, {
+                  year: '2-digit',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                })
+              : t.tbd}
+          </p>
+          <p className={''}>
+            {t.end}:{' '}
+            {endAt
+              ? formatAdminDate(endAt, locale, {
+                  year: '2-digit',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                })
+              : t.tbd}
+          </p>
         </div>
 
         <div className={'ml-auto'}>

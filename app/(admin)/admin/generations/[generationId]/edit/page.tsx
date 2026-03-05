@@ -8,6 +8,7 @@ import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataForm from '@/app/components/data-form'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Edit Generation',
@@ -30,6 +31,8 @@ export default async function EditGenerationPage({
 }: {
   params: Promise<{ generationId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { generationId } = await params
   // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
@@ -49,30 +52,32 @@ export default async function EditGenerationPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={`/admin/generations/${generationId}`}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Generation: {generationData.name}</p>
+        <p className={'text-lg'}>
+          {t.generation}: {generationData.name}
+        </p>
       </AdminNavigationButton>
       <div className={'admin-title py-4'}>
-        Edit Generation: {generationData.name}
+        {t.edit} {t.generation}: {generationData.name}
       </div>
       <DataForm
         action={updateGenerationActionWithGenerationId}
         className={'member-data-grid w-full gap-4'}
       >
         <DataInput
-          title={'Generation Name'}
+          title={t.generation}
           defaultValue={generationData.name}
           name={'name'}
           placeholder={'Generation Name'}
         />
         <DataInput
-          title={'Start Date'}
+          title={t.startTime}
           defaultValue={generationData.startDate}
           name={'startDate'}
           placeholder={'Start Date'}
           type={'date'}
         />
         <DataInput
-          title={'End Date'}
+          title={t.endTime}
           defaultValue={generationData.endDate}
           name={'endDate'}
           placeholder={'End Date'}

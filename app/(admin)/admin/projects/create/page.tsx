@@ -14,6 +14,8 @@ import DataSelectInput from '@/app/components/admin/data-select-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Create Project',
@@ -32,6 +34,7 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function CreateProjectPage() {
+  const t = getAdminMessages(await getAdminLocale())
   const membersList = await getMembersWithGeneration()
   // 기수 정보 가져오기
   const generations = await getGenerations()
@@ -45,9 +48,11 @@ export default async function CreateProjectPage() {
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/projects'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Projects</p>
+        <p className={'text-lg'}>{t.projects}</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>Create Project</div>
+      <div className={'admin-title'}>
+        {t.create} {t.project}
+      </div>
       <DataForm
         action={createProjectAction}
         className={'member-data-grid gap-2'}
@@ -59,62 +64,104 @@ export default async function CreateProjectPage() {
         >
           <div>
             <DataImageInput
-              title={'Main Image'}
+              title={t.mainImage}
               name={'mainImage'}
               baseUrl={'/api/admin/projects/main-image'}
             >
-              Select Main Image
+              {t.selectImage}
             </DataImageInput>
           </div>
           <div>
             <DataMultipleImageInput
               baseUrl={'/api/admin/projects/content-image'}
               name={'contentImages'}
-              title={'Images'}
+              title={t.contentImages}
             >
-              Select Images
+              {t.selectImage}
             </DataMultipleImageInput>
           </div>
         </div>
-        <DataInput
-          title={'English Name'}
-          defaultValue={''}
-          name={'name'}
-          placeholder={'English Name'}
-        />
-        <DataInput
-          title={'Korean Name'}
-          defaultValue={''}
-          name={'nameKo'}
-          placeholder={'Korean Name'}
-        />
-        <DataTextarea
-          defaultValue={''}
-          name={'description'}
-          placeholder={'One-line English description'}
-        />
-        <DataTextarea
-          defaultValue={''}
-          name={'descriptionKo'}
-          placeholder={'한국어 한 줄 설명'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.name}
+            requiredBoth={true}
+            enFieldNames={['name']}
+            koFieldNames={['nameKo']}
+            enContent={
+              <DataInput
+                title={t.nameEn}
+                defaultValue={''}
+                name={'name'}
+                placeholder={t.nameEn}
+              />
+            }
+            koContent={
+              <DataInput
+                title={t.nameKo}
+                defaultValue={''}
+                name={'nameKo'}
+                placeholder={t.nameKo}
+              />
+            }
+          />
+        </div>
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.description}
+            requiredBoth={true}
+            enFieldNames={['description']}
+            koFieldNames={['descriptionKo']}
+            enContent={
+              <DataTextarea
+                defaultValue={''}
+                name={'description'}
+                placeholder={t.descriptionEn}
+              />
+            }
+            koContent={
+              <DataTextarea
+                defaultValue={''}
+                name={'descriptionKo'}
+                placeholder={t.descriptionKo}
+              />
+            }
+          />
+        </div>
         <DataSelectInput
-          title={'Generation'}
+          title={t.generation}
           data={generationList}
           name={'generationId'}
           defaultValue={''}
         />
         <MembersSelectInput membersList={membersList} defaultValue={[]} />
-        <MDXEditor
-          title={'English Content'}
-          name={'content'}
-          placeholder={'Write the project content in English.'}
-        />
-        <MDXEditor
-          title={'Korean Content'}
-          name={'contentKo'}
-          placeholder={'Write the project content in Korean.'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.content}
+            requiredBoth={true}
+            enFieldNames={['content']}
+            koFieldNames={['contentKo']}
+            enContent={
+              <MDXEditor
+                title={t.contentEn}
+                name={'content'}
+                placeholder={'Write the project content in English.'}
+              />
+            }
+            koContent={
+              <MDXEditor
+                title={t.contentKo}
+                name={'contentKo'}
+                placeholder={'프로젝트 내용을 한국어로 작성하세요.'}
+              />
+            }
+          />
+        </div>
         <SubmitButton />
       </DataForm>
     </AdminDefaultLayout>

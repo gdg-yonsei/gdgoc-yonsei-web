@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import Link from 'next/link'
+import { Locale } from '@/i18n-config'
 
 /**
  * `AdminDashboardLink` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -13,13 +14,11 @@ import Link from 'next/link'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default async function AdminDashboardLink() {
+export default async function AdminDashboardLink({ lang }: { lang: Locale }) {
   const session = await auth()
 
-  console.log(session)
-
   if (session?.user?.id) {
-    return <Link href={'/admin'}>GYMS</Link>
+    return <Link href={`/${lang}/admin`}>GYMS</Link>
   }
   return <></>
 }

@@ -10,6 +10,7 @@ import formatUserName from '@/lib/format-user-name'
 import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Create Part',
@@ -28,6 +29,8 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function CreatePartPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   // 기수 정보 가져오기
   const generations = await getGenerations()
   // 기수 선택용 리스트
@@ -41,10 +44,12 @@ export default async function CreatePartPage() {
 
   return (
     <AdminDefaultLayout>
-      <div className={'admin-title'}>Create Part</div>
+      <div className={'admin-title'}>
+        {t.create} {t.part}
+      </div>
       <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
         <DataInput
-          title={'Name'}
+          title={t.name}
           defaultValue={''}
           name={'name'}
           placeholder={'e.g. Android, iOS, ...'}
@@ -55,7 +60,7 @@ export default async function CreatePartPage() {
           placeholder={'e.g. This is a part for Android developers.'}
         />
         <DataSelectInput
-          title={'Generation'}
+          title={t.generation}
           data={generationList}
           name={'generationId'}
           defaultValue={''}
@@ -70,7 +75,7 @@ export default async function CreatePartPage() {
             value: member.id,
           }))}
           name={'membersList'}
-          title={'Members'}
+          title={t.members}
           defaultValue={[]}
         />
         <DataSelectMultipleInput
@@ -85,7 +90,7 @@ export default async function CreatePartPage() {
             value: member.id,
           }))}
           name={'doubleBoardMembersList'}
-          title={'Double Board Members'}
+          title={t.doubleBoardMembers}
           defaultValue={[]}
         />
         <SubmitButton />

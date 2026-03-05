@@ -9,6 +9,7 @@ import formatUserName from '@/lib/format-user-name'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -53,6 +54,8 @@ export default async function PartPage({
 }: {
   params: Promise<{ partId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { partId } = await params
   // Part 데이터 가져오기
   const partData = await getPart(Number(partId))
@@ -72,14 +75,14 @@ export default async function PartPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/parts'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Parts</p>
+        <p className={'text-lg'}>{t.parts}</p>
       </AdminNavigationButton>
       <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{partData.name}</div>
         <DataEditLink
           session={session}
           dataType={'parts'}
-          href={`/admin/parts/${partId}/edit`}
+          href={localizeAdminHref(`/admin/parts/${partId}/edit`, locale)}
         />
         <DataDeleteButton
           session={session}
@@ -89,15 +92,15 @@ export default async function PartPage({
       </div>
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Generation</div>
+          <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>{generationData?.name}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Description</div>
+          <div className={'member-data-title'}>{t.description}</div>
           <div className={'member-data-content'}>{partData.description}</div>
         </div>
         <div className={'col-span-4'}>
-          <div className={'member-data-title'}>Members</div>
+          <div className={'member-data-title'}>{t.members}</div>
           <div className={'member-data-grid gap-2'}>
             {partData.usersToParts
               .filter((userToPart) => userToPart.userType === 'Primary')
@@ -124,7 +127,7 @@ export default async function PartPage({
           </div>
         </div>
         <div className={'col-span-4'}>
-          <div className={'member-data-title'}>Double Board Members</div>
+          <div className={'member-data-title'}>{t.doubleBoardMembers}</div>
           <div className={'member-data-grid gap-2'}>
             {partData.usersToParts
               .filter((userToPart) => userToPart.userType === 'Secondary')

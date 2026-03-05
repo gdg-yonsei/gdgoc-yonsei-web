@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { forbidden } from 'next/navigation'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
 import getUserUpcomingSessions from '@/lib/server/fetcher/admin/getUpcomingSessions'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * `UpcomingSessions` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -16,6 +17,8 @@ import getUserUpcomingSessions from '@/lib/server/fetcher/admin/getUpcomingSessi
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function UpcomingSessions() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
   if (!session || !session.user?.id) {
     return forbidden()
@@ -25,10 +28,10 @@ export default async function UpcomingSessions() {
 
   return (
     <div className={'pb-8'}>
-      <h2 className={'admin-title'}>Upcoming Sessions</h2>
+      <h2 className={'admin-title'}>{t.upcomingSessions}</h2>
       <div className={'member-data-grid w-full gap-2 pt-2'}>
         {enrolledSessions.map((session) => (
-          <SessionCard key={session.id} session={session} />
+          <SessionCard key={session.id} session={session} locale={locale} />
         ))}
       </div>
     </div>

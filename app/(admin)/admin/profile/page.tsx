@@ -6,6 +6,11 @@ import Link from 'next/link'
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
 import UnsubscribeSessionNotiEmailPage from '@/app/(admin)/admin/profile/unsubscribe-session-noti-email'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -23,19 +28,22 @@ export const metadata: Metadata = {
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
+
   return (
     <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
       <div className={'flex items-center gap-2'}>
-        <div className={'admin-title'}>Profile</div>
+        <div className={'admin-title'}>{t.profile}</div>
         <Link
-          href={'/admin/profile/edit'}
+          href={localizeAdminHref('/admin/profile/edit', locale)}
           className={
             'flex items-center gap-2 rounded-full bg-neutral-900 p-2 px-4 text-white transition-all hover:bg-neutral-800'
           }
         >
           <PencilSquareIcon className={'size-5'} />
-          <p>Edit</p>
+          <p>{t.edit}</p>
         </Link>
       </div>
       <Suspense

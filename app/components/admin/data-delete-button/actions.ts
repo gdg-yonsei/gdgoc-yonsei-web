@@ -12,6 +12,7 @@ import { parts } from '@/db/schema/parts'
 import deleteR2Images from '@/lib/server/delete-r2-images'
 import { revalidateCache } from '@/lib/server/cache'
 import { deleteResourceValidation } from '@/lib/validations/admin-api'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * `deleteResourceAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -132,5 +133,5 @@ export default async function deleteResourceAction(
     return { error: 'DB Delete Error' }
   }
 
-  redirect('/admin/' + dataType)
+  redirect(await getLocalizedAdminPath('/admin/' + dataType))
 }

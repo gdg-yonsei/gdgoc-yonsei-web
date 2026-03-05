@@ -3,6 +3,7 @@
 import { useAtom } from 'jotai'
 import { modalState } from '@/lib/atoms'
 import { motion } from 'motion/react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `Modal` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -18,6 +19,7 @@ import { motion } from 'motion/react'
  */
 export default function Modal() {
   const [modal, setModal] = useAtom(modalState)
+  const { t } = useAdminI18n()
 
   /**
    * `closeModal` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -62,7 +64,7 @@ export default function Modal() {
                   'w-full rounded-xl bg-green-600 p-2 px-4 text-white transition-colors hover:bg-green-700'
                 }
               >
-                Confirm
+                {t('confirm')}
               </button>
               <button
                 type={'button'}
@@ -71,7 +73,7 @@ export default function Modal() {
                   'w-full rounded-xl bg-red-600 p-2 px-4 font-semibold text-white transition-colors hover:bg-red-700'
                 }
               >
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>

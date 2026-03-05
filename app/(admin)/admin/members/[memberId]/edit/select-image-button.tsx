@@ -1,4 +1,5 @@
 import { PhotoIcon } from '@heroicons/react/24/outline'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * 이미지 선택 버튼
@@ -13,6 +14,8 @@ export default function SelectImageButton({
   disabled?: boolean
   onClick: () => void
 }) {
+  const { t } = useAdminI18n()
+
   return (
     <button
       disabled={disabled}
@@ -23,7 +26,7 @@ export default function SelectImageButton({
       type={'button'}
     >
       <PhotoIcon className={'size-6'} />
-      <p>Select Image</p>
+      <p>{t('selectImage')}</p>
     </button>
   )
 }

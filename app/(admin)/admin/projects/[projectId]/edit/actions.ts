@@ -13,6 +13,7 @@ import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * Update Project Action
@@ -141,5 +142,5 @@ export async function updateProjectAction(
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동
-  redirect(`/admin/projects/${projectId}`)
+  redirect(await getLocalizedAdminPath(`/admin/projects/${projectId}`))
 }

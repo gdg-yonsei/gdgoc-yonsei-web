@@ -11,6 +11,7 @@ import { revalidateTag } from 'next/cache'
 import { Resend } from 'resend'
 import { users } from '@/db/schema/users'
 import NewParticipant from '@/emails/new-participant'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * `registerSessionAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -118,5 +119,7 @@ export async function registerSessionAction(
 
   revalidateTag('sessions', 'max')
 
-  return redirect(`/admin/sessions/${sessionId}`)
+  return redirect(
+    await getLocalizedAdminPath(`/admin/sessions/${sessionId}`)
+  )
 }

@@ -42,6 +42,45 @@ describe('DataForm and admin menu components', () => {
     expect((formData as FormData).get('title')).toBe('my-title')
   })
 
+  it('blocks submit when required bilingual fields are missing', async () => {
+    const action = vi.fn(async () => ({ error: '' }))
+    const user = userEvent.setup()
+    const { container } = render(
+      <DataForm action={action}>
+        <div
+          data-bilingual-required="true"
+          data-bilingual-en-fields="name"
+          data-bilingual-ko-fields="nameKo"
+          data-bilingual-field-label="Name"
+        />
+        <input name="name" defaultValue="English Name" />
+        <input name="nameKo" defaultValue="" />
+        <button type="submit">Submit</button>
+      </DataForm>
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Submit' }))
+
+    await waitFor(() => {
+      expect(action).not.toHaveBeenCalled()
+      expect(
+        screen.getByText(
+          'Please complete both Korean and English versions: Name (Korean)'
+        )
+      ).toBeVisible()
+    })
+
+    const nameKoInput = container.querySelector(
+      'input[name="nameKo"]'
+    ) as HTMLInputElement
+    await user.type(nameKoInput, '한글 이름')
+    await user.click(screen.getByRole('button', { name: 'Submit' }))
+
+    await waitFor(() => {
+      expect(action).toHaveBeenCalledTimes(1)
+    })
+  })
+
   it('opens and closes mobile admin menu through toggle and backdrop', async () => {
     const user = userEvent.setup()
     const { container } = render(

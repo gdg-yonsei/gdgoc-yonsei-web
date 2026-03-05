@@ -5,12 +5,15 @@ import * as motion from 'motion/react-client'
 import formatUserName from '@/lib/format-user-name'
 import { notFound } from 'next/navigation'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * 사용자 정보 표시 패널
  * @constructor
  */
 async function UserProfile() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -42,6 +45,7 @@ async function UserProfile() {
           'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-1 px-2 text-sm transition-all hover:bg-neutral-800 hover:text-white disabled:bg-neutral-600'
         }
         spinnerClassName={'size-4 border-2 border-t-white border-neutral-700'}
+        label={t.signOut}
       />
     </motion.div>
   )

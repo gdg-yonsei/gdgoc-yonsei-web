@@ -10,6 +10,7 @@ import { memberValidation } from '@/lib/validations/member'
 import { z } from 'zod'
 import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * Update Member Action
@@ -110,5 +111,5 @@ export async function updateMemberAction(
   }
 
   // 성공 시 해당 member 페이지로 이동
-  redirect(`/admin/members/${memberId}`)
+  redirect(await getLocalizedAdminPath(`/admin/members/${memberId}`))
 }

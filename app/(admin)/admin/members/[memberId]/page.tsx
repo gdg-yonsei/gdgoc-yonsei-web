@@ -6,6 +6,12 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { auth } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
 import DataEditLink from '@/app/components/admin/data-edit-link'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -51,6 +57,8 @@ export default async function MemberPage({
 }: {
   params: Promise<{ memberId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { memberId } = await params
 
   // Member 정보 가져오기
@@ -62,7 +70,7 @@ export default async function MemberPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/members'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Members</p>
+        <p className={'text-lg'}>{t.members}</p>
       </AdminNavigationButton>
       <div className={'flex w-full items-center justify-start gap-2 py-1'}>
         <div className={'admin-title'}>
@@ -78,7 +86,7 @@ export default async function MemberPage({
           session={session}
           dataOwnerId={memberId}
           dataType={'members'}
-          href={`/admin/members/${memberId}/edit`}
+          href={localizeAdminHref(`/admin/members/${memberId}/edit`, locale)}
         />
       </div>
       <div className={'member-data-grid w-full gap-2 py-2'}>
@@ -91,62 +99,76 @@ export default async function MemberPage({
             className={'aspect-square w-40 rounded-full'}
           />
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>First Name (English)</div>
-          <div className={'member-data-content'}>{memberData.firstName}</div>
+        <div className={'member-data-col-span'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                <div className={'member-data-box'}>
+                  <div className={'member-data-title'}>{t.firstNameEn}</div>
+                  <div className={'member-data-content'}>{memberData.firstName}</div>
+                </div>
+                <div className={'member-data-box'}>
+                  <div className={'member-data-title'}>{t.lastNameEn}</div>
+                  <div className={'member-data-content'}>{memberData.lastName}</div>
+                </div>
+              </div>
+            }
+            koContent={
+              <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                <div className={'member-data-box'}>
+                  <div className={'member-data-title'}>{t.firstNameKo}</div>
+                  <div className={'member-data-content'}>{memberData.firstNameKo}</div>
+                </div>
+                <div className={'member-data-box'}>
+                  <div className={'member-data-title'}>{t.lastNameKo}</div>
+                  <div className={'member-data-content'}>{memberData.lastNameKo}</div>
+                </div>
+              </div>
+            }
+          />
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Last Name (English)</div>
-          <div className={'member-data-content'}>{memberData.lastName}</div>
-        </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>First Name (Korean)</div>
-          <div className={'member-data-content'}>{memberData.firstNameKo}</div>
-        </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Last Name (Korean)</div>
-          <div className={'member-data-content'}>{memberData.lastNameKo}</div>
-        </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>E-Mail</div>
+          <div className={'member-data-title'}>{t.email}</div>
           <div className={'member-data-content'}>{memberData.email}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Role</div>
+          <div className={'member-data-title'}>{t.role}</div>
           <div className={'member-data-content'}>{memberData.role}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Part</div>
+          <div className={'member-data-title'}>{t.part}</div>
           <div className={'member-data-content'}>{memberData.part}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Github ID</div>
+          <div className={'member-data-title'}>{t.githubId}</div>
           <div className={'member-data-content'}>{memberData.githubId}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Instagram ID</div>
+          <div className={'member-data-title'}>{t.instagramId}</div>
           <div className={'member-data-content'}>{memberData.instagramId}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Linked In Profile URL</div>
+          <div className={'member-data-title'}>{t.linkedInProfileUrl}</div>
           <div className={'member-data-content'}>{memberData.linkedInId}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Major</div>
+          <div className={'member-data-title'}>{t.major}</div>
           <div className={'member-data-content'}>{memberData.major}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Student ID</div>
+          <div className={'member-data-title'}>{t.studentId}</div>
           <div className={'member-data-content'}>{memberData.studentId}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Telephone</div>
+          <div className={'member-data-title'}>{t.telephone}</div>
           <div className={'member-data-content'}>{memberData.telephone}</div>
         </div>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Foreigner</div>
+          <div className={'member-data-title'}>{t.foreigner}</div>
           <div className={'member-data-content'}>
-            {memberData.isForeigner ? 'True' : 'False'}
+            {memberData.isForeigner ? t.trueValue : t.falseValue}
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { eq } from 'drizzle-orm'
 import { revalidateCache } from '@/lib/server/cache'
 import getDeleteMemberFormData from '@/lib/server/form-data/get-delete-member-form-data'
 import { deleteMemberValidation } from '@/lib/validations/delete-member'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * `acceptMemberAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -63,7 +64,7 @@ export default async function acceptMemberAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect('/admin/members/accept')
+  redirect(await getLocalizedAdminPath('/admin/members/accept'))
 }
 
 /**
@@ -105,5 +106,5 @@ export async function deleteUserAction(
     return { error: 'DB Update Error' }
   }
 
-  redirect('/admin/members/accept')
+  redirect(await getLocalizedAdminPath('/admin/members/accept'))
 }

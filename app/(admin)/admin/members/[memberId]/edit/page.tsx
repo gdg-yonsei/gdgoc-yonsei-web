@@ -13,6 +13,8 @@ import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/membe
 import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/data-form'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Edit Member',
@@ -35,6 +37,8 @@ export default async function EditMemberPage({
 }: {
   params: Promise<{ memberId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { memberId } = await params
   // 사용자 로그인 정보 확인
   const session = await auth()
@@ -55,7 +59,7 @@ export default async function EditMemberPage({
         <p>{memberData.name}</p>
       </AdminNavigationButton>
       <div className={'admin-title py-4'}>
-        Edit{' '}
+        {t.edit}{' '}
         {formatUserName(
           memberData.name,
           memberData.firstName,
@@ -74,80 +78,98 @@ export default async function EditMemberPage({
             name={'profileImage'}
           />
           <DataInput
-            title={'Github Name*'}
+            title={`${t.githubName}*`}
             defaultValue={memberData.name}
             name={'name'}
-            placeholder={'Github Name'}
+            placeholder={t.githubName}
           />
+          <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+            <BilingualPanel
+              enTitle={t.english}
+              koTitle={t.korean}
+              fieldLabel={t.name}
+              requiredBoth={true}
+              enFieldNames={['firstName', 'lastName']}
+              koFieldNames={['firstNameKo', 'lastNameKo']}
+              enContent={
+                <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                  <DataInput
+                    title={`${t.firstNameEn}*`}
+                    defaultValue={memberData.firstName}
+                    name={'firstName'}
+                    placeholder={'Yonsei'}
+                  />
+                  <DataInput
+                    title={`${t.lastNameEn}*`}
+                    defaultValue={memberData.lastName}
+                    name={'lastName'}
+                    placeholder={'Kim'}
+                  />
+                </div>
+              }
+              koContent={
+                <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                  <DataInput
+                    title={`${t.firstNameKo}*`}
+                    defaultValue={memberData.firstNameKo}
+                    name={'firstNameKo'}
+                    placeholder={'연세'}
+                  />
+                  <DataInput
+                    title={`${t.lastNameKo}*`}
+                    defaultValue={memberData.lastNameKo}
+                    name={'lastNameKo'}
+                    placeholder={'김'}
+                  />
+                </div>
+              }
+            />
+          </div>
           <DataInput
-            title={'First Name (English)*'}
-            defaultValue={memberData.firstName}
-            name={'firstName'}
-            placeholder={'Yonsei'}
-          />
-          <DataInput
-            title={'Last Name (English)*'}
-            defaultValue={memberData.lastName}
-            name={'lastName'}
-            placeholder={'Kim'}
-          />
-          <DataInput
-            title={'First Name (Korean)*'}
-            defaultValue={memberData.firstNameKo}
-            name={'firstNameKo'}
-            placeholder={'연세'}
-          />
-          <DataInput
-            title={'Last Name (Korean)*'}
-            defaultValue={memberData.lastNameKo}
-            name={'lastNameKo'}
-            placeholder={'김'}
-          />
-          <DataInput
-            title={'E-Mail'}
+            title={t.email}
             defaultValue={memberData.email}
             name={'email'}
-            placeholder={'E-Mail'}
+            placeholder={t.email}
           />
           <DataInput
-            title={'Github ID'}
+            title={t.githubId}
             defaultValue={memberData.githubId}
             name={'githubId'}
-            placeholder={'Github ID'}
+            placeholder={t.githubId}
           />
           <DataInput
-            title={'Instagram ID'}
+            title={t.instagramId}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
-            placeholder={'Instagram ID'}
+            placeholder={t.instagramId}
           />
           <DataInput
-            title={'Linked In Profile URL'}
+            title={t.linkedInProfileUrl}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
-            placeholder={'Linked In Profile URL'}
+            placeholder={t.linkedInProfileUrl}
             type={'link'}
           />
           <DataInput
-            title={'Major'}
+            title={t.major}
             defaultValue={memberData.major}
             name={'major'}
-            placeholder={'Major'}
+            placeholder={t.major}
           />
           <DataInput
-            title={'Student ID'}
+            title={t.studentId}
             defaultValue={memberData.studentId}
             name={'studentId'}
-            placeholder={'Student ID'}
+            placeholder={t.studentId}
           />
           <DataInput
-            title={'Telephone'}
+            title={t.telephone}
             defaultValue={memberData.telephone}
             name={'telephone'}
-            placeholder={'Telephone (only numbers)'}
+            placeholder={t.telephoneOnlyNumber}
           />
           <DataInput
-            title={'Foreigner'}
+            title={t.foreigner}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}

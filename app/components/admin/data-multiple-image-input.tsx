@@ -6,6 +6,7 @@ import { ProjectContentImagePostRequest } from '@/app/api/admin/projects/content
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
 import { uploadMultipleImagesState } from '@/lib/atoms'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `readFilesAsDataURLs` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -64,6 +65,7 @@ export default function DataMultipleImageInput({
   const [prevImageUrls, setPrevImageUrls] = useState<string[]>(defaultValue)
   const [isLoading, setIsLoading] = useAtom(uploadMultipleImagesState)
   const [imageUrls, setImageUrls] = useState<string[]>(defaultValue)
+  const { t } = useAdminI18n()
 
   /**
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
@@ -192,7 +194,7 @@ export default function DataMultipleImageInput({
         onClick={() => inputRef.current?.click()}
         disabled={isLoading}
       >
-        {isLoading ? 'Uploading...' : children}
+        {isLoading ? t('uploading') : children}
       </button>
     </div>
   )

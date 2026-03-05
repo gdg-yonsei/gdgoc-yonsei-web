@@ -15,6 +15,20 @@ import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
 import { Resend } from 'resend'
 import NewSession from '@/emails/new-session'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+
+const CACHE_WARM_TIMEOUT_MS = 3_000
+
+function warmUpPaths(paths: string[]) {
+  void Promise.allSettled(
+    paths.map((path) =>
+      fetch(path, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(CACHE_WARM_TIMEOUT_MS),
+      })
+    )
+  )
+}
 
 /**
  * Create Session Action
@@ -137,19 +151,14 @@ export async function createSessionAction(
       },
     })
 
-    if (part?.generation) {
-       const paths = [
-        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/session/${part.generation.name}/${sessionId}`,
-        `${process.env.NEXT_PUBLIC_SITE_URL}/en/session/${part.generation.name}/${sessionId}`,
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    if (part?.generation && siteUrl) {
+      const paths = [
+        `${siteUrl}/ko/session/${part.generation.name}/${sessionId}`,
+        `${siteUrl}/en/session/${part.generation.name}/${sessionId}`,
       ]
 
-      await Promise.allSettled(
-        paths.map((path) =>
-          fetch(path, {
-            cache: 'no-store',
-          })
-        )
-      )
+      warmUpPaths(paths)
     }
     // End Cache Warming
   } catch (e) {
@@ -221,5 +230,5 @@ export async function createSessionAction(
     }
   }
 
-  redirect(`/admin/sessions`)
+  redirect(await getLocalizedAdminPath('/admin/sessions'))
 }

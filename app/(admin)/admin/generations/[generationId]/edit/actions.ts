@@ -9,6 +9,7 @@ import { generations } from '@/db/schema/generations'
 import { generationValidation } from '@/lib/validations/generation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 
 /**
  * Update Generation Action
@@ -72,5 +73,5 @@ export async function updateGenerationAction(
   }
 
   // 성공 시 해당 generation 페이지로 이동
-  redirect(`/admin/generations/${generationId}`)
+  redirect(await getLocalizedAdminPath(`/admin/generations/${generationId}`))
 }

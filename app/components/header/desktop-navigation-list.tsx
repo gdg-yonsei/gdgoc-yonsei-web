@@ -29,7 +29,7 @@ export default async function DesktopNavigationList({
       }
     >
       <Suspense>
-        <AdminDashboardLink />
+        <AdminDashboardLink lang={lang} />
       </Suspense>
       <Link
         href={`/${lang}/session${lastGeneration ? '/' + lastGeneration.name : ''}`}

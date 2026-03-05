@@ -1,6 +1,7 @@
 import LoadingSpinner from '@/app/components/loading-spinner'
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import { motion } from 'motion/react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * 이미지 저장 버튼
@@ -18,6 +19,8 @@ export default function SaveImageButton({
   imgFile: string
   onClick: () => void
 }) {
+  const { t } = useAdminI18n()
+
   return (
     <motion.button
       disabled={isLoading}
@@ -36,7 +39,7 @@ export default function SaveImageButton({
       ) : (
         <CloudArrowUpIcon className={'size-6'} />
       )}
-      <p>Save</p>
+      <p>{t('save')}</p>
     </motion.button>
   )
 }
