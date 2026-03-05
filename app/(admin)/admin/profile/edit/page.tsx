@@ -81,17 +81,17 @@ export default async function EditProfilePage() {
             required={true}
           />
           <DataInput
-            title={'First Name (Korean)'}
-            defaultValue={memberData.firstNameKo}
-            name={'firstNameKo'}
-            placeholder={'연세'}
-            required={true}
-          />
-          <DataInput
             title={'Last Name (English)'}
             defaultValue={memberData.lastName}
             name={'lastName'}
             placeholder={'Kim'}
+            required={true}
+          />
+          <DataInput
+            title={'First Name (Korean)'}
+            defaultValue={memberData.firstNameKo}
+            name={'firstNameKo'}
+            placeholder={'연세'}
             required={true}
           />
           <DataInput
