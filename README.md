@@ -1,7 +1,7 @@
 # GDGoC Yonsei Official Website 🌐
 
 This is the official website of Google Developer Groups on Campus Yonsei (GDGoC Yonsei).
-It is built with Next.js 15 (App Router), powered by Drizzle ORM with PostgreSQL, and integrates modern web technologies to ensure scalability, performance, and maintainability.
+It is built with Next.js 16 (App Router), powered by Drizzle ORM with PostgreSQL, and integrates modern web technologies to ensure scalability, performance, and maintainability.
 
 GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 
@@ -64,6 +64,9 @@ Your app will be available at http://localhost:3000.
 - pnpm db:studio → Open Drizzle Studio
 - pnpm format → Format code with Prettier
 - pnpm lint → Run ESLint checks
+
+🧱 Architecture Docs
+- Caching and invalidation guide: [`docs/architecture/caching.md`](./docs/architecture/caching.md)
 
 ⸻
 
