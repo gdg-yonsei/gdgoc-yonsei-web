@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
-import { getProject } from '@/lib/server/fetcher/get-project'
+import type { Locale } from '@/i18n-config'
+import { getProjectById } from '@/lib/server/queries/public/projects'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Project'
@@ -26,9 +27,9 @@ export const contentType = 'image/png'
 export default async function Image({
   params,
 }: {
-  params: { projectId: string }
+  params: { lang: Locale; projectId: string }
 }) {
-  const project = await getProject(params.projectId)
+  const project = await getProjectById(params.projectId, params.lang)
 
   return new ImageResponse(
     (

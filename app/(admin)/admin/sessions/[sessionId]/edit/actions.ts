@@ -12,8 +12,15 @@ import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { sessionValidation } from '@/lib/validations/session'
 import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { userToSession } from '@/db/schema/user-to-session'
-import { revalidateCache } from '@/lib/server/cache'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { getR2BucketEnv } from '@/lib/server/env'
+import { invalidateSessionPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import {
+  getGenerationNameForPartId,
+  getSessionCacheContext,
+} from '@/lib/server/services/cache-context'
+import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
 
 /**
  * Update Project Action
@@ -87,6 +94,9 @@ export async function updateSessionAction(
   }
 
   try {
+    const bucketEnv = getR2BucketEnv()
+    const previousSession = await getSessionCacheContext(sessionId)
+
     // 삭제된 이미지 R2에서 삭제
     const prevImages = (
       await db
@@ -106,11 +116,16 @@ export async function updateSessionAction(
     }
 
     for (const imageUrl of toDeleteImages) {
+      const imageKey = normalizeR2ImageObjectKey(imageUrl, 'sessions')
+      if (!imageKey) {
+        continue
+      }
+
       deleteImagePromises.push(
         r2Client.send(
           new DeleteObjectCommand({
-            Bucket: process.env.R2_BUCKET_NAME,
-            Key: imageUrl.replace(process.env.NEXT_PUBLIC_IMAGE_URL!, ''),
+            Bucket: bucketEnv.R2_BUCKET_NAME,
+            Key: imageKey,
           })
         )
       )
@@ -157,11 +172,17 @@ export async function updateSessionAction(
       }))
     )
 
-    // 캐시 업데이트
-    revalidateCache('sessions')
+    const nextGenerationName = await getGenerationNameForPartId(Number(partId))
+
+    invalidateSessionPublicCache({
+      sessionId,
+      previousGenerationName: previousSession.generationName,
+      nextGenerationName,
+    })
   } catch (e) {
-    // DB 업데이트 오류 발생 시 오류 반환
-    console.error(e)
+    logger.error('admin.sessions.update', e, {
+      sessionId,
+    })
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동

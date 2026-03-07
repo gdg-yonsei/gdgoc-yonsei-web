@@ -7,21 +7,9 @@ import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { forbidden, redirect } from 'next/navigation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
-import { revalidateCache } from '@/lib/server/cache'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-
-const CACHE_WARM_TIMEOUT_MS = 3_000
-
-function warmUpPaths(paths: string[]) {
-  void Promise.allSettled(
-    paths.map((path) =>
-      fetch(path, {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(CACHE_WARM_TIMEOUT_MS),
-      })
-    )
-  )
-}
+import { invalidateGenerationPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
 
 /**
  * `createGenerationAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -75,22 +63,11 @@ export async function createGenerationAction(
         id: generations.id,
       })
 
-    // 캐시 업데이트
-    revalidateCache(['generations', 'parts'])
-
-    // Warm up cache for the new generation member page
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-    if (siteUrl) {
-      const paths = [
-        `${siteUrl}/ko/member/${parsedGenerationData.name}`,
-        `${siteUrl}/en/member/${parsedGenerationData.name}`,
-      ]
-
-      warmUpPaths(paths)
-    }
+    invalidateGenerationPublicCache({
+      nextGenerationName: parsedGenerationData.name,
+    })
   } catch (e) {
-    // DB 업데이트 오류
-    console.error(e)
+    logger.error('admin.generations.create', e)
     return { error: 'DB Update Error' }
   }
 

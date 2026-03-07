@@ -3,7 +3,7 @@ import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { users } from '@/db/schema/users'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 /**
  * Preloads the data for a specific session into the cache.
@@ -27,10 +27,7 @@ export const preloadAdminSessionById = (sessionId: string) => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getSession(sessionId: string) {
-  'use cache'
-  applyCacheTags('sessions')
-
-  console.log(new Date(), 'Fetch Session Data', sessionId)
+  noStore()
 
   // Fetch the main session data, including the generation it belongs to.
   const sessionData = await db.query.sessions.findFirst({

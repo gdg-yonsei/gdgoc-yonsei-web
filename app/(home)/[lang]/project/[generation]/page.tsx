@@ -1,18 +1,15 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import formatDateYYYYMMDD from '@/lib/format-date-yyyy-mm-dd'
-import db from '@/db'
-import { eq } from 'drizzle-orm'
-import { generations } from '@/db/schema/generations'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
 import addLangParams from '@/lib/server/add-lang-params'
-import applyCacheTags from '@/lib/server/cacheTagT'
-
-export const dynamicParams = true
-export const dynamic = 'force-static'
+import { i18n } from '@/i18n-config'
+import {
+  getGenerationSummaries,
+} from '@/lib/server/queries/public/generations'
+import { getProjectsByGeneration } from '@/lib/server/queries/public/projects'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -60,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateStaticParams() {
-  const generationList = await getGenerationSummaries()
+  const generationList = await getGenerationSummaries(i18n.defaultLocale)
   return addLangParams(
     generationList.map((generation) => ({ generation: generation.name })),
     ['en', 'ko']
@@ -80,16 +77,12 @@ export async function generateStaticParams() {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function ProjectsPage({ params }: Props) {
-  'use cache'
-  applyCacheTags('projects', 'generations')
   const paramsData = await params
-
-  const generationData = await db.query.generations.findFirst({
-    where: eq(generations.name, paramsData.generation),
-    with: {
-      projects: true,
-    },
-  })
+  const locale = paramsData.lang === 'ko' ? 'ko' : 'en'
+  const generationData = await getProjectsByGeneration(
+    paramsData.generation,
+    locale
+  )
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
@@ -99,7 +92,7 @@ export default async function ProjectsPage({ params }: Props) {
       <StageButtonGroup
         basePath={'project'}
         generation={paramsData.generation}
-        lang={paramsData.lang}
+        lang={locale}
       />
       <div
         className={

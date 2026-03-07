@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
-import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
+import languageParamChecker from '@/lib/language-param-checker'
+import { getLatestGeneration } from '@/lib/server/queries/public/generations'
 
 /**
  * `ProjectRedirect` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -18,13 +19,12 @@ export default async function ProjectRedirect({
 }: {
   params: Promise<{ lang: string }>
 }) {
-  const [lastGeneration, paramsData] = await Promise.all([
-    getLatestGeneration(),
-    params,
-  ])
+  const paramsData = await params
+  const lang = languageParamChecker(paramsData.lang)
+  const lastGeneration = await getLatestGeneration(lang)
 
   if (lastGeneration) {
-    redirect(`/${paramsData.lang}/project/${lastGeneration.name}`)
+    redirect(`/${lang}/project/${lastGeneration.name}`)
   }
   return <></>
 }

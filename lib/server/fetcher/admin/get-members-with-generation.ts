@@ -1,5 +1,5 @@
 import db from '@/db'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadMembersGroupedByGeneration = () => {
   void getMembersWithGeneration()
@@ -18,9 +18,7 @@ export const preloadMembersGroupedByGeneration = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getMembersWithGeneration() {
-  'use cache'
-  applyCacheTags('members', 'generations')
-
+  noStore()
   return db.query.generations.findMany({
     with: {
       parts: {

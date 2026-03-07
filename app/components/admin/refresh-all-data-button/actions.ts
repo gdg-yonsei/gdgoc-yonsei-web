@@ -1,6 +1,7 @@
 'use server'
 
-import { revalidateCache } from '@/lib/server/cache'
+import { invalidateAllPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
 
 /**
  * `revalidateAllDataAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -15,6 +16,6 @@ import { revalidateCache } from '@/lib/server/cache'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export default async function revalidateAllDataAction() {
-  console.log('Refresh All Data')
-  revalidateCache(['generations', 'parts', 'projects', 'members', 'sessions'])
+  logger.info('admin.refresh-all', 'Refreshing public cache surfaces')
+  invalidateAllPublicCache()
 }

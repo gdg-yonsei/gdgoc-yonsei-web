@@ -1,17 +1,17 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+import { connection } from 'next/server'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
-import getPublishedSessionsByGeneration from '@/app/(home)/[lang]/session/[generation]/getSessionList'
+import { i18n } from '@/i18n-config'
+import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
+import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
+import { getPublishedSessionsByGeneration } from '@/lib/server/queries/public/sessions'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
-
-export const dynamicParams = true
-export const dynamic = 'force-static'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateStaticParams() {
-  const generationList = await getGenerationSummaries()
+  const generationList = await getGenerationSummaries(i18n.defaultLocale)
   return generationList.map((generation) => ({ generation: generation.name }))
 }
 
@@ -73,9 +73,15 @@ export async function generateStaticParams() {
  */
 export default async function SessionPage({ params }: Props) {
   const paramsData = await params
+  const locale = paramsData.lang === 'ko' ? 'ko' : 'en'
+
+  await connection()
+  const visibilityBucket = getSessionVisibilityBucket()
 
   const sessionList = await getPublishedSessionsByGeneration(
-    paramsData.generation
+    paramsData.generation,
+    locale,
+    visibilityBucket
   )
 
   return (
@@ -84,7 +90,7 @@ export default async function SessionPage({ params }: Props) {
       <StageButtonGroup
         basePath={'session'}
         generation={paramsData.generation}
-        lang={paramsData.lang}
+        lang={locale}
       />
       <div
         className={

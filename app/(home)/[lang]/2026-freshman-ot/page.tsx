@@ -2,11 +2,6 @@ import { Metadata } from 'next'
 import languageParamChecker from '@/lib/language-param-checker'
 import FreshmanOTPresentation from './presentation'
 
-/* ── Static Generation ──────────────────────────────────────────────────── */
-
-export const dynamic = 'force-static'
-export const dynamicParams = true
-
 /**
  * `generateStaticParams` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
  *

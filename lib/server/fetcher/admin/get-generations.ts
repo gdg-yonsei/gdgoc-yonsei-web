@@ -2,7 +2,7 @@ import 'server-only'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { desc } from 'drizzle-orm'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminGenerations = () => {
   void getGenerations()
@@ -21,9 +21,6 @@ export const preloadAdminGenerations = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getGenerations() {
-  'use cache'
-  applyCacheTags('generations')
-
-  console.log(new Date(), 'Fetch Generations Data')
+  noStore()
   return db.select().from(generations).orderBy(desc(generations.id))
 }

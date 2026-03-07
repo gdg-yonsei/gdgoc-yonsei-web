@@ -12,6 +12,7 @@ import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
 } from '@/lib/server/r2-object-key'
+import { getR2BucketEnv } from '@/lib/server/env'
 
 export interface ProjectMainImagePostRequest {
   fileName: string
@@ -102,7 +103,7 @@ export async function DELETE(request: Request) {
 
   await r2Client.send(
     new DeleteObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
+      Bucket: getR2BucketEnv().R2_BUCKET_NAME,
       Key: objectKey,
     })
   )

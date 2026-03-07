@@ -1,4 +1,3 @@
-import { getGenerations } from '@/lib/server/fetcher/get-generations'
 import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import Link from 'next/link'
@@ -6,10 +5,11 @@ import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import LinkedIn from '@/app/components/svg/linked-in'
 import InstagramWhiteBg from '@/app/components/svg/instagram-white-bg'
 import Github from '@/app/components/svg/github'
+import { getMembersByGeneration } from '@/lib/server/queries/public/members'
 
-type UserProfileType = Awaited<
-  ReturnType<typeof getGenerations>
->[number]['parts'][number]['usersToParts'][number]['user']
+type UserProfileType = NonNullable<
+  Awaited<ReturnType<typeof getMembersByGeneration>>
+>['parts'][number]['usersToParts'][number]['user']
 
 /**
  * `UserProfileCard` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.

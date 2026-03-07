@@ -2,7 +2,7 @@ import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gte } from 'drizzle-orm'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 /**
  * `getUserUpcomingSessions` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -17,9 +17,7 @@ import applyCacheTags from '@/lib/server/cacheTagT'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export default async function getUserUpcomingSessions(userId: string) {
-  'use cache'
-  applyCacheTags('sessions')
-
+  noStore()
   return db
     .select({
       id: sessions.id,

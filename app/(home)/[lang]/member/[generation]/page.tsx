@@ -1,21 +1,15 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profile-card'
-import db from '@/db'
-import { asc, eq } from 'drizzle-orm'
-import { generations } from '@/db/schema/generations'
-import applyCacheTags from '@/lib/server/cacheTagT'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
-import { parts } from '@/db/schema/parts'
+import { i18n } from '@/i18n-config'
 import addLangParams from '@/lib/server/add-lang-params'
+import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
+import { getMembersByGeneration } from '@/lib/server/queries/public/members'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
-
-export const dynamicParams = true
-export const dynamic = 'force-static'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -58,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateStaticParams() {
-  const generationList = await getGenerationSummaries()
+  const generationList = await getGenerationSummaries(i18n.defaultLocale)
   return addLangParams(
     generationList.map((generation) => ({ generation: generation.name })),
     ['ko', 'en']
@@ -78,25 +72,12 @@ export async function generateStaticParams() {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function MembersPage({ params }: Props) {
-  'use cache'
-  applyCacheTags('parts', 'members')
   const paramsData = await params
-
-  const generationData = await db.query.generations.findFirst({
-    where: eq(generations.name, paramsData.generation),
-    with: {
-      parts: {
-        with: {
-          usersToParts: {
-            with: {
-              user: true,
-            },
-          },
-        },
-        orderBy: asc(parts.displayOrder),
-      },
-    },
-  })
+  const locale = paramsData.lang === 'ko' ? 'ko' : 'en'
+  const generationData = await getMembersByGeneration(
+    paramsData.generation,
+    locale
+  )
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
@@ -104,7 +85,7 @@ export default async function MembersPage({ params }: Props) {
       <StageButtonGroup
         basePath={'member'}
         generation={paramsData.generation}
-        lang={paramsData.lang}
+        lang={locale}
       />
       <div className={'flex w-full flex-col gap-8'}>
         {generationData?.parts?.map((part, i) => (

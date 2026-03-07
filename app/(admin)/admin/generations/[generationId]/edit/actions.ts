@@ -8,8 +8,9 @@ import { auth } from '@/auth'
 import { generations } from '@/db/schema/generations'
 import { generationValidation } from '@/lib/validations/generation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
-import { revalidateCache } from '@/lib/server/cache'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidateGenerationPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
 
 /**
  * Update Generation Action
@@ -54,6 +55,13 @@ export async function updateGenerationAction(
 
   // generation data 업데이트
   try {
+    const previousGeneration = await db.query.generations.findFirst({
+      where: eq(generations.id, Number(generationId)),
+      columns: {
+        name: true,
+      },
+    })
+
     await db
       .update(generations)
       .set({
@@ -64,11 +72,14 @@ export async function updateGenerationAction(
       })
       .where(eq(generations.id, Number(generationId)))
 
-    // 캐시 업데이트
-    revalidateCache(['generations', 'parts'])
+    invalidateGenerationPublicCache({
+      previousGenerationName: previousGeneration?.name,
+      nextGenerationName: parsedGenerationData.name,
+    })
   } catch (e) {
-    // DB 업데이트 오류 발생 시 오류 반환
-    console.error(e)
+    logger.error('admin.generations.update', e, {
+      generationId,
+    })
     return { error: 'DB Update Error' }
   }
 

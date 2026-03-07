@@ -7,11 +7,12 @@ import db from '@/db'
 import { and, eq } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
-import { revalidateTag } from 'next/cache'
 import { Resend } from 'resend'
 import { users } from '@/db/schema/users'
 import NewParticipant from '@/emails/new-participant'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { getResendEnv } from '@/lib/server/env'
+import { logger } from '@/lib/server/logger'
 
 /**
  * `registerSessionAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -87,7 +88,7 @@ export async function registerSessionAction(
         const userData = await db.query.users.findFirst({
           where: eq(users.id, session.user?.id),
         })
-        const resend = new Resend(process.env.RESEND_API_KEY)
+        const resend = new Resend(getResendEnv().RESEND_API_KEY)
         await resend.emails.send({
           from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
           to: sessionData?.author.email,
@@ -112,12 +113,12 @@ export async function registerSessionAction(
       }
     })
   } catch (e) {
-    console.error(e)
-    revalidateTag('sessions', 'max')
+    logger.error('admin.sessions.register', e, {
+      sessionId,
+      userId: session.user.id,
+    })
     return { error: 'Overcapacity' }
   }
-
-  revalidateTag('sessions', 'max')
 
   return redirect(
     await getLocalizedAdminPath(`/admin/sessions/${sessionId}`)

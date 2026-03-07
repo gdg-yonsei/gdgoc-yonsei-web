@@ -1,5 +1,8 @@
 import { ImageResponse } from 'next/og'
-import { getSession } from '@/lib/server/fetcher/get-session'
+import { connection } from 'next/server'
+import type { Locale } from '@/i18n-config'
+import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
+import { getSessionById } from '@/lib/server/queries/public/sessions'
 
 // Image metadata
 export const alt = 'GDGoC Yonsei Session'
@@ -26,9 +29,15 @@ export const contentType = 'image/png'
 export default async function Image({
   params,
 }: {
-  params: { sessionId: string }
+  params: { lang: Locale; sessionId: string }
 }) {
-  const session = await getSession(params.sessionId)
+  await connection()
+
+  const session = await getSessionById(
+    params.sessionId,
+    params.lang,
+    getSessionVisibilityBucket()
+  )
 
   return new ImageResponse(
     (

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
 import AdminDashboardLink from '@/app/components/header/gyms-navigation'
 import { Suspense } from 'react'
-import { Locale } from '@/i18n-config'
+import type { Locale } from '@/i18n-config'
+import { getLatestGeneration } from '@/lib/server/queries/public/generations'
 
 /**
  * `DesktopNavigationList` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -21,7 +21,7 @@ export default async function DesktopNavigationList({
 }: {
   lang: Locale
 }) {
-  const lastGeneration = await getLatestGeneration()
+  const lastGeneration = await getLatestGeneration(lang)
   return (
     <div
       className={

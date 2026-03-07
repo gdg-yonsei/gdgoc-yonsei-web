@@ -5,7 +5,7 @@ import { desc, eq } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminMemberById = (userId: string) => {
   void getMember(userId)
@@ -23,10 +23,7 @@ export const preloadAdminMemberById = (userId: string) => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getMember(userId: string) {
-  'use cache'
-  applyCacheTags('members', 'generations', 'parts')
-
-  console.log(new Date(), 'Fetch Member Data:', userId)
+  noStore()
   const result = await db
     .select({
       id: users.id,
