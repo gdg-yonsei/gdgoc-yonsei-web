@@ -11,6 +11,8 @@ import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/data-form'
 import { updateProfileAction } from '@/app/(admin)/admin/profile/edit/actions'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Edit Profile',
@@ -29,6 +31,8 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function EditProfilePage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   // 사용자 로그인 정보 확인
   const session = await auth()
 
@@ -53,9 +57,11 @@ export default async function EditProfilePage() {
     <AdminDefaultLayout>
       <AdminNavigationButton href={`/admin/profile`}>
         <ChevronLeftIcon className={'size-8'} />
-        <p>Profile</p>
+        <p>{t.profile}</p>
       </AdminNavigationButton>
-      <div className={'admin-title py-4'}>Edit Profile</div>
+      <div className={'admin-title py-4'}>
+        {t.edit} {t.profile}
+      </div>
       <div className={'flex flex-col gap-4'}>
         <DataForm
           action={updateProfileActionWithMemberId}
@@ -68,88 +74,106 @@ export default async function EditProfilePage() {
           />
 
           <DataInput
-            title={'Github Name'}
+            title={t.githubName}
             defaultValue={memberData.name}
             name={'name'}
-            placeholder={'Github Name'}
+            placeholder={t.githubName}
           />
+          <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+            <BilingualPanel
+              enTitle={t.english}
+              koTitle={t.korean}
+              fieldLabel={t.name}
+              requiredBoth={true}
+              enFieldNames={['firstName', 'lastName']}
+              koFieldNames={['firstNameKo', 'lastNameKo']}
+              enContent={
+                <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                  <DataInput
+                    title={t.firstNameEn}
+                    defaultValue={memberData.firstName}
+                    name={'firstName'}
+                    placeholder={'Yonsei'}
+                    required={true}
+                  />
+                  <DataInput
+                    title={t.lastNameEn}
+                    defaultValue={memberData.lastName}
+                    name={'lastName'}
+                    placeholder={'Kim'}
+                    required={true}
+                  />
+                </div>
+              }
+              koContent={
+                <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
+                  <DataInput
+                    title={t.firstNameKo}
+                    defaultValue={memberData.firstNameKo}
+                    name={'firstNameKo'}
+                    placeholder={'연세'}
+                    required={true}
+                  />
+                  <DataInput
+                    title={t.lastNameKo}
+                    defaultValue={memberData.lastNameKo}
+                    name={'lastNameKo'}
+                    placeholder={'김'}
+                    required={true}
+                  />
+                </div>
+              }
+            />
+          </div>
           <DataInput
-            title={'First Name (English)'}
-            defaultValue={memberData.firstName}
-            name={'firstName'}
-            placeholder={'Yonsei'}
-            required={true}
-          />
-          <DataInput
-            title={'Last Name (English)'}
-            defaultValue={memberData.lastName}
-            name={'lastName'}
-            placeholder={'Kim'}
-            required={true}
-          />
-          <DataInput
-            title={'First Name (Korean)'}
-            defaultValue={memberData.firstNameKo}
-            name={'firstNameKo'}
-            placeholder={'연세'}
-            required={true}
-          />
-          <DataInput
-            title={'Last Name (Korean)'}
-            defaultValue={memberData.lastNameKo}
-            name={'lastNameKo'}
-            placeholder={'김'}
-            required={true}
-          />
-          <DataInput
-            title={'E-Mail'}
+            title={t.email}
             defaultValue={memberData.email}
             name={'email'}
-            placeholder={'E-Mail'}
+            placeholder={t.email}
             required={true}
           />
           <DataInput
-            title={'Public Github ID'}
+            title={t.publicGithubId}
             defaultValue={memberData.githubId}
             name={'githubId'}
-            placeholder={'Github ID'}
+            placeholder={t.githubId}
           />
           <DataInput
-            title={'Public Instagram ID'}
+            title={t.publicInstagramId}
             defaultValue={memberData.instagramId}
             name={'instagramId'}
-            placeholder={'Instagram ID'}
+            placeholder={t.instagramId}
           />
           <DataInput
-            title={'Public Linked In Profile URL'}
+            title={t.publicLinkedInProfileUrl}
             defaultValue={memberData.linkedInId}
             name={'linkedInId'}
-            placeholder={'Linked In Profile URL'}
+            placeholder={t.linkedInProfileUrl}
             type={'link'}
           />
           <DataInput
-            title={'Major (Korean)'}
+            title={t.majorKo}
             defaultValue={memberData.major}
             name={'major'}
             placeholder={'컴퓨터과학과'}
             required={true}
           />
           <DataInput
-            title={'Student ID'}
+            title={t.studentId}
             defaultValue={memberData.studentId}
             name={'studentId'}
-            placeholder={'Student ID'}
+            placeholder={t.studentId}
             required={true}
           />
           <DataInput
-            title={'Telephone (only numbers)'}
+            title={t.telephoneOnlyNumber}
             defaultValue={memberData.telephone}
             name={'telephone'}
             placeholder={'01012341234'}
             required={true}
           />
           <DataInput
-            title={'Foreigner'}
+            title={t.foreigner}
             defaultValue={'true'}
             name={'isForeigner'}
             placeholder={''}
@@ -157,14 +181,10 @@ export default async function EditProfilePage() {
             isChecked={memberData.isForeigner}
           />
           <div>
-            <p className={'text-lg font-semibold'}>Notification</p>
+            <p className={'text-lg font-semibold'}>{t.notification}</p>
             <p>
-              Please leave the fields blank for any information you do not wish
-              to disclose.
-              <strong>
-                Your major, student ID, and phone number are private and will
-                not be disclosed to the public.
-              </strong>
+              {t.profilePrivacyNotice}{' '}
+              <strong>{t.profilePrivacyNoticeStrong}</strong>
             </p>
           </div>
           <SubmitButton />

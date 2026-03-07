@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockApplyCacheTags = vi.fn()
-const mockCacheTag = vi.fn()
+const mockNoStore = vi.fn()
 
 const mockGenerationsFindMany = vi.fn()
 const mockProjectsFindMany = vi.fn()
@@ -33,16 +32,12 @@ const mockDb = {
   },
 }
 
+vi.mock('next/cache', () => ({
+  unstable_noStore: mockNoStore,
+}))
+
 vi.mock('@/db', () => ({
   default: mockDb,
-}))
-
-vi.mock('@/lib/server/cacheTagT', () => ({
-  default: mockApplyCacheTags,
-}))
-
-vi.mock('next/dist/server/use-cache/cache-tag', () => ({
-  cacheTag: mockCacheTag,
 }))
 
 function createSelectChainWithOrderByResult(result: unknown) {
@@ -73,7 +68,7 @@ describe('admin fetchers', () => {
     vi.clearAllMocks()
   })
 
-  it('fetches generations in descending id order', async () => {
+  it('fetches generations in descending id order without cache', async () => {
     const rows = [{ id: 2, name: '2nd' }]
     const orderBy = vi.fn().mockResolvedValue(rows)
     const from = vi.fn().mockReturnValue({ orderBy })
@@ -84,7 +79,7 @@ describe('admin fetchers', () => {
     )
 
     await expect(getGenerations()).resolves.toEqual(rows)
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('generations')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockSelect).toHaveBeenCalledTimes(1)
     expect(orderBy).toHaveBeenCalledTimes(1)
   })
@@ -104,12 +99,12 @@ describe('admin fetchers', () => {
     })
   })
 
-  it('fetches admin projects ordered by updatedAt', async () => {
+  it('fetches admin projects ordered by updatedAt without cache', async () => {
     mockProjectsFindMany.mockResolvedValue([{ id: 'project-1' }])
     const { getProjects } = await import('@/lib/server/fetcher/admin/get-projects')
 
     await expect(getProjects()).resolves.toEqual([{ id: 'project-1' }])
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('projects')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockProjectsFindMany).toHaveBeenCalledTimes(1)
   })
 
@@ -137,11 +132,7 @@ describe('admin fetchers', () => {
     const { getMembers } = await import('@/lib/server/fetcher/admin/get-members')
     const result = await getMembers()
 
-    expect(mockApplyCacheTags).toHaveBeenCalledWith(
-      'members',
-      'parts',
-      'generations'
-    )
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(result).toEqual([
       { id: 'user-1', name: 'A', part: 'Part1' },
       { id: 'user-2', name: 'B', part: 'Part1' },
@@ -164,18 +155,18 @@ describe('admin fetchers', () => {
     })
   })
 
-  it('fetches sessions grouped by generation and part with cacheTag', async () => {
+  it('fetches sessions grouped by generation and part without cache', async () => {
     mockGenerationsFindMany.mockResolvedValue([{ id: 1, parts: [] }])
     const { getSessions } = await import('@/lib/server/fetcher/admin/get-sessions')
 
     const result = await getSessions()
 
     expect(result).toEqual([{ id: 1, parts: [] }])
-    expect(mockCacheTag).toHaveBeenCalledWith('generations', 'sessions')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockGenerationsFindMany).toHaveBeenCalledTimes(1)
   })
 
-  it('fetches generation detail by id', async () => {
+  it('fetches generation detail by id without cache', async () => {
     mockDb.query.generations.findFirst = vi
       .fn()
       .mockResolvedValue({ id: 10, name: '10th' })
@@ -185,7 +176,7 @@ describe('admin fetchers', () => {
     )
 
     await expect(getGeneration(10)).resolves.toEqual({ id: 10, name: '10th' })
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('generations', 'members', 'parts')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockDb.query.generations.findFirst).toHaveBeenCalledTimes(1)
   })
 
@@ -199,11 +190,7 @@ describe('admin fetchers', () => {
     const result = await getProject('project-1')
 
     expect(result).toEqual({ id: 'project-1', name: 'First' })
-    expect(mockApplyCacheTags).toHaveBeenCalledWith(
-      'projects',
-      'members',
-      'generations'
-    )
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
   })
 
   it('fetches member detail and returns first row', async () => {
@@ -215,7 +202,7 @@ describe('admin fetchers', () => {
     const result = await getMember('user-1')
 
     expect(result).toEqual({ id: 'user-1', name: 'User One' })
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('members', 'generations', 'parts')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(chain.limit).toHaveBeenCalledWith(1)
   })
 
@@ -224,7 +211,7 @@ describe('admin fetchers', () => {
     const { getPart } = await import('@/lib/server/fetcher/admin/get-part')
 
     await expect(getPart(3)).resolves.toEqual({ id: 3, usersToParts: [] })
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('parts', 'members')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockPartsFindFirst).toHaveBeenCalledTimes(1)
   })
 
@@ -245,7 +232,7 @@ describe('admin fetchers', () => {
       userToSession: [],
       author: { id: 'author-1', name: 'Author' },
     })
-    expect(mockApplyCacheTags).toHaveBeenCalledWith('sessions')
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockSessionsFindFirst).toHaveBeenCalledTimes(1)
     expect(mockUsersFindFirst).toHaveBeenCalledTimes(1)
   })

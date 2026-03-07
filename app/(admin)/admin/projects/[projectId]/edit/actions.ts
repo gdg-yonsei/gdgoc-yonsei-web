@@ -12,7 +12,15 @@ import { eq } from 'drizzle-orm'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { usersToProjects } from '@/db/schema/users-to-projects'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { getR2BucketEnv } from '@/lib/server/env'
+import { invalidateProjectPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import {
+  getGenerationNameById,
+  getProjectCacheContext,
+} from '@/lib/server/services/cache-context'
+import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
 
 /**
  * Update Project Action
@@ -70,6 +78,9 @@ export async function updateProjectAction(
   }
 
   try {
+    const bucketEnv = getR2BucketEnv()
+    const previousProject = await getProjectCacheContext(projectId)
+
     // 삭제된 이미지 R2에서 삭제
     const prevImages = (
       await db
@@ -89,11 +100,16 @@ export async function updateProjectAction(
     }
 
     for (const imageUrl of toDeleteImages) {
+      const imageKey = normalizeR2ImageObjectKey(imageUrl, 'projects')
+      if (!imageKey) {
+        continue
+      }
+
       deleteImagePromises.push(
         r2Client.send(
           new DeleteObjectCommand({
-            Bucket: process.env.R2_BUCKET_NAME,
-            Key: imageUrl.replace(process.env.NEXT_PUBLIC_IMAGE_URL!, ''),
+            Bucket: bucketEnv.R2_BUCKET_NAME,
+            Key: imageKey,
           })
         )
       )
@@ -133,13 +149,19 @@ export async function updateProjectAction(
         participants.map((user) => ({ projectId: projectId, userId: user }))
       )
 
-    // 캐시 업데이트
-    revalidateCache('projects')
+    const nextGeneration = await getGenerationNameById(Number(generationId))
+
+    invalidateProjectPublicCache({
+      projectId,
+      previousGenerationName: previousProject.generationName,
+      nextGenerationName: nextGeneration?.name,
+    })
   } catch (e) {
-    // DB 업데이트 오류 발생 시 오류 반환
-    console.error(e)
+    logger.error('admin.projects.update', e, {
+      projectId,
+    })
     return { error: 'DB Update Error' }
   }
   // 성공 시 해당 project 로 이동
-  redirect(`/admin/projects/${projectId}`)
+  redirect(await getLocalizedAdminPath(`/admin/projects/${projectId}`))
 }

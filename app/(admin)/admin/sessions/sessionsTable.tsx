@@ -1,5 +1,6 @@
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * `SessionsTable` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -14,6 +15,8 @@ import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function SessionsTable() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const sessionsData = await getSessions()
 
   return (
@@ -23,12 +26,12 @@ export default async function SessionsTable() {
           <div
             className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
           >
-            Generation: {generation.name}
+            {t.generation}: {generation.name}
           </div>
           <div className={'member-data-grid w-full gap-2 pt-2'}>
             {generation?.parts?.map((part) =>
               part.sessions.map((session) => (
-                <SessionCard session={session} key={session.id} />
+                <SessionCard session={session} key={session.id} locale={locale} />
               ))
             )}
           </div>

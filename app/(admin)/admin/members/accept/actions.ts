@@ -8,9 +8,12 @@ import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
-import { revalidateCache } from '@/lib/server/cache'
 import getDeleteMemberFormData from '@/lib/server/form-data/get-delete-member-form-data'
 import { deleteMemberValidation } from '@/lib/validations/delete-member'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidateMemberPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context'
 
 /**
  * `acceptMemberAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -54,16 +57,22 @@ export default async function acceptMemberAction(
           : 'UNVERIFIED'
 
   try {
+    const generationNames = await getGenerationNamesForUserId(userId)
+
     await db.update(users).set({ role: userRole }).where(eq(users.id, userId))
 
-    revalidateCache('members')
+    invalidateMemberPublicCache({
+      memberId: userId,
+      generationNames,
+    })
   } catch (e) {
-    // DB 업데이트 오류
-    console.error(e)
+    logger.error('admin.members.accept', e, {
+      userId,
+    })
     return { error: 'DB Update Error' }
   }
 
-  redirect('/admin/members/accept')
+  redirect(await getLocalizedAdminPath('/admin/members/accept'))
 }
 
 /**
@@ -96,14 +105,22 @@ export async function deleteUserAction(
   }
 
   try {
+    const generationNames = await getGenerationNamesForUserId(
+      parsedDataResult.data.userId
+    )
+
     await db.delete(users).where(eq(users.id, parsedDataResult.data.userId))
 
-    revalidateCache('members')
+    invalidateMemberPublicCache({
+      memberId: parsedDataResult.data.userId,
+      generationNames,
+    })
   } catch (e) {
-    // DB 업데이트 오류
-    console.error(e)
+    logger.error('admin.members.delete-pending', e, {
+      userId: parsedDataResult.data.userId,
+    })
     return { error: 'DB Update Error' }
   }
 
-  redirect('/admin/members/accept')
+  redirect(await getLocalizedAdminPath('/admin/members/accept'))
 }

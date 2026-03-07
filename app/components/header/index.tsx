@@ -2,9 +2,9 @@ import GDGLogoLinkButton from '@/app/components/header/gdg-logo-link-button'
 import MenuBarButton from './menu-bar-button'
 import DesktopNavigationList from '@/app/components/header/desktop-navigation-list'
 import NavigationList from '@/app/components/header/navigation-list'
-import getLatestGeneration from '@/lib/server/fetcher/getLastGeneration'
 import { auth } from '@/auth'
-import { Locale } from '@/i18n-config'
+import type { Locale } from '@/i18n-config'
+import { getLatestGeneration } from '@/lib/server/queries/public/generations'
 
 /**
  * `Header` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -19,7 +19,7 @@ import { Locale } from '@/i18n-config'
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function Header({ lang }: { lang: Locale }) {
-  const lastGeneration = await getLatestGeneration()
+  const lastGeneration = await getLatestGeneration(lang)
   const isMember = !!(await auth())?.user?.id
 
   return (

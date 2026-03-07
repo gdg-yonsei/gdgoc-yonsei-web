@@ -4,6 +4,7 @@ import acceptMemberAction from '@/app/(admin)/admin/members/accept/actions'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `RoleButton` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -52,19 +53,20 @@ function RoleButton({
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default function AcceptForm({ userId }: { userId: string }) {
+  const { t } = useAdminI18n()
   const [role, setRole] = useState('member')
 
   return (
     <DataForm action={acceptMemberAction} className={'flex items-center gap-2'}>
-      <div className={'text-lg font-semibold'}>Role</div>
+      <div className={'text-lg font-semibold'}>{t('role')}</div>
       <RoleButton role={role} setRole={setRole} value={'member'}>
-        Member
+        {t('roleMember')}
       </RoleButton>
       <RoleButton role={role} setRole={setRole} value={'core'}>
-        Core
+        {t('roleCore')}
       </RoleButton>
       <RoleButton role={role} setRole={setRole} value={'alumni'}>
-        Alumni
+        {t('roleAlumni')}
       </RoleButton>
 
       <input

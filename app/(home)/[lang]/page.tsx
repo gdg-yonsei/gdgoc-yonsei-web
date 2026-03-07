@@ -21,9 +21,6 @@ export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
 }
 
-export const dynamicParams = true
-export const dynamic = 'force-static'
-
 /**
  * GDGoC Yonsei 웹사이트 첫 페이지
  * @param params

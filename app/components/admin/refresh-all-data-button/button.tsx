@@ -2,6 +2,7 @@
 
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `RefreshDataSubmitButton` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -17,6 +18,7 @@ import LoadingSpinner from '@/app/components/loading-spinner'
  */
 export default function RefreshDataSubmitButton() {
   const { pending } = useFormStatus()
+  const { t } = useAdminI18n()
 
   return (
     <button
@@ -31,7 +33,7 @@ export default function RefreshDataSubmitButton() {
           className={'size-4 border-2 border-neutral-700 border-t-white'}
         />
       )}
-      {pending ? 'Refresh...' : 'Refresh Cache Data'}
+      {pending ? t('refreshing') : t('refreshCacheData')}
     </button>
   )
 }

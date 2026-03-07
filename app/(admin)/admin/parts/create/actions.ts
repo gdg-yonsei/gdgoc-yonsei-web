@@ -9,7 +9,10 @@ import { z } from 'zod'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/server/form-data/get-part-form-data'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidatePartPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import { getGenerationNameById } from '@/lib/server/services/cache-context'
 
 /**
  * Create Part Action
@@ -42,6 +45,8 @@ export async function createPartAction(
   }
 
   try {
+    const generation = await getGenerationNameById(generationId)
+
     // 파트 생성 쿼리
     const createPart = await db
       .insert(parts)
@@ -78,13 +83,14 @@ export async function createPartAction(
       if (membersList.length > 0) {
         await db.insert(usersToParts).values(userToPartData)
       }
-    // 캐시 업데이트
-    revalidateCache(['parts', 'members'])
+
+    invalidatePartPublicCache(
+      generation?.name ? [generation.name] : []
+    )
   } catch (e) {
-    // DB 에러 처리
-    console.error(e)
+    logger.error('admin.parts.create', e)
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/parts`)
+  redirect(await getLocalizedAdminPath('/admin/parts'))
 }

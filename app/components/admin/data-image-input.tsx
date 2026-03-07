@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useAtom } from 'jotai'
 import { uploadSingleImageState } from '@/lib/atoms'
 import { ProjectMainImagePostRequest } from '@/app/api/admin/projects/main-image/route'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `DataImageInput` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -36,6 +37,7 @@ export default function DataImageInput({
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultValue)
   const [uploadedImageUrl, setUploadedImageUrl] = useState(defaultValue)
   const [isLoading, setIsLoading] = useAtom(uploadSingleImageState)
+  const { t } = useAdminI18n()
 
   /**
    * 선택한 이미지 파일을 주소로 변환하는 함수
@@ -110,7 +112,7 @@ export default function DataImageInput({
         className={`rounded-xl p-2 px-3 text-sm text-white ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
         disabled={isLoading}
       >
-        {isLoading ? 'Uploading...' : children}
+        {isLoading ? t('uploading') : children}
       </button>
     </div>
   )

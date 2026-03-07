@@ -3,7 +3,7 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 /**
  * `getUnenrolledUpcomingSessions` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -18,8 +18,7 @@ import applyCacheTags from '@/lib/server/cacheTagT'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export default async function getUnenrolledUpcomingSessions(userId: string) {
-  'use cache'
-  applyCacheTags('sessions')
+  noStore()
   const participantsSub = db
     .select({
       sessionId: userToSession.sessionId,

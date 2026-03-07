@@ -9,7 +9,10 @@ import { auth } from '@/auth'
 import { memberValidation } from '@/lib/validations/member'
 import { z } from 'zod'
 import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidateMemberPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context'
 
 /**
  * Update Member Action
@@ -77,6 +80,8 @@ export async function updateMemberAction(
   }
   // member data 업데이트 쿼리
   try {
+    const generationNames = await getGenerationNamesForUserId(memberId)
+
     await db
       .update(users)
       .set({
@@ -101,14 +106,17 @@ export async function updateMemberAction(
       })
       .where(eq(users.id, memberId))
 
-    // 캐시 업데이트
-    revalidateCache('members')
+    invalidateMemberPublicCache({
+      memberId,
+      generationNames,
+    })
   } catch (e) {
-    // DB 업데이트 오류 발생 시 오류 반환
-    console.error(e)
+    logger.error('admin.members.update', e, {
+      memberId,
+    })
     return { error: 'DB Update Error' }
   }
 
   // 성공 시 해당 member 페이지로 이동
-  redirect(`/admin/members/${memberId}`)
+  redirect(await getLocalizedAdminPath(`/admin/members/${memberId}`))
 }

@@ -7,11 +7,12 @@ import { z } from 'zod'
 import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
 import db from '@/db'
-import { eq } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
-import { generations } from '@/db/schema/generations'
 import { usersToProjects } from '@/db/schema/users-to-projects'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidateProjectPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import { getGenerationNameById } from '@/lib/server/services/cache-context'
 /**
  * Create Project Action
  * @param prev - previous state for form error
@@ -71,6 +72,9 @@ export async function createProjectAction(
     if (!name || !description) {
       return { error: 'Name and Description are required' }
     }
+
+    const nextGeneration = await getGenerationNameById(Number(generationId))
+
     // 프로젝트 생성 쿼리
     const createProject = (
       await db
@@ -103,33 +107,14 @@ export async function createProjectAction(
       )
     }
 
-    // 캐시 업데이트
-    revalidateCache('projects')
-
-    // Generation 정보 가져오기 (URL 생성용)
-    const generation = await db.query.generations.findFirst({
-      where: eq(generations.id, Number(generationId)),
+    invalidateProjectPublicCache({
+      projectId: createProject.id,
+      nextGenerationName: nextGeneration?.name,
     })
-
-    if (generation) {
-      const paths = [
-        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/project/${generation.name}/${createProject.id}`,
-        `${process.env.NEXT_PUBLIC_SITE_URL}/en/project/${generation.name}/${createProject.id}`,
-      ]
-
-      await Promise.allSettled(
-        paths.map((path) =>
-          fetch(path, {
-            cache: 'no-store',
-          })
-        )
-      )
-    }
   } catch (e) {
-    // DB 에러 처리
-    console.error(e)
+    logger.error('admin.projects.create', e)
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/projects`)
+  redirect(await getLocalizedAdminPath('/admin/projects'))
 }

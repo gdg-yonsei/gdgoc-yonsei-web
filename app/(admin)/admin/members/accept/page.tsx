@@ -8,6 +8,7 @@ import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
 import Image from 'next/image'
 import { Metadata } from 'next'
 import DeleteForm from '@/app/(admin)/admin/members/accept/delete-form'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Approve Members',
@@ -26,6 +27,8 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function AcceptMemberPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const unacceptedMembers = await db.query.users.findMany({
     where: eq(users.role, 'UNVERIFIED'),
   })
@@ -34,13 +37,13 @@ export default async function AcceptMemberPage() {
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/members'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Members</p>
+        <p className={'text-lg'}>{t.members}</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>Approve Member</div>
+      <div className={'admin-title'}>{t.approveMember}</div>
       <div className={'flex w-full flex-col gap-2 py-4'}>
         {unacceptedMembers.length === 0 && (
           <div className={'mx-auto text-xl text-neutral-800'}>
-            No users to approve.
+            {t.noUsersToApprove}
           </div>
         )}
         {unacceptedMembers.map((member) => (

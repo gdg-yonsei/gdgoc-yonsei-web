@@ -7,15 +7,12 @@ import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { registerSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/register/actions'
 import formatUserName from '@/lib/format-user-name'
-
-const formatter = new Intl.DateTimeFormat('ko-KR', {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false, // 24시간제, true로 하면 오전/오후 붙음
-})
+import {
+  formatAdminDate,
+  getAdminLocale,
+  getAdminMessages,
+} from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 /**
  * `RegisterSessionPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -34,6 +31,8 @@ export default async function RegisterSessionPage({
 }: {
   params: Promise<{ sessionId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { sessionId } = await params
 
   const sessionData = await getSession(sessionId)
@@ -58,10 +57,10 @@ export default async function RegisterSessionPage({
       <AdminDefaultLayout>
         <AdminNavigationButton href={'/admin/sessions'}>
           <ChevronLeftIcon className={'size-8'} />
-          <p className={'text-lg'}>Sessions</p>
+          <p className={'text-lg'}>{t.sessions}</p>
         </AdminNavigationButton>
         <div className={'flex items-center gap-2'}>
-          <div className={'admin-title'}>Session Registration is end</div>
+          <div className={'admin-title'}>{t.sessionRegistrationEnd}</div>
         </div>
       </AdminDefaultLayout>
     )
@@ -71,44 +70,96 @@ export default async function RegisterSessionPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/sessions'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Sessions</p>
+        <p className={'text-lg'}>{t.sessions}</p>
       </AdminNavigationButton>
       <div className={'flex items-center gap-2'}>
-        <div className={'admin-title'}>Session Registration</div>
+        <div className={'admin-title'}>{t.sessionRegistration}</div>
       </div>
       <div className={'grid w-full grid-cols-1 gap-2 md:grid-cols-2'}>
         <div className={'w-full rounded-xl bg-white p-2'}>
-          <h2>Session Information</h2>
+          <h2>{t.sessionInformation}</h2>
+          <BilingualPanel
+            className={'py-1'}
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.session}</p>
+                <p>{sessionData.name}</p>
+              </div>
+            }
+            koContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.session}</p>
+                <p>{sessionData.nameKo}</p>
+              </div>
+            }
+          />
+          <BilingualPanel
+            className={'py-1'}
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.description}</p>
+                <p>{sessionData.description}</p>
+              </div>
+            }
+            koContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.description}</p>
+                <p>{sessionData.descriptionKo}</p>
+              </div>
+            }
+          />
+          <BilingualPanel
+            className={'py-1'}
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.location}</p>
+                <p>{sessionData.location}</p>
+              </div>
+            }
+            koContent={
+              <div>
+                <p className={'text-sm text-neutral-700'}>{t.location}</p>
+                <p>{sessionData.locationKo}</p>
+              </div>
+            }
+          />
           <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>Session</p>
-            <p>EN: {sessionData.name}</p>
-            <p>KO: {sessionData.nameKo}</p>
-          </div>
-          <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>Description</p>
-            <p>EN: {sessionData.description}</p>
-            <p>KO: {sessionData.descriptionKo}</p>
-          </div>
-          <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>Location</p>
-            <p>EN: {sessionData.location}</p>
-            <p>KO: {sessionData.locationKo}</p>
-          </div>
-          <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>Schedule</p>
+            <p className={'text-sm text-neutral-700'}>{t.schedule}</p>
             <p>
-              Start:{' '}
+              {t.start}:{' '}
               {sessionData.startAt
-                ? formatter.format(sessionData.startAt)
-                : 'TBD'}
+                ? formatAdminDate(sessionData.startAt, locale, {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  })
+                : t.tbd}
             </p>
             <p className={''}>
-              End:{' '}
-              {sessionData.endAt ? formatter.format(sessionData.endAt) : 'TBD'}
+              {t.end}:{' '}
+              {sessionData.endAt
+                ? formatAdminDate(sessionData.endAt, locale, {
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  })
+                : t.tbd}
             </p>
           </div>
           <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>Participants</p>
+            <p className={'text-sm text-neutral-700'}>{t.participants}</p>
             <div
               className={
                 'grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
@@ -145,7 +196,9 @@ export default async function RegisterSessionPage({
             'flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-white p-2'
           }
         >
-          <div className={'text-2xl'}>Remaining seats: {leftSeats}</div>
+          <div className={'text-2xl'}>
+            {t.remainingSeats}: {leftSeats}
+          </div>
           <DataForm
             action={registerSessionActionWithSessionId}
             className={'w-full'}
@@ -155,7 +208,7 @@ export default async function RegisterSessionPage({
                 'flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 p-1 text-xl text-white'
               }
             >
-              Register
+              {t.register}
             </SubmitButton>
           </DataForm>
         </div>

@@ -2,7 +2,7 @@ import 'server-only'
 import db from '@/db'
 import { desc, eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadPartById = (partId: number) => {
   void getPart(partId)
@@ -21,10 +21,7 @@ export const preloadPartById = (partId: number) => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getPart(partId: number) {
-  'use cache'
-  applyCacheTags('parts', 'members')
-
-  console.log(new Date(), 'Fetch Part Data', partId)
+  noStore()
   return db.query.parts.findFirst({
     where: eq(parts.id, partId),
     with: {

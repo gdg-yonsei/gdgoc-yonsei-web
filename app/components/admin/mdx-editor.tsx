@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `MDXEditor` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -26,6 +27,7 @@ export default function MDXEditor({
   placeholder: string
   defaultValue?: string | null
 }) {
+  const { locale } = useAdminI18n()
   const [content, setContent] = useState<string | null>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -59,8 +61,8 @@ export default function MDXEditor({
     >
       <div className={'member-data-title'}>{title}</div>
       <div className={'flex flex-col items-start gap-2 lg:flex-row'}>
-        <div className={'w-full'}>
-          <div>Editor</div>
+          <div className={'w-full'}>
+          <div>{locale === 'ko' ? '에디터' : 'Editor'}</div>
           <textarea
             ref={textareaRef}
             name={name}
@@ -75,7 +77,7 @@ export default function MDXEditor({
           />
         </div>
         <div className={'w-full'}>
-          <div>Preview</div>
+          <div>{locale === 'ko' ? '미리보기' : 'Preview'}</div>
           <div
             className={
               'prose min-h-96 w-full rounded-lg border-2 border-sky-900 p-4'

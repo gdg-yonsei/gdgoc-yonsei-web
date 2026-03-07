@@ -2,7 +2,7 @@ import 'server-only'
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminProjectById = (projectId: string) => {
   void getProject(projectId)
@@ -21,10 +21,7 @@ export const preloadAdminProjectById = (projectId: string) => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getProject(projectId: string) {
-  'use cache'
-  applyCacheTags('projects', 'members', 'generations')
-
-  console.log(new Date(), 'Fetch Project Data', projectId)
+  noStore()
   const result = await db.query.projects.findMany({
     where: eq(projects.id, projectId),
     with: {

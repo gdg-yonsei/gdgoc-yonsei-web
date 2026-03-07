@@ -3,7 +3,7 @@ import 'server-only'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminSessions = () => {
   void getSessions()
@@ -22,10 +22,7 @@ export const preloadAdminSessions = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getSessions() {
-  'use cache'
-  console.log(new Date(), 'Fetch Sessions Data')
-  cacheTag('generations', 'sessions')
-
+  noStore()
   return db.query.generations.findMany({
     with: {
       parts: {

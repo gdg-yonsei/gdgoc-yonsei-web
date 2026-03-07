@@ -53,9 +53,6 @@ export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
 }
 
-export const dynamicParams = true
-export const dynamic = 'force-static'
-
 /**
  * `CalendarPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
  *

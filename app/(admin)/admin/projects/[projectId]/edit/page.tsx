@@ -15,6 +15,8 @@ import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Edit Project',
@@ -37,6 +39,7 @@ export default async function EditProjectPage({
 }: {
   params: Promise<{ projectId: string }>
 }) {
+  const t = getAdminMessages(await getAdminLocale())
   const { projectId } = await params
   const projectData = await getProject(projectId)
   if (!projectData) {
@@ -62,39 +65,71 @@ export default async function EditProjectPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={`/admin/projects/${projectId}`}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>{projectData.name} Project</p>
+        <p className={'text-lg'}>
+          {projectData.name} {t.project}
+        </p>
       </AdminNavigationButton>
-      <div className={'admin-title py-4'}>Edit {projectData.name} Project</div>
+      <div className={'admin-title py-4'}>
+        {t.edit} {projectData.name} {t.project}
+      </div>
       <DataForm
         action={updateProjectActionWithProjectId}
         className={'member-data-grid w-full gap-4'}
       >
-        <DataInput
-          defaultValue={projectData.name}
-          name={'name'}
-          placeholder={'Project Name (English)'}
-          title={'Project Name (English)'}
-        />
-        <DataInput
-          defaultValue={projectData.nameKo}
-          name={'nameKo'}
-          placeholder={'Project Name (Korean)'}
-          title={'Project Name (Korean)'}
-        />
-        <DataInput
-          defaultValue={projectData.description}
-          name={'description'}
-          placeholder={'Project Description (English)'}
-          title={'Project Description (English)'}
-        />
-        <DataInput
-          defaultValue={projectData.descriptionKo}
-          name={'descriptionKo'}
-          placeholder={'Project Description (Korean)'}
-          title={'Project Description (Korean)'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.name}
+            requiredBoth={true}
+            enFieldNames={['name']}
+            koFieldNames={['nameKo']}
+            enContent={
+              <DataInput
+                defaultValue={projectData.name}
+                name={'name'}
+                placeholder={t.nameEn}
+                title={t.nameEn}
+              />
+            }
+            koContent={
+              <DataInput
+                defaultValue={projectData.nameKo}
+                name={'nameKo'}
+                placeholder={t.nameKo}
+                title={t.nameKo}
+              />
+            }
+          />
+        </div>
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.description}
+            requiredBoth={true}
+            enFieldNames={['description']}
+            koFieldNames={['descriptionKo']}
+            enContent={
+              <DataInput
+                defaultValue={projectData.description}
+                name={'description'}
+                placeholder={t.descriptionEn}
+                title={t.descriptionEn}
+              />
+            }
+            koContent={
+              <DataInput
+                defaultValue={projectData.descriptionKo}
+                name={'descriptionKo'}
+                placeholder={t.descriptionKo}
+                title={t.descriptionKo}
+              />
+            }
+          />
+        </div>
         <DataSelectInput
-          title={'Generation'}
+          title={t.generation}
           data={generationList}
           name={'generationId'}
           defaultValue={String(projectData.generationId)}
@@ -111,36 +146,50 @@ export default async function EditProjectPage({
           <div>
             <DataImageInput
               baseUrl={'/api/admin/projects/main-image'}
-              title={'Main Image'}
+              title={t.mainImage}
               name={'mainImage'}
               defaultValue={projectData.mainImage}
             >
-              Select Main Image
+              {t.selectImage}
             </DataImageInput>
           </div>
           <div>
             <DataMultipleImageInput
               baseUrl={'/api/admin/projects/content-image'}
               name={'contentImages'}
-              title={'Images'}
+              title={t.contentImages}
               defaultValue={projectData.images.map((image) => image)}
             >
-              Select Images
+              {t.selectImage}
             </DataMultipleImageInput>
           </div>
         </div>
-        <MDXEditor
-          title={'Content (English)'}
-          name={'content'}
-          defaultValue={projectData.content}
-          placeholder={'Please write content'}
-        />
-        <MDXEditor
-          title={'Content (Korean)'}
-          name={'contentKo'}
-          defaultValue={projectData.contentKo}
-          placeholder={'Please write content (Korean)'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.content}
+            requiredBoth={true}
+            enFieldNames={['content']}
+            koFieldNames={['contentKo']}
+            enContent={
+              <MDXEditor
+                title={t.contentEn}
+                name={'content'}
+                defaultValue={projectData.content}
+                placeholder={'Please write content'}
+              />
+            }
+            koContent={
+              <MDXEditor
+                title={t.contentKo}
+                name={'contentKo'}
+                defaultValue={projectData.contentKo}
+                placeholder={'한국어 본문을 작성하세요.'}
+              />
+            }
+          />
+        </div>
         <SubmitButton />
       </DataForm>
     </AdminDefaultLayout>

@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
+import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -51,6 +52,8 @@ export default async function GenerationPage({
 }: {
   params: Promise<{ generationId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { generationId } = await params
   // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
@@ -65,14 +68,16 @@ export default async function GenerationPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/generations'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Generations</p>
+        <p className={'text-lg'}>{t.generations}</p>
       </AdminNavigationButton>
       <div className={'flex items-center gap-2'}>
-        <div className={'admin-title'}>Generation: {generationData.name}</div>
+        <div className={'admin-title'}>
+          {t.generation}: {generationData.name}
+        </div>
         <DataEditLink
           session={session}
           dataType={'generations'}
-          href={`/admin/generations/${generationId}/edit`}
+          href={localizeAdminHref(`/admin/generations/${generationId}/edit`, locale)}
         />
         <DataDeleteButton
           session={session}
@@ -86,7 +91,7 @@ export default async function GenerationPage({
         }
       >
         <div className={'member-data-box col-span-1 sm:col-span-2'}>
-          <div className={'member-data-title'}>Activity Period</div>
+          <div className={'member-data-title'}>{t.activityPeriod}</div>
           <GenerationActivityPeriod
             className={'member-data-content flex items-center gap-2'}
             startDate={generationData.startDate}
@@ -94,7 +99,7 @@ export default async function GenerationPage({
           />
         </div>
         <div className={'col-span-4 flex flex-col gap-2 py-4'}>
-          <div className={'member-data-title'}>Parts</div>
+          <div className={'member-data-title'}>{t.parts}</div>
           <div
             className={
               'grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
@@ -103,7 +108,9 @@ export default async function GenerationPage({
             {generationData.parts.map((part) => (
               <div key={part.id} className={'member-data-box'}>
                 <div className={'member-data-content'}>{part.name}</div>
-                <div>Member: {part.usersToParts.length}</div>
+                <div>
+                  {t.member}: {part.usersToParts.length}
+                </div>
               </div>
             ))}
           </div>

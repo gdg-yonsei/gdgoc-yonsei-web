@@ -1,8 +1,3 @@
-/**
- * @file This file contains server-side functions for fetching a list of all verified members.
- * It uses Next.js's unstable_cache for caching.
- */
-
 import 'server-only'
 import db from '@/db'
 import { users } from '@/db/schema/users'
@@ -10,7 +5,7 @@ import { and, desc, eq, ne } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminMembers = () => {
   void getMembers()
@@ -29,9 +24,7 @@ export const preloadAdminMembers = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getMembers() {
-  'use cache'
-  applyCacheTags('members', 'parts', 'generations')
-  console.log(new Date(), 'Fetch Members Data')
+  noStore()
 
   // Fetch all users (except unverified) with their associated part and generation.
   const userList = await db

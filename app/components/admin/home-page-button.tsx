@@ -1,4 +1,8 @@
+'use client'
+
 import Link from 'next/link'
+import { Locale } from '@/i18n-config'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `HomePageButton` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -12,15 +16,21 @@ import Link from 'next/link'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function HomePageButton() {
+export default function HomePageButton({
+  locale = 'en',
+}: {
+  locale?: Locale
+}) {
+  const { t } = useAdminI18n()
+
   return (
     <Link
       className={
         'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-sm text-white transition-all hover:bg-neutral-800'
       }
-      href={'/'}
+      href={`/${locale}`}
     >
-      Home Page
+      {t('home')}
     </Link>
   )
 }

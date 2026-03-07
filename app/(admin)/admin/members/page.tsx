@@ -7,6 +7,7 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Members',
@@ -25,6 +26,8 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function MembersPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
   const canAccept = await handlePermission(
     session?.user?.id,
@@ -35,16 +38,16 @@ export default async function MembersPage() {
   return (
     <AdminDefaultLayout className={'p-4'}>
       <div className={'flex items-center gap-2 pb-2'}>
-        <div className={'admin-title'}>Members</div>
+        <div className={'admin-title'}>{t.members}</div>
         {canAccept && (
           <Link
-            href={'/admin/members/accept'}
+            href={localizeAdminHref('/admin/members/accept', locale)}
             className={
               'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
             }
           >
             <UsersIcon className={'size-5'} />
-            <p>Approve Member</p>
+            <p>{t.approveMember}</p>
           </Link>
         )}
       </div>

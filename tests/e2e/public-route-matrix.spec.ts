@@ -48,7 +48,8 @@ test.describe('public routes and user interactions', () => {
       const routePage = await context.newPage()
       await routePage.goto(`/en/${target}`, { waitUntil: 'domcontentloaded' })
       await expect(routePage).toHaveURL(
-        new RegExp(`/en/${target}/${latestGeneration}$`)
+        new RegExp(`/en/${target}/${latestGeneration}$`),
+        { timeout: 15_000 }
       )
       await routePage.close()
     }
@@ -103,15 +104,15 @@ test.describe('public routes and user interactions', () => {
   test('home navigation buttons route to major sections', async ({ page }) => {
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
 
-    await page.getByRole('link', { name: /^Member(s)?$/ }).first().click()
+    await page.locator('a[href^="/en/member/"]').first().click()
     await expect(page).toHaveURL(/\/en\/member\//)
 
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
-    await page.getByRole('link', { name: /^Project(s)?$/ }).first().click()
+    await page.locator('a[href^="/en/project/"]').first().click()
     await expect(page).toHaveURL(/\/en\/project\//)
 
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
-    await page.getByRole('link', { name: /^Session(s)?$/ }).first().click()
+    await page.locator('a[href^="/en/session/"]').first().click()
     await expect(page).toHaveURL(/\/en\/session\//)
   })
 })

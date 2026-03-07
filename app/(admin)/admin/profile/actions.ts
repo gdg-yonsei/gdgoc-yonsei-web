@@ -5,7 +5,9 @@ import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
-import revalidateAllDataAction from '@/app/components/admin/refresh-all-data-button/actions'
+import { redirect } from 'next/navigation'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { logger } from '@/lib/server/logger'
 
 /**
  * `toggleSessionNotificationEmailAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -26,17 +28,23 @@ export async function toggleSessionNotificationEmailAction(
   const session = await auth()
 
   if (!session?.user?.id) {
-    return revalidateAllDataAction()
+    return redirect(await getLocalizedAdminPath('/admin/profile'))
   }
 
   const userData = await getMember(session.user.id)
 
-  await db
-    .update(users)
-    .set({
-      sessionNotiEmail: !userData.sessionNotiEmail,
+  try {
+    await db
+      .update(users)
+      .set({
+        sessionNotiEmail: !userData.sessionNotiEmail,
+      })
+      .where(eq(users.id, session.user.id))
+  } catch (error) {
+    logger.error('admin.profile.toggle-session-notification', error, {
+      userId: session.user.id,
     })
-    .where(eq(users.id, session.user.id))
+  }
 
-  await revalidateAllDataAction()
+  redirect(await getLocalizedAdminPath('/admin/profile'))
 }

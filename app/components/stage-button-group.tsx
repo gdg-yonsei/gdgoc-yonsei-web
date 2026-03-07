@@ -1,5 +1,6 @@
 import GenerationButtonGroup from '@/app/components/generation-button-group'
-import getGenerationSummaries from '@/lib/server/fetcher/getGenerationList'
+import type { Locale } from '@/i18n-config'
+import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 
 /**
  * `StageButtonGroup` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -19,10 +20,10 @@ export default async function StageButtonGroup({
   basePath,
 }: {
   generation: string
-  lang: string
+  lang: Locale
   basePath: string
 }) {
-  const generationList = await getGenerationSummaries()
+  const generationList = await getGenerationSummaries(lang)
 
   return (
     <div className={'flex w-full'}>

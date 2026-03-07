@@ -3,6 +3,11 @@ import handlePermission, {
 } from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
 import { Session } from 'next-auth'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 /**
  * 데이터 수정 Link 컴포넌트
@@ -25,6 +30,8 @@ export default async function DataEditLink({
   href: string
   dataType: ResourceType
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   // 사용자가 수정할 수 있는지 확인
   const canEdit = await handlePermission(
     session?.user?.id,
@@ -37,12 +44,12 @@ export default async function DataEditLink({
     <>
       {canEdit && (
         <Link
-          href={href}
+          href={localizeAdminHref(href, locale)}
           className={
             'rounded-lg bg-neutral-900 p-1 px-3 text-white transition-all hover:bg-neutral-800 hover:px-4'
           }
         >
-          Edit
+          {t.edit}
         </Link>
       )}
     </>

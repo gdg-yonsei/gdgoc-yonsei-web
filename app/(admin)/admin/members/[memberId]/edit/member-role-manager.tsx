@@ -1,6 +1,7 @@
 'use client'
 
 import { Dispatch, SetStateAction, useState } from 'react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * Role 변경 버튼 컴포넌트
@@ -35,12 +36,13 @@ function RoleButton({
  * @constructor
  */
 export default function MemberRoleManager({ userRole }: { userRole: string }) {
+  const { t } = useAdminI18n()
   // 사용자 Role 상태
   const [role, setRole] = useState<string>(userRole)
 
   return (
     <div className={'col-span-1 flex flex-col sm:col-span-2'}>
-      <p className={'px-1 text-sm font-semibold text-neutral-700'}>Role</p>
+      <p className={'px-1 text-sm font-semibold text-neutral-700'}>{t('role')}</p>
       <input
         name={'role'}
         hidden={true}

@@ -15,6 +15,8 @@ import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -37,6 +39,7 @@ export default async function EditSessionPage({
 }: {
   params: Promise<{ sessionId: string }>
 }) {
+  const t = getAdminMessages(await getAdminLocale())
   const { sessionId } = await params
   const sessionData = await getSession(sessionId)
   if (!sessionData) {
@@ -56,102 +59,148 @@ export default async function EditSessionPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={`/admin/sessions/${sessionId}`}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>{sessionData.name} Session</p>
+        <p className={'text-lg'}>
+          {sessionData.name} {t.session}
+        </p>
       </AdminNavigationButton>
-      <div className={'admin-title py-4'}>Edit {sessionData.name} Session</div>
+      <div className={'admin-title py-4'}>
+        {t.edit} {sessionData.name} {t.session}
+      </div>
       <DataForm
         action={updateSessionActionWithSessionId}
         className={'member-data-grid w-full gap-4'}
       >
-        <DataInput
-          defaultValue={sessionData.name}
-          name={'name'}
-          placeholder={'Session Name (English)'}
-          title={'Session Name (English)'}
-        />
-        <DataInput
-          defaultValue={sessionData.nameKo}
-          name={'nameKo'}
-          placeholder={'Session Name (Korean)'}
-          title={'Session Name (Korean)'}
-        />
-        <DataInput
-          title={'Location (English)'}
-          defaultValue={sessionData.location}
-          name={'location'}
-          placeholder={'Location (English)'}
-        />
-        <DataInput
-          title={'Location (Korean)'}
-          defaultValue={sessionData.locationKo}
-          name={'locationKo'}
-          placeholder={'Location (Korean)'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.name}
+            requiredBoth={true}
+            enFieldNames={['name']}
+            koFieldNames={['nameKo']}
+            enContent={
+              <DataInput
+                defaultValue={sessionData.name}
+                name={'name'}
+                placeholder={t.nameEn}
+                title={t.nameEn}
+              />
+            }
+            koContent={
+              <DataInput
+                defaultValue={sessionData.nameKo}
+                name={'nameKo'}
+                placeholder={t.nameKo}
+                title={t.nameKo}
+              />
+            }
+          />
+        </div>
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.location}
+            requiredBoth={true}
+            enFieldNames={['location']}
+            koFieldNames={['locationKo']}
+            enContent={
+              <DataInput
+                title={t.locationEn}
+                defaultValue={sessionData.location}
+                name={'location'}
+                placeholder={t.locationEn}
+              />
+            }
+            koContent={
+              <DataInput
+                title={t.locationKo}
+                defaultValue={sessionData.locationKo}
+                name={'locationKo'}
+                placeholder={t.locationKo}
+              />
+            }
+          />
+        </div>
         <DataSelectInput
           data={[
-            { name: 'General Session', value: 'General Session' },
-            { name: 'Part Session', value: 'Part Session' },
+            { name: t.generalSession, value: 'General Session' },
+            { name: t.partSession, value: 'Part Session' },
           ]}
           name={'type'}
-          title={'Session Type'}
+          title={t.sessionType}
           defaultValue={sessionData.type ? sessionData.type : 'Part Session'}
         />
         <DataInput
-          title={'Display on Website'}
+          title={t.displayOnWebsite}
           defaultValue={'true'}
           name={'displayOnWebsite'}
-          placeholder={'Display on Website'}
+          placeholder={t.displayOnWebsite}
           type={'checkbox'}
           isChecked={sessionData.displayOnWebsite!}
         />
-        <MDXEditor
-          title={'English Description'}
-          name={'description'}
-          placeholder={'Write the session description in English.'}
-          defaultValue={sessionData.description}
-        />
-        <MDXEditor
-          title={'Korean Description'}
-          name={'descriptionKo'}
-          placeholder={'Write the session description in Korean.'}
-          defaultValue={sessionData.descriptionKo}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.description}
+            requiredBoth={true}
+            enFieldNames={['description']}
+            koFieldNames={['descriptionKo']}
+            enContent={
+              <MDXEditor
+                title={t.descriptionEn}
+                name={'description'}
+                placeholder={'Write the session description in English.'}
+                defaultValue={sessionData.description}
+              />
+            }
+            koContent={
+              <MDXEditor
+                title={t.descriptionKo}
+                name={'descriptionKo'}
+                placeholder={'세션 설명을 한국어로 작성하세요.'}
+                defaultValue={sessionData.descriptionKo}
+              />
+            }
+          />
+        </div>
 
         <DataInput
-          title={'Internal Open'}
+          title={t.internalOpen}
           name={'internalOpen'}
-          placeholder={'Internal Open'}
+          placeholder={t.internalOpen}
           type={'checkbox'}
           defaultValue={'true'}
           isChecked={sessionData.internalOpen!}
         />
         <DataInput
-          title={'Public Open'}
+          title={t.publicOpen}
           name={'publicOpen'}
-          placeholder={'Public Open'}
+          placeholder={t.publicOpen}
           type={'checkbox'}
           defaultValue={'true'}
           isChecked={sessionData.publicOpen!}
         />
         <DataInput
-          title={'Max Capacity'}
+          title={t.maxCapacity}
           defaultValue={sessionData.maxCapacity}
           name={'maxCapacity'}
-          placeholder={'Max Capacity'}
+          placeholder={t.maxCapacity}
           type={'number'}
         />
         <DataInput
           defaultValue={sessionData.startAt?.toISOString().slice(0, 16)}
           name={'startAt'}
           placeholder={'YYYY-MM-DD'}
-          title={'Start Time'}
+          title={t.startTime}
           type={'datetime-local'}
         />
         <DataInput
           defaultValue={sessionData.endAt?.toISOString().slice(0, 16)}
           name={'endAt'}
           placeholder={'YYYY-MM-DD'}
-          title={'End Time'}
+          title={t.endTime}
           type={'datetime-local'}
         />
         <SessionPartParticipantsInput
@@ -173,21 +222,21 @@ export default async function EditSessionPage({
           <div>
             <DataImageInput
               baseUrl={'/api/admin/sessions/main-image'}
-              title={'Main Image'}
+              title={t.mainImage}
               name={'mainImage'}
               defaultValue={sessionData.mainImage}
             >
-              Select Main Image
+              {t.selectImage}
             </DataImageInput>
           </div>
           <div>
             <DataMultipleImageInput
               baseUrl={'/api/admin/sessions/content-image'}
               name={'contentImages'}
-              title={'Images'}
+              title={t.contentImages}
               defaultValue={sessionData.images.map((image) => image)}
             >
-              Select Images
+              {t.selectImage}
             </DataMultipleImageInput>
           </div>
         </div>

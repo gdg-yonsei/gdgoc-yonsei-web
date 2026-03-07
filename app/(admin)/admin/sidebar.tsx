@@ -3,6 +3,7 @@ import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
+import { getAdminLocale } from '@/lib/admin-i18n/server'
 
 /**
  * 사이드 바 네비게이션 컴포넌트
@@ -34,6 +35,7 @@ function SidebarNavigator({
  * @constructor
  */
 export default async function Sidebar() {
+  const locale = await getAdminLocale()
   const session = await auth()
   return (
     <div
@@ -46,7 +48,7 @@ export default async function Sidebar() {
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       <div className={'flex w-full flex-col gap-4 pt-4'}>
-        {(await getAdminNavigationItems(session?.user?.id)).map((item, i) => (
+        {(await getAdminNavigationItems(session?.user?.id, locale)).map((item, i) => (
           <SidebarNavigator href={item.path} key={i}>
             {item.name}
           </SidebarNavigator>

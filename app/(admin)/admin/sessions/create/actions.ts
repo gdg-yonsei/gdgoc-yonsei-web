@@ -9,12 +9,16 @@ import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { sessionValidation } from '@/lib/validations/session'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
-import { revalidateCache } from '@/lib/server/cache'
 import { eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
 import { Resend } from 'resend'
 import NewSession from '@/emails/new-session'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { getResendEnv, getSiteEnv } from '@/lib/server/env'
+import { invalidateSessionPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import { getGenerationNameForPartId } from '@/lib/server/services/cache-context'
 
 /**
  * Create Session Action
@@ -90,6 +94,9 @@ export async function createSessionAction(
     if (!name || !description) {
       return { error: 'Name and Description are required' }
     }
+
+    const nextGenerationName = await getGenerationNameForPartId(Number(partId))
+
     // session 생성 쿼리
     const createSession = await db
       .insert(sessions)
@@ -126,35 +133,12 @@ export async function createSessionAction(
 
     sessionId = createSession[0].id
 
-    // 캐시 업데이트
-    revalidateCache('sessions')
-
-    // Start Cache Warming
-    const part = await db.query.parts.findFirst({
-      where: eq(parts.id, Number(partId)),
-      with: {
-        generation: true,
-      },
+    invalidateSessionPublicCache({
+      sessionId,
+      nextGenerationName,
     })
-
-    if (part?.generation) {
-       const paths = [
-        `${process.env.NEXT_PUBLIC_SITE_URL}/ko/session/${part.generation.name}/${sessionId}`,
-        `${process.env.NEXT_PUBLIC_SITE_URL}/en/session/${part.generation.name}/${sessionId}`,
-      ]
-
-      await Promise.allSettled(
-        paths.map((path) =>
-          fetch(path, {
-            cache: 'no-store',
-          })
-        )
-      )
-    }
-    // End Cache Warming
   } catch (e) {
-    // DB 에러 처리
-    console.error(e)
+    logger.error('admin.sessions.create', e)
     return { error: 'DB Update Error' }
   }
 
@@ -198,7 +182,8 @@ export async function createSessionAction(
       })
     })
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
+    const resend = new Resend(getResendEnv().RESEND_API_KEY)
+    const siteEnv = getSiteEnv()
 
     for (let i = 0; i < userEmailList.length; i++) {
       await resend.emails.send({
@@ -215,11 +200,11 @@ export async function createSessionAction(
           },
           part: partGeneration.name,
           generation: generationUsers?.name || '',
-          registerUrl: `https://gdgoc.yonsei.ac.kr/admin/sessions/${sessionId}/register`,
+          registerUrl: `${siteEnv.NEXT_PUBLIC_SITE_URL}/admin/sessions/${sessionId}/register`,
         }),
       })
     }
   }
 
-  redirect(`/admin/sessions`)
+  redirect(await getLocalizedAdminPath('/admin/sessions'))
 }

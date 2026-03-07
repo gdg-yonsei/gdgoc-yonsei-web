@@ -10,7 +10,13 @@ import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/server/form-data/get-part-form-data'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidatePartPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
+import {
+  getGenerationNameById,
+  getGenerationNameForPartId,
+} from '@/lib/server/services/cache-context'
 
 /**
  * Update Part Action
@@ -57,6 +63,9 @@ export async function updatePartAction(
 
   try {
     const partIdNumber = Number(partId)
+    const previousGenerationName = await getGenerationNameForPartId(partIdNumber)
+    const nextGeneration = await getGenerationNameById(generationId)
+
     // part 정보 업데이트 쿼리
     await db
       .update(parts)
@@ -97,13 +106,15 @@ export async function updatePartAction(
       await db.insert(usersToParts).values(userToPartData)
     }
 
-    // 캐시 업데이트
-    revalidateCache(['parts', 'members'])
+    invalidatePartPublicCache(
+      [previousGenerationName, nextGeneration?.name].filter(Boolean) as string[]
+    )
   } catch (e) {
-    // DB 업데이트 오류 처리
-    console.error(e)
+    logger.error('admin.parts.update', e, {
+      partId,
+    })
     return { error: 'DB Update Error' }
   }
 
-  redirect(`/admin/parts/${partId}`)
+  redirect(await getLocalizedAdminPath(`/admin/parts/${partId}`))
 }

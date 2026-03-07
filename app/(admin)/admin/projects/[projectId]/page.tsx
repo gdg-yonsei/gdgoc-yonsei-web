@@ -10,6 +10,12 @@ import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import Link from 'next/link'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -54,6 +60,8 @@ export default async function ProjectPage({
 }: {
   params: Promise<{ projectId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { projectId } = await params
   // Project 데이터 가져오기
   const projectData = await getProject(projectId)
@@ -68,7 +76,7 @@ export default async function ProjectPage({
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/projects'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Projects</p>
+        <p className={'text-lg'}>{t.projects}</p>
       </AdminNavigationButton>
       <div className={'flex flex-col gap-2 md:flex-row'}>
         <div className={'flex items-center gap-2'}>
@@ -77,7 +85,7 @@ export default async function ProjectPage({
             session={session}
             dataOwnerId={projectData.authorId}
             dataType={'projects'}
-            href={`/admin/projects/${projectId}/edit`}
+            href={localizeAdminHref(`/admin/projects/${projectId}/edit`, locale)}
           />
           <DataDeleteButton
             session={session}
@@ -91,46 +99,67 @@ export default async function ProjectPage({
             target={'_blank'}
             className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
           >
-            View Published (KO)
+            {t.viewPublishedKo}
           </Link>
           <Link
             href={`/en/project/${projectData.generation.name}/${projectId}`}
             target={'_blank'}
             className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
           >
-            View Published (EN)
+            {t.viewPublishedEn}
           </Link>
         </div>
       </div>
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Generation</div>
+          <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>
             {projectData.generation?.name}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Name (English)</div>
-          <div className={'member-data-content'}>{projectData.name}</div>
+        <div className={'member-data-col-span'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div className={'member-data-box'}>
+                <div className={'member-data-title'}>{t.nameEn}</div>
+                <div className={'member-data-content'}>{projectData.name}</div>
+              </div>
+            }
+            koContent={
+              <div className={'member-data-box'}>
+                <div className={'member-data-title'}>{t.nameKo}</div>
+                <div className={'member-data-content'}>{projectData.nameKo}</div>
+              </div>
+            }
+          />
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>Name (Korean)</div>
-          <div className={'member-data-content'}>{projectData.nameKo}</div>
-        </div>
-
-        <div className={'member-data-box col-span-1 md:col-span-2'}>
-          <div className={'member-data-title'}>Description (English)</div>
-          <div className={'member-data-content'}>{projectData.description}</div>
-        </div>
-        <div className={'member-data-box col-span-1 md:col-span-2'}>
-          <div className={'member-data-title'}>Description (Korean)</div>
-          <div className={'member-data-content'}>
-            {projectData.descriptionKo}
-          </div>
+        <div className={'member-data-col-span'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div className={'member-data-box'}>
+                <div className={'member-data-title'}>{t.descriptionEn}</div>
+                <div className={'member-data-content'}>
+                  {projectData.description}
+                </div>
+              </div>
+            }
+            koContent={
+              <div className={'member-data-box'}>
+                <div className={'member-data-title'}>{t.descriptionKo}</div>
+                <div className={'member-data-content'}>
+                  {projectData.descriptionKo}
+                </div>
+              </div>
+            }
+          />
         </div>
 
         <div className={'member-data-col-span'}>
-          <div className={'member-data-title'}>Participants</div>
+          <div className={'member-data-title'}>{t.participants}</div>
           <div className={'member-data-grid gap-2'}>
             {projectData.usersToProjects.map((user) => (
               <div key={user.user.id} className={'member-data-box'}>
@@ -150,7 +179,7 @@ export default async function ProjectPage({
           }
         >
           <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
-            <div className={'member-data-title'}>Main Image</div>
+            <div className={'member-data-title'}>{t.mainImage}</div>
             <Image
               src={projectData.mainImage}
               alt={projectData.mainImage}
@@ -162,7 +191,7 @@ export default async function ProjectPage({
             />
           </div>
           <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
-            <div className={'member-data-title'}>Content Images</div>
+            <div className={'member-data-title'}>{t.contentImages}</div>
             {projectData.images.map((image, index) => (
               <Image
                 key={index}
@@ -177,13 +206,23 @@ export default async function ProjectPage({
             ))}
           </div>
         </div>
-        <div className={'prose member-data-col-span w-full py-8'}>
-          <div className={'member-data-title'}>Content (English)</div>
-          <SafeMDX source={projectData.content} />
-        </div>
-        <div className={'prose member-data-col-span w-full py-8'}>
-          <div className={'member-data-title'}>Content (Korean)</div>
-          <SafeMDX source={projectData.contentKo} />
+        <div className={'member-data-col-span py-8'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            enContent={
+              <div className={'prose w-full max-w-none'}>
+                <div className={'member-data-title'}>{t.contentEn}</div>
+                <SafeMDX source={projectData.content} />
+              </div>
+            }
+            koContent={
+              <div className={'prose w-full max-w-none'}>
+                <div className={'member-data-title'}>{t.contentKo}</div>
+                <SafeMDX source={projectData.contentKo} />
+              </div>
+            }
+          />
         </div>
       </div>
     </AdminDefaultLayout>

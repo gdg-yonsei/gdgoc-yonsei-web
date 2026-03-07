@@ -7,7 +7,8 @@ const mockR2Send = vi.fn()
 const mockUpdateWhere = vi.fn()
 const mockUpdateSet = vi.fn()
 const mockDbUpdate = vi.fn()
-const mockRevalidateCache = vi.fn()
+const mockInvalidateMemberPublicCache = vi.fn()
+const mockGetGenerationNamesForUserId = vi.fn()
 
 vi.mock('@/auth', () => ({
   auth: mockAuth,
@@ -34,7 +35,11 @@ vi.mock('@/db', () => ({
 }))
 
 vi.mock('@/lib/server/cache', () => ({
-  revalidateCache: mockRevalidateCache,
+  invalidateMemberPublicCache: mockInvalidateMemberPublicCache,
+}))
+
+vi.mock('@/lib/server/services/cache-context', () => ({
+  getGenerationNamesForUserId: mockGetGenerationNamesForUserId,
 }))
 
 describe('admin api route validations', () => {
@@ -46,6 +51,7 @@ describe('admin api route validations', () => {
     mockAuth.mockResolvedValue({ user: { id: 'lead-user-id' } })
     mockHandlePermission.mockResolvedValue(true)
     mockGetPreSignedUrl.mockResolvedValue('https://upload.example')
+    mockGetGenerationNamesForUserId.mockResolvedValue(['seed-gen'])
 
     mockUpdateWhere.mockResolvedValue(undefined)
     mockUpdateSet.mockReturnValue({ where: mockUpdateWhere })
@@ -143,7 +149,10 @@ describe('admin api route validations', () => {
     expect(response.status).toBe(200)
     expect(json.success).toBe(true)
     expect(mockDbUpdate).toHaveBeenCalled()
-    expect(mockRevalidateCache).toHaveBeenCalledWith('members')
+    expect(mockInvalidateMemberPublicCache).toHaveBeenCalledWith({
+      memberId: 'user-1',
+      generationNames: ['seed-gen'],
+    })
   })
 
   it('rejects invalid project main-image POST payload', async () => {

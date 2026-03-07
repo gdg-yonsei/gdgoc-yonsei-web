@@ -2,12 +2,14 @@ import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import Link from 'next/link'
 import formatUserName from '@/lib/format-user-name'
 import UserProfileImage from '@/app/components/user-profile-image'
+import { getAdminLocale, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 /**
  * 멤버 정보 테이블 컴포넌트
  * @constructor
  */
 export default async function MembersTable() {
+  const locale = await getAdminLocale()
   // 멤버 정보 가져오기
   const membersData = await getMembers()
 
@@ -19,7 +21,7 @@ export default async function MembersTable() {
     >
       {membersData.map((member) => (
         <Link
-          href={`/admin/members/${member.id}`}
+          href={localizeAdminHref(`/admin/members/${member.id}`, locale)}
           key={member.id}
           className={
             'flex items-center gap-2 rounded-2xl bg-white p-2 shadow-lg'

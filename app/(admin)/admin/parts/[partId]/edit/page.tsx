@@ -14,6 +14,7 @@ import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
 import { Metadata } from 'next'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Edit Part',
@@ -36,6 +37,8 @@ export default async function EditPartPage({
 }: {
   params: Promise<{ partId: string }>
 }) {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { partId } = await params
   // Part 정보 가져오기
   const partData = await getPart(Number(partId))
@@ -74,13 +77,15 @@ export default async function EditPartPage({
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>{partData.name}</p>
       </AdminNavigationButton>
-      <div className={'admin-title py-4'}>Edit {partData.name}</div>
+      <div className={'admin-title py-4'}>
+        {t.edit} {partData.name}
+      </div>
       <DataForm
         action={updatePartActionWithPartId}
         className={'member-data-grid w-full gap-4'}
       >
         <DataInput
-          title={'Name'}
+          title={t.name}
           defaultValue={partData.name}
           name={'name'}
           placeholder={'Name'}
@@ -91,7 +96,7 @@ export default async function EditPartPage({
           placeholder={'Description'}
         />
         <DataSelectInput
-          title={'Generation'}
+          title={t.generation}
           data={generationList}
           name={'generationId'}
           defaultValue={String(partData.generationsId)}
@@ -108,7 +113,7 @@ export default async function EditPartPage({
             value: member.id,
           }))}
           name={'membersList'}
-          title={'Members'}
+          title={t.members}
           defaultValue={membersIdList}
         />
         <DataSelectMultipleInput
@@ -123,7 +128,7 @@ export default async function EditPartPage({
             value: member.id,
           }))}
           name={'doubleBoardMembersList'}
-          title={'Double Board Members'}
+          title={t.doubleBoardMembers}
           defaultValue={doubleBoardMembersIdList}
         />
         <SubmitButton />

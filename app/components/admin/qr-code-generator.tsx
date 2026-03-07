@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import QRCode from 'react-qr-code'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `QRCodeGenerator` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -17,13 +18,14 @@ import QRCode from 'react-qr-code'
  */
 export default function QRCodeGenerator() {
   const [value, setValue] = useState('')
+  const { t } = useAdminI18n()
   return (
     <div
       className={
         'flex w-full flex-col items-center justify-center gap-8 rounded-xl bg-white p-4'
       }
     >
-      <h2 className={'mr-auto text-xl font-semibold'}>QR Code Generator</h2>
+      <h2 className={'mr-auto text-xl font-semibold'}>{t('qrCodeGenerator')}</h2>
       {value ? (
         <QRCode value={value} className={'size-64'} />
       ) : (
@@ -32,7 +34,7 @@ export default function QRCodeGenerator() {
       <div className={'flex flex-col items-center justify-center gap-1'}>
         <input
           type={'text'}
-          placeholder={'Please enter the value.'}
+          placeholder={t('qrValuePlaceholder')}
           className={
             'w-full rounded-full border-sky-500 bg-neutral-100 p-2 px-4 focus:border-2 focus:outline-none'
           }
@@ -40,11 +42,11 @@ export default function QRCodeGenerator() {
             if (e.target.value.length < 23648) {
               setValue(e.target.value)
             } else {
-              alert('The value is too long. Please enter a shorter value.')
+              alert(t('qrTooLong'))
             }
           }}
         />
-        <p>Please capture the QR Code and use it.</p>
+        <p>{t('qrCaptureHint')}</p>
       </div>
     </div>
   )

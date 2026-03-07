@@ -4,6 +4,7 @@ import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { useState } from 'react'
 import formatUserName from '@/lib/format-user-name'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `SessionPartParticipantsInput` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -29,6 +30,7 @@ export default function SessionPartParticipantsInput({
   }
   membersData: Awaited<ReturnType<typeof getMembers>>
 }) {
+  const { t } = useAdminI18n()
   const [partId, setPartId] = useState<number>(defaultValue?.partId ?? 0)
   const [selectedMembers, setSelectedMembers] = useState<string[]>(
     defaultValue?.selectedMembers ?? []
@@ -48,7 +50,7 @@ export default function SessionPartParticipantsInput({
       >
         {/* Parts 섹션 */}
         <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
-          <p>Parts</p>
+          <p>{t('parts')}</p>
           {/* 이 div가 스크롤 영역이 됩니다. */}
           <div className={'flex-1 overflow-y-auto'}>
             <div className={'flex w-full flex-col gap-2 pt-2'}>
@@ -88,7 +90,7 @@ export default function SessionPartParticipantsInput({
         </div>
         {/* Members 섹션 */}
         <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
-          <p>Members</p>
+          <p>{t('members')}</p>
           {/* 이 div가 스크롤 영역이 됩니다. */}
           <div className={'flex-1 overflow-y-auto'}>
             <div className={'flex flex-col gap-1 pt-2'}>
@@ -134,7 +136,7 @@ export default function SessionPartParticipantsInput({
       >
         {/* Members 섹션 */}
         <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
-          <p>Members</p>
+          <p>{t('members')}</p>
           {/* 이 div가 스크롤 영역이 됩니다. */}
           <div className={'flex-1 overflow-y-auto'}>
             <div

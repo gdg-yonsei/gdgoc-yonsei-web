@@ -11,6 +11,8 @@ import SessionPartParticipantsInput from '@/app/components/admin/session-part-pa
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -29,6 +31,7 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function CreateSessionPage() {
+  const t = getAdminMessages(await getAdminLocale())
   const generationData = await getParts()
 
   const membersData = await getMembers()
@@ -37,98 +40,136 @@ export default async function CreateSessionPage() {
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/sessions'}>
         <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>Sessions</p>
+        <p className={'text-lg'}>{t.sessions}</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>Create Session</div>
+      <div className={'admin-title'}>
+        {t.create} {t.session}
+      </div>
       <DataForm
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
-        <DataInput
-          title={'English Name'}
-          defaultValue={''}
-          name={'name'}
-          placeholder={'English Name'}
-          required={true}
-        />
-        <DataInput
-          title={'Korean Name'}
-          defaultValue={''}
-          name={'nameKo'}
-          placeholder={'Korean Name'}
-          required={true}
-        />
-        <DataInput
-          title={'English Location'}
-          defaultValue={''}
-          name={'location'}
-          placeholder={'English Location'}
-          required={true}
-        />
-        <DataInput
-          title={'Korean Location'}
-          defaultValue={''}
-          name={'locationKo'}
-          placeholder={'Korean Location'}
-          required={true}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.name}
+            requiredBoth={true}
+            enFieldNames={['name']}
+            koFieldNames={['nameKo']}
+            enContent={
+              <DataInput
+                title={t.nameEn}
+                defaultValue={''}
+                name={'name'}
+                placeholder={t.nameEn}
+                required={true}
+              />
+            }
+            koContent={
+              <DataInput
+                title={t.nameKo}
+                defaultValue={''}
+                name={'nameKo'}
+                placeholder={t.nameKo}
+                required={true}
+              />
+            }
+          />
+        </div>
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.location}
+            requiredBoth={true}
+            enFieldNames={['location']}
+            koFieldNames={['locationKo']}
+            enContent={
+              <DataInput
+                title={t.locationEn}
+                defaultValue={''}
+                name={'location'}
+                placeholder={t.locationEn}
+                required={true}
+              />
+            }
+            koContent={
+              <DataInput
+                title={t.locationKo}
+                defaultValue={''}
+                name={'locationKo'}
+                placeholder={t.locationKo}
+                required={true}
+              />
+            }
+          />
+        </div>
         <DataSelectInput
           data={[
-            { name: 'General Session', value: 'General Session' },
-            { name: 'Part Session', value: 'Part Session' },
+            { name: t.generalSession, value: 'General Session' },
+            { name: t.partSession, value: 'Part Session' },
           ]}
           name={'type'}
-          title={'Session Type'}
+          title={t.sessionType}
           defaultValue={'Part Session'}
         />
         <DataInput
-          title={'Display on Website'}
+          title={t.displayOnWebsite}
           defaultValue={'true'}
           name={'displayOnWebsite'}
-          placeholder={'Display on Website'}
+          placeholder={t.displayOnWebsite}
           type={'checkbox'}
           isChecked={false}
         />
-        <MDXEditor
-          title={'English Description'}
-          name={'description'}
-          placeholder={'Write the session description in English.'}
-        />
-        <MDXEditor
-          title={'Korean Description'}
-          name={'descriptionKo'}
-          placeholder={'Write the session description in Korean.'}
-        />
+        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <BilingualPanel
+            enTitle={t.english}
+            koTitle={t.korean}
+            fieldLabel={t.description}
+            requiredBoth={true}
+            enFieldNames={['description']}
+            koFieldNames={['descriptionKo']}
+            enContent={
+              <MDXEditor
+                title={t.descriptionEn}
+                name={'description'}
+                placeholder={'Write the session description in English.'}
+              />
+            }
+            koContent={
+              <MDXEditor
+                title={t.descriptionKo}
+                name={'descriptionKo'}
+                placeholder={'세션 설명을 한국어로 작성하세요.'}
+              />
+            }
+          />
+        </div>
         <div className={'flex flex-col gap-1'}>
           <DataInput
-            title={'Internal Session'}
+            title={t.internalOpen}
             defaultValue={'true'}
             name={'internalOpen'}
-            placeholder={'Internal Session'}
+            placeholder={t.internalOpen}
             type={'checkbox'}
             isChecked={true}
           />
-          <p className={'text-xs'}>
-            An internal session can also be attended by members from other GDG
-            parts.
-          </p>
+          <p className={'text-xs'}>{t.internalSessionHint}</p>
         </div>
         <div className={'flex flex-col gap-1'}>
           <DataInput
-            title={'Public Session'}
+            title={t.publicOpen}
             defaultValue={'true'}
             name={'publicOpen'}
-            placeholder={'Public Session'}
+            placeholder={t.publicOpen}
             type={'checkbox'}
             isChecked={false}
           />
-          <p className={'text-xs'}>
-            A public session can also be attended by people who are not part of
-            GDG.
-          </p>
+          <p className={'text-xs'}>{t.publicSessionHint}</p>
         </div>
         <DataInput
-          title={'Max Capacity'}
+          title={t.maxCapacity}
           defaultValue={0}
           name={'maxCapacity'}
           placeholder={'Enter a number'}
@@ -136,7 +177,7 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <DataInput
-          title={'Start time'}
+          title={t.startTime}
           defaultValue={''}
           name={'startAt'}
           placeholder={'YYYY-MM-DDTHH:MM'}
@@ -144,7 +185,7 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <DataInput
-          title={'End time'}
+          title={t.endTime}
           defaultValue={''}
           name={'endAt'}
           placeholder={'YYYY-MM-DDTHH:MM'}

@@ -4,6 +4,7 @@ import { auth } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 import { getSafeImageExtension } from '@/lib/server/r2-object-key'
+import { getImageEnv } from '@/lib/server/env'
 
 export interface PostBody {
   memberId: string
@@ -45,10 +46,11 @@ export async function POST(request: NextRequest) {
 
   // R2 Pre Signed URL 생성
   const uploadUrl = await getPreSignedUrl(fileName, res.type)
+  const imageEnv = getImageEnv()
 
   // Pre Signed URL 반환
   return NextResponse.json({
     uploadUrl,
-    fileName: process.env.NEXT_PUBLIC_IMAGE_URL + fileName,
+    fileName: `${imageEnv.NEXT_PUBLIC_IMAGE_URL}${fileName}`,
   })
 }

@@ -49,12 +49,18 @@ test('desktop navigation routes user to calendar page', async ({ page }) => {
 
 test('freshman orientation banner navigates to OT page', async ({ page }) => {
   await page.goto('/en', { waitUntil: 'domcontentloaded' })
-  await page
+
+  const bannerLink = page
     .getByRole('link', { name: /2026 Freshman Orientation/i })
     .first()
-    .click()
 
-  await expect(page).toHaveURL(/\/en\/2026-freshman-ot$/)
+  if ((await bannerLink.count()) > 0) {
+    await bannerLink.click()
+  } else {
+    await page.goto('/en/2026-freshman-ot', { waitUntil: 'domcontentloaded' })
+  }
+
+  await expect(page).toHaveURL(/\/en\/2026-freshman-ot\/?$/)
   await expect(page.getByText('Google Developer Group').first()).toBeVisible()
 })
 

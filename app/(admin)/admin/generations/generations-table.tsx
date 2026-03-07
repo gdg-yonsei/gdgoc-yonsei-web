@@ -1,12 +1,15 @@
 import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import Link from 'next/link'
 import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'
+import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 /**
  * Generations 를 보여주는 Table 컴포넌트
  * @constructor
  */
 export default async function GenerationsTable() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   // generations 데이터 가져오기
   const generationsData = await getGenerations()
 
@@ -14,17 +17,17 @@ export default async function GenerationsTable() {
     <div className={'member-data-grid w-full gap-2'}>
       {generationsData.map((generation) => (
         <Link
-          href={`/admin/generations/${generation.id}`}
+          href={localizeAdminHref(`/admin/generations/${generation.id}`, locale)}
           key={generation.id}
           className={
             'flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
           }
         >
           <div className={'text-xl font-bold'}>
-            Generation: {generation.name}
+            {t.generation}: {generation.name}
           </div>
           <div>
-            <div className={'text-sm text-neutral-600'}>Activity Period</div>
+            <div className={'text-sm text-neutral-600'}>{t.activityPeriod}</div>
             <GenerationActivityPeriod
               startDate={generation.startDate}
               endDate={generation.endDate}

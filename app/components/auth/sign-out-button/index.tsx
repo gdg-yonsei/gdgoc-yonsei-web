@@ -8,14 +8,17 @@ import LoadingSpinner from '@/app/components/loading-spinner'
  * 로그아웃 form submit 버튼
  * @param className
  * @param spinnerClassName
+ * @param label
  * @constructor
  */
 function SubmitButton({
   className,
   spinnerClassName,
+  label = 'Sign Out',
 }: {
   className?: string
   spinnerClassName?: string
+  label?: string
 }) {
   const { pending } = useFormStatus()
   return (
@@ -35,7 +38,7 @@ function SubmitButton({
       ) : (
         ''
       )}
-      <p>Sign Out</p>
+      <p>{label}</p>
     </button>
   )
 }
@@ -44,18 +47,25 @@ function SubmitButton({
  * 로그가웃 버튼
  * @param className
  * @param spinnerClassName
+ * @param label
  * @constructor
  */
 export function SignOutButton({
   className,
   spinnerClassName,
+  label,
 }: {
   className?: string
   spinnerClassName?: string
+  label?: string
 }) {
   return (
     <form action={signOutAction}>
-      <SubmitButton className={className} spinnerClassName={spinnerClassName} />
+      <SubmitButton
+        className={className}
+        spinnerClassName={spinnerClassName}
+        label={label}
+      />
     </form>
   )
 }

@@ -6,6 +6,11 @@ import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import ProjectsTable from '@/app/(admin)/admin/projects/projects-table'
 import { Metadata } from 'next'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Projects',
@@ -24,6 +29,8 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function ProjectsPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
   // 사용자가 파타를 생성할 권한이 있는지 확인
   const canCreate = await handlePermission(
@@ -35,16 +42,16 @@ export default async function ProjectsPage() {
   return (
     <AdminDefaultLayout className={'p-4'}>
       <div className={'flex items-center gap-2 pb-2'}>
-        <div className={'admin-title'}>Projects</div>
+        <div className={'admin-title'}>{t.projects}</div>
         {canCreate && (
           <Link
-            href={'/admin/projects/create'}
+            href={localizeAdminHref('/admin/projects/create', locale)}
             className={
               'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
             }
           >
             <PlusCircleIcon className={'size-5'} />
-            <p>Create</p>
+            <p>{t.create}</p>
           </Link>
         )}
       </div>

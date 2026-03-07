@@ -1,5 +1,6 @@
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import { useSession } from 'next-auth/react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * 사용자 정보 패널 (CSR 전용)
@@ -7,6 +8,7 @@ import { useSession } from 'next-auth/react'
  */
 export default function UserAuthControlPanelClient() {
   const { data: session } = useSession()
+  const { t } = useAdminI18n()
 
   return (
     <div
@@ -21,6 +23,7 @@ export default function UserAuthControlPanelClient() {
           'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-1 px-2 text-sm text-white transition-all disabled:bg-neutral-800'
         }
         spinnerClassName={'size-4 border-2 border-t-white border-neutral-700'}
+        label={t('signOut')}
       />
     </div>
   )

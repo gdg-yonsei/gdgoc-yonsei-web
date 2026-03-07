@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { notFound } from 'next/navigation'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { toggleSessionNotificationEmailAction } from '@/app/(admin)/admin/profile/actions'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * `UnsubscribeSessionNotiEmailPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -16,6 +17,8 @@ import { toggleSessionNotificationEmailAction } from '@/app/(admin)/admin/profil
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function UnsubscribeSessionNotiEmailPage() {
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -32,8 +35,8 @@ export default async function UnsubscribeSessionNotiEmailPage() {
       <button
         className={`rounded-full border-2 ${userData.sessionNotiEmail ? 'border-red-500 bg-red-50 text-red-800 hover:bg-red-200' : 'border-green-500 bg-green-50 text-green-800 hover:bg-green-200'} p-2 px-4 text-sm transition-colors`}
       >
-        {userData.sessionNotiEmail ? 'Unsubscribe' : 'Subscribe'} Session
-        Notification Emails
+        {userData.sessionNotiEmail ? t.unsubscribe : t.subscribe}{' '}
+        {t.sessionNotificationEmails}
       </button>
     </form>
   )

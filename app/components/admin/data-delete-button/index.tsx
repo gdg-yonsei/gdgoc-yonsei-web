@@ -5,6 +5,7 @@ import handlePermission, {
 import deleteResourceAction from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * `DataDeleteButton` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -27,6 +28,7 @@ export default async function DataDeleteButton({
   dataType: ResourceType
   dataId: string
 }) {
+  const t = getAdminMessages(await getAdminLocale())
   const canDelete = await handlePermission(
     session?.user?.id,
     'delete',
@@ -48,9 +50,9 @@ export default async function DataDeleteButton({
             className={
               'flex items-center gap-2 rounded-lg bg-red-600 p-1 px-3 text-white transition-all hover:bg-red-500 hover:px-4'
             }
-            questionText={'Are you sure you want to delete this data?'}
+            questionText={t.deleteConfirm}
           >
-            Delete
+            {t.delete}
           </SubmitButton>
         </DataForm>
       )}

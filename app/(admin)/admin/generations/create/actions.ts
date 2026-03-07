@@ -7,7 +7,9 @@ import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { forbidden, redirect } from 'next/navigation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
-import { revalidateCache } from '@/lib/server/cache'
+import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import { invalidateGenerationPublicCache } from '@/lib/server/cache'
+import { logger } from '@/lib/server/logger'
 
 /**
  * `createGenerationAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -61,28 +63,14 @@ export async function createGenerationAction(
         id: generations.id,
       })
 
-    // 캐시 업데이트
-    revalidateCache(['generations', 'parts'])
-
-    // Warm up cache for the new generation member page
-    const paths = [
-      `${process.env.NEXT_PUBLIC_SITE_URL}/ko/member/${parsedGenerationData.name}`,
-      `${process.env.NEXT_PUBLIC_SITE_URL}/en/member/${parsedGenerationData.name}`,
-    ]
-
-    await Promise.allSettled(
-      paths.map((path) =>
-        fetch(path, {
-          cache: 'no-store',
-        })
-      )
-    )
+    invalidateGenerationPublicCache({
+      nextGenerationName: parsedGenerationData.name,
+    })
   } catch (e) {
-    // DB 업데이트 오류
-    console.error(e)
+    logger.error('admin.generations.create', e)
     return { error: 'DB Update Error' }
   }
 
   // generation 페이지로 이동
-  redirect(`/admin/generations`)
+  redirect(await getLocalizedAdminPath('/admin/generations'))
 }

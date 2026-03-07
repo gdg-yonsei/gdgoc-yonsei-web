@@ -1,19 +1,19 @@
-import { getProject } from '@/lib/server/fetcher/get-project'
 import { notFound } from 'next/navigation'
 import PageTitle from '@/app/components/page-title'
 import ImageSliderGallery from '@/app/components/images-slider'
 import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
-import { Metadata } from 'next'
-import { getProjects } from '@/lib/server/fetcher/get-projects'
+import type { Metadata } from 'next'
+import { i18n } from '@/i18n-config'
+import {
+  getProjectById,
+  getProjects,
+} from '@/lib/server/queries/public/projects'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
 }
-
-export const dynamicParams = true
-export const dynamic = 'force-static'
 
 /**
  * `generateStaticParams` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -28,7 +28,7 @@ export const dynamic = 'force-static'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateStaticParams() {
-  const projects = await getProjects()
+  const projects = await getProjects(i18n.defaultLocale)
   const projectIdAndGenerationId = projects.map((project) => ({
     generation: project.generation.name,
     projectId: String(project.id),
@@ -62,7 +62,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
 
-  const projectData = await getProject(projectId)
+  const projectData = await getProjectById(projectId, lang === 'ko' ? 'ko' : 'en')
 
   if (!projectData) {
     if (lang === 'ko') {
@@ -105,7 +105,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function ProjectPage({ params }: Props) {
   const { projectId, lang, generation } = await params
-  const projectData = await getProject(projectId)
+  const projectData = await getProjectById(projectId, lang === 'ko' ? 'ko' : 'en')
 
   if (!projectData) {
     return notFound()

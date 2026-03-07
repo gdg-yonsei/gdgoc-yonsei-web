@@ -5,6 +5,7 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isLoadingState, modalState } from '@/lib/atoms'
 import { ReactNode, useRef } from 'react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * Form Submit Button Component
@@ -13,7 +14,7 @@ import { ReactNode, useRef } from 'react'
 export default function SubmitButton({
   className,
   questionText,
-  children = 'Submit',
+  children,
 }: {
   className?: string
   questionText: string
@@ -23,6 +24,7 @@ export default function SubmitButton({
   const [isLoading] = useAtom(isLoadingState)
   const submitButtonRef = useRef<HTMLButtonElement>(null)
   const [, setModal] = useAtom(modalState)
+  const { t } = useAdminI18n()
 
   return (
     <>
@@ -53,7 +55,7 @@ export default function SubmitButton({
         ) : (
           ''
         )}
-        <p>{isLoading ? 'Suspend...' : children}</p>
+        <p>{isLoading ? t('suspend') : (children ?? t('submit'))}</p>
       </button>
     </>
   )

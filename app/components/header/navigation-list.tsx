@@ -103,7 +103,7 @@ export default function NavigationList({
       {isMember && (
         <MotionLink state={isMenuOpen}>
           <Link
-            href={'/admin'}
+            href={`/${lang}/admin`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={'w-full'}
           >

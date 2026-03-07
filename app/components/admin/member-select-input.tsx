@@ -3,6 +3,7 @@
 import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import { useEffect, useState } from 'react'
 import formatUserName from '@/lib/format-user-name'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
  * `MembersSelectInput` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -23,6 +24,7 @@ export default function MembersSelectInput({
   membersList: Awaited<ReturnType<typeof getMembersWithGeneration>>
   defaultValue: string[]
 }) {
+  const { t } = useAdminI18n()
   const [participants, setParticipants] = useState<string[]>([])
   const [generations, setGenerations] = useState<number[]>([])
 
@@ -82,7 +84,9 @@ export default function MembersSelectInput({
         hidden={true}
         name={'participants'}
       />
-      <p className={'text-sm font-semibold text-neutral-700'}>Participants</p>
+      <p className={'text-sm font-semibold text-neutral-700'}>
+        {t('participants')}
+      </p>
       <div className={'flex w-full flex-col gap-2'}>
         {membersList.map((generation, i) => (
           <div key={i}>
@@ -99,7 +103,7 @@ export default function MembersSelectInput({
                 onClick={() => handleToggleGeneration(generation.id)}
                 className={'text-sm text-neutral-700'}
               >
-                {generations.includes(generation.id) ? 'Close' : 'Open'}
+                {generations.includes(generation.id) ? t('close') : t('open')}
               </button>
             </div>
             <div

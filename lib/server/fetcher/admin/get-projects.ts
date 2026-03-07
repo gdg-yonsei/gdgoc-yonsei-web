@@ -1,13 +1,8 @@
-/**
- * @file This file contains a server-side function for fetching all projects.
- * It uses Next.js's unstable_cache for caching.
- */
-
 import 'server-only'
 import db from '@/db'
 import { desc } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadAdminProjects = () => {
   void getProjects()
@@ -26,10 +21,7 @@ export const preloadAdminProjects = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getProjects() {
-  'use cache'
-  applyCacheTags('projects')
-
-  console.log(new Date(), 'Fetch Projects Data')
+  noStore()
   return db.query.projects.findMany({
     orderBy: desc(projects.updatedAt),
   })

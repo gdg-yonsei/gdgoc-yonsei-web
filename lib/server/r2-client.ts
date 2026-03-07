@@ -3,17 +3,9 @@
  */
 
 import { S3Client } from '@aws-sdk/client-s3'
+import { getR2ClientEnv } from '@/lib/server/env'
 
-// Ensure all required environment variables for R2 are set.
-if (
-  !process.env.CLOUDFLARE_ACCOUNT_ID ||
-  !process.env.R2_ACCESS_KEY ||
-  !process.env.R2_SECRET_KEY
-) {
-  throw new Error(
-    'Cloudflare R2 environment variables (CLOUDFLARE_ACCOUNT_ID, R2_ACCESS_KEY, R2_SECRET_KEY) are not properly set.'
-  )
-}
+const r2Env = getR2ClientEnv()
 
 /**
  * An instance of the S3Client configured to connect to Cloudflare R2 storage.
@@ -23,10 +15,10 @@ if (
  */
 const r2Client = new S3Client({
   region: 'auto',
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  endpoint: `https://${r2Env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY,
-    secretAccessKey: process.env.R2_SECRET_KEY,
+    accessKeyId: r2Env.R2_ACCESS_KEY,
+    secretAccessKey: r2Env.R2_SECRET_KEY,
   },
 })
 

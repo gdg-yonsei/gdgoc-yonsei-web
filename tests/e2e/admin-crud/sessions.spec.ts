@@ -6,6 +6,7 @@ import { openDeleteModalAndConfirm, setHiddenInputValue } from './helpers'
 type SeededData = Awaited<ReturnType<typeof readSeededData>>
 
 test.use({ storageState: ADMIN_STORAGE_STATE })
+const localizedSessionsListPath = /\/(?:en|ko)\/admin\/sessions$/
 
 async function createSession(
   page: Page,
@@ -14,10 +15,13 @@ async function createSession(
 ) {
   await page.goto('/admin/sessions/create', { waitUntil: 'domcontentloaded' })
   await page.locator('input[name="name"]').fill(sessionName)
+  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(0).click()
   await page.locator('input[name="nameKo"]').fill('CRUD 세션')
   await page.locator('input[name="location"]').fill('Room 501')
+  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(1).click()
   await page.locator('input[name="locationKo"]').fill('501호')
   await page.locator('textarea[name="description"]').fill('Session description')
+  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(2).click()
   await page.locator('textarea[name="descriptionKo"]').fill('세션 설명입니다.')
   await page.locator('input[name="maxCapacity"]').fill('20')
   await page.locator('input[name="startAt"]').fill('2027-03-20T10:00')
@@ -31,7 +35,7 @@ async function createSession(
   )
 
   await page.getByRole('button', { name: 'Submit' }).click()
-  await expect(page).toHaveURL(/\/admin\/sessions$/)
+  await expect(page).toHaveURL(localizedSessionsListPath)
 }
 
 test.describe('sessions CRUD', () => {
@@ -80,7 +84,7 @@ test.describe('sessions CRUD', () => {
       await page.getByRole('link', { name: sessionName }).click()
 
       await openDeleteModalAndConfirm(page)
-      await expect(page).toHaveURL(/\/admin\/sessions$/)
+      await expect(page).toHaveURL(localizedSessionsListPath)
       await expect(page.getByRole('link', { name: sessionName })).toHaveCount(0)
     })
   })

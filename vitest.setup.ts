@@ -3,6 +3,15 @@ import { cleanup } from '@testing-library/react'
 import React from 'react'
 import { afterEach, vi } from 'vitest'
 
+process.env.AUTH_DRIZZLE_URL ??= 'postgres://postgres:postgres@localhost:5432/test'
+process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.test'
+process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
+process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'
+process.env.R2_ACCESS_KEY ??= 'test-access-key'
+process.env.R2_SECRET_KEY ??= 'test-secret-key'
+process.env.R2_BUCKET_NAME ??= 'test-bucket'
+process.env.RESEND_API_KEY ??= 'test-resend-key'
+
 type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   src: string | { src?: string }
   blurDataURL?: string

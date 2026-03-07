@@ -3,7 +3,7 @@ import db from '@/db'
 import { asc, desc } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
-import applyCacheTags from '@/lib/server/cacheTagT'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const preloadParts = () => {
   void getParts()
@@ -22,10 +22,7 @@ export const preloadParts = () => {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function getParts() {
-  'use cache'
-  applyCacheTags('parts', 'members')
-
-  console.log(new Date(), 'Fetch Parts Data')
+  noStore()
   return db.query.generations.findMany({
     with: {
       parts: {
