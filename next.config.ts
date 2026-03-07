@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next'
-import { cacheLifeConfig } from '@/lib/server/cache'
+import { cacheLifeConfig } from './lib/server/cache/policy'
 
 const hasSharedRedisCache = Boolean(process.env.REDIS_URL)
 
