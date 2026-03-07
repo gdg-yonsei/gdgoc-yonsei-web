@@ -5,6 +5,7 @@
 import r2Client from '@/lib/server/r2-client'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { getR2BucketEnv } from '@/lib/server/env'
 
 /**
  * Generates a pre-signed URL for uploading a file to the R2 bucket.
@@ -18,14 +19,11 @@ export default async function getPreSignedUrl(
   fileName: string,
   contentType: string
 ): Promise<string> {
-  // Ensure the R2 bucket name is configured in the environment variables.
-  if (!process.env.R2_BUCKET_NAME) {
-    throw new Error('R2_BUCKET_NAME is not set in environment variables.')
-  }
+  const bucketEnv = getR2BucketEnv()
 
   // Create a command to put an object in the R2 bucket.
   const command = new PutObjectCommand({
-    Bucket: process.env.R2_BUCKET_NAME,
+    Bucket: bucketEnv.R2_BUCKET_NAME,
     Key: fileName,
     ContentType: contentType,
   })

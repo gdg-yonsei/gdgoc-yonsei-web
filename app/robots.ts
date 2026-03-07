@@ -1,4 +1,7 @@
 import type { MetadataRoute } from 'next'
+import { getSiteEnv } from '@/lib/server/env'
+
+const siteEnv = getSiteEnv()
 
 /**
  * `generateRobots` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -19,6 +22,6 @@ export default function generateRobots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/en/admin/', '/ko/admin/'],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL}/sitemap.xml`,
+    sitemap: `${siteEnv.NEXT_PUBLIC_SITE_URL}/sitemap.xml`,
   }
 }

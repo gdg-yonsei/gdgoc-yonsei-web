@@ -1,4 +1,5 @@
 import 'server-only'
+import { getImageEnv } from '@/lib/server/env'
 
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
   'jpg',
@@ -11,12 +12,9 @@ const ALLOWED_IMAGE_EXTENSIONS = new Set([
 ])
 
 function getBaseImageUrlWithoutTrailingSlash(): string | null {
-  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL?.trim()
-  if (!baseUrl) {
-    return null
-  }
+  const parsedImageEnv = getImageEnv()
 
-  return baseUrl.replace(/\/+$/, '')
+  return parsedImageEnv.NEXT_PUBLIC_IMAGE_URL.trim().replace(/\/+$/, '')
 }
 
 export function getSafeImageExtension(fileName: string): string | null {

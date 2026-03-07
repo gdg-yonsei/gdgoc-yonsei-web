@@ -5,6 +5,8 @@
 import 'server-only'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectsCommand } from '@aws-sdk/client-s3'
+import { getR2BucketEnv } from '@/lib/server/env'
+import { logger } from '@/lib/server/logger'
 
 /**
  * Deletes multiple images from the Cloudflare R2 bucket.
@@ -21,27 +23,24 @@ export default async function deleteR2Images(
     return true
   }
 
-  // Ensure the R2 bucket name is configured.
-  if (!process.env.R2_BUCKET_NAME) {
-    console.error('R2_BUCKET_NAME is not set in environment variables.')
-    return false
-  }
-
-  // Create the command to delete the specified objects.
-  const deleteCommand = new DeleteObjectsCommand({
-    Bucket: process.env.R2_BUCKET_NAME,
-    Delete: {
-      Objects: imageKeys.map((key) => ({ Key: key })),
-    },
-  })
-
   try {
+    const bucketEnv = getR2BucketEnv()
+
+    // Create the command to delete the specified objects.
+    const deleteCommand = new DeleteObjectsCommand({
+      Bucket: bucketEnv.R2_BUCKET_NAME,
+      Delete: {
+        Objects: imageKeys.map((key) => ({ Key: key })),
+      },
+    })
+
     // Send the deletion command to the R2 client.
     await r2Client.send(deleteCommand)
     return true
   } catch (err) {
-    // Log any errors that occur during the deletion process.
-    console.error('Failed to delete images from R2:', err)
+    logger.error('r2.delete-images', err, {
+      imageKeyCount: imageKeys.length,
+    })
     return false
   }
 }

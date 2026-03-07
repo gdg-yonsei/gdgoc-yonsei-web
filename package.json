@@ -41,6 +41,7 @@
     "next-auth": "5.0.0-beta.30",
     "next-mdx-remote": "^5.0.0",
     "postgres": "^3.4.8",
+    "redis": "^5.11.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-markdown": "^10.1.0",
