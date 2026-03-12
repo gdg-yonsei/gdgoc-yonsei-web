@@ -13,6 +13,7 @@ import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { getGenerationNameById } from '@/lib/server/services/cache-context'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 /**
  * Create Project Action
  * @param prev - previous state for form error
@@ -45,6 +46,14 @@ export async function createProjectAction(
     participants,
     generationId,
   } = getProjectFormData(formData)
+
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (
+    resolvedScope.scope?.kind !== 'generation' ||
+    resolvedScope.scope.generationId !== Number(generationId)
+  ) {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
 
   try {
     // zod validation

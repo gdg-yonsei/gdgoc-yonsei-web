@@ -215,7 +215,6 @@ describe('form-data parsers', () => {
       descriptionKo: '설명',
       mainImage: '/main.png',
       contentImages: ['/1.png'],
-      generationId: '10',
       location: 'A101',
       locationKo: '에이101',
       internalOpen: true,
@@ -226,10 +225,10 @@ describe('form-data parsers', () => {
       type: 'General Session',
       displayOnWebsite: true,
     })
-    expect(result.startAt.getTime()).toBe(
+    expect(result.startAt?.getTime()).toBe(
       new Date('2025-01-01T10:00:00.000Z').getTime()
     )
-    expect(result.endAt.getTime()).toBe(
+    expect(result.endAt?.getTime()).toBe(
       new Date('2025-01-01T12:00:00.000Z').getTime()
     )
   })

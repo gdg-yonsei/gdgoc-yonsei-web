@@ -10,9 +10,14 @@ export const SEEDED_DATA_FILE = path.join(AUTH_DIR, 'seed-data.json')
 export type SeededE2EData = {
   generationId: number
   generationName: string
+  secondGenerationId: number
+  secondGenerationName: string
   partId: number
+  secondPartId: number
   projectId: string
+  secondProjectId: string
   sessionId: string
+  secondSessionId: string
   adminUserId: string
   memberUserId: string
   pendingApproveUserId: string

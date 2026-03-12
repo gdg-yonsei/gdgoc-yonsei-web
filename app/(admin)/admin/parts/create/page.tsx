@@ -4,13 +4,13 @@ import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { createPartAction } from '@/app/(admin)/admin/parts/create/actions'
 import DataTextarea from '@/app/components/admin/data-textarea'
-import DataSelectInput from '@/app/components/admin/data-select-input'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
-import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import { auth } from '@/auth'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Create Part',
@@ -31,16 +31,26 @@ export const metadata: Metadata = {
 export default async function CreatePartPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  // 기수 정보 가져오기
-  const generations = await getGenerations()
-  // 기수 선택용 리스트
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+
+  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+    return (
+      <AdminDefaultLayout>
+        <div className={'admin-title'}>
+          {t.create} {t.part}
+        </div>
+        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+        </div>
+      </AdminDefaultLayout>
+    )
+  }
 
   // 멤버 데이터 가져오기
-  const membersData = await getMembers()
+  const membersData = await getMembers(resolvedScope.scope)
 
   return (
     <AdminDefaultLayout>
@@ -48,6 +58,12 @@ export default async function CreatePartPage() {
         {t.create} {t.part}
       </div>
       <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
+        <input
+          hidden={true}
+          name={'generationId'}
+          readOnly={true}
+          value={String(resolvedScope.selectedGeneration.id)}
+        />
         <DataInput
           title={t.name}
           defaultValue={''}
@@ -59,12 +75,12 @@ export default async function CreatePartPage() {
           name={'description'}
           placeholder={'e.g. This is a part for Android developers.'}
         />
-        <DataSelectInput
-          title={t.generation}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={''}
-        />
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>
+            {resolvedScope.selectedGeneration.name}
+          </div>
+        </div>
         <DataSelectMultipleInput
           data={membersData.map((member) => ({
             name: formatUserName(

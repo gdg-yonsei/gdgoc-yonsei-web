@@ -6,7 +6,6 @@ import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import formatUserName from '@/lib/format-user-name'
-import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
@@ -64,10 +63,6 @@ export default async function PartPage({
     notFound()
   }
 
-  // 기수 데이터 가져오기
-  const generationData = partData.generationsId
-    ? await getGeneration(partData.generationsId)
-    : null
   // 사용자 로그인 정보
   const session = await auth()
 
@@ -93,7 +88,7 @@ export default async function PartPage({
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>{generationData?.name}</div>
+          <div className={'member-data-content'}>{partData.generation?.name}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.description}</div>

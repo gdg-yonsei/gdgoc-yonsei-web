@@ -9,7 +9,7 @@ import { ReactNode } from 'react'
  * @param className - 추가 CSS 클래스
  * @constructor
  */
-export default function AdminDefaultLayout({
+export default async function AdminDefaultLayout({
   children,
   className,
 }: {

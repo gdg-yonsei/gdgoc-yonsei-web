@@ -7,6 +7,7 @@ import { z } from 'zod'
 import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { eq } from 'drizzle-orm'
+import { parts } from '@/db/schema/parts'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { sessionValidation } from '@/lib/validations/session'
@@ -49,7 +50,6 @@ export async function updateSessionAction(
     descriptionKo,
     contentImages,
     mainImage,
-    generationId,
     startAt,
     endAt,
     internalOpen,
@@ -72,7 +72,6 @@ export async function updateSessionAction(
       descriptionKo,
       contentImages,
       mainImage,
-      generationId,
       startAt,
       endAt,
       location,
@@ -96,6 +95,33 @@ export async function updateSessionAction(
   try {
     const bucketEnv = getR2BucketEnv()
     const previousSession = await getSessionCacheContext(sessionId)
+    const existingSession = await db.query.sessions.findFirst({
+      where: eq(sessions.id, sessionId),
+      columns: {
+        id: true,
+      },
+      with: {
+        part: {
+          columns: {
+            generationsId: true,
+          },
+        },
+      },
+    })
+
+    const selectedPart = await db.query.parts.findFirst({
+      where: eq(parts.id, Number(partId)),
+      columns: {
+        generationsId: true,
+      },
+    })
+
+    if (
+      !existingSession?.part?.generationsId ||
+      existingSession.part.generationsId !== selectedPart?.generationsId
+    ) {
+      return { error: 'Session generation cannot be changed from this screen.' }
+    }
 
     // 삭제된 이미지 R2에서 삭제
     const prevImages = (

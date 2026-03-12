@@ -63,6 +63,17 @@ export async function updatePartAction(
 
   try {
     const partIdNumber = Number(partId)
+    const existingPart = await db.query.parts.findFirst({
+      where: eq(parts.id, partIdNumber),
+      columns: {
+        generationsId: true,
+      },
+    })
+
+    if (!existingPart || existingPart.generationsId !== generationId) {
+      return { error: 'Part generation cannot be changed from this screen.' }
+    }
+
     const previousGenerationName = await getGenerationNameForPartId(partIdNumber)
     const nextGeneration = await getGenerationNameById(generationId)
 
@@ -102,7 +113,7 @@ export async function updatePartAction(
     }
 
     // 파트에 멤버 정보 새로 추가
-    if (membersList.length > 0) {
+    if (userToPartData.length > 0) {
       await db.insert(usersToParts).values(userToPartData)
     }
 

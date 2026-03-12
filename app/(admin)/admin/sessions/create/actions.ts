@@ -19,6 +19,7 @@ import { getResendEnv, getSiteEnv } from '@/lib/server/env'
 import { invalidateSessionPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { getGenerationNameForPartId } from '@/lib/server/services/cache-context'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 /**
  * Create Session Action
@@ -60,6 +61,11 @@ export async function createSessionAction(
     displayOnWebsite,
   } = getSessionFormData(formData)
 
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (resolvedScope.scope?.kind !== 'generation') {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
+
   try {
     // zod validation
     sessionValidation.parse({
@@ -93,6 +99,21 @@ export async function createSessionAction(
   try {
     if (!name || !description) {
       return { error: 'Name and Description are required' }
+    }
+
+    const selectedPart = await db.query.parts.findFirst({
+      where: eq(parts.id, Number(partId)),
+      columns: {
+        generationsId: true,
+        name: true,
+      },
+    })
+
+    if (
+      !selectedPart?.generationsId ||
+      selectedPart.generationsId !== resolvedScope.scope.generationId
+    ) {
+      return { error: 'The selected part does not belong to the current generation scope.' }
     }
 
     const nextGenerationName = await getGenerationNameForPartId(Number(partId))

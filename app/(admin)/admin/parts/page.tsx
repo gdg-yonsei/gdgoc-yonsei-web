@@ -7,6 +7,7 @@ import { auth } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Parts',
@@ -30,12 +31,17 @@ export default async function PartsPage() {
   const session = await auth()
   // 사용자가 파타를 생성할 권한이 있는지 확인
   const canCreate = await handlePermission(session?.user?.id, 'post', 'parts')
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const canCreateInCurrentScope =
+    canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
     <AdminDefaultLayout>
       <div className={'flex items-center gap-2 pb-2'}>
         <div className={'admin-title'}>{t.parts}</div>
-        {canCreate && (
+        {canCreateInCurrentScope && (
           <Link
             href={localizeAdminHref('/admin/parts/create', locale)}
             className={
@@ -46,6 +52,11 @@ export default async function PartsPage() {
             <p>{t.create}</p>
           </Link>
         )}
+        {canCreate && !canCreateInCurrentScope && (
+          <div className={'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
+        )}
       </div>
 
       <Suspense
@@ -55,7 +66,7 @@ export default async function PartsPage() {
           />
         }
       >
-        <PartsTable />
+        <PartsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )

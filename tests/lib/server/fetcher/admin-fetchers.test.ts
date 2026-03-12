@@ -4,14 +4,17 @@ const mockNoStore = vi.fn()
 
 const mockGenerationsFindMany = vi.fn()
 const mockProjectsFindMany = vi.fn()
+const mockPartsFindMany = vi.fn()
 const mockPartsFindFirst = vi.fn()
 const mockSessionsFindFirst = vi.fn()
 const mockUsersFindFirst = vi.fn()
 
 const mockSelect = vi.fn()
+const mockSelectDistinctOn = vi.fn()
 
 const mockDb = {
   select: mockSelect,
+  selectDistinctOn: mockSelectDistinctOn,
   query: {
     generations: {
       findMany: mockGenerationsFindMany,
@@ -21,6 +24,7 @@ const mockDb = {
       findMany: mockProjectsFindMany,
     },
     parts: {
+      findMany: mockPartsFindMany,
       findFirst: mockPartsFindFirst,
     },
     sessions: {
@@ -43,8 +47,20 @@ vi.mock('@/db', () => ({
 function createSelectChainWithOrderByResult(result: unknown) {
   const chain = {
     from: vi.fn(() => chain),
-    where: vi.fn(() => chain),
+    innerJoin: vi.fn(() => chain),
     leftJoin: vi.fn(() => chain),
+    where: vi.fn(() => chain),
+    orderBy: vi.fn(async () => result),
+  }
+
+  return chain
+}
+
+function createDistinctOnChainWithOrderByResult(result: unknown) {
+  const chain = {
+    from: vi.fn(() => chain),
+    innerJoin: vi.fn(() => chain),
+    where: vi.fn(() => chain),
     orderBy: vi.fn(async () => result),
   }
 
@@ -99,51 +115,132 @@ describe('admin fetchers', () => {
     })
   })
 
-  it('fetches admin projects ordered by updatedAt without cache', async () => {
-    mockProjectsFindMany.mockResolvedValue([{ id: 'project-1' }])
+  it('maps project list items with generation metadata', async () => {
+    const createdAt = new Date('2025-01-01T00:00:00.000Z')
+    const updatedAt = new Date('2025-01-02T00:00:00.000Z')
+
+    mockProjectsFindMany.mockResolvedValue([
+      {
+        id: 'project-1',
+        name: 'Project One',
+        nameKo: '프로젝트 원',
+        mainImage: '/project.png',
+        createdAt,
+        updatedAt,
+        generationId: 11,
+        generation: {
+          name: '11th',
+        },
+      },
+    ])
+
     const { getProjects } = await import('@/lib/server/fetcher/admin/get-projects')
 
-    await expect(getProjects()).resolves.toEqual([{ id: 'project-1' }])
+    await expect(getProjects()).resolves.toEqual([
+      {
+        id: 'project-1',
+        name: 'Project One',
+        nameKo: '프로젝트 원',
+        mainImage: '/project.png',
+        createdAt,
+        updatedAt,
+        generationId: 11,
+        generationName: '11th',
+      },
+    ])
     expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockProjectsFindMany).toHaveBeenCalledTimes(1)
   })
 
-  it('preloads admin projects', async () => {
-    mockProjectsFindMany.mockResolvedValue([])
-    const { preloadAdminProjects } = await import(
-      '@/lib/server/fetcher/admin/get-projects'
-    )
-    preloadAdminProjects()
+  it('maps parts into flat list items with member counts', async () => {
+    mockPartsFindMany.mockResolvedValue([
+      {
+        id: 5,
+        name: 'Frontend',
+        description: 'UI work',
+        displayOrder: 1,
+        generationsId: 11,
+        generation: {
+          id: 11,
+          name: '11th',
+        },
+        usersToParts: [{}, {}],
+      },
+    ])
 
-    await vi.waitFor(() => {
-      expect(mockProjectsFindMany).toHaveBeenCalledTimes(1)
-    })
+    const { getParts } = await import('@/lib/server/fetcher/admin/get-parts')
+
+    await expect(getParts()).resolves.toEqual([
+      {
+        id: 5,
+        name: 'Frontend',
+        description: 'UI work',
+        displayOrder: 1,
+        memberCount: 2,
+        generationId: 11,
+        generationName: '11th',
+      },
+    ])
+    expect(mockNoStore).toHaveBeenCalledTimes(1)
+    expect(mockPartsFindMany).toHaveBeenCalledTimes(1)
   })
 
-  it('fetches admin members and de-duplicates by user id', async () => {
-    const rows = [
-      { id: 'user-1', name: 'A', part: 'Part1' },
-      { id: 'user-1', name: 'A', part: 'Part2' },
-      { id: 'user-2', name: 'B', part: 'Part1' },
-    ]
-    const chain = createSelectChainWithOrderByResult(rows)
-    mockSelect.mockReturnValue(chain)
+  it('fetches admin members scoped by generation and keeps one row per user per generation', async () => {
+    const chain = createDistinctOnChainWithOrderByResult([
+      {
+        id: 'user-2',
+        name: 'Beta',
+        part: 'Backend',
+        generationId: 10,
+        generation: '10th',
+        role: 'MEMBER',
+        firstName: 'Beta',
+        firstNameKo: '베타',
+        lastName: 'Park',
+        lastNameKo: '박',
+        image: null,
+        isForeigner: false,
+      },
+      {
+        id: 'user-1',
+        name: 'Alpha',
+        part: 'Frontend',
+        generationId: 11,
+        generation: '11th',
+        role: 'CORE',
+        firstName: 'Alpha',
+        firstNameKo: '알파',
+        lastName: 'Kim',
+        lastNameKo: '김',
+        image: null,
+        isForeigner: false,
+      },
+    ])
+    mockSelectDistinctOn.mockReturnValue(chain)
 
     const { getMembers } = await import('@/lib/server/fetcher/admin/get-members')
     const result = await getMembers()
 
     expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(result).toEqual([
-      { id: 'user-1', name: 'A', part: 'Part1' },
-      { id: 'user-2', name: 'B', part: 'Part1' },
+      expect.objectContaining({
+        id: 'user-1',
+        generationId: 11,
+        part: 'Frontend',
+      }),
+      expect.objectContaining({
+        id: 'user-2',
+        generationId: 10,
+        part: 'Backend',
+      }),
     ])
     expect(chain.from).toHaveBeenCalledTimes(1)
-    expect(chain.leftJoin).toHaveBeenCalledTimes(3)
+    expect(chain.innerJoin).toHaveBeenCalledTimes(3)
   })
 
   it('preloads admin members', async () => {
-    const chain = createSelectChainWithOrderByResult([])
-    mockSelect.mockReturnValue(chain)
+    const chain = createDistinctOnChainWithOrderByResult([])
+    mockSelectDistinctOn.mockReturnValue(chain)
 
     const { preloadAdminMembers } = await import(
       '@/lib/server/fetcher/admin/get-members'
@@ -155,15 +252,34 @@ describe('admin fetchers', () => {
     })
   })
 
-  it('fetches sessions grouped by generation and part without cache', async () => {
-    mockGenerationsFindMany.mockResolvedValue([{ id: 1, parts: [] }])
+  it('fetches sessions as flat list items with part and generation data', async () => {
+    const chain = createSelectChainWithOrderByResult([
+      {
+        id: 'session-1',
+        name: 'Session One',
+        nameKo: '세션 원',
+        mainImage: '/session.png',
+        startAt: new Date('2025-01-01T10:00:00.000Z'),
+        endAt: new Date('2025-01-01T11:00:00.000Z'),
+        partId: 7,
+        partName: 'Frontend',
+        generationId: 11,
+        generationName: '11th',
+      },
+    ])
+    mockSelect.mockReturnValue(chain)
+
     const { getSessions } = await import('@/lib/server/fetcher/admin/get-sessions')
 
-    const result = await getSessions()
-
-    expect(result).toEqual([{ id: 1, parts: [] }])
+    await expect(getSessions()).resolves.toEqual([
+      expect.objectContaining({
+        id: 'session-1',
+        partName: 'Frontend',
+        generationName: '11th',
+      }),
+    ])
     expect(mockNoStore).toHaveBeenCalledTimes(1)
-    expect(mockGenerationsFindMany).toHaveBeenCalledTimes(1)
+    expect(chain.innerJoin).toHaveBeenCalledTimes(1)
   })
 
   it('fetches generation detail by id without cache', async () => {

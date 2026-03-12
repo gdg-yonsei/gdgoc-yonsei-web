@@ -80,6 +80,16 @@ export async function updateProjectAction(
   try {
     const bucketEnv = getR2BucketEnv()
     const previousProject = await getProjectCacheContext(projectId)
+    const existingProject = await db.query.projects.findFirst({
+      where: eq(projects.id, projectId),
+      columns: {
+        generationId: true,
+      },
+    })
+
+    if (!existingProject || existingProject.generationId !== Number(generationId)) {
+      return { error: 'Project generation cannot be changed from this screen.' }
+    }
 
     // 삭제된 이미지 R2에서 삭제
     const prevImages = (

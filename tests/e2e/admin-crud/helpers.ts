@@ -30,6 +30,20 @@ export async function setHiddenInputValue(
   )
 }
 
+export async function setAdminGenerationScope(
+  page: Page,
+  scopeName: string
+) {
+  const scopeSelect = page
+    .locator(
+      'select[aria-label="Current Scope"], select[aria-label="현재 범위"], select[aria-label="Generation"], select[aria-label="기수"]'
+    )
+    .first()
+
+  await expect(scopeSelect).toBeVisible()
+  await scopeSelect.selectOption({ label: scopeName })
+}
+
 export async function openDeleteModalAndConfirm(page: Page) {
   await page.getByRole('button', { name: 'Delete' }).click()
   await expect(

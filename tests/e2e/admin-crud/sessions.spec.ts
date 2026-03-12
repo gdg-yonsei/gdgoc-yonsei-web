@@ -27,11 +27,11 @@ async function createSession(
   await page.locator('input[name="startAt"]').fill('2027-03-20T10:00')
   await page.locator('input[name="endAt"]').fill('2027-03-20T12:00')
 
-  await setHiddenInputValue(page, 'partId', seededData.partId.toString())
+  await setHiddenInputValue(page, 'partId', seededData.secondPartId.toString())
   await setHiddenInputValue(
     page,
     'participantId',
-    JSON.stringify([seededData.memberUserId])
+    JSON.stringify([seededData.adminUserId])
   )
 
   await page.getByRole('button', { name: 'Submit' }).click()
@@ -63,11 +63,18 @@ test.describe('sessions CRUD', () => {
       const updatedSessionName = `${sessionName} Updated`
 
       await createSession(page, sessionName, seededData)
-      await page.getByRole('link', { name: sessionName }).click()
-      await expect(page.getByText(sessionName, { exact: true })).toBeVisible()
+      await page
+        .locator('a[href*="/admin/sessions/"]')
+        .filter({ hasText: sessionName })
+        .last()
+        .click()
+      await expect(page).toHaveURL(/\/admin\/sessions\/[^/]+$/)
 
       await page.getByRole('link', { name: 'Edit' }).click()
-      await page.locator('input[name="name"]').fill(updatedSessionName)
+      await expect(page).toHaveURL(/\/admin\/sessions\/.+\/edit$/)
+      await page
+        .getByRole('textbox', { name: 'Name (English)' })
+        .fill(updatedSessionName)
       await page.getByRole('button', { name: 'Submit' }).click()
 
       await expect(
@@ -81,7 +88,11 @@ test.describe('sessions CRUD', () => {
       const sessionName = `CRUD Session ${Date.now().toString()}`
 
       await createSession(page, sessionName, seededData)
-      await page.getByRole('link', { name: sessionName }).click()
+      await page
+        .locator('a[href*="/admin/sessions/"]')
+        .filter({ hasText: sessionName })
+        .last()
+        .click()
 
       await openDeleteModalAndConfirm(page)
       await expect(page).toHaveURL(localizedSessionsListPath)

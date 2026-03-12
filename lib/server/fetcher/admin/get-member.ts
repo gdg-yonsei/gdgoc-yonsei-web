@@ -1,7 +1,7 @@
 import 'server-only'
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, sql } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
@@ -22,7 +22,7 @@ export const preloadAdminMemberById = (userId: string) => {
  * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
-export async function getMember(userId: string) {
+export async function getMember(userId: string, generationId?: number | null) {
   noStore()
   const result = await db
     .select({
@@ -42,6 +42,7 @@ export async function getMember(userId: string) {
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
       isForeigner: users.isForeigner,
+      generationId: generations.id,
       generation: generations.name,
       major: users.major,
       studentId: users.studentId,
@@ -53,7 +54,16 @@ export async function getMember(userId: string) {
     .leftJoin(usersToParts, eq(usersToParts.userId, users.id))
     .leftJoin(parts, eq(parts.id, usersToParts.partId))
     .leftJoin(generations, eq(generations.id, parts.generationsId))
-    .orderBy(desc(generations.id), desc(parts.id), desc(users.updatedAt))
+    .orderBy(
+      generationId
+        ? desc(
+            sql<number>`CASE WHEN ${generations.id} = ${generationId} THEN 1 ELSE 0 END`
+          )
+        : desc(generations.id),
+      desc(generations.id),
+      desc(parts.id),
+      desc(users.updatedAt)
+    )
     .limit(1)
 
   return result[0]

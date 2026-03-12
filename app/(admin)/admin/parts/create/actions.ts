@@ -13,6 +13,7 @@ import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidatePartPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { getGenerationNameById } from '@/lib/server/services/cache-context'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 /**
  * Create Part Action
@@ -29,9 +30,21 @@ export async function createPartAction(
     return forbidden()
   }
 
+  if (!session?.user?.id) {
+    return { error: 'User not found' }
+  }
+
   // form data 에서 part data 추출
   const { name, description, generationId, membersList, doubleBoardMembersList } =
     getPartFormData(formData)
+
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (
+    resolvedScope.scope?.kind !== 'generation' ||
+    resolvedScope.scope.generationId !== generationId
+  ) {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
 
   try {
     // zod validation
@@ -57,32 +70,31 @@ export async function createPartAction(
       })
       .returning({ id: parts.id })
 
-      const userToPartData: {
-        userId: string
-        partId: number
-        userType: 'Core' | 'Primary' | 'Secondary'
-      }[] = []
-  
-      for (const member of membersList) {
-        userToPartData.push({
-          userId: member,
-          partId: createPart[0].id,
-          userType: 'Primary',
-        })
-      }
-  
-      for (const doubleMember of doubleBoardMembersList) {
-        userToPartData.push({
-          userId: doubleMember,
-          partId: createPart[0].id,
-          userType: 'Secondary',
-        })
-      }
-  
-      // 파트에 멤버 정보 새로 추가
-      if (membersList.length > 0) {
-        await db.insert(usersToParts).values(userToPartData)
-      }
+    const userToPartData: {
+      userId: string
+      partId: number
+      userType: 'Core' | 'Primary' | 'Secondary'
+    }[] = []
+
+    for (const member of membersList) {
+      userToPartData.push({
+        userId: member,
+        partId: createPart[0].id,
+        userType: 'Primary',
+      })
+    }
+
+    for (const doubleMember of doubleBoardMembersList) {
+      userToPartData.push({
+        userId: doubleMember,
+        partId: createPart[0].id,
+        userType: 'Secondary',
+      })
+    }
+
+    if (userToPartData.length > 0) {
+      await db.insert(usersToParts).values(userToPartData)
+    }
 
     invalidatePartPublicCache(
       generation?.name ? [generation.name] : []

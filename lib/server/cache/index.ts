@@ -2,7 +2,10 @@ import 'server-only'
 
 import { cacheLife, cacheTag, revalidatePath, revalidateTag, updateTag } from 'next/cache'
 import { i18n } from '@/i18n-config'
-import type { PublicCacheProfile } from '@/lib/server/cache/policy'
+import {
+  cacheLifeConfig,
+  type PublicCacheProfile,
+} from '@/lib/server/cache/policy'
 
 export * from '@/lib/server/cache/invalidation'
 export * from '@/lib/server/cache/policy'
@@ -21,7 +24,7 @@ export function cacheQuery(
   profile: PublicCacheProfile,
   tags: readonly string[]
 ) {
-  cacheLife(profile)
+  cacheLife(cacheLifeConfig[profile])
   cacheTag(...uniqueStrings(tags))
 }
 

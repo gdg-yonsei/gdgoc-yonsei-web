@@ -9,13 +9,13 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
-import DataSelectInput from '@/app/components/admin/data-select-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
-import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { auth } from '@/auth'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Create Project',
@@ -35,14 +35,29 @@ export const metadata: Metadata = {
  */
 export default async function CreateProjectPage() {
   const t = getAdminMessages(await getAdminLocale())
-  const membersList = await getMembersWithGeneration()
-  // 기수 정보 가져오기
-  const generations = await getGenerations()
-  // 기수 선택용 리스트
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+
+  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+    return (
+      <AdminDefaultLayout>
+        <AdminNavigationButton href={'/admin/projects'}>
+          <ChevronLeftIcon className={'size-8'} />
+          <p className={'text-lg'}>{t.projects}</p>
+        </AdminNavigationButton>
+        <div className={'admin-title'}>
+          {t.create} {t.project}
+        </div>
+        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+        </div>
+      </AdminDefaultLayout>
+    )
+  }
+
+  const membersList = await getMembers(resolvedScope.scope)
 
   return (
     <AdminDefaultLayout>
@@ -57,6 +72,12 @@ export default async function CreateProjectPage() {
         action={createProjectAction}
         className={'member-data-grid gap-2'}
       >
+        <input
+          hidden={true}
+          name={'generationId'}
+          readOnly={true}
+          value={String(resolvedScope.selectedGeneration.id)}
+        />
         <div
           className={
             'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
@@ -131,13 +152,13 @@ export default async function CreateProjectPage() {
             }
           />
         </div>
-        <DataSelectInput
-          title={t.generation}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={''}
-        />
-        <MembersSelectInput membersList={membersList} defaultValue={[]} />
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>
+            {resolvedScope.selectedGeneration.name}
+          </div>
+        </div>
+        <MembersSelectInput members={membersList} defaultValue={[]} />
         <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
           <BilingualPanel
             enTitle={t.english}

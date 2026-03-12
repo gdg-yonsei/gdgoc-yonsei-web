@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
+import AdminGenerationScopeBar from '@/app/components/admin/admin-generation-scope-bar'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import RefreshAllDataButton from '@/app/components/admin/refresh-all-data-button'
 import HomePageButton from '@/app/components/admin/home-page-button'
 import { Locale } from '@/i18n-config'
+import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 /**
  * 사이드 바 내비게이터
@@ -39,9 +41,11 @@ function SidebarNavigator({
 export default function Sidebar({
   navigations,
   locale,
+  resolvedScope,
 }: {
   navigations: NavigationItem[]
   locale: Locale
+  resolvedScope: ResolvedAdminGenerationScope
 }) {
   return (
     <div
@@ -53,6 +57,13 @@ export default function Sidebar({
       <div className={'flex w-full items-center gap-2'}>
         <GDGLogo className={'w-12'} />
         <div className={'text-2xl font-bold'}>GYMS</div>
+      </div>
+      <div className={'pt-4'}>
+        <AdminGenerationScopeBar
+          locale={locale}
+          resolvedScope={resolvedScope}
+          variant={'sidebar'}
+        />
       </div>
       {/*관리자 페이지 내비게이터 리스트*/}
       <div className={'flex w-full flex-col gap-2 pt-4'}>

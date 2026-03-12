@@ -9,6 +9,12 @@ const mockForbidden = vi.fn(() => 'FORBIDDEN')
 const mockInsert = vi.fn()
 const mockUpdate = vi.fn()
 const mockDelete = vi.fn()
+const mockResolveAdminGenerationScope = vi.fn()
+const mockQuery = {
+  parts: {
+    findFirst: vi.fn(),
+  },
+}
 
 const mockUpdateWhere = vi.fn()
 const mockUpdateSet = vi.fn()
@@ -38,6 +44,10 @@ vi.mock('@/lib/server/services/cache-context', () => ({
   getSessionCacheContext: vi.fn(),
 }))
 
+vi.mock('@/lib/server/admin-generation-scope', () => ({
+  resolveAdminGenerationScope: mockResolveAdminGenerationScope,
+}))
+
 vi.mock('next/navigation', () => ({
   redirect: mockRedirect,
   forbidden: mockForbidden,
@@ -48,6 +58,7 @@ vi.mock('@/db', () => ({
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
+    query: mockQuery,
   },
 }))
 
@@ -67,6 +78,15 @@ describe('parts CRUD server actions', () => {
     mockHandlePermission.mockResolvedValue(true)
     mockGetGenerationNameById.mockResolvedValue({ name: '1st' })
     mockGetGenerationNameForPartId.mockResolvedValue('1st')
+    mockResolveAdminGenerationScope.mockResolvedValue({
+      scope: {
+        kind: 'generation',
+        generationId: 1,
+      },
+    })
+    mockQuery.parts.findFirst.mockResolvedValue({
+      generationsId: 2,
+    })
 
     mockUpdateWhere.mockResolvedValue(undefined)
     mockUpdateSet.mockReturnValue({ where: mockUpdateWhere })
@@ -158,6 +178,10 @@ describe('parts CRUD server actions', () => {
     const { updatePartAction } = await import(
       '@/app/(admin)/admin/parts/[partId]/edit/actions'
     )
+
+    mockQuery.parts.findFirst.mockResolvedValue({
+      generationsId: 2,
+    })
 
     const formData = createFormData({
       name: 'Cloud Updated',

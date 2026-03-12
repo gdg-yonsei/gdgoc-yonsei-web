@@ -8,6 +8,7 @@ import handlePermission from '@/lib/server/permission/handle-permission'
 
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Members',
@@ -34,6 +35,9 @@ export default async function MembersPage() {
     'put',
     'membersRole'
   )
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
 
   return (
     <AdminDefaultLayout className={'p-4'}>
@@ -58,7 +62,7 @@ export default async function MembersPage() {
           />
         }
       >
-        <MembersTable />
+        <MembersTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )

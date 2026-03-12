@@ -17,9 +17,12 @@ const FIXTURE_IDS = {
   pendingApproveUserId: 'e2e-pending-approve-user',
   pendingDeleteUserId: 'e2e-pending-delete-user',
   projectId: '00000000-0000-4000-8000-000000000001',
+  secondProjectId: '00000000-0000-4000-8000-000000000003',
   sessionId: '00000000-0000-4000-8000-000000000002',
+  secondSessionId: '00000000-0000-4000-8000-000000000004',
   sessionToken: 'e2e-admin-session-token',
   generationName: 'e2e-gen',
+  secondGenerationName: 'e2e-gen-2',
 }
 
 /**
@@ -57,12 +60,31 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     })
     .returning({ id: generations.id, name: generations.name })
 
+  const [secondGeneration] = await db
+    .insert(generations)
+    .values({
+      name: FIXTURE_IDS.secondGenerationName,
+      startDate: '2026-01-01',
+      endDate: '2026-12-31',
+    })
+    .returning({ id: generations.id, name: generations.name })
+
   const [part] = await db
     .insert(parts)
     .values({
       name: 'E2E Part',
       description: 'Part for deterministic Playwright tests',
       generationsId: generation.id,
+      displayOrder: 1,
+    })
+    .returning({ id: parts.id })
+
+  const [secondPart] = await db
+    .insert(parts)
+    .values({
+      name: 'E2E Part 2',
+      description: 'Second generation part for scope switching tests',
+      generationsId: secondGeneration.id,
       displayOrder: 1,
     })
     .returning({ id: parts.id })
@@ -133,6 +155,11 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
       userType: 'Core',
     },
     {
+      userId: FIXTURE_IDS.adminUserId,
+      partId: secondPart.id,
+      userType: 'Core',
+    },
+    {
       userId: FIXTURE_IDS.memberUserId,
       partId: part.id,
       userType: 'Primary',
@@ -153,6 +180,20 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     generationId: generation.id,
   })
 
+  await db.insert(projects).values({
+    id: FIXTURE_IDS.secondProjectId,
+    name: 'E2E Project 2',
+    nameKo: 'E2E 프로젝트 2',
+    description: 'Project in second generation for scope tests',
+    descriptionKo: '기수 스코프 테스트용 두 번째 기수 프로젝트',
+    content: '# E2E Project 2 Content',
+    contentKo: '# E2E 프로젝트 2 내용',
+    mainImage: '/project-default.png',
+    images: [],
+    authorId: FIXTURE_IDS.adminUserId,
+    generationId: secondGeneration.id,
+  })
+
   await db.insert(usersToProjects).values([
     {
       userId: FIXTURE_IDS.adminUserId,
@@ -161,6 +202,10 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     {
       userId: FIXTURE_IDS.memberUserId,
       projectId: FIXTURE_IDS.projectId,
+    },
+    {
+      userId: FIXTURE_IDS.adminUserId,
+      projectId: FIXTURE_IDS.secondProjectId,
     },
   ])
 
@@ -183,6 +228,25 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     endAt: new Date('2025-06-01T12:00:00.000Z'),
   })
 
+  await db.insert(sessions).values({
+    id: FIXTURE_IDS.secondSessionId,
+    name: 'E2E Session 2',
+    nameKo: 'E2E 세션 2',
+    description: 'Session in second generation for scope tests',
+    descriptionKo: '기수 스코프 테스트용 두 번째 기수 세션',
+    mainImage: '/session-default.png',
+    images: [],
+    authorId: FIXTURE_IDS.adminUserId,
+    partId: secondPart.id,
+    internalOpen: true,
+    publicOpen: true,
+    displayOnWebsite: true,
+    location: 'Room 202',
+    locationKo: '202호',
+    startAt: new Date('2026-06-01T10:00:00.000Z'),
+    endAt: new Date('2026-06-01T12:00:00.000Z'),
+  })
+
   await db.insert(userToSession).values({
     userId: FIXTURE_IDS.memberUserId,
     sessionId: FIXTURE_IDS.sessionId,
@@ -197,9 +261,14 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   return {
     generationId: generation.id,
     generationName: generation.name,
+    secondGenerationId: secondGeneration.id,
+    secondGenerationName: secondGeneration.name,
     partId: part.id,
+    secondPartId: secondPart.id,
     projectId: FIXTURE_IDS.projectId,
+    secondProjectId: FIXTURE_IDS.secondProjectId,
     sessionId: FIXTURE_IDS.sessionId,
+    secondSessionId: FIXTURE_IDS.secondSessionId,
     adminUserId: FIXTURE_IDS.adminUserId,
     memberUserId: FIXTURE_IDS.memberUserId,
     pendingApproveUserId: FIXTURE_IDS.pendingApproveUserId,

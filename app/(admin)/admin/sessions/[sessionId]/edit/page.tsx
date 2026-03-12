@@ -11,12 +11,15 @@ import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/ed
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
-import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { auth } from '@/auth'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
+import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 
 export const metadata: Metadata = {
   title: 'Edit Session',
@@ -39,7 +42,8 @@ export default async function EditSessionPage({
 }: {
   params: Promise<{ sessionId: string }>
 }) {
-  const t = getAdminMessages(await getAdminLocale())
+  const locale = await getAdminLocale()
+  const t = getAdminMessages(locale)
   const { sessionId } = await params
   const sessionData = await getSession(sessionId)
   if (!sessionData) {
@@ -51,12 +55,56 @@ export default async function EditSessionPage({
     sessionId
   )
 
-  // 기수 정보 가져오기
-  const generationData = await getParts()
-  const membersData = await getMembers()
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const actualGeneration = sessionData.part?.generation
+    ? {
+        id: sessionData.part.generation.id,
+        name: sessionData.part.generation.name,
+      }
+    : null
+  const generationData = actualGeneration
+    ? await getGeneration(actualGeneration.id)
+    : null
+  const membersData =
+    actualGeneration &&
+    (await getMembers({
+      kind: 'generation',
+      generationId: actualGeneration.id,
+    }))
+  const scopedParts =
+    generationData?.parts.map((part) => ({
+      id: part.id,
+      name: part.name,
+      generationName: generationData.name,
+      members: part.usersToParts.map((userToPart) => ({
+        id: userToPart.user.id,
+        name: userToPart.user.name,
+        firstName: userToPart.user.firstName,
+        lastName: userToPart.user.lastName,
+        firstNameKo: userToPart.user.firstNameKo,
+        lastNameKo: userToPart.user.lastNameKo,
+        isForeigner: userToPart.user.isForeigner,
+      })),
+    })) ?? []
 
   return (
     <AdminDefaultLayout>
+      {actualGeneration && (
+        <AdminGenerationScopeMismatchNotice
+          actualGeneration={actualGeneration}
+          canSwitch={
+            resolvedScope?.canAccessAll === true ||
+            resolvedScope?.options.some(
+              (option) => option.id === actualGeneration.id
+            ) === true
+          }
+          currentScope={resolvedScope?.scope ?? null}
+          locale={locale}
+        />
+      )}
       <AdminNavigationButton href={`/admin/sessions/${sessionId}`}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>
@@ -70,6 +118,10 @@ export default async function EditSessionPage({
         action={updateSessionActionWithSessionId}
         className={'member-data-grid w-full gap-4'}
       >
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>{actualGeneration?.name}</div>
+        </div>
         <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
           <BilingualPanel
             enTitle={t.english}
@@ -204,14 +256,14 @@ export default async function EditSessionPage({
           type={'datetime-local'}
         />
         <SessionPartParticipantsInput
-          generationData={generationData}
           defaultValue={{
             partId: sessionData.partId,
             selectedMembers: sessionData.userToSession.map(
               (user) => user.userId
             ),
           }}
-          membersData={membersData}
+          members={membersData ?? []}
+          parts={scopedParts}
         />
 
         <div

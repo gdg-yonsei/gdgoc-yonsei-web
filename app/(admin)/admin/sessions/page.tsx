@@ -13,6 +13,7 @@ import {
   getAdminMessages,
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Sessions',
@@ -40,6 +41,11 @@ export default async function SessionsPage() {
     'post',
     'sessions'
   )
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const canCreateInCurrentScope =
+    canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
     <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
@@ -63,7 +69,7 @@ export default async function SessionsPage() {
       </Suspense>
       <div className={'flex items-center gap-2 pb-2'}>
         <div className={'admin-title'}>{t.sessions}</div>
-        {canCreate && (
+        {canCreateInCurrentScope && (
           <Link
             href={localizeAdminHref('/admin/sessions/create', locale)}
             className={
@@ -74,6 +80,11 @@ export default async function SessionsPage() {
             <p>{t.create}</p>
           </Link>
         )}
+        {canCreate && !canCreateInCurrentScope && (
+          <div className={'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
+        )}
       </div>
       <Suspense
         fallback={
@@ -82,7 +93,7 @@ export default async function SessionsPage() {
           />
         }
       >
-        <SessionsTable />
+        <SessionsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )
