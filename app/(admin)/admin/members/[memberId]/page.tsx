@@ -12,6 +12,8 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { Metadata } from 'next'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -29,7 +31,7 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ memberId: string }>
-}) {
+}): Promise<Metadata> {
   const { memberId } = await params
 
   // Member 정보 가져오기
@@ -60,11 +62,18 @@ export default async function MemberPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { memberId } = await params
+  const currentSession = await auth()
+  const resolvedScope = currentSession?.user?.id
+    ? await resolveAdminGenerationScope(currentSession.user.id)
+    : null
 
   // Member 정보 가져오기
-  const memberData = await getMember(memberId)
-  // 사용자 로그인 정보 가져오기
-  const session = await auth()
+  const memberData = await getMember(
+    memberId,
+    resolvedScope?.scope?.kind === 'generation'
+      ? resolvedScope.scope.generationId
+      : undefined
+  )
 
   return (
     <AdminDefaultLayout>
@@ -83,7 +92,7 @@ export default async function MemberPage({
         </div>
 
         <DataEditLink
-          session={session}
+          session={currentSession}
           dataOwnerId={memberId}
           dataType={'members'}
           href={localizeAdminHref(`/admin/members/${memberId}/edit`, locale)}
@@ -107,11 +116,15 @@ export default async function MemberPage({
               <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
                 <div className={'member-data-box'}>
                   <div className={'member-data-title'}>{t.firstNameEn}</div>
-                  <div className={'member-data-content'}>{memberData.firstName}</div>
+                  <div className={'member-data-content'}>
+                    {memberData.firstName}
+                  </div>
                 </div>
                 <div className={'member-data-box'}>
                   <div className={'member-data-title'}>{t.lastNameEn}</div>
-                  <div className={'member-data-content'}>{memberData.lastName}</div>
+                  <div className={'member-data-content'}>
+                    {memberData.lastName}
+                  </div>
                 </div>
               </div>
             }
@@ -119,11 +132,15 @@ export default async function MemberPage({
               <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
                 <div className={'member-data-box'}>
                   <div className={'member-data-title'}>{t.firstNameKo}</div>
-                  <div className={'member-data-content'}>{memberData.firstNameKo}</div>
+                  <div className={'member-data-content'}>
+                    {memberData.firstNameKo}
+                  </div>
                 </div>
                 <div className={'member-data-box'}>
                   <div className={'member-data-title'}>{t.lastNameKo}</div>
-                  <div className={'member-data-content'}>{memberData.lastNameKo}</div>
+                  <div className={'member-data-content'}>
+                    {memberData.lastNameKo}
+                  </div>
                 </div>
               </div>
             }
@@ -136,6 +153,10 @@ export default async function MemberPage({
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.role}</div>
           <div className={'member-data-content'}>{memberData.role}</div>
+        </div>
+        <div className={'member-data-box'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>{memberData.generation}</div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.part}</div>

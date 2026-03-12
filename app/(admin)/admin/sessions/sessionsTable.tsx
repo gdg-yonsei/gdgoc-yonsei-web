@@ -1,5 +1,9 @@
-import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
+import {
+  getSessions,
+  type AdminSessionListItem,
+} from '@/lib/server/fetcher/admin/get-sessions'
 import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
+import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
@@ -14,26 +18,62 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default async function SessionsTable() {
+function groupSessionsByGeneration(sessionList: AdminSessionListItem[]) {
+  return Object.values(
+    sessionList.reduce<Record<string, { generationName: string; sessions: AdminSessionListItem[] }>>(
+      (groups, session) => {
+        const key = String(session.generationId ?? 'none')
+        if (!groups[key]) {
+          groups[key] = {
+            generationName: session.generationName ?? 'Unknown',
+            sessions: [],
+          }
+        }
+        groups[key].sessions.push(session)
+        return groups
+      },
+      {}
+    )
+  )
+}
+
+export default async function SessionsTable({
+  scope,
+}: {
+  scope: AdminGenerationScope | null
+}) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const sessionsData = await getSessions()
+  const sessionsData = await getSessions(scope)
+
+  if (sessionsData.length === 0) {
+    return (
+      <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+        <div className={'font-semibold'}>{t.noScopedResults}</div>
+        <div className={'pt-1 text-sm text-neutral-500'}>
+          {t.noScopedResultsHint}
+        </div>
+      </div>
+    )
+  }
+
+  const groupedSessions = groupSessionsByGeneration(sessionsData)
 
   return (
     <div className={'flex w-full flex-col gap-2'}>
-      {sessionsData?.map((generation) => (
-        <div key={generation.id}>
-          <div
-            className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
-          >
-            {t.generation}: {generation.name}
-          </div>
+      {groupedSessions.map((group) => (
+        <div key={group.generationName}>
+          {scope?.kind === 'all' && (
+            <div
+              className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
+            >
+              {t.generation}: {group.generationName}
+            </div>
+          )}
           <div className={'member-data-grid w-full gap-2 pt-2'}>
-            {generation?.parts?.map((part) =>
-              part.sessions.map((session) => (
-                <SessionCard session={session} key={session.id} locale={locale} />
-              ))
-            )}
+            {group.sessions.map((session) => (
+              <SessionCard session={session} key={session.id} locale={locale} />
+            ))}
           </div>
         </div>
       ))}

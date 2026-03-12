@@ -10,13 +10,14 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataImageInput from '@/app/components/admin/data-image-input'
 import DataMultipleImageInput from '@/app/components/admin/data-multiple-image-input'
-import DataSelectInput from '@/app/components/admin/data-select-input'
-import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
-import { getMembersWithGeneration } from '@/lib/server/fetcher/admin/get-members-with-generation'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
+import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { auth } from '@/auth'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 
 export const metadata: Metadata = {
   title: 'Edit Project',
@@ -40,6 +41,7 @@ export default async function EditProjectPage({
   params: Promise<{ projectId: string }>
 }) {
   const t = getAdminMessages(await getAdminLocale())
+  const locale = await getAdminLocale()
   const { projectId } = await params
   const projectData = await getProject(projectId)
   if (!projectData) {
@@ -51,18 +53,38 @@ export default async function EditProjectPage({
     projectId
   )
 
-  const membersList = await getMembersWithGeneration()
-
-  // 기수 정보 가져오기
-  const generations = await getGenerations()
-  // 기수 선택용 리스트
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const actualGeneration = projectData.generation
+    ? {
+        id: projectData.generation.id,
+        name: projectData.generation.name,
+      }
+    : null
+  const membersList =
+    actualGeneration &&
+    (await getMembers({
+      kind: 'generation',
+      generationId: actualGeneration.id,
+    }))
 
   return (
     <AdminDefaultLayout>
+      {actualGeneration && (
+        <AdminGenerationScopeMismatchNotice
+          actualGeneration={actualGeneration}
+          canSwitch={
+            resolvedScope?.canAccessAll === true ||
+            resolvedScope?.options.some(
+              (option) => option.id === actualGeneration.id
+            ) === true
+          }
+          currentScope={resolvedScope?.scope ?? null}
+          locale={locale}
+        />
+      )}
       <AdminNavigationButton href={`/admin/projects/${projectId}`}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>
@@ -76,6 +98,12 @@ export default async function EditProjectPage({
         action={updateProjectActionWithProjectId}
         className={'member-data-grid w-full gap-4'}
       >
+        <input
+          hidden={true}
+          name={'generationId'}
+          readOnly={true}
+          value={String(actualGeneration?.id ?? projectData.generationId)}
+        />
         <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
           <BilingualPanel
             enTitle={t.english}
@@ -128,15 +156,13 @@ export default async function EditProjectPage({
             }
           />
         </div>
-        <DataSelectInput
-          title={t.generation}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={String(projectData.generationId)}
-        />
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>{actualGeneration?.name}</div>
+        </div>
         <MembersSelectInput
-          membersList={membersList}
           defaultValue={projectData.usersToProjects.map((user) => user.userId)}
+          members={membersList ?? []}
         />
         <div
           className={

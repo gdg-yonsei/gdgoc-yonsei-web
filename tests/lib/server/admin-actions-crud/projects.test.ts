@@ -19,6 +19,7 @@ const mockDeleteWhere = vi.fn()
 const mockSelectLimit = vi.fn()
 const mockSelectWhere = vi.fn()
 const mockSelectFrom = vi.fn()
+const mockResolveAdminGenerationScope = vi.fn()
 
 const mockQuery = {
   projects: {
@@ -50,6 +51,10 @@ vi.mock('@/lib/server/services/cache-context', () => ({
   getProjectCacheContext: mockGetProjectCacheContext,
   getGenerationNameForPartId: vi.fn(),
   getSessionCacheContext: vi.fn(),
+}))
+
+vi.mock('@/lib/server/admin-generation-scope', () => ({
+  resolveAdminGenerationScope: mockResolveAdminGenerationScope,
 }))
 
 vi.mock('next/navigation', () => ({
@@ -109,6 +114,12 @@ describe('projects CRUD server actions', () => {
     mockGetProjectCacheContext.mockResolvedValue({
       projectId: 'project-ctx',
       generationName: 'seed-gen',
+    })
+    mockResolveAdminGenerationScope.mockResolvedValue({
+      scope: {
+        kind: 'generation',
+        generationId: 1,
+      },
     })
   })
 
@@ -232,6 +243,9 @@ describe('projects CRUD server actions', () => {
       },
     ])
     mockGetGenerationNameById.mockResolvedValue({ name: '3rd' })
+    mockQuery.projects.findFirst.mockResolvedValue({
+      generationId: 3,
+    })
 
     const usersToProjectsValues = vi.fn().mockResolvedValue(undefined)
     mockInsert.mockReturnValue({

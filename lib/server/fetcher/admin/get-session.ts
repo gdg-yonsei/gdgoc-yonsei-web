@@ -33,7 +33,11 @@ export async function getSession(sessionId: string) {
   const sessionData = await db.query.sessions.findFirst({
     where: eq(sessions.id, sessionId),
     with: {
-      part: true,
+      part: {
+        with: {
+          generation: true,
+        },
+      },
       userToSession: {
         with: {
           user: true,

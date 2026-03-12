@@ -1,4 +1,4 @@
-import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
+import { type AdminSessionListItem } from '@/lib/server/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -24,7 +24,8 @@ export default function SessionCard({
   session,
   locale,
 }: {
-  session: Awaited<ReturnType<typeof getSessions>>[0]['parts'][0]['sessions'][0]
+  session: Pick<AdminSessionListItem, 'id' | 'mainImage' | 'name' | 'startAt'> &
+    Partial<Pick<AdminSessionListItem, 'partName'>>
   locale: Locale
 }) {
   const t = getAdminMessages(locale)
@@ -47,6 +48,9 @@ export default function SessionCard({
       >
         <div>
           <div className={'text-xl font-semibold'}>{session.name}</div>
+          {session.partName && (
+            <div className={'text-sm text-neutral-600'}>{session.partName}</div>
+          )}
         </div>
         <div className={'flex flex-col text-sm'}>
           {session.startAt

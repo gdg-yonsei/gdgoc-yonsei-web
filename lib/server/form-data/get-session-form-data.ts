@@ -33,7 +33,6 @@ export default function getSessionFormData(formData: FormData): {
   descriptionKo: string | null
   mainImage: string | null
   contentImages: string[]
-  generationId: string | null
   startAt: Date | null
   endAt: Date | null
   location: string | null
@@ -68,8 +67,6 @@ export default function getSessionFormData(formData: FormData): {
 
   // Safely parse contentImages JSON string
   const contentImagesArray = parseStringArrayFromJson(formData.get('contentImages'))
-
-  const generationId = formData.get('generationId') as string | null
   const startAt = new Date(formData.get('startAt') as string)
   const endAt = new Date(formData.get('endAt') as string)
 
@@ -80,7 +77,6 @@ export default function getSessionFormData(formData: FormData): {
     descriptionKo,
     mainImage,
     contentImages: contentImagesArray,
-    generationId,
     location,
     locationKo,
     partId,

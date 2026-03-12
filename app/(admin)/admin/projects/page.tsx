@@ -11,6 +11,7 @@ import {
   getAdminMessages,
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: 'Projects',
@@ -38,12 +39,17 @@ export default async function ProjectsPage() {
     'post',
     'projects'
   )
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const canCreateInCurrentScope =
+    canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
     <AdminDefaultLayout className={'p-4'}>
       <div className={'flex items-center gap-2 pb-2'}>
         <div className={'admin-title'}>{t.projects}</div>
-        {canCreate && (
+        {canCreateInCurrentScope && (
           <Link
             href={localizeAdminHref('/admin/projects/create', locale)}
             className={
@@ -54,6 +60,11 @@ export default async function ProjectsPage() {
             <p>{t.create}</p>
           </Link>
         )}
+        {canCreate && !canCreateInCurrentScope && (
+          <div className={'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
+        )}
       </div>
       <Suspense
         fallback={
@@ -62,7 +73,7 @@ export default async function ProjectsPage() {
           />
         }
       >
-        <ProjectsTable />
+        <ProjectsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )

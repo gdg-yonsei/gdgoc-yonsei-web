@@ -6,13 +6,15 @@ import DataInput from '@/app/components/admin/data-input'
 import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
-import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { auth } from '@/auth'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -32,9 +34,46 @@ export const metadata: Metadata = {
  */
 export default async function CreateSessionPage() {
   const t = getAdminMessages(await getAdminLocale())
-  const generationData = await getParts()
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
 
-  const membersData = await getMembers()
+  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+    return (
+      <AdminDefaultLayout>
+        <AdminNavigationButton href={'/admin/sessions'}>
+          <ChevronLeftIcon className={'size-8'} />
+          <p className={'text-lg'}>{t.sessions}</p>
+        </AdminNavigationButton>
+        <div className={'admin-title'}>
+          {t.create} {t.session}
+        </div>
+        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+        </div>
+      </AdminDefaultLayout>
+    )
+  }
+
+  const generationData = await getGeneration(resolvedScope.selectedGeneration.id)
+  const membersData = await getMembers(resolvedScope.scope)
+
+  const scopedParts =
+    generationData?.parts.map((part) => ({
+      id: part.id,
+      name: part.name,
+      generationName: generationData.name,
+      members: part.usersToParts.map((userToPart) => ({
+        id: userToPart.user.id,
+        name: userToPart.user.name,
+        firstName: userToPart.user.firstName,
+        lastName: userToPart.user.lastName,
+        firstNameKo: userToPart.user.firstNameKo,
+        lastNameKo: userToPart.user.lastNameKo,
+        isForeigner: userToPart.user.isForeigner,
+      })),
+    })) ?? []
 
   return (
     <AdminDefaultLayout>
@@ -49,6 +88,12 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>
+            {resolvedScope.selectedGeneration.name}
+          </div>
+        </div>
         <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
           <BilingualPanel
             enTitle={t.english}
@@ -193,8 +238,8 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <SessionPartParticipantsInput
-          generationData={generationData}
-          membersData={membersData}
+          members={membersData}
+          parts={scopedParts}
         />
         <SubmitButton />
       </DataForm>

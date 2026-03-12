@@ -20,6 +20,7 @@ const mockDeleteWhere = vi.fn()
 const mockSelectLimit = vi.fn()
 const mockSelectWhere = vi.fn()
 const mockSelectFrom = vi.fn()
+const mockResolveAdminGenerationScope = vi.fn()
 
 const mockQuery = {
   generations: {
@@ -57,6 +58,10 @@ vi.mock('@/lib/server/services/cache-context', () => ({
   getSessionCacheContext: mockGetSessionCacheContext,
   getProjectCacheContext: vi.fn(),
   getGenerationNameById: vi.fn(),
+}))
+
+vi.mock('@/lib/server/admin-generation-scope', () => ({
+  resolveAdminGenerationScope: mockResolveAdminGenerationScope,
 }))
 
 vi.mock('@/lib/server/env', () => ({
@@ -145,6 +150,12 @@ describe('sessions CRUD server actions', () => {
     mockGetSessionCacheContext.mockResolvedValue({
       sessionId: 'session-ctx',
       generationName: 'seed-gen',
+    })
+    mockResolveAdminGenerationScope.mockResolvedValue({
+      scope: {
+        kind: 'generation',
+        generationId: 1,
+      },
     })
   })
 
@@ -260,6 +271,12 @@ describe('sessions CRUD server actions', () => {
     const participantValues = vi.fn().mockResolvedValue(undefined)
     mockInsert.mockReturnValue({
       values: participantValues,
+    })
+    mockQuery.sessions.findFirst.mockResolvedValue({
+      id: '00000000-0000-4000-8000-000000000444',
+      part: {
+        generationsId: 1,
+      },
     })
 
     const { updateSessionAction } = await import(

@@ -3,77 +3,59 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 
-const membersWithGenerationFixture = [
+const memberOptionsFixture = [
   {
-    id: 1,
-    name: '11th',
-    parts: [
-      {
-        id: 101,
-        name: 'Frontend',
-        usersToParts: [
-          {
-            user: {
-              id: 'member-1',
-              name: 'alice',
-              firstNameKo: '앨리스',
-              lastNameKo: '김',
-              isForeigner: false,
-            },
-          },
-          {
-            user: {
-              id: 'member-2',
-              name: 'bob',
-              firstNameKo: '밥',
-              lastNameKo: '박',
-              isForeigner: false,
-            },
-          },
-        ],
-      },
-    ],
+    id: 'member-1',
+    name: 'alice',
+    firstName: 'Alice',
+    lastName: 'Kim',
+    firstNameKo: '앨리스',
+    lastNameKo: '김',
+    isForeigner: false,
+    part: 'Frontend',
+  },
+  {
+    id: 'member-2',
+    name: 'bob',
+    firstName: 'Bob',
+    lastName: 'Park',
+    firstNameKo: '밥',
+    lastNameKo: '박',
+    isForeigner: false,
+    part: 'Backend',
   },
 ]
 
-const partGenerationFixture = [
+const scopedPartFixture = [
   {
-    id: 1,
-    name: '11th',
-    parts: [
+    id: 101,
+    name: 'Frontend',
+    generationName: '11th',
+    members: [
       {
-        id: 101,
-        name: 'Frontend',
-        usersToParts: [
-          {
-            user: {
-              id: 'member-1',
-              name: 'alice',
-              firstName: 'Alice',
-              lastName: 'Kim',
-              firstNameKo: '앨리스',
-              lastNameKo: '김',
-              isForeigner: false,
-            },
-          },
-        ],
+        id: 'member-1',
+        name: 'alice',
+        firstName: 'Alice',
+        lastName: 'Kim',
+        firstNameKo: '앨리스',
+        lastNameKo: '김',
+        isForeigner: false,
       },
+    ],
+  },
+  {
+    id: 102,
+    name: 'Backend',
+    generationName: '11th',
+    members: [
       {
-        id: 102,
-        name: 'Backend',
-        usersToParts: [
-          {
-            user: {
-              id: 'member-2',
-              name: 'bob',
-              firstName: 'Bob',
-              lastName: 'Park',
-              firstNameKo: '밥',
-              lastNameKo: '박',
-              isForeigner: false,
-            },
-          },
-        ],
+        id: 'member-2',
+        name: 'bob',
+        firstName: 'Bob',
+        lastName: 'Park',
+        firstNameKo: '밥',
+        lastNameKo: '박',
+        isForeigner: false,
       },
     ],
   },
@@ -108,12 +90,11 @@ describe('admin selection components', () => {
   it('opens generation list and toggles participants in MembersSelectInput', async () => {
     const { container } = render(
       <MembersSelectInput
-        membersList={membersWithGenerationFixture as never}
+        members={memberOptionsFixture as never}
         defaultValue={['member-1']}
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open' }))
     fireEvent.click(screen.getByRole('button', { name: /김앨리스/i }))
 
     const hiddenInput = container.querySelector(
@@ -133,13 +114,13 @@ describe('admin selection components', () => {
   it('keeps part and participant hidden fields in sync in SessionPartParticipantsInput', async () => {
     const { container } = render(
       <SessionPartParticipantsInput
-        generationData={partGenerationFixture as never}
-        membersData={membersFixture as never}
+        parts={scopedPartFixture as never}
+        members={membersFixture as never}
         defaultValue={{ partId: 101, selectedMembers: ['member-1'] }}
       />
     )
 
-    fireEvent.click(screen.getAllByRole('button', { name: /11th Backend/i })[0])
+    fireEvent.click(screen.getByRole('button', { name: /Backend 11th/i }))
 
     const partIdInput = container.querySelector(
       'input[name="partId"]'

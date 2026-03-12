@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { setAdminGenerationScope } from './admin-crud/helpers'
 import { readSeededData } from './helpers/read-seeded-data'
 import { ADMIN_STORAGE_STATE } from './setup/constants'
 
@@ -94,5 +95,48 @@ test.describe('authenticated admin routes', () => {
         await expect(page.locator('body')).toBeVisible()
       })
     }
+  })
+
+  test('generation scope filters admin lists and persists across pages', async ({
+    page,
+  }) => {
+    await page.goto('/admin/parts', { waitUntil: 'domcontentloaded' })
+
+    await expect(
+      page.locator(`a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`a[href$="/admin/parts/${seededData.partId.toString()}"]`)
+    ).toHaveCount(0)
+
+    await setAdminGenerationScope(page, seededData.generationName)
+
+    await expect(
+      page.locator(`a[href$="/admin/parts/${seededData.partId.toString()}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`)
+    ).toHaveCount(0)
+
+    await page.goto('/admin/projects', { waitUntil: 'domcontentloaded' })
+    await expect(
+      page.locator(`a[href$="/admin/projects/${seededData.projectId}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`a[href$="/admin/projects/${seededData.secondProjectId}"]`)
+    ).toHaveCount(0)
+
+    await page.goto('/admin/sessions', { waitUntil: 'domcontentloaded' })
+    await expect(
+      page.locator(`a[href$="/admin/sessions/${seededData.sessionId}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`a[href$="/admin/sessions/${seededData.secondSessionId}"]`)
+    ).toHaveCount(0)
+    await expect(
+      page.locator(
+        `a[href$="/admin/sessions/${seededData.secondSessionId}/register"]`
+      )
+    ).toBeVisible()
   })
 })

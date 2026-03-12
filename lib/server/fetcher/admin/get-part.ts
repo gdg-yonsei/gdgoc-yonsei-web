@@ -25,6 +25,7 @@ export async function getPart(partId: number) {
   return db.query.parts.findFirst({
     where: eq(parts.id, partId),
     with: {
+      generation: true,
       usersToParts: {
         with: {
           user: true, // Include the full user object for each member

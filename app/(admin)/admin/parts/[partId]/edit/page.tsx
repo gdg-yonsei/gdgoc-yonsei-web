@@ -8,13 +8,16 @@ import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import { updatePartAction } from '@/app/(admin)/admin/parts/[partId]/edit/actions'
 import DataTextarea from '@/app/components/admin/data-textarea'
 import DataForm from '@/app/components/data-form'
-import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
-import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
 import formatUserName from '@/lib/format-user-name'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import { auth } from '@/auth'
+import {
+  resolveAdminGenerationScope,
+} from '@/lib/server/admin-generation-scope'
+import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 
 export const metadata: Metadata = {
   title: 'Edit Part',
@@ -62,17 +65,38 @@ export default async function EditPartPage({
 
   // Part 정보 업데이트 Action
   const updatePartActionWithPartId = updatePartAction.bind(null, partId)
-
-  const generations = await getGenerations()
-  const generationList = generations.map((generation) => ({
-    name: generation.name,
-    value: String(generation.id),
-  }))
-
-  const membersData = await getMembers()
+  const session = await auth()
+  const resolvedScope = session?.user?.id
+    ? await resolveAdminGenerationScope(session.user.id)
+    : null
+  const actualGeneration = partData.generation
+    ? {
+        id: partData.generation.id,
+        name: partData.generation.name,
+      }
+    : null
+  const membersData =
+    actualGeneration &&
+    (await getMembers({
+      kind: 'generation',
+      generationId: actualGeneration.id,
+    }))
 
   return (
     <AdminDefaultLayout>
+      {actualGeneration && (
+        <AdminGenerationScopeMismatchNotice
+          actualGeneration={actualGeneration}
+          canSwitch={
+            resolvedScope?.canAccessAll === true ||
+            resolvedScope?.options.some(
+              (option) => option.id === actualGeneration.id
+            ) === true
+          }
+          currentScope={resolvedScope?.scope ?? null}
+          locale={locale}
+        />
+      )}
       <AdminNavigationButton href={`/admin/parts/${partId}`}>
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>{partData.name}</p>
@@ -84,6 +108,12 @@ export default async function EditPartPage({
         action={updatePartActionWithPartId}
         className={'member-data-grid w-full gap-4'}
       >
+        <input
+          hidden={true}
+          name={'generationId'}
+          readOnly={true}
+          value={String(actualGeneration?.id ?? partData.generationsId ?? '')}
+        />
         <DataInput
           title={t.name}
           defaultValue={partData.name}
@@ -95,14 +125,12 @@ export default async function EditPartPage({
           name={'description'}
           placeholder={'Description'}
         />
-        <DataSelectInput
-          title={t.generation}
-          data={generationList}
-          name={'generationId'}
-          defaultValue={String(partData.generationsId)}
-        />
+        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+          <div className={'member-data-title'}>{t.generation}</div>
+          <div className={'member-data-content'}>{actualGeneration?.name}</div>
+        </div>
         <DataSelectMultipleInput
-          data={membersData.map((member) => ({
+          data={(membersData ?? []).map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,
@@ -117,7 +145,7 @@ export default async function EditPartPage({
           defaultValue={membersIdList}
         />
         <DataSelectMultipleInput
-          data={membersData.map((member) => ({
+          data={(membersData ?? []).map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,

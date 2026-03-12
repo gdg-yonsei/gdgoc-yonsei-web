@@ -60,6 +60,24 @@ const adminMessages = {
     locationEn: 'Location (English)',
     locationKo: 'Location (Korean)',
     generation: 'Generation',
+    generationScope: 'Generation Scope',
+    generationScopeHint:
+      'This filter applies to parts, members, sessions, and projects.',
+    currentGenerationScope: 'Current Scope',
+    allGenerations: 'All Generations',
+    noAccessibleGenerations:
+      'No generation is connected to your admin memberships yet.',
+    noScopedResults: 'No data exists in the selected generation yet.',
+    noScopedResultsHint:
+      'Switch to another generation or create new data in this scope.',
+    selectSpecificGenerationToCreate:
+      'Select a specific generation from the scope bar to create data.',
+    switchToItemGeneration: 'Switch to this generation',
+    itemGenerationMismatch:
+      'You are viewing data that belongs to a different generation than the current scope.',
+    itemGenerationMismatchHint:
+      'The form below follows the item generation to prevent accidental cross-generation edits.',
+    itemGeneration: 'Item Generation',
     activityPeriod: 'Activity Period',
     part: 'Part',
     participants: 'Participants',
@@ -192,6 +210,23 @@ const adminMessages = {
     locationEn: '영문 장소',
     locationKo: '한글 장소',
     generation: '기수',
+    generationScope: '기수 범위',
+    generationScopeHint:
+      '이 필터는 파트, 멤버, 세션, 프로젝트 목록과 폼에 적용됩니다.',
+    currentGenerationScope: '현재 범위',
+    allGenerations: '전체 기수',
+    noAccessibleGenerations:
+      '현재 관리자 소속으로 연결된 기수가 아직 없습니다.',
+    noScopedResults: '선택한 기수에는 아직 표시할 데이터가 없습니다.',
+    noScopedResultsHint: '다른 기수를 선택하거나 이 기수에 새 데이터를 생성하세요.',
+    selectSpecificGenerationToCreate:
+      '데이터를 생성하려면 상단 범위에서 특정 기수를 선택하세요.',
+    switchToItemGeneration: '이 기수로 전환',
+    itemGenerationMismatch:
+      '현재 범위와 다른 기수에 속한 데이터를 보고 있습니다.',
+    itemGenerationMismatchHint:
+      '잘못된 교차 기수 수정을 막기 위해 아래 폼은 항목의 실제 기수 기준으로 표시됩니다.',
+    itemGeneration: '항목 기수',
     activityPeriod: '활동 기간',
     part: '파트',
     participants: '참여자',

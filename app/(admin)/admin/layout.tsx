@@ -14,6 +14,7 @@ import {
   getAdminLocale,
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
   title: {
@@ -56,13 +57,21 @@ export default async function AdminLayout({
 
   // 사용자의 권한에 따라 네비게이션 목록을 가져옴
   const navigations = await getAdminNavigationItems(session?.user?.id, locale)
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
 
   return (
     <AdminI18nProvider locale={locale} messages={messages}>
       <AuthProvider>
-        <Header navigations={navigations} locale={locale} />
+        <Header
+          navigations={navigations}
+          locale={locale}
+        />
         <JotaiProvider>
-          <Sidebar navigations={navigations} locale={locale} />
+          <Sidebar
+            navigations={navigations}
+            locale={locale}
+            resolvedScope={resolvedScope}
+          />
           {children}
           <Modal />
         </JotaiProvider>
