@@ -116,7 +116,7 @@ export default function BookingForm() {
               .filter((r) => r.building.startsWith(selectedBuilding))
               .map((r) => (
                 <option key={r.id} value={r.name}>
-                  {r.name} (수용인원/면적: {r.capacity})
+                  {r.name} ({r.building}) [{r.capacity}]
                 </option>
               ))}
           </select>
