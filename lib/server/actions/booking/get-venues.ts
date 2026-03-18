@@ -37,8 +37,11 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
   }
 
   try {
-    // Use undici's dispatcher to ignore self-signed certs in Next.js 14+ fetch
-    const response = await fetch('https://auto-booker.moveto.kr/api/venues', {
+    const baseUrl = process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000'
+      : 'https://auto-booker.moveto.kr'
+
+    const response = await fetch(`${baseUrl}/api/venues`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,11 +49,6 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
       },
       // Cache the structure for an hour or upon dynamic validation
       next: { revalidate: 3600 },
-      // https://github.com/nodejs/undici/issues/2324#issuecomment-1887304193
-      // @ts-ignore
-      dispatcher: new (require('undici').Agent)({
-        connect: { rejectUnauthorized: false }
-      })
     })
 
     if (!response.ok) {

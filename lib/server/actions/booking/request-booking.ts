@@ -43,17 +43,17 @@ export async function requestBookingAction(formData: FormData) {
   }
 
   try {
-    const response = await fetch('https://auto-booker.moveto.kr/api/booking-request', {
+    const baseUrl = process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8000'
+      : 'https://auto-booker.moveto.kr'
+
+    const response = await fetch(`${baseUrl}/api/booking-request`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Session-Token': sessionToken,
       },
       body: JSON.stringify(payload),
-      // @ts-ignore
-      dispatcher: new (require('undici').Agent)({
-        connect: { rejectUnauthorized: false }
-      })
     })
 
     if (!response.ok) {
