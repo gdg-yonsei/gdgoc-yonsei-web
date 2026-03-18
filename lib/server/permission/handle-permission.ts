@@ -28,6 +28,8 @@ export type ResourceType =
   | 'adminPage'
   | 'generationsPage'
   | 'partsPage'
+  | 'bookingPage'
+  | 'booking'
 
 /**
  * Checks if a user has permission to perform a specific action on a resource.

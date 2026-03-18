@@ -48,6 +48,7 @@ export default function checkPermission(
         generationsPage: false,
         partsPage: false,
         performancePage: false,
+        bookingPage: false,
       },
       post: {
         members: userId === dataOwnerId, // Can only edit their own profile
@@ -56,6 +57,7 @@ export default function checkPermission(
         projects: true,
         sessions: false,
         parts: false,
+        booking: false,
       },
       put: {
         members: userId === dataOwnerId, // Can only edit their own profile
@@ -64,6 +66,7 @@ export default function checkPermission(
         projects: userId === dataOwnerId, // Can only edit their own projects
         sessions: false,
         parts: false,
+        booking: false,
       },
       delete: {
         members: userId === dataOwnerId, // Can only delete their own account
@@ -72,6 +75,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
     },
     // Permissions for core members
@@ -85,6 +89,7 @@ export default function checkPermission(
         generationsPage: false,
         partsPage: true,
         performancePage: true,
+        bookingPage: true,
       },
       post: {
         members: true,
@@ -93,6 +98,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
+        booking: true,
       },
       put: {
         members: true,
@@ -101,6 +107,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
+        booking: true,
       },
       delete: {
         members: userId === dataOwnerId, // Can only delete their own account
@@ -109,6 +116,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: false,
+        booking: true,
       },
     },
     // Permissions for lead members (full access)
@@ -122,6 +130,7 @@ export default function checkPermission(
         generationsPage: true,
         partsPage: true,
         performancePage: true,
+        bookingPage: true,
       },
       post: {
         members: true,
@@ -130,6 +139,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
+        booking: true,
       },
       put: {
         members: true,
@@ -138,6 +148,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
+        booking: true,
       },
       delete: {
         members: true,
@@ -146,6 +157,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
+        booking: true,
       },
     },
     // Permissions for alumni
@@ -159,6 +171,7 @@ export default function checkPermission(
         generationsPage: false,
         partsPage: false,
         performancePage: false,
+        bookingPage: false,
       },
       post: {
         members: userId === dataOwnerId, // Can only edit their own profile
@@ -167,6 +180,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
       put: {
         members: userId === dataOwnerId, // Can only edit their own profile
@@ -175,6 +189,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
       delete: {
         members: false,
@@ -183,6 +198,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
     },
     // Permissions for unverified users (no access)
@@ -195,6 +211,7 @@ export default function checkPermission(
         sessionsPage: false,
         generationsPage: false,
         partsPage: false,
+        bookingPage: false,
       },
       post: {
         members: false,
@@ -203,6 +220,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
       put: {
         members: false,
@@ -211,6 +229,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
       delete: {
         members: false,
@@ -219,6 +238,7 @@ export default function checkPermission(
         projects: false,
         sessions: false,
         parts: false,
+        booking: false,
       },
     },
   }
