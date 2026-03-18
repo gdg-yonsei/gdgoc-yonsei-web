@@ -152,6 +152,7 @@ const adminMessages = {
     roleMember: 'Member',
     roleCore: 'Core',
     roleAlumni: 'Alumni',
+    booking: 'Venue Booking',
   },
   ko: {
     confirm: '확인',
@@ -296,6 +297,7 @@ const adminMessages = {
     roleMember: '멤버',
     roleCore: '코어',
     roleAlumni: '알럼나이',
+    booking: '대관 예약',
   },
 } as const satisfies Record<Locale, Record<string, string>>
 

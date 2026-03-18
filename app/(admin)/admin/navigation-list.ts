@@ -32,6 +32,11 @@ export default async function getAdminNavigationItems(
       dataResource: 'adminPage',
     },
     {
+      name: `🏢 ${t.booking}`,
+      path: localizeAdminHref('/admin/booking', locale),
+      dataResource: 'bookingPage',
+    },
+    {
       name: `🗓️ ${t.generations}`,
       path: localizeAdminHref('/admin/generations', locale),
       dataResource: 'generationsPage',
