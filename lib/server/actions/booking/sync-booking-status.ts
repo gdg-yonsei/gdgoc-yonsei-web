@@ -1,36 +1,12 @@
 import 'server-only'
-import { cookies } from 'next/headers'
 import { eq, isNotNull } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import db from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
-import { bookingFetch } from './booking-fetch'
 
 export async function syncBookingStatus() {
-  const cookieStore = await cookies()
-  let sessionToken = cookieStore.get('__Secure-authjs.session-token')?.value
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('authjs.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('__Secure-next-auth.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('next-auth.session-token')?.value
-  }
-
-  if (!sessionToken) return
-
   try {
-    const response = await bookingFetch('/api/booking-requests', {
-      headers: { 'X-Session-Token': sessionToken },
-      cache: 'no-store',
-    })
-
-    if (!response.ok) return
-
-    const apiRequests: { id: number; status: string }[] = await response.json()
-
-    // Get local records that have an externalId
+    // Get local records that have an externalId (linked to auto-booker's booking_requests)
     const localRecords = await db
       .select({
         id: bookingRequests.id,
@@ -40,10 +16,23 @@ export async function syncBookingStatus() {
       .from(bookingRequests)
       .where(isNotNull(bookingRequests.externalId))
 
-    // Build a map of externalId -> apiStatus
+    if (localRecords.length === 0) return
+
+    // Query auto-booker's booking_requests table directly for status updates
+    const externalIds = localRecords
+      .map((r) => r.externalId)
+      .filter((id): id is string => id !== null)
+
+    if (externalIds.length === 0) return
+
+    const apiRecords = await db.execute(
+      sql`SELECT id, status FROM booking_requests WHERE id = ANY(${externalIds.map(Number)}::int[])`
+    )
+
     const apiStatusMap = new Map<string, string>()
-    for (const req of apiRequests) {
-      apiStatusMap.set(req.id.toString(), req.status)
+    const rows = apiRecords as unknown as { id: number; status: string }[]
+    for (const row of rows) {
+      apiStatusMap.set(row.id.toString(), row.status)
     }
 
     // Update local records where status differs

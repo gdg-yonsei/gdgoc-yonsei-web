@@ -1,11 +1,10 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { auth } from '@/auth'
 import db from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
 import { revalidatePath } from 'next/cache'
-import { bookingFetch } from './booking-fetch'
+import { sql } from 'drizzle-orm'
 
 export async function requestBookingAction(formData: FormData) {
   const roomName = formData.get('roomName') as string
@@ -18,82 +17,75 @@ export async function requestBookingAction(formData: FormData) {
   const attendees = Number(formData.get('attendees'))
   const contactPhone = formData.get('contactPhone') as string
 
-  // Fetch session token
-  const cookieStore = await cookies()
-  let sessionToken = cookieStore.get('__Secure-authjs.session-token')?.value
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('authjs.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('__Secure-next-auth.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('next-auth.session-token')?.value
-  }
-
-  if (!sessionToken) {
-    return { success: false, error: 'Unauthorized: Session session-token not found' }
-  }
-
   const session = await auth()
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized: User not authenticated' }
   }
 
-  const payload = {
-    room_name: roomName,
-    building: building,
-    campus: campus,
-    start_time: startTime + ':00',
-    end_time: endTime + ':00',
-    event_name: eventName,
-    event_type: eventType,
-    attendees: attendees,
-    contact_phone: contactPhone,
+  const startDate = new Date(startTime)
+  const endDate = new Date(endTime)
+
+  if (endDate <= startDate) {
+    return { success: false, error: '종료 시간은 시작 시간 이후여야 합니다' }
+  }
+
+  if (startDate <= new Date()) {
+    return { success: false, error: '과거 시간에는 예약할 수 없습니다' }
   }
 
   try {
-    const response = await bookingFetch('/api/booking-request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Session-Token': sessionToken,
-      },
-      body: JSON.stringify(payload),
-    })
+    // Insert into auto-booker's booking_requests table directly
+    // The auto-booker scheduler reads from this table to execute bookings
+    const result = await db.execute(sql`
+      INSERT INTO booking_requests (
+        user_id, user_email, room_name, building, campus,
+        start_time, end_time, event_name, event_type,
+        attendees, contact_phone, status, created_at
+      ) VALUES (
+        ${session.user.id},
+        ${session.user.email ?? 'unknown@gdgoc.yonsei.ac.kr'},
+        ${roomName},
+        ${building},
+        ${campus},
+        ${startDate.toISOString()},
+        ${endDate.toISOString()},
+        ${eventName},
+        ${eventType},
+        ${attendees},
+        ${contactPhone},
+        'PENDING',
+        NOW()
+      )
+      RETURNING id, status
+    `)
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null)
-      return { success: false, error: errorData?.detail || `API Request failed with status ${response.status}` }
-    }
+    const rows = result as unknown as { id: number; status: string }[]
+    const inserted = rows?.[0]
 
-    const data = await response.json()
-
-    // Save to local DB
+    // Also save to web_booking_requests for local tracking
     try {
       await db.insert(bookingRequests).values({
-        externalId: data.id?.toString() ?? null,
+        externalId: inserted?.id?.toString() ?? null,
         roomName,
         building,
         campus,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
+        startTime: startDate,
+        endTime: endDate,
         eventName,
         eventType,
         attendees,
         contactPhone,
-        status: data.status ?? 'PENDING',
+        status: 'PENDING',
         requestedById: session.user.id,
       })
     } catch (error: any) {
-      console.error('DB save failure:', error.message)
-      // DB save failure should not block the user — the API request already succeeded
+      console.error('web_booking_requests save failure:', error.message)
     }
 
     revalidatePath('/admin/booking')
-    return { success: true, data }
+    return { success: true, data: { id: inserted?.id, status: 'PENDING' } }
   } catch (error: any) {
-    console.error(error.message)
-    return { success: false, error: error.message || 'Network error occurred' }
+    console.error('Booking request failed:', error.message)
+    return { success: false, error: error.message || '예약 등록에 실패했습니다' }
   }
 }
