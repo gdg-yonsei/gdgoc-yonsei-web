@@ -1,5 +1,8 @@
-CREATE TYPE "public"."bookingStatus" AS ENUM('PENDING', 'SCHEDULED', 'SUCCESS', 'FAILED');--> statement-breakpoint
-CREATE TABLE "booking_requests" (
+DO $$ BEGIN
+  CREATE TYPE "public"."bookingStatus" AS ENUM('PENDING', 'SCHEDULED', 'SUCCESS', 'FAILED');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "booking_requests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"externalId" text,
 	"roomName" text NOT NULL,
@@ -17,4 +20,7 @@ CREATE TABLE "booking_requests" (
 	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "booking_requests" ADD CONSTRAINT "booking_requests_requestedById_user_id_fk" FOREIGN KEY ("requestedById") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE cascade;
+DO $$ BEGIN
+  ALTER TABLE "booking_requests" ADD CONSTRAINT "booking_requests_requestedById_user_id_fk" FOREIGN KEY ("requestedById") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE cascade;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;

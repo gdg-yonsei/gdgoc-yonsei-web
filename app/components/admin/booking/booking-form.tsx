@@ -46,14 +46,36 @@ export default function BookingForm() {
 
   const [startDate, setStartDate] = useState('')
   const [startTime, setStartTime] = useState('08:00')
-  const [endDate, setEndDate] = useState('')
-  const [endTime, setEndTime] = useState('08:00')
+  const [durationMinutes, setDurationMinutes] = useState(120)
+
+  function computeEnd() {
+    const [h, m] = startTime.split(':').map(Number)
+    const totalMin = h * 60 + m + durationMinutes
+    const endH = Math.floor(totalMin / 60)
+    const endM = totalMin % 60
+
+    // 자정을 넘기면 다음 날
+    let endDateStr = startDate
+    if (endH >= 24) {
+      if (startDate) {
+        const d = new Date(startDate)
+        d.setDate(d.getDate() + Math.floor(endH / 24))
+        endDateStr = d.toISOString().slice(0, 10)
+      }
+    }
+
+    const finalH = endH % 24
+    const endTimeStr = `${finalH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`
+    return { endDate: endDateStr, endTime: endTimeStr }
+  }
+
+  const { endDate, endTime } = computeEnd()
 
   async function handleSubmit(formData: FormData) {
     setError(null)
     setSuccess(false)
 
-    if (!startDate || !endDate) {
+    if (!startDate) {
       setError('날짜를 선택해주세요.')
       return
     }
@@ -159,10 +181,7 @@ export default function BookingForm() {
             type="date"
             className="member-data-input"
             value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value)
-              if (!endDate) setEndDate(e.target.value)
-            }}
+            onChange={(e) => setStartDate(e.target.value)}
             required
           />
         </div>
@@ -187,34 +206,39 @@ export default function BookingForm() {
 
         <div className="flex flex-col">
           <p className="px-1 text-sm font-semibold text-neutral-700">
-            종료 날짜
-          </p>
-          <input
-            type="date"
-            className="member-data-input"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            종료 시간
+            대관 시간
           </p>
           <select
             className="member-data-input"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(Number(e.target.value))}
             required
           >
-            {timeOptions.map((t) => (
-              <option key={`end-${t.value}`} value={t.value}>
-                {t.label}
-              </option>
-            ))}
+            {[30, 60, 90, 120, 150, 180, 210, 240, 300, 360].map((min) => {
+              const h = Math.floor(min / 60)
+              const m = min % 60
+              const label = h > 0
+                ? m > 0 ? `${h}시간 ${m}분` : `${h}시간`
+                : `${m}분`
+              return (
+                <option key={min} value={min}>
+                  {label}
+                </option>
+              )
+            })}
           </select>
         </div>
+
+        {startDate && (
+          <div className="flex flex-col gap-1 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">
+            <p>
+              <span className="font-medium">시작:</span> {startDate} {startTime}
+            </p>
+            <p>
+              <span className="font-medium">종료:</span> {endDate} {endTime}
+            </p>
+          </div>
+        )}
 
         <DataInput
           title="행사 이름 (예: GDGoC 정기 세션)"
