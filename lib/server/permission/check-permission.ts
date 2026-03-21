@@ -89,7 +89,7 @@ export default function checkPermission(
         generationsPage: false,
         partsPage: true,
         performancePage: true,
-        bookingPage: true,
+        bookingPage: false,
       },
       post: {
         members: true,
@@ -98,7 +98,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
-        booking: true,
+        booking: false,
       },
       put: {
         members: true,
@@ -107,7 +107,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: true,
-        booking: true,
+        booking: false,
       },
       delete: {
         members: userId === dataOwnerId, // Can only delete their own account
@@ -116,7 +116,7 @@ export default function checkPermission(
         projects: true,
         sessions: true,
         parts: false,
-        booking: true,
+        booking: false,
       },
     },
     // Permissions for lead members (full access)

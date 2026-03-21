@@ -16,6 +16,7 @@ import * as usersToProjectsSchema from './schema/users-to-projects'
 import * as verificationTokensSchema from './schema/verification-tokens'
 import * as externalParticipantsSchema from './schema/external-participants'
 import * as userToSessionSchema from './schema/user-to-session'
+import * as bookingRequestsSchema from './schema/booking-requests'
 import { getDatabaseEnv } from '@/lib/server/env-core'
 
 const databaseEnv = getDatabaseEnv()
@@ -37,6 +38,7 @@ const db = drizzle(databaseEnv.AUTH_DRIZZLE_URL, {
     ...verificationTokensSchema,
     ...externalParticipantsSchema,
     ...userToSessionSchema,
+    ...bookingRequestsSchema,
   },
 })
 

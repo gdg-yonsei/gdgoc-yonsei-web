@@ -1,6 +1,11 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { auth } from '@/auth'
+import db from '@/db'
+import { bookingRequests } from '@/db/schema/booking-requests'
+import { revalidatePath } from 'next/cache'
+import { bookingFetch } from './booking-fetch'
 
 export async function requestBookingAction(formData: FormData) {
   const roomName = formData.get('roomName') as string
@@ -30,6 +35,11 @@ export async function requestBookingAction(formData: FormData) {
     return { success: false, error: 'Unauthorized: Session session-token not found' }
   }
 
+  const session = await auth()
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized: User not authenticated' }
+  }
+
   const payload = {
     room_name: roomName,
     building: building,
@@ -43,11 +53,7 @@ export async function requestBookingAction(formData: FormData) {
   }
 
   try {
-    const baseUrl = process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000'
-      : 'https://auto-booker.moveto.kr'
-
-    const response = await fetch(`${baseUrl}/api/booking-request`, {
+    const response = await bookingFetch('/api/booking-request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,8 +68,32 @@ export async function requestBookingAction(formData: FormData) {
     }
 
     const data = await response.json()
+
+    // Save to local DB
+    try {
+      await db.insert(bookingRequests).values({
+        externalId: data.id?.toString() ?? null,
+        roomName,
+        building,
+        campus,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+        eventName,
+        eventType,
+        attendees,
+        contactPhone,
+        status: data.status ?? 'PENDING',
+        requestedById: session.user.id,
+      })
+    } catch (error: any) {
+      console.error('DB save failure:', error.message)
+      // DB save failure should not block the user — the API request already succeeded
+    }
+
+    revalidatePath('/admin/booking')
     return { success: true, data }
   } catch (error: any) {
+    console.error(error.message)
     return { success: false, error: error.message || 'Network error occurred' }
   }
 }
