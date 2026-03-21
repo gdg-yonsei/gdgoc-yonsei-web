@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import ProjectsTable from '@/app/(admin)/admin/projects/projects-table'

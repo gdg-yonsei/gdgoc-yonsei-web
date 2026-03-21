@@ -21,7 +21,7 @@ import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope
  * @param formData - part data
  */
 export async function createPartAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -53,7 +53,7 @@ export async function createPartAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation error' }
     }
   }
 
@@ -70,6 +70,11 @@ export async function createPartAction(
       })
       .returning({ id: parts.id })
 
+    const createdPart = createPart[0]
+    if (!createdPart) {
+      throw new Error('Failed to create part')
+    }
+
     const userToPartData: {
       userId: string
       partId: number
@@ -79,7 +84,7 @@ export async function createPartAction(
     for (const member of membersList) {
       userToPartData.push({
         userId: member,
-        partId: createPart[0].id,
+        partId: createdPart.id,
         userType: 'Primary',
       })
     }
@@ -87,7 +92,7 @@ export async function createPartAction(
     for (const doubleMember of doubleBoardMembersList) {
       userToPartData.push({
         userId: doubleMember,
-        partId: createPart[0].id,
+        partId: createdPart.id,
         userType: 'Secondary',
       })
     }

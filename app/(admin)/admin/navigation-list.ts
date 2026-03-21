@@ -69,6 +69,6 @@ export default async function getAdminNavigationItems(
   ]
 
   return adminNavigationItems.filter(
-    (item) => checkPermission(userId)[userRole].get[item.dataResource]
+    (item) => checkPermission(userId)[userRole]?.get?.[item.dataResource] ?? false
   )
 }

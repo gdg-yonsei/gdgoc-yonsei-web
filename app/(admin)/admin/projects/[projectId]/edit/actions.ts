@@ -30,7 +30,7 @@ import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
  */
 export async function updateProjectAction(
   projectId: string,
-  prevState: { error: string },
+  _prevState: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -73,7 +73,7 @@ export async function updateProjectAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation error' }
     }
   }
 
@@ -99,6 +99,10 @@ export async function updateProjectAction(
         .where(eq(projects.id, projectId))
         .limit(1)
     )[0]
+
+    if (!prevImages) {
+      return { error: 'Project not found' }
+    }
 
     const toDeleteImages = prevImages.images.filter(
       (prevImage) => !contentImages.includes(prevImage)

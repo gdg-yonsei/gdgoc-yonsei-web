@@ -20,7 +20,7 @@ import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope
  * @param formData - project data
  */
 export async function createProjectAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -73,7 +73,7 @@ export async function createProjectAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation failed' }
     }
   }
 
@@ -106,6 +106,10 @@ export async function createProjectAction(
         })
         .returning({ id: projects.id })
     )[0]
+
+    if (!createProject) {
+      return { error: 'Failed to create project' }
+    }
 
     if (participants.length > 0) {
       await db.insert(usersToProjects).values(

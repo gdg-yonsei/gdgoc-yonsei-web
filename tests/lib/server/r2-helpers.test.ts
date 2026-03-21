@@ -37,7 +37,7 @@ describe('R2 helper utilities', () => {
     expect(signedUrl).toBe('https://signed.example/upload')
     expect(mockGetSignedUrl).toHaveBeenCalledTimes(1)
 
-    const [, command, options] = mockGetSignedUrl.mock.calls[0]
+    const [, command, options] = mockGetSignedUrl.mock.calls[0]!
     expect((command as { input: Record<string, string> }).input).toEqual({
       Bucket: 'test-bucket',
       Key: 'images/file.png',
@@ -83,7 +83,7 @@ describe('R2 helper utilities', () => {
     expect(result).toBe(true)
     expect(mockR2Send).toHaveBeenCalledTimes(1)
 
-    const [deleteCommand] = mockR2Send.mock.calls[0]
+    const [deleteCommand] = mockR2Send.mock.calls[0]!
     expect((deleteCommand as { input: Record<string, unknown> }).input).toEqual({
       Bucket: 'test-bucket',
       Delete: {

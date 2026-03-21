@@ -51,43 +51,51 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     `)
   )
 
-  const [generation] = await db
-    .insert(generations)
-    .values({
-      name: FIXTURE_IDS.generationName,
-      startDate: '2025-01-01',
-      endDate: '2025-12-31',
-    })
-    .returning({ id: generations.id, name: generations.name })
+  const generation = (
+    await db
+      .insert(generations)
+      .values({
+        name: FIXTURE_IDS.generationName,
+        startDate: '2025-01-01',
+        endDate: '2025-12-31',
+      })
+      .returning({ id: generations.id, name: generations.name })
+  )[0]!
 
-  const [secondGeneration] = await db
-    .insert(generations)
-    .values({
-      name: FIXTURE_IDS.secondGenerationName,
-      startDate: '2026-01-01',
-      endDate: '2026-12-31',
-    })
-    .returning({ id: generations.id, name: generations.name })
+  const secondGeneration = (
+    await db
+      .insert(generations)
+      .values({
+        name: FIXTURE_IDS.secondGenerationName,
+        startDate: '2026-01-01',
+        endDate: '2026-12-31',
+      })
+      .returning({ id: generations.id, name: generations.name })
+  )[0]!
 
-  const [part] = await db
-    .insert(parts)
-    .values({
-      name: 'E2E Part',
-      description: 'Part for deterministic Playwright tests',
-      generationsId: generation.id,
-      displayOrder: 1,
-    })
-    .returning({ id: parts.id })
+  const part = (
+    await db
+      .insert(parts)
+      .values({
+        name: 'E2E Part',
+        description: 'Part for deterministic Playwright tests',
+        generationsId: generation.id,
+        displayOrder: 1,
+      })
+      .returning({ id: parts.id })
+  )[0]!
 
-  const [secondPart] = await db
-    .insert(parts)
-    .values({
-      name: 'E2E Part 2',
-      description: 'Second generation part for scope switching tests',
-      generationsId: secondGeneration.id,
-      displayOrder: 1,
-    })
-    .returning({ id: parts.id })
+  const secondPart = (
+    await db
+      .insert(parts)
+      .values({
+        name: 'E2E Part 2',
+        description: 'Second generation part for scope switching tests',
+        generationsId: secondGeneration.id,
+        displayOrder: 1,
+      })
+      .returning({ id: parts.id })
+  )[0]!
 
   await db.insert(users).values([
     {

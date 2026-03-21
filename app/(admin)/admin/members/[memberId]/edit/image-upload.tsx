@@ -50,8 +50,8 @@ export default function ImageUpload({
       const requestUploadUrl = await fetch('/api/admin/members/profile-image', {
         method: 'POST',
         body: JSON.stringify({
-          type: inputRef?.current?.files?.[0].type,
-          fileName: inputRef?.current?.files?.[0].name,
+          type: inputRef.current?.files?.[0]?.type,
+          fileName: inputRef.current?.files?.[0]?.name,
           memberId: memberId,
         } as PostBody),
       })

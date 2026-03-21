@@ -6,6 +6,12 @@ export default defineConfig([
   ...nextCoreWebVitals,
   ...nextTypeScript,
   {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+  {
     files: ['lib/**/*.{ts,tsx}', 'db/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [

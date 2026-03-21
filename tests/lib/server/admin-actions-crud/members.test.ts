@@ -165,7 +165,7 @@ describe('members CRUD server actions', () => {
 
     await updateMemberAction('member-2', { error: '' }, formData)
 
-    const setArg = mockUpdateSet.mock.calls[0][0]
+    const setArg = mockUpdateSet.mock.calls[0]![0]
     expect(setArg).not.toHaveProperty('role')
   })
 

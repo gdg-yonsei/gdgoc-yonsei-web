@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   if (!bodyValidationResult.success) {
     return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0].message },
+      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
       { status: 400 }
     )
   }
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   const responseData: { fileName: string; uploadUrl: string }[] = []
 
   for (let i = 0; i < uploadUrls.length; i++) {
-    responseData.push({ fileName: fileNames[i], uploadUrl: uploadUrls[i] })
+    responseData.push({ fileName: fileNames[i]!, uploadUrl: uploadUrls[i]! })
   }
 
   // Pre Signed URL 반환

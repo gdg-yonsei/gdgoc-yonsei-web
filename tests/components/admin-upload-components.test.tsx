@@ -140,7 +140,7 @@ describe('admin upload components', () => {
     const deleteButtons = screen
       .getAllByRole('button')
       .filter((button) => button.className.includes('bg-red-500'))
-    fireEvent.click(deleteButtons[0])
+    fireEvent.click(deleteButtons[0]!)
 
     await waitFor(() => {
       expect(JSON.parse(hiddenInput.value)).toEqual([

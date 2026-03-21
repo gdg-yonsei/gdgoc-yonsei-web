@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
+vi.mock('@/lib/hooks/use-reduced-motion', () => ({
+  useReducedMotion: () => false,
+}))
 import NavigationButton from '@/app/components/navigation-button'
 import GenerationButtonGroup from '@/app/components/generation-button-group'
 import LoadingSpinner from '@/app/components/loading-spinner'

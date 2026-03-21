@@ -24,7 +24,7 @@ import { logger } from '@/lib/server/logger'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function createGenerationAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   // 사용자 generation 을 추가할 권한이 있는지 확인
@@ -45,7 +45,11 @@ export async function createGenerationAction(
 
   if (!parsedGenerationDataResult.success) {
     console.log(parsedGenerationDataResult.error.issues)
-    return { error: parsedGenerationDataResult.error.issues[0].message }
+    return {
+      error:
+        parsedGenerationDataResult.error.issues[0]?.message ??
+        'Validation error',
+    }
   }
 
   const parsedGenerationData = parsedGenerationDataResult.data

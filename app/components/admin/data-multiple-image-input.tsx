@@ -100,7 +100,7 @@ export default function DataMultipleImageInput({
       const filesArr = Array.from(files)
       await Promise.all(
         filesArr.map((file, i) =>
-          fetch(uploadUrls[i].uploadUrl, {
+          fetch(uploadUrls[i]!.uploadUrl, {
             method: 'PUT',
             body: file,
           })

@@ -19,6 +19,9 @@ export default async function UserProfile() {
   }
 
   const userData = await getMember(session.user.id)
+  if (!userData) {
+    notFound()
+  }
 
   return (
     <div className={'member-data-grid gap-2 py-4'}>

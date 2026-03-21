@@ -55,7 +55,11 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
 
     const data = await response.json()
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Network error occurred while fetching venues' }
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Network error occurred while fetching venues'
+    return { success: false, error: message }
   }
 }

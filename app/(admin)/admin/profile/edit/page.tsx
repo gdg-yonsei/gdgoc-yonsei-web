@@ -4,7 +4,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
-import { forbidden } from 'next/navigation'
+import { forbidden, notFound } from 'next/navigation'
 import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataInput from '@/app/components/admin/data-input'
@@ -46,6 +46,9 @@ export default async function EditProfilePage() {
   }
   // Member 정보 가져오기
   const memberData = await getMember(memberId)
+  if (!memberData) {
+    notFound()
+  }
 
   // Member 정보 업데이트 Action
   const updateProfileActionWithMemberId = updateProfileAction.bind(

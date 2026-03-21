@@ -22,6 +22,10 @@ async function UserProfile() {
 
   const userData = await getMember(session.user.id)
 
+  if (!userData) {
+    return null
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

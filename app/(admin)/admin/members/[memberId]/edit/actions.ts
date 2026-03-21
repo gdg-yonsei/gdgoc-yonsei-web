@@ -22,7 +22,7 @@ import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context
  */
 export async function updateMemberAction(
   memberId: string,
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   // 사용자가 member 를 수정할 권한이 있는지 확인
@@ -75,7 +75,7 @@ export async function updateMemberAction(
     // 데이터 형식이 맞지 않을 경우 오류 반환
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation failed' }
     }
   }
   // member data 업데이트 쿼리

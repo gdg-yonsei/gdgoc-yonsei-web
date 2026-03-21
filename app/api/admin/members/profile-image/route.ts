@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   if (!bodyValidationResult.success) {
     return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0].message },
+      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
       { status: 400 }
     )
   }

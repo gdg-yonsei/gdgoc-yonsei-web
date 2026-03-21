@@ -28,7 +28,7 @@ import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export default async function acceptMemberAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   // 사용자를 추가할 추가할 권한이 있는지 확인
@@ -42,7 +42,9 @@ export default async function acceptMemberAction(
 
   if (!parsedDataResult.success) {
     console.log(parsedDataResult.error.issues)
-    return { error: parsedDataResult.error.issues[0].message }
+    return {
+      error: parsedDataResult.error.issues[0]?.message ?? 'Validation error',
+    }
   }
 
   const { userId, role } = parsedDataResult.data
@@ -88,7 +90,7 @@ export default async function acceptMemberAction(
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function deleteUserAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -101,7 +103,9 @@ export async function deleteUserAction(
 
   if (!parsedDataResult.success) {
     console.log(parsedDataResult.error.issues)
-    return { error: parsedDataResult.error.issues[0].message }
+    return {
+      error: parsedDataResult.error.issues[0]?.message ?? 'Validation error',
+    }
   }
 
   try {
