@@ -183,6 +183,13 @@
       "when": 1765598495668,
       "tag": "0025_slim_emma_frost",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1774082957826,
+      "tag": "0026_fresh_gamma_corps",
+      "breakpoints": true
     }
   ]
 }

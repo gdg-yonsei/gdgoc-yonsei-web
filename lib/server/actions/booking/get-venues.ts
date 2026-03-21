@@ -1,6 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { bookingFetch } from './booking-fetch'
 
 export type VenuesResponse = {
   success: boolean
@@ -37,11 +38,7 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
   }
 
   try {
-    const baseUrl = process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000'
-      : 'https://auto-booker.moveto.kr'
-
-    const response = await fetch(`${baseUrl}/api/venues`, {
+    const response = await bookingFetch('/api/venues', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

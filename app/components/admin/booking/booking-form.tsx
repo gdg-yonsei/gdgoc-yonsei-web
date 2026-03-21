@@ -20,6 +20,21 @@ const venuesData = venuesDataRaw as {
   }
 }
 
+function generateTimeOptions(): { label: string; value: string }[] {
+  const options: { label: string; value: string }[] = []
+  for (let hour = 8; hour <= 22; hour++) {
+    for (let min = 0; min < 60; min += 10) {
+      if (hour === 22 && min > 0) break
+      const h = hour.toString().padStart(2, '0')
+      const m = min.toString().padStart(2, '0')
+      options.push({ label: `${h}:${m}`, value: `${h}:${m}` })
+    }
+  }
+  return options
+}
+
+const timeOptions = generateTimeOptions()
+
 export default function BookingForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
@@ -29,10 +44,24 @@ export default function BookingForm() {
     venuesData['신촌캠퍼스']?.buildings[0] || ''
   )
 
+  const [startDate, setStartDate] = useState('')
+  const [startTime, setStartTime] = useState('08:00')
+  const [endDate, setEndDate] = useState('')
+  const [endTime, setEndTime] = useState('08:00')
+
   async function handleSubmit(formData: FormData) {
     setError(null)
     setSuccess(false)
+
+    if (!startDate || !endDate) {
+      setError('날짜를 선택해주세요.')
+      return
+    }
+
     formData.set('campus', selectedCampus)
+    formData.set('startTime', `${startDate}T${startTime}`)
+    formData.set('endTime', `${endDate}T${endTime}`)
+
     const result = await requestBookingAction(formData)
 
     if (result.success) {
@@ -121,22 +150,72 @@ export default function BookingForm() {
               ))}
           </select>
         </div>
-        <DataInput
-          title="시작 시간"
-          name="startTime"
-          placeholder=""
-          type="datetime-local"
-          defaultValue=""
-          required
-        />
-        <DataInput
-          title="종료 시간"
-          name="endTime"
-          placeholder=""
-          type="datetime-local"
-          defaultValue=""
-          required
-        />
+
+        <div className="flex flex-col">
+          <p className="px-1 text-sm font-semibold text-neutral-700">
+            시작 날짜
+          </p>
+          <input
+            type="date"
+            className="member-data-input"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value)
+              if (!endDate) setEndDate(e.target.value)
+            }}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <p className="px-1 text-sm font-semibold text-neutral-700">
+            시작 시간
+          </p>
+          <select
+            className="member-data-input"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            required
+          >
+            {timeOptions.map((t) => (
+              <option key={`start-${t.value}`} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col">
+          <p className="px-1 text-sm font-semibold text-neutral-700">
+            종료 날짜
+          </p>
+          <input
+            type="date"
+            className="member-data-input"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <p className="px-1 text-sm font-semibold text-neutral-700">
+            종료 시간
+          </p>
+          <select
+            className="member-data-input"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            required
+          >
+            {timeOptions.map((t) => (
+              <option key={`end-${t.value}`} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <DataInput
           title="행사 이름 (예: GDGoC 정기 세션)"
           name="eventName"
@@ -144,13 +223,17 @@ export default function BookingForm() {
           defaultValue=""
           required
         />
-        <DataInput
-          title="행사 유형 (예: 행사 및 회의)"
-          name="eventType"
-          placeholder="행사 및 회의"
-          defaultValue="행사 및 회의"
-          required
-        />
+
+        <div className="flex flex-col">
+          <p className="px-1 text-sm font-semibold text-neutral-700">
+            행사 유형
+          </p>
+          <select name="eventType" className="member-data-input" required>
+            <option value="행사 및 회의">행사 및 회의</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+
         <DataInput
           title="예상 참석 인원"
           name="attendees"
