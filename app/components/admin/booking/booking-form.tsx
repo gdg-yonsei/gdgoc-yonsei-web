@@ -106,6 +106,10 @@ export default function BookingForm() {
         </Link>
         에 접속해서 미리 확인해야 합니다.
       </p>
+      <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        오늘부터 2주 이내의 날짜는 대관 예약이 불가합니다. 예약 시스템이 2주
+        전에 자동으로 대관을 신청하므로, 최소 2주 뒤의 날짜를 선택해주세요.
+      </div>
 
       {error && (
         <div className="rounded-xl bg-red-100 p-4 text-sm text-red-700">
@@ -182,6 +186,11 @@ export default function BookingForm() {
             className="member-data-input"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
+            min={(() => {
+              const d = new Date()
+              d.setDate(d.getDate() + 15)
+              return d.toISOString().slice(0, 10)
+            })()}
             required
           />
         </div>
