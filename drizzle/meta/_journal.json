@@ -190,6 +190,13 @@
       "when": 1774082957826,
       "tag": "0026_fresh_gamma_corps",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1774170000000,
+      "tag": "0027_create_web_booking_requests",
+      "breakpoints": true
     }
   ]
 }

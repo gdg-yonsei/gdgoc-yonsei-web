@@ -16,7 +16,7 @@ export const bookingStatusEnum = pgEnum('bookingStatus', [
   'FAILED',
 ])
 
-export const bookingRequests = pgTable('booking_requests', {
+export const bookingRequests = pgTable('web_booking_requests', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   externalId: text('externalId'),
   roomName: text('roomName').notNull(),
