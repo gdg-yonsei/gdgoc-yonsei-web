@@ -13,6 +13,7 @@ import {
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 
 /**
@@ -36,9 +37,12 @@ export async function generateMetadata({
 
   // Member 정보 가져오기
   const memberData = await getMember(memberId)
+  if (!memberData) {
+    notFound()
+  }
 
   return {
-    title: `Member: ${memberData?.name}`,
+    title: `Member: ${memberData.name}`,
   }
 }
 
@@ -74,6 +78,9 @@ export default async function MemberPage({
       ? resolvedScope.scope.generationId
       : undefined
   )
+  if (!memberData) {
+    notFound()
+  }
 
   return (
     <AdminDefaultLayout>

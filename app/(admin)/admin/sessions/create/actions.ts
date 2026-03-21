@@ -27,7 +27,7 @@ import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope
  * @param formData - session data
  */
 export async function createSessionAction(
-  prev: { error: string },
+  _prev: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -91,7 +91,7 @@ export async function createSessionAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation error' }
     }
   }
 
@@ -144,15 +144,20 @@ export async function createSessionAction(
       })
       .returning({ id: sessions.id })
 
+    const createdSession = createSession[0]
+    if (!createdSession) {
+      throw new Error('Failed to create session')
+    }
+
     // 참가자 생성 쿼리
     await db.insert(userToSession).values(
       participantId.map((id) => ({
         userId: id,
-        sessionId: createSession[0].id,
+        sessionId: createdSession.id,
       }))
     )
 
-    sessionId = createSession[0].id
+    sessionId = createdSession.id
 
     invalidateSessionPublicCache({
       sessionId,
@@ -209,7 +214,7 @@ export async function createSessionAction(
     for (let i = 0; i < userEmailList.length; i++) {
       await resend.emails.send({
         from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-        to: userEmailList[i],
+        to: userEmailList[i] ?? '',
         subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
         react: NewSession({
           session: {

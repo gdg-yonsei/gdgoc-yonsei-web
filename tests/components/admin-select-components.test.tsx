@@ -134,7 +134,7 @@ describe('admin selection components', () => {
       expect(JSON.parse(participantInput.value)).toEqual(['member-2'])
     })
 
-    fireEvent.click(screen.getAllByRole('button', { name: /박밥/i })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: /박밥/i })[0]!)
     await waitFor(() => {
       expect(JSON.parse(participantInput.value)).toEqual([])
     })

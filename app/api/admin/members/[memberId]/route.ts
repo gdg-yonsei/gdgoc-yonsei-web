@@ -31,7 +31,7 @@ export async function PUT(
 
   if (!bodyValidationResult.success) {
     return privateJson(
-      { error: bodyValidationResult.error.issues[0].message },
+      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
       { status: 400 }
     )
   }

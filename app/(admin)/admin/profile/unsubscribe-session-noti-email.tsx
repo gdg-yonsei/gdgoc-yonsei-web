@@ -26,6 +26,9 @@ export default async function UnsubscribeSessionNotiEmailPage() {
   }
 
   const userData = await getMember(session.user.id)
+  if (!userData) {
+    notFound()
+  }
 
   return (
     <form

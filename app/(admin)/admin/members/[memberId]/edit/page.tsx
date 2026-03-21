@@ -6,7 +6,7 @@ import formatUserName from '@/lib/format-user-name'
 import { updateMemberAction } from '@/app/(admin)/admin/members/[memberId]/edit/actions'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
-import { forbidden } from 'next/navigation'
+import { forbidden, notFound } from 'next/navigation'
 import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/member-role-manager'
@@ -49,6 +49,9 @@ export default async function EditMemberPage({
   }
   // Member 정보 가져오기
   const memberData = await getMember(memberId)
+  if (!memberData) {
+    notFound()
+  }
   // Member 정보 업데이트 Action
   const updateMemberActionWithMemberId = updateMemberAction.bind(null, memberId)
 

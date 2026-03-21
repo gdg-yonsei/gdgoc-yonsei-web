@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 function extractSitemapPaths(xml: string): string[] {
   const paths = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)]
-    .map((match) => match[1].replaceAll('&amp;', '&').trim())
+    .map((match) => match[1]!.replaceAll('&amp;', '&').trim())
     .map((url) => {
       const parsedUrl = new URL(url)
       return `${parsedUrl.pathname}${parsedUrl.search}`

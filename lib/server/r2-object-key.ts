@@ -62,7 +62,7 @@ export function normalizeR2ImageObjectKey(
   }
 
   // Ignore URL query/hash fragments.
-  keyCandidate = keyCandidate.split(/[?#]/)[0]
+  keyCandidate = keyCandidate.split(/[?#]/)[0] ?? ''
 
   const publicImageBaseUrl = getBaseImageUrlWithoutTrailingSlash()
   if (/^https?:\/\//i.test(keyCandidate)) {

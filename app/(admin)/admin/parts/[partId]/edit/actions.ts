@@ -26,7 +26,7 @@ import {
  */
 export async function updatePartAction(
   partId: string,
-  prevState: { error: string },
+  _prevState: { error: string },
   formData: FormData
 ) {
   // 사용자가 part 를 수정할 권한이 있는지 확인
@@ -57,7 +57,7 @@ export async function updatePartAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation error' }
     }
   }
 

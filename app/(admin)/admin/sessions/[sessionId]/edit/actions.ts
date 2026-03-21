@@ -31,7 +31,7 @@ import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
  */
 export async function updateSessionAction(
   sessionId: string,
-  prevState: { error: string },
+  _prevState: { error: string },
   formData: FormData
 ) {
   const session = await auth()
@@ -88,7 +88,7 @@ export async function updateSessionAction(
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
       console.log(err.issues)
-      return { error: err.issues[0].message }
+      return { error: err.issues[0]?.message ?? 'Validation error' }
     }
   }
 
@@ -131,6 +131,10 @@ export async function updateSessionAction(
         .where(eq(sessions.id, sessionId))
         .limit(1)
     )[0]
+
+    if (!prevImages) {
+      return { error: 'Session not found' }
+    }
 
     const toDeleteImages = prevImages.images.filter(
       (prevImage) => !contentImages.includes(prevImage)

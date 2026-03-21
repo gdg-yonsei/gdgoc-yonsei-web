@@ -57,5 +57,8 @@ export default async function handlePermission(
   const userRole = await getUserRole(userId)
 
   // Determine permission based on the user's role, the action, and the resource.
-  return checkPermission(userId, dataOwnerId)[userRole][action][resource]
+  return (
+    checkPermission(userId, dataOwnerId)[userRole]?.[action]?.[resource] ??
+    false
+  )
 }

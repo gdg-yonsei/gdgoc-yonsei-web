@@ -168,7 +168,7 @@ describe('public queries', () => {
     ])
     expect(mockSessionsFindMany).toHaveBeenCalledTimes(1)
 
-    const query = mockSessionsFindMany.mock.calls[0][0]
+    const query = mockSessionsFindMany.mock.calls[0]![0]
     expect(query).toMatchObject({
       with: {
         part: {

@@ -20,7 +20,7 @@ import { logger } from '@/lib/server/logger'
  */
 export async function updateGenerationAction(
   generationId: string,
-  prevState: { error: string },
+  _prevState: { error: string },
   formData: FormData
 ) {
   // 사용자 권한 확인
@@ -48,7 +48,11 @@ export async function updateGenerationAction(
 
   if (!parsedGenerationDataResult.success) {
     console.log(parsedGenerationDataResult.error.issues)
-    return { error: parsedGenerationDataResult.error.issues[0].message }
+    return {
+      error:
+        parsedGenerationDataResult.error.issues[0]?.message ??
+        'Validation error',
+    }
   }
 
   const parsedGenerationData = parsedGenerationDataResult.data

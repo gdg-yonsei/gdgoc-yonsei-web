@@ -49,7 +49,7 @@ export default function BookingForm() {
   const [durationMinutes, setDurationMinutes] = useState(120)
 
   function computeEnd() {
-    const [h, m] = startTime.split(':').map(Number)
+    const [h, m] = startTime.split(':').map(Number) as [number, number]
     const totalMin = h * 60 + m + durationMinutes
     const endH = Math.floor(totalMin / 60)
     const endM = totalMin % 60
@@ -131,8 +131,8 @@ export default function BookingForm() {
             onChange={(e) => {
               const val = e.target.value
               setSelectedCampus(val)
-              if (venuesData && venuesData[val]?.buildings.length > 0) {
-                setSelectedBuilding(venuesData[val].buildings[0])
+              if (venuesData && venuesData[val]?.buildings && venuesData[val].buildings.length > 0) {
+                setSelectedBuilding(venuesData[val]!.buildings[0] ?? '')
               } else {
                 setSelectedBuilding('')
               }

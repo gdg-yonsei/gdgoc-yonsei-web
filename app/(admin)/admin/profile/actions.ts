@@ -32,6 +32,9 @@ export async function toggleSessionNotificationEmailAction(
   }
 
   const userData = await getMember(session.user.id)
+  if (!userData) {
+    return redirect(await getLocalizedAdminPath('/admin/profile'))
+  }
 
   try {
     await db

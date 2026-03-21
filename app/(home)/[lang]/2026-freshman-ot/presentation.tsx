@@ -1502,8 +1502,8 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
      * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
      */
     const handleTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0].clientX
-      startY = e.touches[0].clientY
+      startX = e.touches[0]?.clientX ?? 0
+      startY = e.touches[0]?.clientY ?? 0
     }
     /**
      * `handleTouchEnd` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -1518,8 +1518,8 @@ export default function FreshmanOTPresentation({ lang }: { lang: Locale }) {
      * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
      */
     const handleTouchEnd = (e: TouchEvent) => {
-      const dx = startX - e.changedTouches[0].clientX
-      const dy = startY - e.changedTouches[0].clientY
+      const dx = startX - (e.changedTouches[0]?.clientX ?? 0)
+      const dy = startY - (e.changedTouches[0]?.clientY ?? 0)
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
         if (dx > 0) next()
         else prev()
