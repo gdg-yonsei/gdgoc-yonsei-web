@@ -10,10 +10,7 @@ import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import { forbidden, redirect } from 'next/navigation'
 import Modal from '@/app/components/admin/modal'
 import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
-import {
-  getAdminLocale,
-  getAdminMessages,
-} from '@/lib/admin-i18n/server'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
@@ -62,10 +59,7 @@ export default async function AdminLayout({
   return (
     <AdminI18nProvider locale={locale} messages={messages}>
       <AuthProvider>
-        <Header
-          navigations={navigations}
-          locale={locale}
-        />
+        <Header navigations={navigations} locale={locale} />
         <JotaiProvider>
           <Sidebar
             navigations={navigations}

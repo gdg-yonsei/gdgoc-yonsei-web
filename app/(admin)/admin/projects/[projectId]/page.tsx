@@ -85,7 +85,10 @@ export default async function ProjectPage({
             session={session}
             dataOwnerId={projectData.authorId}
             dataType={'projects'}
-            href={localizeAdminHref(`/admin/projects/${projectId}/edit`, locale)}
+            href={localizeAdminHref(
+              `/admin/projects/${projectId}/edit`,
+              locale
+            )}
           />
           <DataDeleteButton
             session={session}
@@ -97,6 +100,7 @@ export default async function ProjectPage({
           <Link
             href={`/ko/project/${projectData.generation.name}/${projectId}`}
             target={'_blank'}
+            rel={'noreferrer noopener'}
             className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
           >
             {t.viewPublishedKo}
@@ -104,6 +108,7 @@ export default async function ProjectPage({
           <Link
             href={`/en/project/${projectData.generation.name}/${projectId}`}
             target={'_blank'}
+            rel={'noreferrer noopener'}
             className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
           >
             {t.viewPublishedEn}
@@ -130,7 +135,9 @@ export default async function ProjectPage({
             koContent={
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.nameKo}</div>
-                <div className={'member-data-content'}>{projectData.nameKo}</div>
+                <div className={'member-data-content'}>
+                  {projectData.nameKo}
+                </div>
               </div>
             }
           />

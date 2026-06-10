@@ -35,6 +35,7 @@ export default function Footer() {
             <Link
               href={'mailto:gdsc.yonsei.univ@gmail.com'}
               target={'_blank'}
+              rel={'noreferrer noopener'}
               className={'gap-2 md:flex md:items-center'}
             >
               <Mail className={'size-9'} />
@@ -43,6 +44,7 @@ export default function Footer() {
             <Link
               href={'https://www.linkedin.com/company/gdsc-yonsei/'}
               target={'_blank'}
+              rel={'noreferrer noopener'}
               className={'gap-2 md:flex md:items-center'}
             >
               <LinkedIn className={'size-9'} />
@@ -51,6 +53,7 @@ export default function Footer() {
             <Link
               href={'https://www.instagram.com/gdg.yonseiuniv/'}
               target={'_blank'}
+              rel={'noreferrer noopener'}
               className={'gap-2 md:flex md:items-center'}
             >
               <Instagram className={'size-9'} />

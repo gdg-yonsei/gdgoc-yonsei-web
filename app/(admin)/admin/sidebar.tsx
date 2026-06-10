@@ -48,11 +48,13 @@ export default async function Sidebar() {
         <div className={'text-2xl font-bold'}>GYMS</div>
       </div>
       <div className={'flex w-full flex-col gap-4 pt-4'}>
-        {(await getAdminNavigationItems(session?.user?.id, locale)).map((item, i) => (
-          <SidebarNavigator href={item.path} key={i}>
-            {item.name}
-          </SidebarNavigator>
-        ))}
+        {(await getAdminNavigationItems(session?.user?.id, locale)).map(
+          (item, i) => (
+            <SidebarNavigator href={item.path} key={i}>
+              {item.name}
+            </SidebarNavigator>
+          )
+        )}
       </div>
     </div>
   )

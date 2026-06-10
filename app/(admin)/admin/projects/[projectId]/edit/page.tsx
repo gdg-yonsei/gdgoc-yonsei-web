@@ -63,12 +63,10 @@ export default async function EditProjectPage({
         name: projectData.generation.name,
       }
     : null
-  const membersList =
-    actualGeneration &&
-    (await getMembers({
-      kind: 'generation',
-      generationId: actualGeneration.id,
-    }))
+  const membersList = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersList.map((m) => [m.id, m])).values()
+  )
 
   return (
     <AdminDefaultLayout>
@@ -156,13 +154,17 @@ export default async function EditProjectPage({
             }
           />
         </div>
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>{actualGeneration?.name}</div>
         </div>
         <MembersSelectInput
           defaultValue={projectData.usersToProjects.map((user) => user.userId)}
-          members={membersList ?? []}
+          members={uniqueMembers}
         />
         <div
           className={

@@ -14,9 +14,7 @@ import formatUserName from '@/lib/format-user-name'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { auth } from '@/auth'
-import {
-  resolveAdminGenerationScope,
-} from '@/lib/server/admin-generation-scope'
+import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 
 export const metadata: Metadata = {
@@ -75,12 +73,10 @@ export default async function EditPartPage({
         name: partData.generation.name,
       }
     : null
-  const membersData =
-    actualGeneration &&
-    (await getMembers({
-      kind: 'generation',
-      generationId: actualGeneration.id,
-    }))
+  const membersData = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersData.map((m) => [m.id, m])).values()
+  )
 
   return (
     <AdminDefaultLayout>
@@ -125,12 +121,16 @@ export default async function EditPartPage({
           name={'description'}
           placeholder={'Description'}
         />
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>{actualGeneration?.name}</div>
         </div>
         <DataSelectMultipleInput
-          data={(membersData ?? []).map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,
@@ -145,7 +145,7 @@ export default async function EditPartPage({
           defaultValue={membersIdList}
         />
         <DataSelectMultipleInput
-          data={(membersData ?? []).map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,

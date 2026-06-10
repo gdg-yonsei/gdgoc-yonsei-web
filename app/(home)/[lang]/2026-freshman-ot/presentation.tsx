@@ -634,7 +634,10 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                   Session
                 </h3>
                 <span className="bg-gdg-blue-100 text-gdg-blue-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {getLocalizedText(lang, { ko: '기술 세션', en: 'Tech Sessions' })}
+                  {getLocalizedText(lang, {
+                    ko: '기술 세션',
+                    en: 'Tech Sessions',
+                  })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
@@ -670,7 +673,10 @@ function ActivitiesSessionProjectSlide({ lang }: { lang: Locale }) {
                   Project
                 </h3>
                 <span className="bg-gdg-red-100 text-gdg-red-300 rounded-full px-3 py-0.5 text-sm font-semibold">
-                  {getLocalizedText(lang, { ko: '팀 프로젝트', en: 'Team Projects' })}
+                  {getLocalizedText(lang, {
+                    ko: '팀 프로젝트',
+                    en: 'Team Projects',
+                  })}
                 </span>
               </div>
               <div className="flex flex-col gap-2">

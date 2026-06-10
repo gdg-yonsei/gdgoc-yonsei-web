@@ -1,21 +1,19 @@
-import { Agent } from 'undici'
+export function getBookingApiBaseUrl(): URL {
+  const baseUrl = new URL(
+    process.env.AUTO_BOOKER_URL || 'https://auto-booker.moveto.kr'
+  )
 
-const dispatcher = new Agent({
-  connect: { rejectUnauthorized: false },
-})
+  if (process.env.NODE_ENV === 'production' && baseUrl.protocol !== 'https:') {
+    throw new Error('AUTO_BOOKER_URL must use https in production.')
+  }
 
-export function getBookingApiBaseUrl(): string {
-  return process.env.AUTO_BOOKER_URL || 'https://auto-booker.moveto.kr'
+  return baseUrl
 }
 
 export async function bookingFetch(
   path: string,
   init?: RequestInit
 ): Promise<Response> {
-  const url = `${getBookingApiBaseUrl()}${path}`
-  return fetch(url, {
-    ...init,
-    // @ts-expect-error -- undici dispatcher is not in the standard RequestInit type
-    dispatcher,
-  })
+  const url = new URL(path, getBookingApiBaseUrl())
+  return fetch(url, init)
 }

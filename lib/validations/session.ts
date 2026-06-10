@@ -7,7 +7,10 @@ export const sessionValidation = z
     name: z.string().trim().nonempty('Name is required'),
     nameKo: z.string().trim().nonempty('Name (Korean) is required'),
     description: z.string().trim().nonempty('Description is required'),
-    descriptionKo: z.string().trim().nonempty('Description (Korean) is required'),
+    descriptionKo: z
+      .string()
+      .trim()
+      .nonempty('Description (Korean) is required'),
     mainImage: z.string().nullable(),
     contentImages: z.array(z.string().trim().min(1, 'Image URL is required')),
     location: z.string().trim().nonempty('location is required'),

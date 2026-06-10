@@ -30,9 +30,10 @@ vi.mock('@/db', () => ({
 }))
 
 vi.mock('@/lib/server/cache', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/server/cache')>(
-    '@/lib/server/cache'
-  )
+  const actual =
+    await vi.importActual<typeof import('@/lib/server/cache')>(
+      '@/lib/server/cache'
+    )
 
   return {
     ...actual,
@@ -64,9 +65,8 @@ describe('public queries', () => {
     const mockFrom = vi.fn().mockReturnValue({ orderBy: mockOrderBy })
     mockSelect.mockReturnValue({ from: mockFrom })
 
-    const { getGenerationSummaries } = await import(
-      '@/lib/server/queries/public/generations'
-    )
+    const { getGenerationSummaries } =
+      await import('@/lib/server/queries/public/generations')
 
     const result = await getGenerationSummaries('ko')
 
@@ -85,9 +85,8 @@ describe('public queries', () => {
   it('returns latest generation with locale-scoped tag', async () => {
     mockGenerationsFindFirst.mockResolvedValue({ id: 3, name: '3rd' })
 
-    const { getLatestGeneration } = await import(
-      '@/lib/server/queries/public/generations'
-    )
+    const { getLatestGeneration } =
+      await import('@/lib/server/queries/public/generations')
 
     const result = await getLatestGeneration('en')
 
@@ -117,9 +116,8 @@ describe('public queries', () => {
 
   it('fetches project detail with contributor relation', async () => {
     mockProjectsFindFirst.mockResolvedValue({ id: 'project-1' })
-    const { getProjectById } = await import(
-      '@/lib/server/queries/public/projects'
-    )
+    const { getProjectById } =
+      await import('@/lib/server/queries/public/projects')
 
     const result = await getProjectById('project-1', 'en')
 
@@ -142,9 +140,8 @@ describe('public queries', () => {
 
   it('fetches project list for a generation', async () => {
     mockGenerationsFindFirst.mockResolvedValue({ name: '5th', projects: [] })
-    const { getProjectsByGeneration } = await import(
-      '@/lib/server/queries/public/projects'
-    )
+    const { getProjectsByGeneration } =
+      await import('@/lib/server/queries/public/projects')
 
     const result = await getProjectsByGeneration('5th', 'ko')
 
@@ -182,9 +179,8 @@ describe('public queries', () => {
 
   it('fetches a visible session detail with locale-scoped detail tag', async () => {
     mockSessionsFindFirst.mockResolvedValue({ id: 'session-1' })
-    const { getSessionById } = await import(
-      '@/lib/server/queries/public/sessions'
-    )
+    const { getSessionById } =
+      await import('@/lib/server/queries/public/sessions')
 
     const result = await getSessionById(
       'session-1',
@@ -203,9 +199,8 @@ describe('public queries', () => {
     const chain = createSelectChainWithOrderByResult([{ id: 'session-1' }])
     mockSelect.mockReturnValue(chain)
 
-    const { getPublishedSessionsByGeneration } = await import(
-      '@/lib/server/queries/public/sessions'
-    )
+    const { getPublishedSessionsByGeneration } =
+      await import('@/lib/server/queries/public/sessions')
 
     const result = await getPublishedSessionsByGeneration(
       '6th',
@@ -224,9 +219,8 @@ describe('public queries', () => {
 
   it('fetches members for a generation with locale-scoped tags', async () => {
     mockGenerationsFindFirst.mockResolvedValue({ name: '7th', parts: [] })
-    const { getMembersByGeneration } = await import(
-      '@/lib/server/queries/public/members'
-    )
+    const { getMembersByGeneration } =
+      await import('@/lib/server/queries/public/members')
 
     const result = await getMembersByGeneration('7th', 'en')
 

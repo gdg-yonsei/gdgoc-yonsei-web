@@ -6,7 +6,11 @@ import { auth } from '@/auth'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Generations',

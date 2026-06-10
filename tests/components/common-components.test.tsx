@@ -152,15 +152,29 @@ describe('common components', () => {
   it('renders footer links', () => {
     render(<Footer />)
 
-    expect(
-      screen.getByRole('link', { name: /gdsc\.yonsei\.univ@gmail\.com/i })
-    ).toHaveAttribute('href', 'mailto:gdsc.yonsei.univ@gmail.com')
-    expect(
-      screen.getByRole('link', { name: /go to LinkedIn/i })
-    ).toHaveAttribute('href', 'https://www.linkedin.com/company/gdsc-yonsei/')
-    expect(
-      screen.getByRole('link', { name: /@gdg\.yonseiuniv/i })
-    ).toHaveAttribute('href', 'https://www.instagram.com/gdg.yonseiuniv/')
+    const mailLink = screen.getByRole('link', {
+      name: /gdsc\.yonsei\.univ@gmail\.com/i,
+    })
+    const linkedInLink = screen.getByRole('link', { name: /go to LinkedIn/i })
+    const instagramLink = screen.getByRole('link', {
+      name: /@gdg\.yonseiuniv/i,
+    })
+
+    expect(mailLink).toHaveAttribute(
+      'href',
+      'mailto:gdsc.yonsei.univ@gmail.com'
+    )
+    expect(mailLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(linkedInLink).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/company/gdsc-yonsei/'
+    )
+    expect(linkedInLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(instagramLink).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/gdg.yonseiuniv/'
+    )
+    expect(instagramLink).toHaveAttribute('rel', 'noreferrer noopener')
   })
 
   it('supports back-to-page behavior from next router', async () => {

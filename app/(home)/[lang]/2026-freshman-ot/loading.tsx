@@ -16,22 +16,23 @@ export default function FreshmanOTLoading() {
       <div className="flex flex-col items-center gap-6">
         {/* Google-colored dots animation */}
         <div className="flex gap-3">
-          {['bg-gdg-blue-300', 'bg-gdg-red-300', 'bg-gdg-yellow-300', 'bg-gdg-green-300'].map(
-            (color, i) => (
-              <div
-                key={i}
-                className={`h-3 w-3 rounded-full ${color}`}
-                style={{
-                  animation: 'pulse 1.2s ease-in-out infinite',
-                  animationDelay: `${i * 0.15}s`,
-                }}
-              />
-            ),
-          )}
+          {[
+            'bg-gdg-blue-300',
+            'bg-gdg-red-300',
+            'bg-gdg-yellow-300',
+            'bg-gdg-green-300',
+          ].map((color, i) => (
+            <div
+              key={i}
+              className={`h-3 w-3 rounded-full ${color}`}
+              style={{
+                animation: 'pulse 1.2s ease-in-out infinite',
+                animationDelay: `${i * 0.15}s`,
+              }}
+            />
+          ))}
         </div>
-        <p className="text-sm tracking-widest text-neutral-400">
-          Loading...
-        </p>
+        <p className="text-sm tracking-widest text-neutral-400">Loading...</p>
       </div>
 
       <style>{`

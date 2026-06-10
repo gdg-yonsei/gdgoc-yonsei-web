@@ -19,7 +19,10 @@ describe('r2 object key security helpers', () => {
 
   it('normalizes valid object key from full image URL', () => {
     expect(
-      normalizeR2ImageObjectKey('https://cdn.example/projects/abc-123.png', 'projects')
+      normalizeR2ImageObjectKey(
+        'https://cdn.example/projects/abc-123.png',
+        'projects'
+      )
     ).toBe('projects/abc-123.png')
   })
 
@@ -31,10 +34,19 @@ describe('r2 object key security helpers', () => {
 
   it('rejects unsafe or out-of-scope keys', () => {
     expect(
-      normalizeR2ImageObjectKey('https://evil.example/projects/abc-123.png', 'projects')
+      normalizeR2ImageObjectKey(
+        'https://evil.example/projects/abc-123.png',
+        'projects'
+      )
     ).toBeNull()
-    expect(normalizeR2ImageObjectKey('users/abc-123.png', 'projects')).toBeNull()
-    expect(normalizeR2ImageObjectKey('projects/../../secrets.png', 'projects')).toBeNull()
-    expect(normalizeR2ImageObjectKey('projects/abc-123.txt', 'projects')).toBeNull()
+    expect(
+      normalizeR2ImageObjectKey('users/abc-123.png', 'projects')
+    ).toBeNull()
+    expect(
+      normalizeR2ImageObjectKey('projects/../../secrets.png', 'projects')
+    ).toBeNull()
+    expect(
+      normalizeR2ImageObjectKey('projects/abc-123.txt', 'projects')
+    ).toBeNull()
   })
 })

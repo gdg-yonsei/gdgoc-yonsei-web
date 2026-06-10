@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { cacheLifeConfig } from '@/lib/server/cache/policy'
 
 const mockCacheLife = vi.fn()
 const mockCacheTag = vi.fn()
@@ -24,14 +25,13 @@ describe('cache utilities', () => {
 
     cacheQuery('projectList', ['project:list:ko', 'project:list:ko', 'home:ko'])
 
-    expect(mockCacheLife).toHaveBeenCalledWith('projectList')
+    expect(mockCacheLife).toHaveBeenCalledWith(cacheLifeConfig.projectList)
     expect(mockCacheTag).toHaveBeenCalledWith('project:list:ko', 'home:ko')
   })
 
   it('revalidates and updates tags with duplicate inputs removed', async () => {
-    const { revalidateCacheTags, updateCacheTags } = await import(
-      '@/lib/server/cache'
-    )
+    const { revalidateCacheTags, updateCacheTags } =
+      await import('@/lib/server/cache')
 
     revalidateCacheTags(['member:list:ko', 'member:list:ko', 'home:ko'])
     updateCacheTags(['project:list:en', 'project:list:en', 'home:en'])
@@ -68,9 +68,7 @@ describe('cache utilities', () => {
     expect(mockRevalidateTag).toHaveBeenCalledWith('home:ko', 'max')
     expect(mockRevalidateTag).toHaveBeenCalledWith('sitemap:en', 'max')
     expect(mockRevalidatePath).toHaveBeenCalledWith('/en/project')
-    expect(mockRevalidatePath).toHaveBeenCalledWith(
-      '/ko/project/6th/project-1'
-    )
+    expect(mockRevalidatePath).toHaveBeenCalledWith('/ko/project/6th/project-1')
   })
 
   it('invalidates all public cache surfaces and sitemap path', async () => {

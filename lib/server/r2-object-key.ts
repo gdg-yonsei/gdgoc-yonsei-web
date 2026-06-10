@@ -70,7 +70,10 @@ export function normalizeR2ImageObjectKey(
       return null
     }
     keyCandidate = keyCandidate.slice(publicImageBaseUrl.length)
-  } else if (publicImageBaseUrl && keyCandidate.startsWith(publicImageBaseUrl)) {
+  } else if (
+    publicImageBaseUrl &&
+    keyCandidate.startsWith(publicImageBaseUrl)
+  ) {
     keyCandidate = keyCandidate.slice(publicImageBaseUrl.length)
   }
 

@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 import { getSafeImageExtension } from '@/lib/server/r2-object-key'
 import { getImageEnv } from '@/lib/server/env'
+import { privateJson } from '@/lib/server/http'
 
 export interface PostBody {
   memberId: string
@@ -20,11 +21,15 @@ export interface PostBody {
 export async function POST(request: NextRequest) {
   const session = await auth()
   const json = await request.json().catch(() => null)
-  const bodyValidationResult = memberProfileImageUploadValidation.safeParse(json)
+  const bodyValidationResult =
+    memberProfileImageUploadValidation.safeParse(json)
 
   if (!bodyValidationResult.success) {
-    return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
+    return privateJson(
+      {
+        error:
+          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
+      },
       { status: 400 }
     )
   }
@@ -34,13 +39,13 @@ export async function POST(request: NextRequest) {
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', res.memberId))
   ) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return privateJson({ error: 'Forbidden' }, { status: 403 })
   }
 
   // 파일 업로드 경로
   const extension = getSafeImageExtension(res.fileName)
   if (!extension) {
-    return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 })
+    return privateJson({ error: 'Invalid file extension' }, { status: 400 })
   }
   const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${extension}`
 
@@ -49,7 +54,7 @@ export async function POST(request: NextRequest) {
   const imageEnv = getImageEnv()
 
   // Pre Signed URL 반환
-  return NextResponse.json({
+  return privateJson({
     uploadUrl,
     fileName: `${imageEnv.NEXT_PUBLIC_IMAGE_URL}${fileName}`,
   })

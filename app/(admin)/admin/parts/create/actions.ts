@@ -35,8 +35,13 @@ export async function createPartAction(
   }
 
   // form data 에서 part data 추출
-  const { name, description, generationId, membersList, doubleBoardMembersList } =
-    getPartFormData(formData)
+  const {
+    name,
+    description,
+    generationId,
+    membersList,
+    doubleBoardMembersList,
+  } = getPartFormData(formData)
 
   const resolvedScope = await resolveAdminGenerationScope(session.user.id)
   if (
@@ -48,7 +53,13 @@ export async function createPartAction(
 
   try {
     // zod validation
-    partValidation.parse({ name, description, generationId, membersList, doubleBoardMembersList })
+    partValidation.parse({
+      name,
+      description,
+      generationId,
+      membersList,
+      doubleBoardMembersList,
+    })
   } catch (err) {
     // zod validation 에러 처리
     if (err instanceof z.ZodError) {
@@ -101,9 +112,7 @@ export async function createPartAction(
       await db.insert(usersToParts).values(userToPartData)
     }
 
-    invalidatePartPublicCache(
-      generation?.name ? [generation.name] : []
-    )
+    invalidatePartPublicCache(generation?.name ? [generation.name] : [])
   } catch (e) {
     logger.error('admin.parts.create', e)
     return { error: 'DB Update Error' }

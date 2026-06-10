@@ -91,9 +91,8 @@ describe('delete-resource server actions', () => {
   })
 
   it('rejects delete request when dataId format is invalid', async () => {
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'parts')
@@ -108,9 +107,8 @@ describe('delete-resource server actions', () => {
   it('returns forbidden when user has no delete permission', async () => {
     mockHandlePermission.mockResolvedValue(false)
 
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'parts')
@@ -129,9 +127,8 @@ describe('delete-resource server actions', () => {
     })
     mockDeleteR2Images.mockResolvedValue(false)
 
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'projects')
@@ -144,9 +141,8 @@ describe('delete-resource server actions', () => {
   })
 
   it('deletes part resource when request form is valid', async () => {
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'parts')
@@ -173,9 +169,8 @@ describe('delete-resource server actions', () => {
       generationName: '10th',
     })
 
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'sessions')

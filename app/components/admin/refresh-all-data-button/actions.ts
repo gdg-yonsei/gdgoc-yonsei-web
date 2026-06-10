@@ -1,7 +1,10 @@
 'use server'
 
+import { auth } from '@/auth'
 import { invalidateAllPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
+import handlePermission from '@/lib/server/permission/handle-permission'
+import { forbidden } from 'next/navigation'
 
 /**
  * `revalidateAllDataAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -16,6 +19,12 @@ import { logger } from '@/lib/server/logger'
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export default async function revalidateAllDataAction() {
+  const session = await auth()
+
+  if (!(await handlePermission(session?.user?.id, 'get', 'adminPage'))) {
+    return forbidden()
+  }
+
   logger.info('admin.refresh-all', 'Refreshing public cache surfaces')
   invalidateAllPublicCache()
 }

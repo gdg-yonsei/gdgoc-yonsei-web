@@ -101,7 +101,11 @@ export default function BookingForm() {
       </p>
       <p className="text-sm text-neutral-600">
         장소의 공실 여부는{' '}
-        <Link href={'https://space.yonsei.ac.kr'} target={'_blank'}>
+        <Link
+          href={'https://space.yonsei.ac.kr'}
+          target={'_blank'}
+          rel={'noreferrer noopener'}
+        >
           https://space.yonsei.ac.kr
         </Link>
         에 접속해서 미리 확인해야 합니다.
@@ -131,7 +135,11 @@ export default function BookingForm() {
             onChange={(e) => {
               const val = e.target.value
               setSelectedCampus(val)
-              if (venuesData && venuesData[val]?.buildings && venuesData[val].buildings.length > 0) {
+              if (
+                venuesData &&
+                venuesData[val]?.buildings &&
+                venuesData[val].buildings.length > 0
+              ) {
                 setSelectedBuilding(venuesData[val]!.buildings[0] ?? '')
               } else {
                 setSelectedBuilding('')
@@ -226,9 +234,8 @@ export default function BookingForm() {
             {[30, 60, 90, 120, 150, 180, 210, 240, 300, 360].map((min) => {
               const h = Math.floor(min / 60)
               const m = min % 60
-              const label = h > 0
-                ? m > 0 ? `${h}시간 ${m}분` : `${h}시간`
-                : `${m}분`
+              const label =
+                h > 0 ? (m > 0 ? `${h}시간 ${m}분` : `${h}시간`) : `${m}분`
               return (
                 <option key={min} value={min}>
                   {label}

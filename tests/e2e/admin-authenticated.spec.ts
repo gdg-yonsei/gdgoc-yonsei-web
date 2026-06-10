@@ -38,7 +38,9 @@ test.describe('authenticated admin routes', () => {
 
     for (const route of routes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
 
         expect(response).not.toBeNull()
         expect(response?.status() ?? 0).toBeLessThan(400)
@@ -57,7 +59,9 @@ test.describe('authenticated admin routes', () => {
 
     for (const route of createRoutes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
 
         expect(response).not.toBeNull()
         expect(response?.status() ?? 0).toBeLessThan(400)
@@ -88,7 +92,9 @@ test.describe('authenticated admin routes', () => {
 
     for (const route of routes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
 
         expect(response).not.toBeNull()
         expect(response?.status() ?? 0).toBeLessThan(400)
@@ -103,7 +109,9 @@ test.describe('authenticated admin routes', () => {
     await page.goto('/admin/parts', { waitUntil: 'domcontentloaded' })
 
     await expect(
-      page.locator(`a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`)
+      page.locator(
+        `a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`
+      )
     ).toBeVisible()
     await expect(
       page.locator(`a[href$="/admin/parts/${seededData.partId.toString()}"]`)
@@ -115,7 +123,9 @@ test.describe('authenticated admin routes', () => {
       page.locator(`a[href$="/admin/parts/${seededData.partId.toString()}"]`)
     ).toBeVisible()
     await expect(
-      page.locator(`a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`)
+      page.locator(
+        `a[href$="/admin/parts/${seededData.secondPartId.toString()}"]`
+      )
     ).toHaveCount(0)
 
     await page.goto('/admin/projects', { waitUntil: 'domcontentloaded' })

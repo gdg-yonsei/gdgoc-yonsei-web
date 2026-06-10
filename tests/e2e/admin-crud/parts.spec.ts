@@ -7,10 +7,7 @@ type SeededData = Awaited<ReturnType<typeof readSeededData>>
 
 test.use({ storageState: ADMIN_STORAGE_STATE })
 
-async function createPart(
-  page: Page,
-  partName: string
-) {
+async function createPart(page: Page, partName: string) {
   await page.goto('/admin/parts/create', { waitUntil: 'domcontentloaded' })
   await page.locator('input[name="name"]').fill(partName)
   await page

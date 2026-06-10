@@ -60,9 +60,8 @@ describe('admin generation scope', () => {
       get: vi.fn(() => ({ value: 'all' })),
     })
 
-    const { resolveAdminGenerationScope } = await import(
-      '@/lib/server/admin-generation-scope'
-    )
+    const { resolveAdminGenerationScope } =
+      await import('@/lib/server/admin-generation-scope')
 
     await expect(resolveAdminGenerationScope('lead-user')).resolves.toEqual({
       canAccessAll: true,
@@ -87,9 +86,8 @@ describe('admin generation scope', () => {
       get: vi.fn(() => ({ value: '999' })),
     })
 
-    const { resolveAdminGenerationScope } = await import(
-      '@/lib/server/admin-generation-scope'
-    )
+    const { resolveAdminGenerationScope } =
+      await import('@/lib/server/admin-generation-scope')
 
     await expect(resolveAdminGenerationScope('member-user')).resolves.toEqual({
       canAccessAll: false,
@@ -114,9 +112,8 @@ describe('admin generation scope', () => {
       ])
     )
 
-    const { normalizeAdminGenerationScopeValueForUser } = await import(
-      '@/lib/server/admin-generation-scope'
-    )
+    const { normalizeAdminGenerationScopeValueForUser } =
+      await import('@/lib/server/admin-generation-scope')
 
     await expect(
       normalizeAdminGenerationScopeValueForUser('member-user', '10')
@@ -132,9 +129,8 @@ describe('admin generation scope', () => {
       ])
     )
 
-    const { normalizeAdminGenerationScopeValueForUser } = await import(
-      '@/lib/server/admin-generation-scope'
-    )
+    const { normalizeAdminGenerationScopeValueForUser } =
+      await import('@/lib/server/admin-generation-scope')
 
     await expect(
       normalizeAdminGenerationScopeValueForUser('member-user', 'all')

@@ -8,10 +8,7 @@ import {
   SEEDED_DATA_FILE,
   SeededE2EData,
 } from './constants'
-import {
-  getSeededAdminSessionToken,
-  resetAndSeedE2EDatabase,
-} from './seed-db'
+import { getSeededAdminSessionToken, resetAndSeedE2EDatabase } from './seed-db'
 
 async function writeAuthState(baseURL: string) {
   const token = getSeededAdminSessionToken()

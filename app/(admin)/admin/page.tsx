@@ -61,6 +61,7 @@ export default async function AdminPage() {
                   'https://calendar.google.com/calendar/u/0?cid=Njc3NjI4ZDUyODM0Mjk5NjViZTE3MmMxMzVmZjBjNjc4MzA3OTVlNWFkZmIzYmMxMTc4MmIzMDVkMTRiMzkyY0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t'
                 }
                 target={'_blank'}
+                rel={'noreferrer noopener'}
               >
                 {t.googleCalendar}
               </Link>

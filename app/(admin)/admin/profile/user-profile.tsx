@@ -40,7 +40,9 @@ export default async function UserProfile() {
             <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.firstNameEn}</div>
-                <div className={'member-data-content'}>{userData.firstName}</div>
+                <div className={'member-data-content'}>
+                  {userData.firstName}
+                </div>
               </div>
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.lastNameEn}</div>
@@ -52,11 +54,15 @@ export default async function UserProfile() {
             <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.firstNameKo}</div>
-                <div className={'member-data-content'}>{userData.firstNameKo}</div>
+                <div className={'member-data-content'}>
+                  {userData.firstNameKo}
+                </div>
               </div>
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.lastNameKo}</div>
-                <div className={'member-data-content'}>{userData.lastNameKo}</div>
+                <div className={'member-data-content'}>
+                  {userData.lastNameKo}
+                </div>
               </div>
             </div>
           }

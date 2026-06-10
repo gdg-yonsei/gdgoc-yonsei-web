@@ -28,7 +28,9 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: showMore ? 1 : 0 }}
           transition={
-            shouldReduce ? { duration: 0 } : { duration: 0.4, ease: 'easeInOut' }
+            shouldReduce
+              ? { duration: 0 }
+              : { duration: 0.4, ease: 'easeInOut' }
           }
         >
           {children}

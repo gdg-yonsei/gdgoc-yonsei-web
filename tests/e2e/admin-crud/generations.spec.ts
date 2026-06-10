@@ -15,7 +15,9 @@ const localizedGenerationDetailPath = /\/(?:en|ko)\/admin\/generations\/\d+$/
 const localizedGenerationCreatePath = /\/(?:en|ko)\/admin\/generations\/create$/
 
 async function createGeneration(page: Page, name: string) {
-  await page.goto('/admin/generations/create', { waitUntil: 'domcontentloaded' })
+  await page.goto('/admin/generations/create', {
+    waitUntil: 'domcontentloaded',
+  })
   await page.locator('input[name="name"]').fill(name)
   await page.locator('input[name="startDate"]').fill('2024-01-01')
   await page.locator('input[name="endDate"]').fill('2024-12-31')
@@ -23,10 +25,7 @@ async function createGeneration(page: Page, name: string) {
   await expect(page).toHaveURL(localizedGenerationsListPath)
 }
 
-async function openGenerationByName(
-  page: Page,
-  name: string
-) {
+async function openGenerationByName(page: Page, name: string) {
   await page
     .getByRole('link', {
       name: new RegExp(`Generation: ${escapeRegExp(name)}`),
@@ -43,12 +42,17 @@ test.describe('generations CRUD', () => {
 
   test.describe('read', () => {
     test('reads seeded generation detail page', async ({ page }) => {
-      await page.goto(`/admin/generations/${seededData.generationId.toString()}`, {
-        waitUntil: 'domcontentloaded',
-      })
+      await page.goto(
+        `/admin/generations/${seededData.generationId.toString()}`,
+        {
+          waitUntil: 'domcontentloaded',
+        }
+      )
 
       await expect(
-        page.getByText(`Generation: ${seededData.generationName}`, { exact: true })
+        page.getByText(`Generation: ${seededData.generationName}`, {
+          exact: true,
+        })
       ).toBeVisible()
     })
   })

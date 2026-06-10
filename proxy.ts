@@ -35,7 +35,9 @@ function getLocale(request: NextRequest): string | undefined {
 }
 
 function isSupportedLocale(locale: string | undefined): locale is string {
-  return !!locale && i18n.locales.includes(locale as (typeof i18n.locales)[number])
+  return (
+    !!locale && i18n.locales.includes(locale as (typeof i18n.locales)[number])
+  )
 }
 
 /**
@@ -52,6 +54,7 @@ function isSupportedLocale(locale: string | undefined): locale is string {
  */
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const useSecureCookie = process.env.NODE_ENV === 'production'
 
   const pathnameSegments = pathname.split('/')
   const localeFromPath = pathnameSegments[1]
@@ -73,14 +76,15 @@ export function proxy(request: NextRequest) {
     })
     response.cookies.set(ADMIN_LOCALE_COOKIE, localeFromPath, {
       path: '/',
+      httpOnly: true,
       sameSite: 'lax',
+      secure: useSecureCookie,
     })
 
     return response
   }
 
-  const isAdminPath =
-    pathname === '/admin' || pathname.startsWith('/admin/')
+  const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
 
   if (isAdminPath) {
     const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
@@ -94,7 +98,9 @@ export function proxy(request: NextRequest) {
     const response = NextResponse.redirect(redirectUrl)
     response.cookies.set(ADMIN_LOCALE_COOKIE, locale ?? i18n.defaultLocale, {
       path: '/',
+      httpOnly: true,
       sameSite: 'lax',
+      secure: useSecureCookie,
     })
 
     return response

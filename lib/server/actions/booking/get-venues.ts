@@ -1,5 +1,7 @@
 'use server'
 
+import { auth } from '@/auth'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { cookies } from 'next/headers'
 import { bookingFetch } from './booking-fetch'
 
@@ -20,6 +22,15 @@ export type VenuesResponse = {
 }
 
 export async function getVenuesAction(): Promise<VenuesResponse> {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return { success: false, error: 'Unauthorized' }
+  }
+
+  if (!(await handlePermission(session.user.id, 'get', 'bookingPage'))) {
+    return { success: false, error: 'Forbidden' }
+  }
+
   // Fetch session token
   const cookieStore = await cookies()
   let sessionToken = cookieStore.get('__Secure-authjs.session-token')?.value
@@ -34,7 +45,10 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
   }
 
   if (!sessionToken) {
-    return { success: false, error: 'Unauthorized: Session session-token not found' }
+    return {
+      success: false,
+      error: 'Unauthorized: Session session-token not found',
+    }
   }
 
   try {
@@ -50,7 +64,12 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null)
-      return { success: false, error: errorData?.detail || `API Request failed with status ${response.status}` }
+      return {
+        success: false,
+        error:
+          errorData?.detail ||
+          `API Request failed with status ${response.status}`,
+      }
     }
 
     const data = await response.json()

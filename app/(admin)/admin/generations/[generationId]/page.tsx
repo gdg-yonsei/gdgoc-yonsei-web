@@ -7,7 +7,11 @@ import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { auth } from '@/auth'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -77,7 +81,10 @@ export default async function GenerationPage({
         <DataEditLink
           session={session}
           dataType={'generations'}
-          href={localizeAdminHref(`/admin/generations/${generationId}/edit`, locale)}
+          href={localizeAdminHref(
+            `/admin/generations/${generationId}/edit`,
+            locale
+          )}
         />
         <DataDeleteButton
           session={session}

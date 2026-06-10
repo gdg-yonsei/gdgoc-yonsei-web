@@ -7,7 +7,11 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 
 import { Metadata } from 'next'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {

@@ -18,21 +18,23 @@ import {
  */
 function groupProjectsByGeneration(projectsData: AdminProjectListItem[]) {
   return Object.values(
-    projectsData.reduce<Record<string, { generationName: string; projects: AdminProjectListItem[] }>>(
-      (groups, project) => {
-        const key = String(project.generationId)
-        if (!groups[key]) {
-          groups[key] = {
-            generationName: project.generationName ?? 'Unknown',
-            projects: [],
-          }
+    projectsData.reduce<
+      Record<
+        string,
+        { generationName: string; projects: AdminProjectListItem[] }
+      >
+    >((groups, project) => {
+      const key = String(project.generationId)
+      if (!groups[key]) {
+        groups[key] = {
+          generationName: project.generationName ?? 'Unknown',
+          projects: [],
         }
+      }
 
-        groups[key].projects.push(project)
-        return groups
-      },
-      {}
-    )
+      groups[key].projects.push(project)
+      return groups
+    }, {})
   )
 }
 
@@ -65,7 +67,9 @@ export default async function ProjectsTable({
         <div key={group.generationName}>
           {scope?.kind === 'all' && (
             <div
-              className={'border-b-2 border-neutral-300 pb-1 text-sm text-neutral-600'}
+              className={
+                'border-b-2 border-neutral-300 pb-1 text-sm text-neutral-600'
+              }
             >
               {t.generation}: {group.generationName}
             </div>
@@ -73,7 +77,10 @@ export default async function ProjectsTable({
           <div className={'member-data-grid w-full gap-2 pt-2'}>
             {group.projects.map((project) => (
               <Link
-                href={localizeAdminHref(`/admin/projects/${project.id}`, locale)}
+                href={localizeAdminHref(
+                  `/admin/projects/${project.id}`,
+                  locale
+                )}
                 key={project.id}
                 className={'flex flex-col rounded-xl bg-white'}
               >
@@ -89,7 +96,9 @@ export default async function ProjectsTable({
 
                 <div className={'p-4'}>
                   <div className={'text-xl font-semibold'}>{project.name}</div>
-                  <div className={'pb-4 text-lg font-semibold text-neutral-700'}>
+                  <div
+                    className={'pb-4 text-lg font-semibold text-neutral-700'}
+                  >
                     {project.nameKo}
                   </div>
                   <div className={'flex flex-col text-sm'}>

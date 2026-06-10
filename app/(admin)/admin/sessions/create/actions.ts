@@ -113,7 +113,10 @@ export async function createSessionAction(
       !selectedPart?.generationsId ||
       selectedPart.generationsId !== resolvedScope.scope.generationId
     ) {
-      return { error: 'The selected part does not belong to the current generation scope.' }
+      return {
+        error:
+          'The selected part does not belong to the current generation scope.',
+      }
     }
 
     const nextGenerationName = await getGenerationNameForPartId(Number(partId))

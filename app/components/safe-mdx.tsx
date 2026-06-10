@@ -1,8 +1,8 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import ReactMarkdown from 'react-markdown'
 import rehypeSanitize from 'rehype-sanitize'
 
 /**
- * Render MDX content with HTML sanitization to prevent XSS attacks.
+ * Render user-authored markdown without evaluating MDX/JS expressions.
  * @param source - MDX content string
  */
 export default function SafeMDX({ source }: { source: string | null }) {
@@ -10,10 +10,12 @@ export default function SafeMDX({ source }: { source: string | null }) {
     return <></>
   }
   return (
-    <MDXRemote
-      source={source.replaceAll('<', '').replaceAll('>', '')}
+    <ReactMarkdown
+      skipHtml
       // @ts-expect-error - rehypeSanitize is not typed correctly
-      options={{ mdxOptions: { rehypePlugins: [rehypeSanitize] } }}
-    />
+      rehypePlugins={[rehypeSanitize]}
+    >
+      {source}
+    </ReactMarkdown>
   )
 }

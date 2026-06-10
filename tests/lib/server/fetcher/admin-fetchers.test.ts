@@ -60,6 +60,7 @@ function createDistinctOnChainWithOrderByResult(result: unknown) {
   const chain = {
     from: vi.fn(() => chain),
     innerJoin: vi.fn(() => chain),
+    leftJoin: vi.fn(() => chain),
     where: vi.fn(() => chain),
     orderBy: vi.fn(async () => result),
   }
@@ -90,9 +91,8 @@ describe('admin fetchers', () => {
     const from = vi.fn().mockReturnValue({ orderBy })
     mockSelect.mockReturnValue({ from })
 
-    const { getGenerations } = await import(
-      '@/lib/server/fetcher/admin/get-generations'
-    )
+    const { getGenerations } =
+      await import('@/lib/server/fetcher/admin/get-generations')
 
     await expect(getGenerations()).resolves.toEqual(rows)
     expect(mockNoStore).toHaveBeenCalledTimes(1)
@@ -105,9 +105,8 @@ describe('admin fetchers', () => {
     const from = vi.fn().mockReturnValue({ orderBy })
     mockSelect.mockReturnValue({ from })
 
-    const { preloadAdminGenerations } = await import(
-      '@/lib/server/fetcher/admin/get-generations'
-    )
+    const { preloadAdminGenerations } =
+      await import('@/lib/server/fetcher/admin/get-generations')
     preloadAdminGenerations()
 
     await vi.waitFor(() => {
@@ -134,7 +133,8 @@ describe('admin fetchers', () => {
       },
     ])
 
-    const { getProjects } = await import('@/lib/server/fetcher/admin/get-projects')
+    const { getProjects } =
+      await import('@/lib/server/fetcher/admin/get-projects')
 
     await expect(getProjects()).resolves.toEqual([
       {
@@ -218,7 +218,8 @@ describe('admin fetchers', () => {
     ])
     mockSelectDistinctOn.mockReturnValue(chain)
 
-    const { getMembers } = await import('@/lib/server/fetcher/admin/get-members')
+    const { getMembers } =
+      await import('@/lib/server/fetcher/admin/get-members')
     const result = await getMembers()
 
     expect(mockNoStore).toHaveBeenCalledTimes(1)
@@ -235,16 +236,15 @@ describe('admin fetchers', () => {
       }),
     ])
     expect(chain.from).toHaveBeenCalledTimes(1)
-    expect(chain.innerJoin).toHaveBeenCalledTimes(3)
+    expect(chain.leftJoin).toHaveBeenCalledTimes(3)
   })
 
   it('preloads admin members', async () => {
     const chain = createDistinctOnChainWithOrderByResult([])
     mockSelectDistinctOn.mockReturnValue(chain)
 
-    const { preloadAdminMembers } = await import(
-      '@/lib/server/fetcher/admin/get-members'
-    )
+    const { preloadAdminMembers } =
+      await import('@/lib/server/fetcher/admin/get-members')
     preloadAdminMembers()
 
     await vi.waitFor(() => {
@@ -269,7 +269,8 @@ describe('admin fetchers', () => {
     ])
     mockSelect.mockReturnValue(chain)
 
-    const { getSessions } = await import('@/lib/server/fetcher/admin/get-sessions')
+    const { getSessions } =
+      await import('@/lib/server/fetcher/admin/get-sessions')
 
     await expect(getSessions()).resolves.toEqual([
       expect.objectContaining({
@@ -287,9 +288,8 @@ describe('admin fetchers', () => {
       .fn()
       .mockResolvedValue({ id: 10, name: '10th' })
 
-    const { getGeneration } = await import(
-      '@/lib/server/fetcher/admin/get-generation'
-    )
+    const { getGeneration } =
+      await import('@/lib/server/fetcher/admin/get-generation')
 
     await expect(getGeneration(10)).resolves.toEqual({ id: 10, name: '10th' })
     expect(mockNoStore).toHaveBeenCalledTimes(1)
@@ -302,7 +302,8 @@ describe('admin fetchers', () => {
       { id: 'project-2', name: 'Second' },
     ])
 
-    const { getProject } = await import('@/lib/server/fetcher/admin/get-project')
+    const { getProject } =
+      await import('@/lib/server/fetcher/admin/get-project')
     const result = await getProject('project-1')
 
     expect(result).toEqual({ id: 'project-1', name: 'First' })
@@ -339,7 +340,8 @@ describe('admin fetchers', () => {
     })
     mockUsersFindFirst.mockResolvedValue({ id: 'author-1', name: 'Author' })
 
-    const { getSession } = await import('@/lib/server/fetcher/admin/get-session')
+    const { getSession } =
+      await import('@/lib/server/fetcher/admin/get-session')
     const result = await getSession('session-1')
 
     expect(result).toEqual({
@@ -355,7 +357,8 @@ describe('admin fetchers', () => {
 
   it('returns null when session detail does not exist', async () => {
     mockSessionsFindFirst.mockResolvedValue(null)
-    const { getSession } = await import('@/lib/server/fetcher/admin/get-session')
+    const { getSession } =
+      await import('@/lib/server/fetcher/admin/get-session')
 
     await expect(getSession('missing')).resolves.toBeNull()
     expect(mockUsersFindFirst).not.toHaveBeenCalled()

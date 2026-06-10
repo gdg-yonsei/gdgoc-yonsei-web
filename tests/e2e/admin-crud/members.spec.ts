@@ -19,12 +19,16 @@ test.describe('members update/approve/delete', () => {
         waitUntil: 'domcontentloaded',
       })
 
-      await expect(page.getByText('Tester Member', { exact: true })).toBeVisible()
+      await expect(
+        page.getByText('Tester Member', { exact: true })
+      ).toBeVisible()
     })
   })
 
   test.describe('update', () => {
-    test('updates member profile and approves pending member', async ({ page }) => {
+    test('updates member profile and approves pending member', async ({
+      page,
+    }) => {
       await page.goto(`/admin/members/${seededData.memberUserId}/edit`, {
         waitUntil: 'domcontentloaded',
       })
@@ -37,7 +41,9 @@ test.describe('members update/approve/delete', () => {
       )
       await expect(page.getByText('Tester CRUD', { exact: true })).toBeVisible()
 
-      await page.goto('/admin/members/accept', { waitUntil: 'domcontentloaded' })
+      await page.goto('/admin/members/accept', {
+        waitUntil: 'domcontentloaded',
+      })
 
       const approveForm = page
         .locator('form')
@@ -62,7 +68,9 @@ test.describe('members update/approve/delete', () => {
 
   test.describe('delete', () => {
     test('deletes pending member from approve page', async ({ page }) => {
-      await page.goto('/admin/members/accept', { waitUntil: 'domcontentloaded' })
+      await page.goto('/admin/members/accept', {
+        waitUntil: 'domcontentloaded',
+      })
 
       const deleteForm = page
         .locator('form')

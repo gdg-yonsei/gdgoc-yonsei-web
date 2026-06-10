@@ -97,9 +97,8 @@ describe('parts CRUD server actions', () => {
   })
 
   it('returns validation error when part members overlap between lists', async () => {
-    const { createPartAction } = await import(
-      '@/app/(admin)/admin/parts/create/actions'
-    )
+    const { createPartAction } =
+      await import('@/app/(admin)/admin/parts/create/actions')
 
     const formData = createFormData({
       name: 'Cloud',
@@ -133,9 +132,8 @@ describe('parts CRUD server actions', () => {
         values: userToPartValues,
       })
 
-    const { createPartAction } = await import(
-      '@/app/(admin)/admin/parts/create/actions'
-    )
+    const { createPartAction } =
+      await import('@/app/(admin)/admin/parts/create/actions')
 
     const formData = createFormData({
       name: 'Cloud',
@@ -175,9 +173,8 @@ describe('parts CRUD server actions', () => {
     })
     mockGetGenerationNameById.mockResolvedValue({ name: '2nd' })
 
-    const { updatePartAction } = await import(
-      '@/app/(admin)/admin/parts/[partId]/edit/actions'
-    )
+    const { updatePartAction } =
+      await import('@/app/(admin)/admin/parts/[partId]/edit/actions')
 
     mockQuery.parts.findFirst.mockResolvedValue({
       generationsId: 2,
@@ -222,9 +219,8 @@ describe('parts CRUD server actions', () => {
   })
 
   it('deletes part from shared delete action path', async () => {
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'parts')

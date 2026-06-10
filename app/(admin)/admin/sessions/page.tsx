@@ -81,7 +81,11 @@ export default async function SessionsPage() {
           </Link>
         )}
         {canCreate && !canCreateInCurrentScope && (
-          <div className={'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'}>
+          <div
+            className={
+              'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'
+            }
+          >
             {t.selectSpecificGenerationToCreate}
           </div>
         )}

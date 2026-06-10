@@ -51,7 +51,9 @@ export default async function deleteResourceAction(
   })
 
   if (!validationResult.success) {
-    return { error: validationResult.error.issues[0]?.message ?? 'Validation failed' }
+    return {
+      error: validationResult.error.issues[0]?.message ?? 'Validation failed',
+    }
   }
 
   const { dataType, dataId } = validationResult.data

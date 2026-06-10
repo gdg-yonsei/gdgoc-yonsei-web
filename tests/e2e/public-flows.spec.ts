@@ -22,12 +22,12 @@ test('extra public pages load correctly', async ({ page }) => {
         expect(response).not.toBeNull()
         expect(
           response?.status() ?? 0,
-          `${route} returned an unexpected status`,
+          `${route} returned an unexpected status`
         ).toBeLessThan(400)
         await expect(page.locator('body')).toBeVisible()
       } catch (error) {
         failures.push(
-          `${route}\n${error instanceof Error ? error.message : String(error)}`,
+          `${route}\n${error instanceof Error ? error.message : String(error)}`
         )
       }
     })
@@ -35,13 +35,16 @@ test('extra public pages load correctly', async ({ page }) => {
 
   expect(
     failures,
-    `Public route smoke test failures:\n\n${failures.join('\n\n')}`,
+    `Public route smoke test failures:\n\n${failures.join('\n\n')}`
   ).toEqual([])
 })
 
 test('desktop navigation routes user to calendar page', async ({ page }) => {
   await page.goto('/en', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('link', { name: /^Calendar$/ }).first().click()
+  await page
+    .getByRole('link', { name: /^Calendar$/ })
+    .first()
+    .click()
 
   await expect(page).toHaveURL(/\/en\/calendar$/)
   await expect(page.getByRole('heading', { name: 'Calendar' })).toBeVisible()

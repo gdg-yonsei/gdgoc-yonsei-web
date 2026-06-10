@@ -86,6 +86,7 @@ export default function UserProfileCard({
                   .replace('www.linkedin.com/in/', '')
               }
               target={'_blank'}
+              rel={'noreferrer noopener'}
             >
               <LinkedIn className={'size-6'} />
             </Link>
@@ -97,6 +98,7 @@ export default function UserProfileCard({
                 userData.instagramId.replace('@', '')
               }
               target={'_blank'}
+              rel={'noreferrer noopener'}
             >
               <InstagramWhiteBg className={'size-8'} />
             </Link>
@@ -105,6 +107,7 @@ export default function UserProfileCard({
             <Link
               href={'https://github.com/' + userData.githubId.replace('@', '')}
               target={'_blank'}
+              rel={'noreferrer noopener'}
             >
               <Github className={'size-7'} />
             </Link>

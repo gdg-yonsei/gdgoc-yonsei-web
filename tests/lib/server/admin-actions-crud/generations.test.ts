@@ -55,9 +55,8 @@ describe('generation CRUD server actions', () => {
   })
 
   it('returns validation error for invalid generation date format', async () => {
-    const { createGenerationAction } = await import(
-      '@/app/(admin)/admin/generations/create/actions'
-    )
+    const { createGenerationAction } =
+      await import('@/app/(admin)/admin/generations/create/actions')
 
     const formData = new FormData()
     formData.set('name', '11th')
@@ -80,9 +79,8 @@ describe('generation CRUD server actions', () => {
       values: valuesMock,
     })
 
-    const { createGenerationAction } = await import(
-      '@/app/(admin)/admin/generations/create/actions'
-    )
+    const { createGenerationAction } =
+      await import('@/app/(admin)/admin/generations/create/actions')
 
     const formData = new FormData()
     formData.set('name', '11th')
@@ -112,9 +110,8 @@ describe('generation CRUD server actions', () => {
       set: setMock,
     })
 
-    const { updateGenerationAction } = await import(
-      '@/app/(admin)/admin/generations/[generationId]/edit/actions'
-    )
+    const { updateGenerationAction } =
+      await import('@/app/(admin)/admin/generations/[generationId]/edit/actions')
 
     const formData = new FormData()
     formData.set('name', '12th')
@@ -137,9 +134,8 @@ describe('generation CRUD server actions', () => {
   })
 
   it('deletes generation from shared delete action path', async () => {
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'generations')

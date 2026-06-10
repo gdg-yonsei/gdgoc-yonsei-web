@@ -6,9 +6,7 @@ import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
 import addLangParams from '@/lib/server/add-lang-params'
 import { i18n } from '@/i18n-config'
-import {
-  getGenerationSummaries,
-} from '@/lib/server/queries/public/generations'
+import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectsByGeneration } from '@/lib/server/queries/public/projects'
 
 type Props = {

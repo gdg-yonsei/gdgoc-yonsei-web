@@ -42,7 +42,9 @@ export default function MemberRoleManager({ userRole }: { userRole: string }) {
 
   return (
     <div className={'col-span-1 flex flex-col sm:col-span-2'}>
-      <p className={'px-1 text-sm font-semibold text-neutral-700'}>{t('role')}</p>
+      <p className={'px-1 text-sm font-semibold text-neutral-700'}>
+        {t('role')}
+      </p>
       <input
         name={'role'}
         hidden={true}

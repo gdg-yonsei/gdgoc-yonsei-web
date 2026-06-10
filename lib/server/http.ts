@@ -7,10 +7,7 @@ const privateNoStoreHeaders = {
   Vary: 'Cookie, Authorization',
 } as const
 
-export function privateJson(
-  body: unknown,
-  init?: ResponseInit
-): NextResponse {
+export function privateJson(body: unknown, init?: ResponseInit): NextResponse {
   return NextResponse.json(body, {
     ...init,
     headers: {

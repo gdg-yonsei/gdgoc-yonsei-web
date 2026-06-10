@@ -108,7 +108,9 @@ export default async function SessionPage({
             koContent={
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.nameKo}</div>
-                <div className={'member-data-content'}>{sessionData.nameKo}</div>
+                <div className={'member-data-content'}>
+                  {sessionData.nameKo}
+                </div>
               </div>
             }
           />
@@ -199,7 +201,9 @@ export default async function SessionPage({
             enContent={
               <div className={'member-data-box'}>
                 <div className={'member-data-title'}>{t.locationEn}</div>
-                <div className={'member-data-content'}>{sessionData.location}</div>
+                <div className={'member-data-content'}>
+                  {sessionData.location}
+                </div>
               </div>
             }
             koContent={

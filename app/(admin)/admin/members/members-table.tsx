@@ -18,20 +18,19 @@ import {
  */
 function groupMembersByGeneration(membersData: AdminMemberListItem[]) {
   return Object.values(
-    membersData.reduce<Record<string, { generation: string; members: AdminMemberListItem[] }>>(
-      (groups, member) => {
-        const key = String(member.generationId ?? 'none')
-        if (!groups[key]) {
-          groups[key] = {
-            generation: member.generation ?? 'Unknown',
-            members: [],
-          }
+    membersData.reduce<
+      Record<string, { generation: string; members: AdminMemberListItem[] }>
+    >((groups, member) => {
+      const key = String(member.generationId ?? 'none')
+      if (!groups[key]) {
+        groups[key] = {
+          generation: member.generation ?? 'Unknown',
+          members: [],
         }
-        groups[key].members.push(member)
-        return groups
-      },
-      {}
-    )
+      }
+      groups[key].members.push(member)
+      return groups
+    }, {})
   )
 }
 
@@ -64,7 +63,9 @@ export default async function MembersTable({
         <div key={group.generation}>
           {scope?.kind === 'all' && (
             <div
-              className={'border-b-2 border-neutral-300 pb-1 text-sm text-neutral-600'}
+              className={
+                'border-b-2 border-neutral-300 pb-1 text-sm text-neutral-600'
+              }
             >
               {t.generation}: {group.generation}
             </div>

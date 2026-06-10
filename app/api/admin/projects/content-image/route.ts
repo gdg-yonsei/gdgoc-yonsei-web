@@ -1,9 +1,9 @@
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
-import { NextResponse } from 'next/server'
 import { multipleImageUploadValidation } from '@/lib/validations/admin-api'
 import { getSafeImageExtension } from '@/lib/server/r2-object-key'
+import { privateJson } from '@/lib/server/http'
 
 export interface ProjectContentImagePostRequest {
   images: { fileName: string; type: string }[]
@@ -25,15 +25,18 @@ export async function POST(request: Request) {
   const session = await auth()
   // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'projects'))) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return privateJson({ error: 'Forbidden' }, { status: 403 })
   }
 
   const json = await request.json().catch(() => null)
   const bodyValidationResult = multipleImageUploadValidation.safeParse(json)
 
   if (!bodyValidationResult.success) {
-    return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
+    return privateJson(
+      {
+        error:
+          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
+      },
       { status: 400 }
     )
   }
@@ -46,10 +49,7 @@ export async function POST(request: Request) {
   for (const image of res.images) {
     const extension = getSafeImageExtension(image.fileName)
     if (!extension) {
-      return NextResponse.json(
-        { error: 'Invalid file extension' },
-        { status: 400 }
-      )
+      return privateJson({ error: 'Invalid file extension' }, { status: 400 })
     }
     // 파일 업로드 경로
     const fileName = `projects/${crypto.randomUUID()}.${extension}`
@@ -68,5 +68,5 @@ export async function POST(request: Request) {
   }
 
   // Pre Signed URL 반환
-  return NextResponse.json({ uploadUrls: responseData })
+  return privateJson({ uploadUrls: responseData })
 }

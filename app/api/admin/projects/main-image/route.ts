@@ -1,7 +1,6 @@
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
-import { NextResponse } from 'next/server'
 import r2Client from '@/lib/server/r2-client'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import {
@@ -13,6 +12,7 @@ import {
   normalizeR2ImageObjectKey,
 } from '@/lib/server/r2-object-key'
 import { getR2BucketEnv } from '@/lib/server/env'
+import { privateJson } from '@/lib/server/http'
 
 export interface ProjectMainImagePostRequest {
   fileName: string
@@ -35,15 +35,18 @@ export async function POST(request: Request) {
   const session = await auth()
   // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'post', 'projects'))) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return privateJson({ error: 'Forbidden' }, { status: 403 })
   }
 
   const json = await request.json().catch(() => null)
   const bodyValidationResult = singleImageUploadValidation.safeParse(json)
 
   if (!bodyValidationResult.success) {
-    return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
+    return privateJson(
+      {
+        error:
+          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
+      },
       { status: 400 }
     )
   }
@@ -53,7 +56,7 @@ export async function POST(request: Request) {
   // 파일 업로드 경로
   const extension = getSafeImageExtension(res.fileName)
   if (!extension) {
-    return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 })
+    return privateJson({ error: 'Invalid file extension' }, { status: 400 })
   }
   const fileName = `projects/${crypto.randomUUID()}.${extension}`
 
@@ -61,7 +64,7 @@ export async function POST(request: Request) {
   const uploadUrl = await getPreSignedUrl(fileName, res.type)
 
   // Pre Signed URL 반환
-  return NextResponse.json({ uploadUrl, fileName })
+  return privateJson({ uploadUrl, fileName })
 }
 
 /**
@@ -80,14 +83,17 @@ export async function DELETE(request: Request) {
   const session = await auth()
   // 사용자 권한 확인
   if (!(await handlePermission(session?.user?.id, 'delete', 'projects'))) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return privateJson({ error: 'Forbidden' }, { status: 403 })
   }
   const json = await request.json().catch(() => null)
   const bodyValidationResult = imageDeleteValidation.safeParse(json)
 
   if (!bodyValidationResult.success) {
-    return NextResponse.json(
-      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
+    return privateJson(
+      {
+        error:
+          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
+      },
       { status: 400 }
     )
   }
@@ -98,7 +104,7 @@ export async function DELETE(request: Request) {
   )
 
   if (!objectKey) {
-    return NextResponse.json({ error: 'Invalid image key' }, { status: 400 })
+    return privateJson({ error: 'Invalid image key' }, { status: 400 })
   }
 
   await r2Client.send(
@@ -107,5 +113,5 @@ export async function DELETE(request: Request) {
       Key: objectKey,
     })
   )
-  return NextResponse.json({ message: 'success' })
+  return privateJson({ message: 'success' })
 }

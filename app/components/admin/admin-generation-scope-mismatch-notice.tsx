@@ -36,7 +36,8 @@ export default function AdminGenerationScopeMismatchNotice({
         <div className={'font-semibold'}>{t.itemGenerationMismatch}</div>
         <div>{t.itemGenerationMismatchHint}</div>
         <div>
-          {t.itemGeneration}: <span className={'font-semibold'}>{actualGeneration.name}</span>
+          {t.itemGeneration}:{' '}
+          <span className={'font-semibold'}>{actualGeneration.name}</span>
         </div>
       </div>
       {canSwitch && (

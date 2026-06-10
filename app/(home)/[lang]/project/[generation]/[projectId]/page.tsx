@@ -62,7 +62,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
 
-  const projectData = await getProjectById(projectId, lang === 'ko' ? 'ko' : 'en')
+  const projectData = await getProjectById(
+    projectId,
+    lang === 'ko' ? 'ko' : 'en'
+  )
 
   if (!projectData) {
     if (lang === 'ko') {
@@ -105,7 +108,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function ProjectPage({ params }: Props) {
   const { projectId, lang, generation } = await params
-  const projectData = await getProjectById(projectId, lang === 'ko' ? 'ko' : 'en')
+  const projectData = await getProjectById(
+    projectId,
+    lang === 'ko' ? 'ko' : 'en'
+  )
 
   if (!projectData) {
     return notFound()

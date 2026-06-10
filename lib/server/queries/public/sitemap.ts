@@ -3,7 +3,10 @@ import 'server-only'
 import type { MetadataRoute } from 'next'
 import { i18n } from '@/i18n-config'
 import { cacheQuery, sitemapTag } from '@/lib/server/cache'
-import { getSessionVisibilityBucket, publicCachePolicy } from '@/lib/server/cache/policy'
+import {
+  getSessionVisibilityBucket,
+  publicCachePolicy,
+} from '@/lib/server/cache/policy'
 import { getSiteEnv } from '@/lib/server/env'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
@@ -28,7 +31,10 @@ function generateLocalizedSitemapEntries(
 export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.sitemap, i18n.locales.map((locale) => sitemapTag(locale)))
+  cacheQuery(
+    publicCachePolicy.sitemap,
+    i18n.locales.map((locale) => sitemapTag(locale))
+  )
 
   const baseLocale = i18n.defaultLocale
   const generationList = await getGenerationSummaries(baseLocale)
@@ -38,7 +44,9 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const projectsList: MetadataRoute.Sitemap = projectList.map((project) => ({
     url: `/project/${project.generation.name}/${project.id}`,
     lastModified:
-      project.updatedAt > project.createdAt ? project.updatedAt : project.createdAt,
+      project.updatedAt > project.createdAt
+        ? project.updatedAt
+        : project.createdAt,
     changeFrequency: 'monthly',
     priority: 0.8,
   }))

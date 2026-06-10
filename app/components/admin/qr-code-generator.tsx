@@ -25,7 +25,9 @@ export default function QRCodeGenerator() {
         'flex w-full flex-col items-center justify-center gap-8 rounded-xl bg-white p-4'
       }
     >
-      <h2 className={'mr-auto text-xl font-semibold'}>{t('qrCodeGenerator')}</h2>
+      <h2 className={'mr-auto text-xl font-semibold'}>
+        {t('qrCodeGenerator')}
+      </h2>
       {value ? (
         <QRCode value={value} className={'size-64'} />
       ) : (
