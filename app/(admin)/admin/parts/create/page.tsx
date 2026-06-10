@@ -100,6 +100,8 @@ export default async function CreatePartPage() {
               member.lastName
             ),
             value: member.id,
+            generation: member.generation,
+            part: member.part,
           }))}
           name={'membersList'}
           title={t.members}
@@ -115,6 +117,8 @@ export default async function CreatePartPage() {
               !member.isForeigner
             ),
             value: member.id,
+            generation: member.generation,
+            part: member.part,
           }))}
           name={'doubleBoardMembersList'}
           title={t.doubleBoardMembers}

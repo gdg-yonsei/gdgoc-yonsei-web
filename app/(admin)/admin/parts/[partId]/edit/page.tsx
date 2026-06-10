@@ -139,6 +139,8 @@ export default async function EditPartPage({
               !member.isForeigner
             ),
             value: member.id,
+            generation: member.generation,
+            part: member.part,
           }))}
           name={'membersList'}
           title={t.members}
@@ -154,6 +156,8 @@ export default async function EditPartPage({
               !member.isForeigner
             ),
             value: member.id,
+            generation: member.generation,
+            part: member.part,
           }))}
           name={'doubleBoardMembersList'}
           title={t.doubleBoardMembers}
