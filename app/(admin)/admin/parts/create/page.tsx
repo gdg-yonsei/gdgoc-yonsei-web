@@ -54,8 +54,10 @@ export default async function CreatePartPage() {
     )
   }
 
-  // 멤버 데이터 가져오기
-  const membersData = await getMembers(resolvedScope.scope)
+  const membersData = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersData.map((m) => [m.id, m])).values()
+  )
 
   return (
     <AdminDefaultLayout>
@@ -91,7 +93,7 @@ export default async function CreatePartPage() {
           </div>
         </div>
         <DataSelectMultipleInput
-          data={membersData.map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstName,
@@ -104,7 +106,7 @@ export default async function CreatePartPage() {
           defaultValue={[]}
         />
         <DataSelectMultipleInput
-          data={membersData.map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,

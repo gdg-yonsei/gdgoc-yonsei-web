@@ -64,7 +64,10 @@ export default async function CreateSessionPage() {
   const generationData = await getGeneration(
     resolvedScope.selectedGeneration.id
   )
-  const membersData = await getMembers(resolvedScope.scope)
+  const membersData = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersData.map((m) => [m.id, m])).values()
+  )
 
   const scopedParts =
     generationData?.parts.map((part) => ({
@@ -249,7 +252,7 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <SessionPartParticipantsInput
-          members={membersData}
+          members={uniqueMembers}
           parts={scopedParts}
         />
         <SubmitButton />

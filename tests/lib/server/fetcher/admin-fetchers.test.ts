@@ -60,6 +60,7 @@ function createDistinctOnChainWithOrderByResult(result: unknown) {
   const chain = {
     from: vi.fn(() => chain),
     innerJoin: vi.fn(() => chain),
+    leftJoin: vi.fn(() => chain),
     where: vi.fn(() => chain),
     orderBy: vi.fn(async () => result),
   }
@@ -235,7 +236,7 @@ describe('admin fetchers', () => {
       }),
     ])
     expect(chain.from).toHaveBeenCalledTimes(1)
-    expect(chain.innerJoin).toHaveBeenCalledTimes(3)
+    expect(chain.leftJoin).toHaveBeenCalledTimes(3)
   })
 
   it('preloads admin members', async () => {

@@ -62,7 +62,10 @@ export default async function CreateProjectPage() {
     )
   }
 
-  const membersList = await getMembers(resolvedScope.scope)
+  const membersList = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersList.map((m) => [m.id, m])).values()
+  )
 
   return (
     <AdminDefaultLayout>
@@ -167,7 +170,7 @@ export default async function CreateProjectPage() {
             {resolvedScope.selectedGeneration.name}
           </div>
         </div>
-        <MembersSelectInput members={membersList} defaultValue={[]} />
+        <MembersSelectInput members={uniqueMembers} defaultValue={[]} />
         <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
           <BilingualPanel
             enTitle={t.english}

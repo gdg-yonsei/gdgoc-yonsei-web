@@ -73,12 +73,10 @@ export default async function EditPartPage({
         name: partData.generation.name,
       }
     : null
-  const membersData =
-    actualGeneration &&
-    (await getMembers({
-      kind: 'generation',
-      generationId: actualGeneration.id,
-    }))
+  const membersData = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersData.map((m) => [m.id, m])).values()
+  )
 
   return (
     <AdminDefaultLayout>
@@ -132,7 +130,7 @@ export default async function EditPartPage({
           <div className={'member-data-content'}>{actualGeneration?.name}</div>
         </div>
         <DataSelectMultipleInput
-          data={(membersData ?? []).map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,
@@ -147,7 +145,7 @@ export default async function EditPartPage({
           defaultValue={membersIdList}
         />
         <DataSelectMultipleInput
-          data={(membersData ?? []).map((member) => ({
+          data={uniqueMembers.map((member) => ({
             name: formatUserName(
               member.name,
               member.firstNameKo,

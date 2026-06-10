@@ -68,12 +68,10 @@ export default async function EditSessionPage({
   const generationData = actualGeneration
     ? await getGeneration(actualGeneration.id)
     : null
-  const membersData =
-    actualGeneration &&
-    (await getMembers({
-      kind: 'generation',
-      generationId: actualGeneration.id,
-    }))
+  const membersData = await getMembers(null)
+  const uniqueMembers = Array.from(
+    new Map(membersData.map((m) => [m.id, m])).values()
+  )
   const scopedParts =
     generationData?.parts.map((part) => ({
       id: part.id,
@@ -266,7 +264,7 @@ export default async function EditSessionPage({
               (user) => user.userId
             ),
           }}
-          members={membersData ?? []}
+          members={uniqueMembers}
           parts={scopedParts}
         />
 
