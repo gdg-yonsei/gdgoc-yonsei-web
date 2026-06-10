@@ -20,11 +20,17 @@ export default function DataSelectMultipleInput({
   title,
   defaultValue,
 }: {
-  data: { name: string; value: string }[]
+  data: {
+    name: string
+    value: string
+    generation?: string | null
+    part?: string | null
+  }[]
   name: string
   title: string
   defaultValue: string[]
 }) {
+  const [search, setSearch] = useState('')
   // input ref
   const inputRef = useRef<HTMLInputElement>(null)
   // multiple value state
@@ -60,6 +66,10 @@ export default function DataSelectMultipleInput({
     }
   }, [value])
 
+  const filteredData = data.filter((d) =>
+    d.name.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div
       className={
@@ -67,16 +77,31 @@ export default function DataSelectMultipleInput({
       }
     >
       <div className={'member-data-title'}>{title}</div>
+      <input
+        type="text"
+        placeholder="이름으로 검색..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="member-data-input mb-2 max-w-xs"
+      />
       <input name={name} hidden={true} ref={inputRef} />
       <div className={'member-data-grid gap-2'}>
-        {data.map((d, i) => (
+        {filteredData.map((d, i) => (
           <button
             type={'button'}
             key={i}
-            className={`rounded-xl p-2 px-4 ${value.includes(d.value) ? 'bg-neutral-900 text-white' : 'bg-white'}`}
+            className={`flex flex-col items-start rounded-xl p-2 px-4 ${value.includes(d.value) ? 'bg-neutral-900 font-medium text-white' : 'bg-white'}`}
             onClick={() => handleClick(d.value)}
           >
-            {d.name}
+            {d.generation || d.part ? (
+              <div
+                className={`text-left text-xs ${value.includes(d.value) ? 'text-neutral-300' : 'text-neutral-500'}`}
+              >
+                {d.generation ? `${d.generation} ` : ''}
+                {d.part ? `· ${d.part}` : ''}
+              </div>
+            ) : null}
+            <div className="text-left">{d.name}</div>
           </button>
         ))}
       </div>
