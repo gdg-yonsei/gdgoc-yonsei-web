@@ -120,7 +120,5 @@ export async function registerSessionAction(
     return { error: 'Overcapacity' }
   }
 
-  return redirect(
-    await getLocalizedAdminPath(`/admin/sessions/${sessionId}`)
-  )
+  return redirect(await getLocalizedAdminPath(`/admin/sessions/${sessionId}`))
 }

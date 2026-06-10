@@ -18,10 +18,7 @@ function toVisibilityDate(visibilityBucket: string): Date {
   return new Date(visibilityBucket)
 }
 
-export async function getSessions(
-  locale: Locale,
-  visibilityBucket: string
-) {
+export async function getSessions(locale: Locale, visibilityBucket: string) {
   'use cache: remote'
 
   cacheQuery(publicCachePolicy.sessionList, [sessionListTag(locale)])

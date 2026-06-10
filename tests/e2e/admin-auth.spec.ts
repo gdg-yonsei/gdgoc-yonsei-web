@@ -7,13 +7,13 @@ test('anonymous user is redirected to sign-in when visiting admin', async ({
 
   await expect(page).toHaveURL(/\/auth\/sign-in$/)
   await expect(
-    page.getByRole('button', { name: /Sign in with Github/i }),
+    page.getByRole('button', { name: /Sign in with Github/i })
   ).toBeVisible()
   await expect(
-    page.getByRole('button', { name: /Sign in with Google/i }),
+    page.getByRole('button', { name: /Sign in with Google/i })
   ).toBeVisible()
   await expect(
-    page.getByRole('button', { name: /Sign in with Passkey/i }),
+    page.getByRole('button', { name: /Sign in with Passkey/i })
   ).toBeVisible()
 })
 

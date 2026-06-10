@@ -7,7 +7,9 @@ import { sessions } from '@/db/schema/sessions'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { eq } from 'drizzle-orm'
 
-function uniqueStrings(values: readonly (string | null | undefined)[]): string[] {
+function uniqueStrings(
+  values: readonly (string | null | undefined)[]
+): string[] {
   return [...new Set(values.filter(Boolean) as string[])]
 }
 

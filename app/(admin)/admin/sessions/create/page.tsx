@@ -39,7 +39,10 @@ export default async function CreateSessionPage() {
     ? await resolveAdminGenerationScope(session.user.id)
     : null
 
-  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+  if (
+    resolvedScope?.scope?.kind !== 'generation' ||
+    !resolvedScope.selectedGeneration
+  ) {
     return (
       <AdminDefaultLayout>
         <AdminNavigationButton href={'/admin/sessions'}>
@@ -50,13 +53,17 @@ export default async function CreateSessionPage() {
           {t.create} {t.session}
         </div>
         <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
-          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+          <div className={'font-semibold'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
         </div>
       </AdminDefaultLayout>
     )
   }
 
-  const generationData = await getGeneration(resolvedScope.selectedGeneration.id)
+  const generationData = await getGeneration(
+    resolvedScope.selectedGeneration.id
+  )
   const membersData = await getMembers(resolvedScope.scope)
 
   const scopedParts =
@@ -88,7 +95,11 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>
             {resolvedScope.selectedGeneration.name}

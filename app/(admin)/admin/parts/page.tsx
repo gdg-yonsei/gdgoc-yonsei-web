@@ -6,7 +6,11 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
@@ -53,7 +57,11 @@ export default async function PartsPage() {
           </Link>
         )}
         {canCreate && !canCreateInCurrentScope && (
-          <div className={'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'}>
+          <div
+            className={
+              'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'
+            }
+          >
             {t.selectSpecificGenerationToCreate}
           </div>
         )}

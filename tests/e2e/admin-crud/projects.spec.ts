@@ -15,16 +15,31 @@ async function createProject(
 ) {
   await page.goto('/admin/projects/create', { waitUntil: 'domcontentloaded' })
   await page.locator('input[name="name"]').fill(projectName)
-  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(0).click()
+  await page
+    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .nth(0)
+    .click()
   await page.locator('input[name="nameKo"]').fill(projectNameKo)
   await page
     .locator('textarea[name="description"]')
     .fill('One-line description for project')
-  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(1).click()
-  await page.locator('textarea[name="descriptionKo"]').fill('프로젝트 한 줄 설명')
-  await page.locator('textarea[name="content"]').fill('## Project English Content')
-  await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(2).click()
-  await page.locator('textarea[name="contentKo"]').fill('## 프로젝트 한국어 내용')
+  await page
+    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .nth(1)
+    .click()
+  await page
+    .locator('textarea[name="descriptionKo"]')
+    .fill('프로젝트 한 줄 설명')
+  await page
+    .locator('textarea[name="content"]')
+    .fill('## Project English Content')
+  await page
+    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .nth(2)
+    .click()
+  await page
+    .locator('textarea[name="contentKo"]')
+    .fill('## 프로젝트 한국어 내용')
 
   await page.getByRole('button', { name: 'Open' }).first().click()
   await page.getByRole('button', { name: '테스터관리' }).click()
@@ -89,11 +104,7 @@ test.describe('projects CRUD', () => {
       const updatedProjectName = `Cache Project Updated ${suffix}`
       const updatedProjectNameKo = `캐시 프로젝트 수정 ${suffix}`
 
-      await createProject(
-        page,
-        projectName,
-        projectNameKo
-      )
+      await createProject(page, projectName, projectNameKo)
 
       await page.goto(`/en/project/${seededData.secondGenerationName}`, {
         waitUntil: 'domcontentloaded',
@@ -120,7 +131,10 @@ test.describe('projects CRUD', () => {
       await page
         .getByRole('textbox', { name: 'Name (English)' })
         .fill(updatedProjectName)
-      await page.getByRole('button', { name: /^(Korean|한국어)/ }).nth(0).click()
+      await page
+        .getByRole('button', { name: /^(Korean|한국어)/ })
+        .nth(0)
+        .click()
       await page
         .getByRole('textbox', { name: 'Name (Korean)' })
         .fill(updatedProjectNameKo)
@@ -134,9 +148,7 @@ test.describe('projects CRUD', () => {
       await expect(
         page.getByRole('link').filter({ hasText: updatedProjectName }).first()
       ).toBeVisible()
-      await expect(
-        page.getByText(projectName, { exact: true })
-      ).toHaveCount(0)
+      await expect(page.getByText(projectName, { exact: true })).toHaveCount(0)
 
       await page.goto(`/en/project/${seededData.secondGenerationName}`, {
         waitUntil: 'domcontentloaded',

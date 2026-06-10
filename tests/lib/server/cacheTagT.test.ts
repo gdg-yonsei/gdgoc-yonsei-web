@@ -18,9 +18,7 @@ describe('cache tags', () => {
   })
 
   it('encodes identifiers inside item tags', () => {
-    expect(projectTag('project/id', 'en')).toBe(
-      'project:item:project%2Fid:en'
-    )
+    expect(projectTag('project/id', 'en')).toBe('project:item:project%2Fid:en')
   })
 
   it('expands helpers across all public locales', () => {

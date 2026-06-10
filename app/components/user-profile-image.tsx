@@ -26,7 +26,7 @@ export default function UserProfileImage({
     <Image
       src={
         src
-          ? src.includes('http')
+          ? src.startsWith('http://') || src.startsWith('https://')
             ? src
             : process.env.NEXT_PUBLIC_IMAGE_URL + src
           : '/default-user-profile.png'

@@ -126,9 +126,8 @@ describe('projects CRUD server actions', () => {
   it('returns user error when project author is unavailable in session', async () => {
     mockAuth.mockResolvedValue({ user: {} })
 
-    const { createProjectAction } = await import(
-      '@/app/(admin)/admin/projects/create/actions'
-    )
+    const { createProjectAction } =
+      await import('@/app/(admin)/admin/projects/create/actions')
 
     const formData = createFormData({
       name: 'CRUD Project',
@@ -138,7 +137,9 @@ describe('projects CRUD server actions', () => {
       content: 'English',
       contentKo: '한국어',
       mainImage: 'https://cdn.example/projects/main.png',
-      contentImages: JSON.stringify(['https://cdn.example/projects/content-1.png']),
+      contentImages: JSON.stringify([
+        'https://cdn.example/projects/content-1.png',
+      ]),
       participants: JSON.stringify(['user-a']),
       generationId: '1',
     })
@@ -150,9 +151,8 @@ describe('projects CRUD server actions', () => {
   })
 
   it('returns project validation error when participants are empty', async () => {
-    const { createProjectAction } = await import(
-      '@/app/(admin)/admin/projects/create/actions'
-    )
+    const { createProjectAction } =
+      await import('@/app/(admin)/admin/projects/create/actions')
 
     const formData = createFormData({
       name: 'CRUD Project',
@@ -162,7 +162,9 @@ describe('projects CRUD server actions', () => {
       content: 'English',
       contentKo: '한국어',
       mainImage: 'https://cdn.example/projects/main.png',
-      contentImages: JSON.stringify(['https://cdn.example/projects/content-1.png']),
+      contentImages: JSON.stringify([
+        'https://cdn.example/projects/content-1.png',
+      ]),
       participants: JSON.stringify([]),
       generationId: '1',
     })
@@ -190,9 +192,8 @@ describe('projects CRUD server actions', () => {
         values: participantsValues,
       })
 
-    const { createProjectAction } = await import(
-      '@/app/(admin)/admin/projects/create/actions'
-    )
+    const { createProjectAction } =
+      await import('@/app/(admin)/admin/projects/create/actions')
 
     const formData = createFormData({
       name: 'CRUD Project',
@@ -202,7 +203,9 @@ describe('projects CRUD server actions', () => {
       content: '<b>English</b>',
       contentKo: '<i>한국어</i>',
       mainImage: 'https://cdn.example/projects/main.png',
-      contentImages: JSON.stringify(['https://cdn.example/projects/content-1.png']),
+      contentImages: JSON.stringify([
+        'https://cdn.example/projects/content-1.png',
+      ]),
       participants: JSON.stringify(['user-a']),
       generationId: '1',
     })
@@ -252,9 +255,8 @@ describe('projects CRUD server actions', () => {
       values: usersToProjectsValues,
     })
 
-    const { updateProjectAction } = await import(
-      '@/app/(admin)/admin/projects/[projectId]/edit/actions'
-    )
+    const { updateProjectAction } =
+      await import('@/app/(admin)/admin/projects/[projectId]/edit/actions')
 
     const formData = createFormData({
       name: 'Updated Project',
@@ -318,9 +320,8 @@ describe('projects CRUD server actions', () => {
       generationName: 'seed-gen',
     })
 
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'projects')

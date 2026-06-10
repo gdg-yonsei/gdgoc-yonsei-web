@@ -55,7 +55,9 @@ export default function MembersSelectInput({
                 )
               }}
             >
-              <div className={'text-xs opacity-70'}>{member.part ?? t('part')}</div>
+              <div className={'text-xs opacity-70'}>
+                {member.part ?? t('part')}
+              </div>
               <div>
                 {member.firstNameKo && member.lastNameKo
                   ? formatUserName(

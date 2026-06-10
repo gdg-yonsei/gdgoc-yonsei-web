@@ -5,17 +5,20 @@ const stars = [
     delay: '0.5s',
   },
   {
-    className: 'bg-gdg-red-300 -bottom-0 -left-24 shooting-star shooting-star-tr',
+    className:
+      'bg-gdg-red-300 -bottom-0 -left-24 shooting-star shooting-star-tr',
     duration: '3s',
     delay: '0s',
   },
   {
-    className: 'bg-gdg-red-300 -bottom-24 -left-24 shooting-star shooting-star-tr',
+    className:
+      'bg-gdg-red-300 -bottom-24 -left-24 shooting-star shooting-star-tr',
     duration: '5s',
     delay: '2s',
   },
   {
-    className: 'bg-gdg-blue-300 -right-24 bottom-0 shooting-star shooting-star-tl',
+    className:
+      'bg-gdg-blue-300 -right-24 bottom-0 shooting-star shooting-star-tl',
     duration: '3s',
     delay: '0.5s',
   },
@@ -26,35 +29,35 @@ const stars = [
     delay: '0s',
   },
   {
-    className: 'bg-gdg-blue-300 top-96 -right-24 shooting-star shooting-star-tl',
+    className:
+      'bg-gdg-blue-300 top-96 -right-24 shooting-star shooting-star-tl',
     duration: '4s',
     delay: '1s',
   },
   {
-    className: 'bg-gdg-green-300 top-0 -right-24 shooting-star shooting-star-bl',
+    className:
+      'bg-gdg-green-300 top-0 -right-24 shooting-star shooting-star-bl',
     duration: '3s',
     delay: '1s',
   },
   {
-    className: 'bg-gdg-green-300 top-48 -right-24 shooting-star shooting-star-bl',
+    className:
+      'bg-gdg-green-300 top-48 -right-24 shooting-star shooting-star-bl',
     duration: '4s',
     delay: '2s',
   },
   {
-    className:
-      'bg-yellow-500 top-24 -left-24 shooting-star shooting-star-br',
+    className: 'bg-yellow-500 top-24 -left-24 shooting-star shooting-star-br',
     duration: '4s',
     delay: '0s',
   },
   {
-    className:
-      'bg-yellow-500 top-48 -left-24 shooting-star shooting-star-br',
+    className: 'bg-yellow-500 top-48 -left-24 shooting-star shooting-star-br',
     duration: '3s',
     delay: '2s',
   },
   {
-    className:
-      'bg-yellow-500 top-96 -left-24 shooting-star shooting-star-br',
+    className: 'bg-yellow-500 top-96 -left-24 shooting-star shooting-star-br',
     duration: '5s',
     delay: '1.5s',
   },
@@ -66,7 +69,9 @@ const stars = [
  */
 export default function HomePageBackground() {
   return (
-    <div className={'pointer-events-none absolute inset-0 -z-10 overflow-hidden'}>
+    <div
+      className={'pointer-events-none absolute inset-0 -z-10 overflow-hidden'}
+    >
       {stars.map((star, index) => (
         <div
           key={index}

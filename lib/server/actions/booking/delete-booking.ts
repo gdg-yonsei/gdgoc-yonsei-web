@@ -3,6 +3,7 @@
 import { auth } from '@/auth'
 import db from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import type { ActionResult } from '@/lib/server/actions/types'
 import { revalidatePath } from 'next/cache'
 import { eq, sql } from 'drizzle-orm'
@@ -27,6 +28,10 @@ export async function deleteBookingAction(
     return { success: false, error: 'Unauthorized' }
   }
 
+  if (!(await handlePermission(session.user.id, 'delete', 'booking'))) {
+    return { success: false, error: 'Forbidden' }
+  }
+
   try {
     const record = await db
       .select({ externalId: bookingRequests.externalId })
@@ -37,6 +42,10 @@ export async function deleteBookingAction(
     const externalId = record[0]?.externalId
 
     if (externalId) {
+      if (!/^\d+$/.test(externalId)) {
+        return { success: false, error: 'Invalid external booking ID' }
+      }
+
       await db.execute(
         sql`DELETE FROM booking_requests WHERE id = ${Number(externalId)}`
       )

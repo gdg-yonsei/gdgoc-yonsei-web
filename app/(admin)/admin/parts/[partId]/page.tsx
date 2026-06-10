@@ -8,7 +8,11 @@ import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -88,7 +92,9 @@ export default async function PartPage({
       <div className={'member-data-grid gap-2'}>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>{partData.generation?.name}</div>
+          <div className={'member-data-content'}>
+            {partData.generation?.name}
+          </div>
         </div>
         <div className={'member-data-box'}>
           <div className={'member-data-title'}>{t.description}</div>

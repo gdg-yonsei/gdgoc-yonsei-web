@@ -8,6 +8,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 ⸻
 
 🚀 Tech Stack
+
 - Framework: Next.js 16 (App Router)
 - Language: TypeScript, React 19
 - Styling: Tailwind CSS 4, Typography Plugin
@@ -15,7 +16,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 - Authentication: NextAuth.js v5 + Drizzle Adapter + WebAuthn
 - Email: Resend + React Email
 - Storage: Cloudflare R2 (with presigned URLs for uploads)
-- Markdown & MDX: next-mdx-remote, react-markdown, rehype-sanitize
+- Markdown: react-markdown, rehype-sanitize
 - Animation: Motion
 - Utilities: Zod (validation), Jotai (state management)
 
@@ -25,39 +26,41 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 
 1. Clone the Repository
 
-    ```bash
-    git clone https://github.com/gdgoc-yonsei/gdgoc-yonsei-web.git
-    cd gdgoc-yonsei-web
-    ```
+   ```bash
+   git clone https://github.com/gdgoc-yonsei/gdgoc-yonsei-web.git
+   cd gdgoc-yonsei-web
+   ```
 
 2. Install Dependencies
 
-    ```bash
-    pnpm install
-    ```
+   ```bash
+   pnpm install
+   ```
 
 3. Configure Environment Variables
-    ```bash
-    cp .env.example .env
-    ```
+
+   ```bash
+   cp .env.example .env
+   ```
 
 4. Run Database Migration
 
-    ```
-    pnpm db:push
-    ```
+   ```
+   pnpm db:push
+   ```
 
 5. Start Development Server
 
-    ```
-    pnpm dev
-    ```
+   ```
+   pnpm dev
+   ```
 
 Your app will be available at http://localhost:3000.
 
 ⸻
 
 📦 NPM Scripts
+
 - pnpm dev → Run development server (Next.js + Turbopack)
 - pnpm build → Run DB migration & build the project
 - pnpm start → Run production server
@@ -66,6 +69,7 @@ Your app will be available at http://localhost:3000.
 - pnpm lint → Run ESLint checks
 
 🧱 Architecture Docs
+
 - Caching and invalidation guide: [`docs/architecture/caching.md`](./docs/architecture/caching.md)
 
 ⸻

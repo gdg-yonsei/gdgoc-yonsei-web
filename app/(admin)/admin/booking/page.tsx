@@ -22,7 +22,11 @@ export default async function BookingPage() {
     redirect('/auth/sign-in')
   }
 
-  const hasPermission = await handlePermission(session.user.id, 'get', 'bookingPage')
+  const hasPermission = await handlePermission(
+    session.user.id,
+    'get',
+    'bookingPage'
+  )
   if (!hasPermission) {
     forbidden()
   }

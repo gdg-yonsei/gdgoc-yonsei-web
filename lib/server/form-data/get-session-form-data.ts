@@ -66,7 +66,9 @@ export default function getSessionFormData(formData: FormData): {
   }
 
   // Safely parse contentImages JSON string
-  const contentImagesArray = parseStringArrayFromJson(formData.get('contentImages'))
+  const contentImagesArray = parseStringArrayFromJson(
+    formData.get('contentImages')
+  )
   const startAt = new Date(formData.get('startAt') as string)
   const endAt = new Date(formData.get('endAt') as string)
 

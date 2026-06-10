@@ -4,7 +4,11 @@ import {
 } from '@/lib/server/fetcher/admin/get-parts'
 import Link from 'next/link'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n/server'
+import {
+  getAdminLocale,
+  getAdminMessages,
+  localizeAdminHref,
+} from '@/lib/admin-i18n/server'
 
 /**
  * 파트 정보 표시 테이블
@@ -12,21 +16,20 @@ import { getAdminLocale, getAdminMessages, localizeAdminHref } from '@/lib/admin
  */
 function groupPartsByGeneration(partsData: AdminPartListItem[]) {
   return Object.values(
-    partsData.reduce<Record<string, { generationName: string; items: AdminPartListItem[] }>>(
-      (groups, part) => {
-        const key = String(part.generationId ?? 'none')
-        if (!groups[key]) {
-          groups[key] = {
-            generationName: part.generationName ?? 'Unknown',
-            items: [],
-          }
+    partsData.reduce<
+      Record<string, { generationName: string; items: AdminPartListItem[] }>
+    >((groups, part) => {
+      const key = String(part.generationId ?? 'none')
+      if (!groups[key]) {
+        groups[key] = {
+          generationName: part.generationName ?? 'Unknown',
+          items: [],
         }
+      }
 
-        groups[key].items.push(part)
-        return groups
-      },
-      {}
-    )
+      groups[key].items.push(part)
+      return groups
+    }, {})
   )
 }
 
@@ -59,7 +62,9 @@ export default async function PartsTable({
         <div key={group.generationName}>
           {scope?.kind === 'all' && (
             <div
-              className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
+              className={
+                'border-b-2 border-neutral-300 text-sm text-neutral-600'
+              }
             >
               {t.generation}: {group.generationName}
             </div>

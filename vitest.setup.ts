@@ -3,7 +3,8 @@ import { cleanup } from '@testing-library/react'
 import React from 'react'
 import { afterEach, vi } from 'vitest'
 
-process.env.AUTH_DRIZZLE_URL ??= 'postgres://postgres:postgres@localhost:5432/test'
+process.env.AUTH_DRIZZLE_URL ??=
+  'postgres://postgres:postgres@localhost:5432/test'
 process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.test'
 process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
 process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'
@@ -65,7 +66,10 @@ const createMotionProxy = () =>
     {
       get:
         (_, tag: string) =>
-        ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
+        ({
+          children,
+          ...props
+        }: React.PropsWithChildren<Record<string, unknown>>) =>
           React.createElement(tag, props, children),
     }
   )

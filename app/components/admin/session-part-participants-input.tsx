@@ -46,7 +46,9 @@ export default function SessionPartParticipantsInput({
   const initialPartId = defaultValue?.partId ?? parts[0]?.id ?? 0
   const [partId, setPartId] = useState<number>(initialPartId)
   const [selectedMembers, setSelectedMembers] = useState<string[]>(
-    defaultValue?.selectedMembers ?? parts[0]?.members.map((member) => member.id) ?? []
+    defaultValue?.selectedMembers ??
+      parts[0]?.members.map((member) => member.id) ??
+      []
   )
 
   const currentPart = useMemo(
@@ -56,7 +58,12 @@ export default function SessionPartParticipantsInput({
 
   return (
     <>
-      <input hidden={true} name={'partId'} readOnly={true} value={String(partId)} />
+      <input
+        hidden={true}
+        name={'partId'}
+        readOnly={true}
+        value={String(partId)}
+      />
       <input
         hidden={true}
         name={'participantId'}
@@ -84,7 +91,9 @@ export default function SessionPartParticipantsInput({
                   className={`${partId === part.id ? 'bg-neutral-950 text-white' : 'bg-neutral-100'} rounded-lg p-2 text-left`}
                 >
                   <div>{part.name}</div>
-                  <div className={'text-xs opacity-70'}>{part.generationName}</div>
+                  <div className={'text-xs opacity-70'}>
+                    {part.generationName}
+                  </div>
                 </button>
               ))}
             </div>

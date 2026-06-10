@@ -59,7 +59,10 @@ export async function getMembers(scope?: AdminGenerationScope | null) {
     .innerJoin(generations, eq(parts.generationsId, generations.id))
     .where(
       scope?.kind === 'generation'
-        ? and(ne(users.role, 'UNVERIFIED'), eq(generations.id, scope.generationId))
+        ? and(
+            ne(users.role, 'UNVERIFIED'),
+            eq(generations.id, scope.generationId)
+          )
         : ne(users.role, 'UNVERIFIED')
     )
     .orderBy(
@@ -72,7 +75,8 @@ export async function getMembers(scope?: AdminGenerationScope | null) {
     )
 
   return [...rows].sort((left, right) => {
-    const generationDifference = (right.generationId ?? 0) - (left.generationId ?? 0)
+    const generationDifference =
+      (right.generationId ?? 0) - (left.generationId ?? 0)
     if (generationDifference !== 0) {
       return generationDifference
     }

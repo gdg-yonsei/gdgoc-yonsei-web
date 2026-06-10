@@ -28,7 +28,9 @@ test.describe('public routes and user interactions', () => {
 
     for (const route of routes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
         expect(response).not.toBeNull()
         expect(response?.status() ?? 0).toBeLessThan(400)
         await expect(page.locator('body')).toBeVisible()
@@ -75,7 +77,9 @@ test.describe('public routes and user interactions', () => {
 
     for (const route of routes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
         expect(response).not.toBeNull()
         expect(response?.status() ?? 0).toBeLessThan(400)
         await expect(page.locator('body')).toBeVisible()
@@ -88,13 +92,17 @@ test.describe('public routes and user interactions', () => {
   }) => {
     const generation = seededData.generationName
 
-    await page.goto(`/en/project/${generation}`, { waitUntil: 'domcontentloaded' })
+    await page.goto(`/en/project/${generation}`, {
+      waitUntil: 'domcontentloaded',
+    })
     await page.getByRole('heading', { name: 'E2E Project' }).click()
     await expect(
       page.getByRole('heading', { name: /E2E Project/i }).first()
     ).toBeVisible()
 
-    await page.goto(`/en/session/${generation}`, { waitUntil: 'domcontentloaded' })
+    await page.goto(`/en/session/${generation}`, {
+      waitUntil: 'domcontentloaded',
+    })
     await page.getByRole('heading', { name: 'E2E Session' }).click()
     await expect(
       page.getByRole('heading', { name: /E2E Session/i }).first()

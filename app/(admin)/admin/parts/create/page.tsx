@@ -36,14 +36,19 @@ export default async function CreatePartPage() {
     ? await resolveAdminGenerationScope(session.user.id)
     : null
 
-  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+  if (
+    resolvedScope?.scope?.kind !== 'generation' ||
+    !resolvedScope.selectedGeneration
+  ) {
     return (
       <AdminDefaultLayout>
         <div className={'admin-title'}>
           {t.create} {t.part}
         </div>
         <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
-          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+          <div className={'font-semibold'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
         </div>
       </AdminDefaultLayout>
     )
@@ -75,7 +80,11 @@ export default async function CreatePartPage() {
           name={'description'}
           placeholder={'e.g. This is a part for Android developers.'}
         />
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>
             {resolvedScope.selectedGeneration.name}

@@ -87,7 +87,10 @@ export async function updateProjectAction(
       },
     })
 
-    if (!existingProject || existingProject.generationId !== Number(generationId)) {
+    if (
+      !existingProject ||
+      existingProject.generationId !== Number(generationId)
+    ) {
       return { error: 'Project generation cannot be changed from this screen.' }
     }
 

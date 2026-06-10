@@ -160,9 +160,8 @@ describe('sessions CRUD server actions', () => {
   })
 
   it('returns session validation error when end time is before start time', async () => {
-    const { createSessionAction } = await import(
-      '@/app/(admin)/admin/sessions/create/actions'
-    )
+    const { createSessionAction } =
+      await import('@/app/(admin)/admin/sessions/create/actions')
 
     const formData = createFormData({
       name: 'CRUD Session',
@@ -207,9 +206,8 @@ describe('sessions CRUD server actions', () => {
         values: participantValues,
       })
 
-    const { createSessionAction } = await import(
-      '@/app/(admin)/admin/sessions/create/actions'
-    )
+    const { createSessionAction } =
+      await import('@/app/(admin)/admin/sessions/create/actions')
 
     const formData = createFormData({
       name: 'CRUD Session',
@@ -279,9 +277,8 @@ describe('sessions CRUD server actions', () => {
       },
     })
 
-    const { updateSessionAction } = await import(
-      '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
-    )
+    const { updateSessionAction } =
+      await import('@/app/(admin)/admin/sessions/[sessionId]/edit/actions')
 
     const formData = createFormData({
       name: 'Updated Session',
@@ -353,9 +350,8 @@ describe('sessions CRUD server actions', () => {
       generationName: 'seed-gen',
     })
 
-    const { default: deleteResourceAction } = await import(
-      '@/app/components/admin/data-delete-button/actions'
-    )
+    const { default: deleteResourceAction } =
+      await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
     formData.set('dataType', 'sessions')

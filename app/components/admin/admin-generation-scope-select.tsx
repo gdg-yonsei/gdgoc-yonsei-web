@@ -34,12 +34,14 @@ export default function AdminGenerationScopeSelect({
   return (
     <label className={'flex w-full min-w-0 flex-col gap-1'}>
       {showLabel && (
-        <span className={'text-xs font-semibold text-neutral-500'}>{label}</span>
+        <span className={'text-xs font-semibold text-neutral-500'}>
+          {label}
+        </span>
       )}
       <select
         aria-label={label}
         className={
-          'w-full max-w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 outline-none transition focus:border-neutral-900 disabled:cursor-not-allowed disabled:bg-neutral-100'
+          'w-full max-w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 transition outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:bg-neutral-100'
         }
         defaultValue={selectedValue}
         disabled={disabled || isPending}

@@ -14,7 +14,7 @@ function extractSitemapPaths(xml: string): string[] {
 function assertHealthyResponse(path: string, responseStatus: number) {
   expect(
     responseStatus,
-    `${path} returned an unexpected status: ${responseStatus.toString()}`,
+    `${path} returned an unexpected status: ${responseStatus.toString()}`
   ).toBeLessThan(400)
 }
 
@@ -26,7 +26,10 @@ test('root path redirects to a localized home page', async ({ page }) => {
   await expect(page.locator('body')).toBeVisible()
 })
 
-test('all sitemap URLs return successful responses', async ({ page, request }) => {
+test('all sitemap URLs return successful responses', async ({
+  page,
+  request,
+}) => {
   test.setTimeout(5 * 60 * 1000)
 
   const sitemapResponse = await request.get('/sitemap.xml')
@@ -51,7 +54,7 @@ test('all sitemap URLs return successful responses', async ({ page, request }) =
         await expect(page.locator('body')).toBeVisible()
       } catch (error) {
         failures.push(
-          `${path}\n${error instanceof Error ? error.message : String(error)}`,
+          `${path}\n${error instanceof Error ? error.message : String(error)}`
         )
       }
     })
@@ -59,6 +62,6 @@ test('all sitemap URLs return successful responses', async ({ page, request }) =
 
   expect(
     failures,
-    `Sitemap smoke test failures:\n\n${failures.join('\n\n')}`,
+    `Sitemap smoke test failures:\n\n${failures.join('\n\n')}`
   ).toEqual([])
 })

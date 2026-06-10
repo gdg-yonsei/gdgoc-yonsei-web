@@ -28,9 +28,8 @@ describe('R2 helper utilities', () => {
   it('generates presigned url with expected command input', async () => {
     mockGetSignedUrl.mockResolvedValue('https://signed.example/upload')
 
-    const { default: getPreSignedUrl } = await import(
-      '@/lib/server/get-pre-signed-url'
-    )
+    const { default: getPreSignedUrl } =
+      await import('@/lib/server/get-pre-signed-url')
 
     const signedUrl = await getPreSignedUrl('images/file.png', 'image/png')
 
@@ -49,20 +48,18 @@ describe('R2 helper utilities', () => {
   it('throws when R2 bucket env is missing for presigned url generation', async () => {
     delete process.env.R2_BUCKET_NAME
 
-    const { default: getPreSignedUrl } = await import(
-      '@/lib/server/get-pre-signed-url'
-    )
+    const { default: getPreSignedUrl } =
+      await import('@/lib/server/get-pre-signed-url')
 
-    await expect(getPreSignedUrl('images/file.png', 'image/png')).rejects.toThrow(
-      'R2_BUCKET_NAME is not set in environment variables.'
-    )
+    await expect(
+      getPreSignedUrl('images/file.png', 'image/png')
+    ).rejects.toThrow('R2_BUCKET_NAME is not set in environment variables.')
     expect(mockGetSignedUrl).not.toHaveBeenCalled()
   })
 
   it('returns true immediately for empty delete list', async () => {
-    const { default: deleteR2Images } = await import(
-      '@/lib/server/delete-r2-images'
-    )
+    const { default: deleteR2Images } =
+      await import('@/lib/server/delete-r2-images')
 
     await expect(deleteR2Images([])).resolves.toBe(true)
     expect(mockR2Send).not.toHaveBeenCalled()
@@ -71,9 +68,8 @@ describe('R2 helper utilities', () => {
   it('deletes provided object keys from configured bucket', async () => {
     mockR2Send.mockResolvedValue({ Deleted: [{ Key: 'images/file.png' }] })
 
-    const { default: deleteR2Images } = await import(
-      '@/lib/server/delete-r2-images'
-    )
+    const { default: deleteR2Images } =
+      await import('@/lib/server/delete-r2-images')
 
     const result = await deleteR2Images([
       'images/file.png',
@@ -84,18 +80,19 @@ describe('R2 helper utilities', () => {
     expect(mockR2Send).toHaveBeenCalledTimes(1)
 
     const [deleteCommand] = mockR2Send.mock.calls[0]!
-    expect((deleteCommand as { input: Record<string, unknown> }).input).toEqual({
-      Bucket: 'test-bucket',
-      Delete: {
-        Objects: [{ Key: 'images/file.png' }, { Key: 'images/file-2.png' }],
-      },
-    })
+    expect((deleteCommand as { input: Record<string, unknown> }).input).toEqual(
+      {
+        Bucket: 'test-bucket',
+        Delete: {
+          Objects: [{ Key: 'images/file.png' }, { Key: 'images/file-2.png' }],
+        },
+      }
+    )
   })
 
   it('returns false if delete fails or bucket env is missing', async () => {
-    const { default: deleteR2Images } = await import(
-      '@/lib/server/delete-r2-images'
-    )
+    const { default: deleteR2Images } =
+      await import('@/lib/server/delete-r2-images')
 
     delete process.env.R2_BUCKET_NAME
     await expect(deleteR2Images(['images/file.png'])).resolves.toBe(false)

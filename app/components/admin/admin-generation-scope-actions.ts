@@ -26,6 +26,8 @@ export async function setAdminGenerationScopeAction(nextValue: string) {
 
   cookieStore.set(ADMIN_GENERATION_SCOPE_COOKIE, normalizedValue, {
     path: '/',
+    httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
   })
 }

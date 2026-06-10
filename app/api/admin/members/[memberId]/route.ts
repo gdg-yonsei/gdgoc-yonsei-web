@@ -22,16 +22,22 @@ export async function PUT(
   const { memberId } = await params
   const session = await auth()
   // 사용자 권한 확인
-  if (!(await handlePermission(session?.user?.id, 'put', 'members', memberId))) {
+  if (
+    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
+  ) {
     return privateJson({ error: 'Forbidden' }, { status: 403 })
   }
   // Body 에서 프로필 이미지 URL 추출
   const json = await request.json().catch(() => null)
-  const bodyValidationResult = updateMemberProfileImageValidation.safeParse(json)
+  const bodyValidationResult =
+    updateMemberProfileImageValidation.safeParse(json)
 
   if (!bodyValidationResult.success) {
     return privateJson(
-      { error: bodyValidationResult.error.issues[0]?.message ?? 'Validation failed' },
+      {
+        error:
+          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
+      },
       { status: 400 }
     )
   }

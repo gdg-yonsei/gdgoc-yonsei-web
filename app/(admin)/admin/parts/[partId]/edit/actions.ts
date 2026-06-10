@@ -74,7 +74,8 @@ export async function updatePartAction(
       return { error: 'Part generation cannot be changed from this screen.' }
     }
 
-    const previousGenerationName = await getGenerationNameForPartId(partIdNumber)
+    const previousGenerationName =
+      await getGenerationNameForPartId(partIdNumber)
     const nextGeneration = await getGenerationNameById(generationId)
 
     // part 정보 업데이트 쿼리

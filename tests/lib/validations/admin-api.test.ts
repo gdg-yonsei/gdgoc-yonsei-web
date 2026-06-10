@@ -81,8 +81,9 @@ describe('admin api validation schemas', () => {
   })
 
   it('validates image delete and profile update payload', () => {
-    expect(imageDeleteValidation.safeParse({ imageUrl: 'path/to/file' }).success)
-      .toBe(true)
+    expect(
+      imageDeleteValidation.safeParse({ imageUrl: 'path/to/file' }).success
+    ).toBe(true)
     expect(imageDeleteValidation.safeParse({ imageUrl: '' }).success).toBe(
       false
     )

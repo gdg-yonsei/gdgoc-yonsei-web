@@ -5,7 +5,11 @@ import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import type { Locale } from '@/i18n-config'
-import { cacheQuery, memberGenerationTag, memberListTag } from '@/lib/server/cache'
+import {
+  cacheQuery,
+  memberGenerationTag,
+  memberListTag,
+} from '@/lib/server/cache'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { asc, eq } from 'drizzle-orm'
 

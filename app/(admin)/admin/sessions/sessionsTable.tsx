@@ -20,20 +20,22 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
  */
 function groupSessionsByGeneration(sessionList: AdminSessionListItem[]) {
   return Object.values(
-    sessionList.reduce<Record<string, { generationName: string; sessions: AdminSessionListItem[] }>>(
-      (groups, session) => {
-        const key = String(session.generationId ?? 'none')
-        if (!groups[key]) {
-          groups[key] = {
-            generationName: session.generationName ?? 'Unknown',
-            sessions: [],
-          }
+    sessionList.reduce<
+      Record<
+        string,
+        { generationName: string; sessions: AdminSessionListItem[] }
+      >
+    >((groups, session) => {
+      const key = String(session.generationId ?? 'none')
+      if (!groups[key]) {
+        groups[key] = {
+          generationName: session.generationName ?? 'Unknown',
+          sessions: [],
         }
-        groups[key].sessions.push(session)
-        return groups
-      },
-      {}
-    )
+      }
+      groups[key].sessions.push(session)
+      return groups
+    }, {})
   )
 }
 
@@ -65,7 +67,9 @@ export default async function SessionsTable({
         <div key={group.generationName}>
           {scope?.kind === 'all' && (
             <div
-              className={'border-b-2 border-neutral-300 text-sm text-neutral-600'}
+              className={
+                'border-b-2 border-neutral-300 text-sm text-neutral-600'
+              }
             >
               {t.generation}: {group.generationName}
             </div>

@@ -129,7 +129,8 @@ export async function resolveAdminGenerationScope(
 
   if (requestedScope?.kind === 'generation') {
     const selectedGeneration =
-      options.find((option) => option.id === requestedScope.generationId) ?? null
+      options.find((option) => option.id === requestedScope.generationId) ??
+      null
 
     return {
       canAccessAll,

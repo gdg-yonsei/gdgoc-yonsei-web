@@ -30,10 +30,7 @@ export async function setHiddenInputValue(
   )
 }
 
-export async function setAdminGenerationScope(
-  page: Page,
-  scopeName: string
-) {
+export async function setAdminGenerationScope(page: Page, scopeName: string) {
   const scopeSelect = page
     .locator(
       'select[aria-label="Current Scope"], select[aria-label="현재 범위"], select[aria-label="Generation"], select[aria-label="기수"]'

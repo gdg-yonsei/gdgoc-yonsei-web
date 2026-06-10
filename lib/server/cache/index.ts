@@ -1,6 +1,12 @@
 import 'server-only'
 
-import { cacheLife, cacheTag, revalidatePath, revalidateTag, updateTag } from 'next/cache'
+import {
+  cacheLife,
+  cacheTag,
+  revalidatePath,
+  revalidateTag,
+  updateTag,
+} from 'next/cache'
 import { i18n } from '@/i18n-config'
 import {
   cacheLifeConfig,

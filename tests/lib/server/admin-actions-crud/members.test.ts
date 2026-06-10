@@ -69,9 +69,8 @@ describe('members CRUD server actions', () => {
   it('returns forbidden when member edit permission is denied', async () => {
     mockHandlePermission.mockResolvedValue(false)
 
-    const { updateMemberAction } = await import(
-      '@/app/(admin)/admin/members/[memberId]/edit/actions'
-    )
+    const { updateMemberAction } =
+      await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
 
     const formData = createFormData({
       name: 'updated-member',
@@ -101,9 +100,8 @@ describe('members CRUD server actions', () => {
   it('updates member profile and applies role when allowed', async () => {
     mockHandlePermission.mockResolvedValueOnce(true).mockResolvedValueOnce(true)
 
-    const { updateMemberAction } = await import(
-      '@/app/(admin)/admin/members/[memberId]/edit/actions'
-    )
+    const { updateMemberAction } =
+      await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
 
     const formData = createFormData({
       name: 'updated-member',
@@ -139,11 +137,12 @@ describe('members CRUD server actions', () => {
   })
 
   it('updates member profile without role field when role permission is denied', async () => {
-    mockHandlePermission.mockResolvedValueOnce(true).mockResolvedValueOnce(false)
+    mockHandlePermission
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false)
 
-    const { updateMemberAction } = await import(
-      '@/app/(admin)/admin/members/[memberId]/edit/actions'
-    )
+    const { updateMemberAction } =
+      await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
 
     const formData = createFormData({
       name: 'updated-member',
@@ -170,9 +169,8 @@ describe('members CRUD server actions', () => {
   })
 
   it('approves pending member and maps role value', async () => {
-    const { default: acceptMemberAction } = await import(
-      '@/app/(admin)/admin/members/accept/actions'
-    )
+    const { default: acceptMemberAction } =
+      await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
       userId: 'pending-1',
@@ -190,9 +188,8 @@ describe('members CRUD server actions', () => {
   })
 
   it('deletes pending user from accept page', async () => {
-    const { deleteUserAction } = await import(
-      '@/app/(admin)/admin/members/accept/actions'
-    )
+    const { deleteUserAction } =
+      await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
       userId: 'pending-2',

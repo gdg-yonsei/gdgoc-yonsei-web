@@ -40,7 +40,10 @@ export default async function CreateProjectPage() {
     ? await resolveAdminGenerationScope(session.user.id)
     : null
 
-  if (resolvedScope?.scope?.kind !== 'generation' || !resolvedScope.selectedGeneration) {
+  if (
+    resolvedScope?.scope?.kind !== 'generation' ||
+    !resolvedScope.selectedGeneration
+  ) {
     return (
       <AdminDefaultLayout>
         <AdminNavigationButton href={'/admin/projects'}>
@@ -51,7 +54,9 @@ export default async function CreateProjectPage() {
           {t.create} {t.project}
         </div>
         <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
-          <div className={'font-semibold'}>{t.selectSpecificGenerationToCreate}</div>
+          <div className={'font-semibold'}>
+            {t.selectSpecificGenerationToCreate}
+          </div>
         </div>
       </AdminDefaultLayout>
     )
@@ -152,7 +157,11 @@ export default async function CreateProjectPage() {
             }
           />
         </div>
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>
             {resolvedScope.selectedGeneration.name}

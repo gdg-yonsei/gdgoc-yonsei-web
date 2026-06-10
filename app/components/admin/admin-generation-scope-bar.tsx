@@ -40,13 +40,21 @@ export default function AdminGenerationScopeBar({
               showLabel={false}
             />
           ) : (
-            <div className={'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'}>
+            <div
+              className={
+                'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'
+              }
+            >
               {t.noAccessibleGenerations}
             </div>
           )}
         </div>
       ) : (
-        <div className={'flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'}>
+        <div
+          className={
+            'flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'
+          }
+        >
           {resolvedScope.options.length > 0 ? (
             <AdminGenerationScopeSelect
               allGenerationsLabel={t.allGenerations}
@@ -57,7 +65,11 @@ export default function AdminGenerationScopeBar({
               selectedValue={serializeAdminGenerationScope(resolvedScope.scope)}
             />
           ) : (
-            <div className={'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'}>
+            <div
+              className={
+                'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'
+              }
+            >
               {t.noAccessibleGenerations}
             </div>
           )}

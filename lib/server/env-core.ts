@@ -37,7 +37,9 @@ const baseServerEnvSchema = z.object({
   R2_BUCKET_NAME: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
   REDIS_URL: redisUrlSchema.optional(),
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
 })
 
 const siteEnvSchema = z.object({

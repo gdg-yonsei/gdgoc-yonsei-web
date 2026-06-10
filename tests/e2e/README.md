@@ -1,6 +1,7 @@
 # Playwright E2E Tests
 
 ## Prerequisites
+
 - `.env` must be configured.
 - Database must be reachable because the home header and many routes query DB.
 - Install browser binaries once:
@@ -16,6 +17,7 @@ pnpm test:e2e
 ```
 
 ## Optional
+
 - UI mode: `pnpm test:e2e:ui`
 - Headed mode: `pnpm test:e2e:headed`
 - Use an existing server:

@@ -16,11 +16,7 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function HomePageButton({
-  locale = 'en',
-}: {
-  locale?: Locale
-}) {
+export default function HomePageButton({ locale = 'en' }: { locale?: Locale }) {
   const { t } = useAdminI18n()
 
   return (

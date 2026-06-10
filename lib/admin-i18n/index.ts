@@ -219,7 +219,8 @@ const adminMessages = {
     noAccessibleGenerations:
       '현재 관리자 소속으로 연결된 기수가 아직 없습니다.',
     noScopedResults: '선택한 기수에는 아직 표시할 데이터가 없습니다.',
-    noScopedResultsHint: '다른 기수를 선택하거나 이 기수에 새 데이터를 생성하세요.',
+    noScopedResultsHint:
+      '다른 기수를 선택하거나 이 기수에 새 데이터를 생성하세요.',
     selectSpecificGenerationToCreate:
       '데이터를 생성하려면 상단 범위에서 특정 기수를 선택하세요.',
     switchToItemGeneration: '이 기수로 전환',

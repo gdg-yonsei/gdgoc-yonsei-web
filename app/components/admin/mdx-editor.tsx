@@ -61,7 +61,7 @@ export default function MDXEditor({
     >
       <div className={'member-data-title'}>{title}</div>
       <div className={'flex flex-col items-start gap-2 lg:flex-row'}>
-          <div className={'w-full'}>
+        <div className={'w-full'}>
           <div>{locale === 'ko' ? '에디터' : 'Editor'}</div>
           <textarea
             ref={textareaRef}

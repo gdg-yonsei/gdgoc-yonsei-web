@@ -38,12 +38,15 @@ Pre-PR checks: `pnpm lint`, `pnpm test`, `pnpm build`.
 ## Architecture
 
 ### Route Groups
+
 - `app/(home)/[lang]/` — public pages with locale parameter (en, ko)
 - `app/(admin)/` — admin pages (auth, booking, projects, members)
 - `app/api/` — API routes (auth, admin image uploads, member management)
 
 ### Server Code Separation
+
 `lib/server/` contains all server-only logic, enforced by ESLint (cannot import from `app/`):
+
 - `actions/` — server actions (e.g., booking CRUD)
 - `queries/public/` — cached data fetching
 - `cache/` — cache policies, tags, invalidation (locale-scoped tags like `project:item:uuid:ko`)
@@ -51,31 +54,37 @@ Pre-PR checks: `pnpm lint`, `pnpm test`, `pnpm build`.
 - `services/` — business logic
 
 ### Database
+
 - Schema definitions in `db/schema/`, client instance in `db/index.ts`
 - Drizzle ORM with PostgreSQL; migrations in `drizzle/`
 - Key tables: users (with roles), projects, sessions, booking_requests, generations, parts
 
 ### Auth
+
 - NextAuth.js v5 (beta) with Drizzle adapter, configured in `auth.ts`
 - Providers: GitHub OAuth, Google OAuth, WebAuthn/Passkeys
 - Database-backed sessions; permission checks in `lib/server/permission/`
 
 ### i18n
+
 - Path-based routing via `[lang]` parameter (en, ko)
 - Admin locale via cookie (`ADMIN_LOCALE_COOKIE`)
 - `proxy.ts` middleware handles locale detection and redirects
 
 ### Caching
+
 - Next.js ISR with granular cache life policies per content type (`lib/server/cache/policy.ts`)
 - Optional Redis distributed cache (enabled when `REDIS_URL` is set)
 - Cache tags are locale-scoped; invalidation in `lib/server/cache/invalidation.ts`
 - Architecture doc: `docs/architecture/caching.md`
 
 ### Storage
+
 - Cloudflare R2 via AWS SDK S3 client (`lib/server/r2-client.ts`)
 - Presigned URLs for secure uploads (`lib/server/get-pre-signed-url.ts`)
 
 ### Testing
+
 - Unit/component: `tests/unit/*.test.ts`, `tests/component/*.test.tsx` (Vitest + Testing Library + JSDOM)
 - E2E: `tests/e2e/*.spec.ts` (Playwright, Chromium only, single worker)
 - `server-only` module is mocked in Vitest config

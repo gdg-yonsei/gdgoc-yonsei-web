@@ -54,7 +54,9 @@ function publicPath(
   return toLocalizedPublicRoute(`/${locale}${pathname}`)
 }
 
-function localizedPublicPaths(pathnames: readonly LocalizedPublicRoute[]): string[] {
+function localizedPublicPaths(
+  pathnames: readonly LocalizedPublicRoute[]
+): string[] {
   return i18n.locales.flatMap((locale) =>
     pathnames.map((pathname) => publicPath(pathname, locale))
   )
@@ -95,7 +97,9 @@ export function invalidateGenerationPublicCache(args: {
   nextGenerationName?: string | null
 }) {
   const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(Boolean) as string[]
+    [args.previousGenerationName, args.nextGenerationName].filter(
+      Boolean
+    ) as string[]
   )
 
   const immediateTags = uniqueStrings(
@@ -195,7 +199,9 @@ export function invalidateProjectPublicCache(args: {
   nextGenerationName?: string | null
 }) {
   const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(Boolean) as string[]
+    [args.previousGenerationName, args.nextGenerationName].filter(
+      Boolean
+    ) as string[]
   )
 
   const immediateTags = uniqueStrings(
@@ -235,7 +241,9 @@ export function invalidateSessionPublicCache(args: {
   nextGenerationName?: string | null
 }) {
   const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(Boolean) as string[]
+    [args.previousGenerationName, args.nextGenerationName].filter(
+      Boolean
+    ) as string[]
   )
 
   const immediateTags = uniqueStrings(

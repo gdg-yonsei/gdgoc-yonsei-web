@@ -156,7 +156,11 @@ export default async function EditProjectPage({
             }
           />
         </div>
-        <div className={'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'}>
+        <div
+          className={
+            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
+          }
+        >
           <div className={'member-data-title'}>{t.generation}</div>
           <div className={'member-data-content'}>{actualGeneration?.name}</div>
         </div>
