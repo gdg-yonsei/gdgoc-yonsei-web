@@ -40,7 +40,7 @@ export default async function Sidebar() {
   return (
     <div
       className={
-        'fixed top-0 left-0 hidden h-screen w-60 bg-neutral-100 p-4 lg:block'
+        'fixed top-0 left-0 hidden h-screen w-60 overflow-y-auto bg-neutral-100 p-4 lg:block'
       }
     >
       <div className={'flex w-full items-center gap-2'}>
