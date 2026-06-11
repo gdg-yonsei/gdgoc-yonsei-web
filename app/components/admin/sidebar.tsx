@@ -50,7 +50,7 @@ export default function Sidebar({
   return (
     <div
       className={
-        'fixed top-0 left-0 hidden h-screen w-60 bg-neutral-100 p-4 lg:block'
+        'fixed top-0 left-0 hidden h-screen w-60 overflow-y-auto bg-neutral-100 p-4 lg:block'
       }
     >
       {/*관리자 페이지 사이드바 제목*/}

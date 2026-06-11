@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 
 import * as accountsSchema from './schema/accounts'
 import * as authSessionsSchema from './schema/auth-sessions'
@@ -21,7 +22,13 @@ import { getDatabaseEnv } from '@/lib/server/env-core'
 
 const databaseEnv = getDatabaseEnv()
 
-const db = drizzle(databaseEnv.AUTH_DRIZZLE_URL, {
+const client = postgres(databaseEnv.AUTH_DRIZZLE_URL, {
+  transform: {
+    undefined: null,
+  },
+})
+
+const db = drizzle(client, {
   schema: {
     ...accountsSchema,
     ...authSessionsSchema,
@@ -43,3 +50,4 @@ const db = drizzle(databaseEnv.AUTH_DRIZZLE_URL, {
 })
 
 export default db
+
