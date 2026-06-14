@@ -5,6 +5,8 @@ import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import { Locale } from '@/i18n-config'
 import { localizeAdminHref } from '@/lib/admin-i18n'
+import AdminGenerationScopeBar from '@/app/components/admin/admin-generation-scope-bar'
+import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 /**
  * 모바일 화면에서 보이는 관리자 페이지 헤더
@@ -13,9 +15,11 @@ import { localizeAdminHref } from '@/lib/admin-i18n'
 export default function Header({
   navigations,
   locale,
+  resolvedScope,
 }: {
   navigations: NavigationItem[]
   locale: Locale
+  resolvedScope: ResolvedAdminGenerationScope
 }) {
   return (
     <div className={'fixed top-0 left-0 z-10 flex w-full flex-col lg:hidden'}>
@@ -33,7 +37,13 @@ export default function Header({
           <ToggleMenubarButton />
         </div>
       </div>
-      <MenuBar navigations={navigations} locale={locale} />
+      <MenuBar navigations={navigations} locale={locale}>
+        <AdminGenerationScopeBar
+          locale={locale}
+          resolvedScope={resolvedScope}
+          variant={'sidebar'}
+        />
+      </MenuBar>
     </div>
   )
 }
