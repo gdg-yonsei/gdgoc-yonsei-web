@@ -27,7 +27,11 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html lang={'en'} className={`bg-neutral-50 ${googleSans.className}`}>
+    <html
+      lang={'en'}
+      className={`bg-neutral-50 ${googleSans.className}`}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   )

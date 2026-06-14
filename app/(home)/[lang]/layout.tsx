@@ -79,6 +79,7 @@ export default async function RootLayout({
     <html
       lang={lang}
       className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
+      suppressHydrationWarning
     >
       <body>
         <Header lang={lang} />
