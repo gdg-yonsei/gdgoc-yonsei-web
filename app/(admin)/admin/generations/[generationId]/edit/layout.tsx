@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden } from 'next/navigation'
+import { connection } from 'next/server'
 
 /**
  * `EditGenerationLayout` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -20,6 +21,7 @@ export default async function EditGenerationLayout({
 }: {
   children: ReactNode
 }) {
+  await connection()
   const session = await auth()
   // 사용자가 generation 을 수정할 권한이 있는지 확인
   if (!(await handlePermission(session?.user?.id, 'put', 'generations'))) {

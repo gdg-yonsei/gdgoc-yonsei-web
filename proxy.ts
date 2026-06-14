@@ -62,12 +62,10 @@ export function proxy(request: NextRequest) {
     isSupportedLocale(localeFromPath) && pathnameSegments[2] === 'admin'
 
   if (isLocalizedAdminPath) {
-    const rewritePathname = pathname.replace(`/${localeFromPath}`, '') || '/'
-    const rewriteUrl = request.nextUrl.clone()
-    rewriteUrl.pathname = rewritePathname
-
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set('x-admin-locale', localeFromPath)
+    const rewriteUrl = request.nextUrl.clone()
+    rewriteUrl.pathname = `/${pathnameSegments.slice(2).join('/')}`
 
     const response = NextResponse.rewrite(rewriteUrl, {
       request: {
@@ -90,13 +88,16 @@ export function proxy(request: NextRequest) {
     const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
     const locale = isSupportedLocale(localeFromCookie)
       ? localeFromCookie
-      : getLocale(request)
+      : (getLocale(request) ?? i18n.defaultLocale)
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-admin-locale', locale)
 
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = `/${locale}${pathname}`
-
-    const response = NextResponse.redirect(redirectUrl)
-    response.cookies.set(ADMIN_LOCALE_COOKIE, locale ?? i18n.defaultLocale, {
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    })
+    response.cookies.set(ADMIN_LOCALE_COOKIE, locale, {
       path: '/',
       httpOnly: true,
       sameSite: 'lax',

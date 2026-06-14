@@ -1,7 +1,11 @@
 import 'server-only'
 
 import { unstable_noStore as noStore } from 'next/cache'
+import { asc, count, desc, eq } from 'drizzle-orm'
 import db from '@/db'
+import { generations } from '@/db/schema/generations'
+import { parts } from '@/db/schema/parts'
+import { usersToParts } from '@/db/schema/users-to-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export type AdminPartListItem = {
@@ -21,29 +25,28 @@ export const preloadParts = (scope?: AdminGenerationScope | null) => {
 export async function getParts(scope?: AdminGenerationScope | null) {
   noStore()
 
-  const partList = await db.query.parts.findMany({
-    where:
+  return db
+    .select({
+      id: parts.id,
+      name: parts.name,
+      description: parts.description,
+      displayOrder: parts.displayOrder,
+      memberCount: count(usersToParts.userId),
+      generationId: generations.id,
+      generationName: generations.name,
+    })
+    .from(parts)
+    .leftJoin(generations, eq(parts.generationsId, generations.id))
+    .leftJoin(usersToParts, eq(usersToParts.partId, parts.id))
+    .where(
       scope?.kind === 'generation'
-        ? (part, { eq }) => eq(part.generationsId, scope.generationId)
-        : undefined,
-    with: {
-      generation: true,
-      usersToParts: true,
-    },
-    orderBy: (part, { asc, desc }) => [
-      desc(part.generationsId),
-      asc(part.displayOrder),
-      asc(part.createdAt),
-    ],
-  })
-
-  return partList.map<AdminPartListItem>((part) => ({
-    id: part.id,
-    name: part.name,
-    description: part.description,
-    displayOrder: part.displayOrder,
-    memberCount: part.usersToParts.length,
-    generationId: part.generation?.id ?? part.generationsId ?? null,
-    generationName: part.generation?.name ?? null,
-  }))
+        ? eq(parts.generationsId, scope.generationId)
+        : undefined
+    )
+    .groupBy(parts.id, generations.id)
+    .orderBy(
+      desc(parts.generationsId),
+      asc(parts.displayOrder),
+      asc(parts.createdAt)
+    )
 }

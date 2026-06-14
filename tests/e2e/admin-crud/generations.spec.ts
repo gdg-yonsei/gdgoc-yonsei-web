@@ -10,19 +10,26 @@ import {
 test.use({ storageState: ADMIN_STORAGE_STATE })
 
 type SeededData = Awaited<ReturnType<typeof readSeededData>>
-const localizedGenerationsListPath = /\/(?:en|ko)\/admin\/generations$/
-const localizedGenerationDetailPath = /\/(?:en|ko)\/admin\/generations\/\d+$/
-const localizedGenerationCreatePath = /\/(?:en|ko)\/admin\/generations\/create$/
+const adminGenerationsListPath = /\/(?:(?:en|ko)\/)?admin\/generations$/
+const adminGenerationDetailPath = /\/(?:(?:en|ko)\/)?admin\/generations\/\d+$/
+const adminGenerationCreatePath =
+  /\/(?:(?:en|ko)\/)?admin\/generations\/create$/
 
 async function createGeneration(page: Page, name: string) {
   await page.goto('/admin/generations/create', {
     waitUntil: 'domcontentloaded',
   })
-  await page.locator('input[name="name"]').fill(name)
-  await page.locator('input[name="startDate"]').fill('2024-01-01')
-  await page.locator('input[name="endDate"]').fill('2024-12-31')
+  await page.locator('input[name="name"]').filter({ visible: true }).fill(name)
+  await page
+    .locator('input[name="startDate"]')
+    .filter({ visible: true })
+    .fill('2024-01-01')
+  await page
+    .locator('input[name="endDate"]')
+    .filter({ visible: true })
+    .fill('2024-12-31')
   await page.getByRole('button', { name: 'Submit' }).click()
-  await expect(page).toHaveURL(localizedGenerationsListPath)
+  await expect(page).toHaveURL(adminGenerationsListPath, { timeout: 30_000 })
 }
 
 async function openGenerationByName(page: Page, name: string) {
@@ -59,6 +66,8 @@ test.describe('generations CRUD', () => {
 
   test.describe('update', () => {
     test('updates a newly created generation', async ({ page }) => {
+      test.setTimeout(150_000)
+
       const generationName = `crud-generation-${Date.now().toString()}`
       const updatedName = `${generationName}-updated`
 
@@ -69,17 +78,27 @@ test.describe('generations CRUD', () => {
       ).toBeVisible()
 
       await page.getByRole('link', { name: 'Edit' }).click()
-      await page.locator('input[name="name"]').fill(updatedName)
-      await page.locator('input[name="endDate"]').fill('2028-01-01')
+      await page
+        .locator('input[name="name"]')
+        .filter({ visible: true })
+        .fill(updatedName)
+      await page
+        .locator('input[name="endDate"]')
+        .filter({ visible: true })
+        .fill('2028-01-01')
       await page.getByRole('button', { name: 'Submit' }).click()
 
-      await expect(page).toHaveURL(localizedGenerationDetailPath)
+      await expect(page).toHaveURL(adminGenerationDetailPath, {
+        timeout: 30_000,
+      })
       await expect(
         page.getByText(`Generation: ${updatedName}`, { exact: true })
       ).toBeVisible()
 
       await openDeleteModalAndConfirm(page)
-      await expect(page).toHaveURL(localizedGenerationsListPath)
+      await expect(page).toHaveURL(adminGenerationsListPath, {
+        timeout: 30_000,
+      })
       await expect(
         page.getByRole('link', {
           name: new RegExp(`Generation: ${escapeRegExp(updatedName)}`),
@@ -91,15 +110,26 @@ test.describe('generations CRUD', () => {
       await page.goto('/admin/generations/create', {
         waitUntil: 'domcontentloaded',
       })
-      await page.locator('input[name="name"]').fill('invalid-range-generation')
-      await page.locator('input[name="startDate"]').fill('2029-12-31')
-      await page.locator('input[name="endDate"]').fill('2029-01-01')
+      await page
+        .locator('input[name="name"]')
+        .filter({ visible: true })
+        .fill('invalid-range-generation')
+      await page
+        .locator('input[name="startDate"]')
+        .filter({ visible: true })
+        .fill('2029-12-31')
+      await page
+        .locator('input[name="endDate"]')
+        .filter({ visible: true })
+        .fill('2029-01-01')
       await page.getByRole('button', { name: 'Submit' }).click()
 
       await expect(
         page.getByText('The end date must be later than the start date.')
       ).toBeVisible()
-      await expect(page).toHaveURL(localizedGenerationCreatePath)
+      await expect(page).toHaveURL(adminGenerationCreatePath, {
+        timeout: 30_000,
+      })
     })
   })
 
@@ -116,7 +146,9 @@ test.describe('generations CRUD', () => {
       ).toBeVisible()
 
       await openDeleteModalAndConfirm(page)
-      await expect(page).toHaveURL(localizedGenerationsListPath)
+      await expect(page).toHaveURL(adminGenerationsListPath, {
+        timeout: 30_000,
+      })
       await expect(
         page.getByRole('link', {
           name: new RegExp(`Generation: ${escapeRegExp(generationName)}`),

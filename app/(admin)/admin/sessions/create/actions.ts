@@ -1,9 +1,6 @@
 'use server'
 
-import { auth } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { forbidden, redirect } from 'next/navigation'
-import { z } from 'zod'
+import { redirect } from 'next/navigation'
 import db from '@/db'
 import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
 import { sessionValidation } from '@/lib/validations/session'
@@ -12,35 +9,36 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import { Resend } from 'resend'
-import NewSession from '@/emails/new-session'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { getResendEnv, getSiteEnv } from '@/lib/server/env'
 import { invalidateSessionPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { getGenerationNameForPartId } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  authorizeAdminAction,
+  getZodActionError,
+  insertRowsIfAny,
+  stripHtmlCharacters,
+} from '@/lib/server/actions/admin'
 
-/**
- * Create Session Action
- * @param prev - previous state for form error
- * @param formData - session data
- */
 export async function createSessionAction(
   _prev: { error: string },
   formData: FormData
 ) {
-  const session = await auth()
-  // 사용자가 session 를 수정할 권한이 있는지 확인
-  if (!(await handlePermission(session?.user?.id, 'put', 'sessions'))) {
-    return forbidden()
+  const authorization = await authorizeAdminAction({
+    action: 'put',
+    resource: 'sessions',
+  })
+
+  if (!authorization.ok) {
+    return authorization.response
   }
 
+  const { session } = authorization
   if (!session?.user?.id) {
     return { error: 'User not found' }
   }
 
-  // form data 에서 part data 추출
   const {
     name,
     nameKo,
@@ -67,7 +65,6 @@ export async function createSessionAction(
   }
 
   try {
-    // zod validation
     sessionValidation.parse({
       name,
       nameKo,
@@ -88,10 +85,9 @@ export async function createSessionAction(
       displayOnWebsite,
     })
   } catch (err) {
-    // zod validation 에러 처리
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation error' }
+    const validationError = getZodActionError(err)
+    if (validationError) {
+      return { error: validationError }
     }
   }
 
@@ -101,13 +97,16 @@ export async function createSessionAction(
       return { error: 'Name and Description are required' }
     }
 
-    const selectedPart = await db.query.parts.findFirst({
-      where: eq(parts.id, Number(partId)),
-      columns: {
-        generationsId: true,
-        name: true,
-      },
-    })
+    const [selectedPart, nextGenerationName] = await Promise.all([
+      db.query.parts.findFirst({
+        where: eq(parts.id, Number(partId)),
+        columns: {
+          generationsId: true,
+          name: true,
+        },
+      }),
+      getGenerationNameForPartId(Number(partId)),
+    ])
 
     if (
       !selectedPart?.generationsId ||
@@ -119,18 +118,13 @@ export async function createSessionAction(
       }
     }
 
-    const nextGenerationName = await getGenerationNameForPartId(Number(partId))
-
-    // session 생성 쿼리
     const createSession = await db
       .insert(sessions)
       .values({
         name: name,
         nameKo: nameKo!,
-        description: description.replaceAll('<', '').replaceAll('>', ''),
-        descriptionKo: descriptionKo
-          ? descriptionKo.replaceAll('<', '').replaceAll('>', '')
-          : '',
+        description: stripHtmlCharacters(description),
+        descriptionKo: stripHtmlCharacters(descriptionKo),
         authorId: session.user.id,
         images: contentImages,
         ...(mainImage ? { mainImage: mainImage } : {}),
@@ -152,12 +146,12 @@ export async function createSessionAction(
       throw new Error('Failed to create session')
     }
 
-    // 참가자 생성 쿼리
-    await db.insert(userToSession).values(
+    await insertRowsIfAny(
       participantId.map((id) => ({
         userId: id,
         sessionId: createdSession.id,
-      }))
+      })),
+      (rows) => db.insert(userToSession).values(rows)
     )
 
     sessionId = createdSession.id
@@ -211,28 +205,36 @@ export async function createSessionAction(
       })
     })
 
+    const [{ Resend }, { default: NewSession }, { getResendEnv, getSiteEnv }] =
+      await Promise.all([
+        import('resend'),
+        import('@/emails/new-session'),
+        import('@/lib/server/env'),
+      ])
     const resend = new Resend(getResendEnv().RESEND_API_KEY)
     const siteEnv = getSiteEnv()
 
-    for (let i = 0; i < userEmailList.length; i++) {
-      await resend.emails.send({
-        from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-        to: userEmailList[i] ?? '',
-        subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
-        react: NewSession({
-          session: {
-            name: name,
-            location: locationKo!,
-            startAt: startAt ? startAt?.toISOString() : 'TBD',
-            endAt: endAt ? endAt?.toISOString() : 'TBD',
-            leftCapacity: maxCapacity - participantId.length,
-          },
-          part: partGeneration.name,
-          generation: generationUsers?.name || '',
-          registerUrl: `${siteEnv.NEXT_PUBLIC_SITE_URL}/admin/sessions/${sessionId}/register`,
-        }),
-      })
-    }
+    await Promise.all(
+      userEmailList.map((email) =>
+        resend.emails.send({
+          from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
+          to: email,
+          subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
+          react: NewSession({
+            session: {
+              name: name,
+              location: locationKo!,
+              startAt: startAt ? startAt?.toISOString() : 'TBD',
+              endAt: endAt ? endAt?.toISOString() : 'TBD',
+              leftCapacity: maxCapacity - participantId.length,
+            },
+            part: partGeneration.name,
+            generation: generationUsers?.name || '',
+            registerUrl: `${siteEnv.NEXT_PUBLIC_SITE_URL}/admin/sessions/${sessionId}/register`,
+          }),
+        })
+      )
+    )
   }
 
   redirect(await getLocalizedAdminPath('/admin/sessions'))

@@ -26,13 +26,12 @@ export default async function GenerationsTable() {
             locale
           )}
           key={generation.id}
+          aria-label={`${t.generation}: ${generation.name}`}
           className={
             'flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
           }
         >
-          <div className={'text-xl font-bold'}>
-            {t.generation}: {generation.name}
-          </div>
+          <div className={'text-xl font-bold'}>{generation.name}</div>
           <div>
             <div className={'text-sm text-neutral-600'}>{t.activityPeriod}</div>
             <GenerationActivityPeriod

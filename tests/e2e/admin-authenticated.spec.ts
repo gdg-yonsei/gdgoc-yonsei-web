@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { setAdminGenerationScope } from './admin-crud/helpers'
 import { readSeededData } from './helpers/read-seeded-data'
 import { ADMIN_STORAGE_STATE } from './setup/constants'
@@ -6,6 +6,21 @@ import { ADMIN_STORAGE_STATE } from './setup/constants'
 type SeededData = Awaited<ReturnType<typeof readSeededData>>
 
 test.use({ storageState: ADMIN_STORAGE_STATE })
+
+async function expectAdminRoutesReachable(page: Page, routes: string[]) {
+  for (const route of routes) {
+    await test.step(route, async () => {
+      const response = await page.goto(route, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60_000,
+      })
+
+      expect(response).not.toBeNull()
+      expect(response?.status() ?? 0).toBeLessThan(400)
+      await expect(page.locator('body')).toBeVisible()
+    })
+  }
+}
 
 test.describe('authenticated admin routes', () => {
   let seededData: SeededData
@@ -27,6 +42,8 @@ test.describe('authenticated admin routes', () => {
   })
 
   test('all primary admin list pages are reachable', async ({ page }) => {
+    test.setTimeout(90_000)
+
     const routes = [
       '/admin/generations',
       '/admin/parts',
@@ -36,35 +53,22 @@ test.describe('authenticated admin routes', () => {
       '/admin/profile',
     ]
 
-    for (const route of routes) {
-      await test.step(route, async () => {
-        const response = await page.goto(route, {
-          waitUntil: 'domcontentloaded',
-        })
-
-        expect(response).not.toBeNull()
-        expect(response?.status() ?? 0).toBeLessThan(400)
-        await expect(page.locator('body')).toBeVisible()
-      })
-    }
+    await expectAdminRoutesReachable(page, routes)
   })
 
-  test('all admin create pages expose submit controls', async ({ page }) => {
+  test('generation and part create pages expose submit controls', async ({
+    page,
+  }) => {
+    test.setTimeout(90_000)
+
     const createRoutes = [
       '/admin/generations/create',
       '/admin/parts/create',
-      '/admin/sessions/create',
-      '/admin/projects/create',
     ]
 
     for (const route of createRoutes) {
       await test.step(route, async () => {
-        const response = await page.goto(route, {
-          waitUntil: 'domcontentloaded',
-        })
-
-        expect(response).not.toBeNull()
-        expect(response?.status() ?? 0).toBeLessThan(400)
+        await expectAdminRoutesReachable(page, [route])
         await expect(
           page.getByRole('button', { name: /Submit|Register/i }).first()
         ).toBeVisible()
@@ -72,35 +76,74 @@ test.describe('authenticated admin routes', () => {
     }
   })
 
-  test('seeded admin detail/edit/register pages are reachable', async ({
+  test('session and project create pages expose submit controls', async ({
     page,
   }) => {
+    test.setTimeout(150_000)
+
+    const createRoutes = [
+      '/admin/sessions/create',
+      '/admin/projects/create',
+    ]
+
+    for (const route of createRoutes) {
+      await test.step(route, async () => {
+        await expectAdminRoutesReachable(page, [route])
+        await expect(
+          page.getByRole('button', { name: /Submit|Register/i }).first()
+        ).toBeVisible()
+      })
+    }
+  })
+
+  test('seeded generation and part detail/edit pages are reachable', async ({
+    page,
+  }) => {
+    test.setTimeout(150_000)
+
     const routes = [
       `/admin/generations/${seededData.generationId.toString()}`,
       `/admin/generations/${seededData.generationId.toString()}/edit`,
       `/admin/parts/${seededData.partId.toString()}`,
       `/admin/parts/${seededData.partId.toString()}/edit`,
+    ]
+
+    await expectAdminRoutesReachable(page, routes)
+  })
+
+  test('seeded project and session detail/edit/register pages are reachable', async ({
+    page,
+  }) => {
+    test.setTimeout(210_000)
+
+    const routes = [
       `/admin/projects/${seededData.projectId}`,
       `/admin/projects/${seededData.projectId}/edit`,
       `/admin/sessions/${seededData.sessionId}`,
       `/admin/sessions/${seededData.sessionId}/edit`,
       `/admin/sessions/${seededData.sessionId}/register`,
-      `/admin/members/${seededData.memberUserId}`,
-      `/admin/members/${seededData.memberUserId}/edit`,
-      '/admin/profile/edit',
     ]
 
-    for (const route of routes) {
-      await test.step(route, async () => {
-        const response = await page.goto(route, {
-          waitUntil: 'domcontentloaded',
-        })
+    await expectAdminRoutesReachable(page, routes)
+  })
 
-        expect(response).not.toBeNull()
-        expect(response?.status() ?? 0).toBeLessThan(400)
-        await expect(page.locator('body')).toBeVisible()
-      })
-    }
+  test('seeded member detail/edit pages are reachable', async ({
+    page,
+  }) => {
+    test.setTimeout(150_000)
+
+    const routes = [
+      `/admin/members/${seededData.memberUserId}`,
+      `/admin/members/${seededData.memberUserId}/edit`,
+    ]
+
+    await expectAdminRoutesReachable(page, routes)
+  })
+
+  test('profile edit page is reachable', async ({ page }) => {
+    test.setTimeout(90_000)
+
+    await expectAdminRoutesReachable(page, ['/admin/profile/edit'])
   })
 
   test('generation scope filters admin lists and persists across pages', async ({

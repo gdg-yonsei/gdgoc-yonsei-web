@@ -24,10 +24,30 @@ export async function getSessions(locale: Locale, visibilityBucket: string) {
   cacheQuery(publicCachePolicy.sessionList, [sessionListTag(locale)])
 
   return db.query.sessions.findMany({
+    columns: {
+      id: true,
+      name: true,
+      nameKo: true,
+      mainImage: true,
+      startAt: true,
+      endAt: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     with: {
       part: {
+        columns: {
+          id: true,
+          name: true,
+          generationsId: true,
+        },
         with: {
-          generation: true,
+          generation: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -52,19 +72,8 @@ export async function getPublishedSessionsByGeneration(
       id: sessions.id,
       name: sessions.name,
       nameKo: sessions.nameKo,
-      description: sessions.description,
-      descriptionKo: sessions.descriptionKo,
       mainImage: sessions.mainImage,
-      images: sessions.images,
-      internalOpen: sessions.internalOpen,
-      publicOpen: sessions.publicOpen,
-      maxCapacity: sessions.maxCapacity,
-      location: sessions.location,
-      locationKo: sessions.locationKo,
-      type: sessions.type,
-      displayOnWebsite: sessions.displayOnWebsite,
       startAt: sessions.startAt,
-      endAt: sessions.endAt,
       createdAt: sessions.createdAt,
       updatedAt: sessions.updatedAt,
     })
@@ -74,6 +83,33 @@ export async function getPublishedSessionsByGeneration(
     .where(
       and(
         eq(generations.name, generationName),
+        eq(sessions.displayOnWebsite, true),
+        lte(sessions.endAt, toVisibilityDate(visibilityBucket))
+      )
+    )
+    .orderBy(desc(sessions.endAt))
+}
+
+export async function getPublishedSessionsForSitemap(
+  locale: Locale,
+  visibilityBucket: string
+) {
+  'use cache: remote'
+
+  cacheQuery(publicCachePolicy.sitemap, [sessionListTag(locale)])
+
+  return db
+    .select({
+      id: sessions.id,
+      generationName: generations.name,
+      createdAt: sessions.createdAt,
+      updatedAt: sessions.updatedAt,
+    })
+    .from(sessions)
+    .leftJoin(parts, eq(sessions.partId, parts.id))
+    .leftJoin(generations, eq(generations.id, parts.generationsId))
+    .where(
+      and(
         eq(sessions.displayOnWebsite, true),
         lte(sessions.endAt, toVisibilityDate(visibilityBucket))
       )
@@ -96,5 +132,20 @@ export async function getSessionById(
       lte(sessions.endAt, toVisibilityDate(visibilityBucket)),
       eq(sessions.displayOnWebsite, true)
     ),
+    columns: {
+      id: true,
+      name: true,
+      nameKo: true,
+      description: true,
+      descriptionKo: true,
+      mainImage: true,
+      images: true,
+      startAt: true,
+      endAt: true,
+      location: true,
+      locationKo: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   })
 }

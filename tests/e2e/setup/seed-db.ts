@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { sql } from 'drizzle-orm'
 import db from '../../../db'
 import { authSessions } from '../../../db/schema/auth-sessions'
@@ -16,19 +17,21 @@ const FIXTURE_IDS = {
   memberUserId: 'e2e-member-user',
   pendingApproveUserId: 'e2e-pending-approve-user',
   pendingDeleteUserId: 'e2e-pending-delete-user',
-  projectId: '00000000-0000-4000-8000-000000000001',
-  secondProjectId: '00000000-0000-4000-8000-000000000003',
-  sessionId: '00000000-0000-4000-8000-000000000002',
-  secondSessionId: '00000000-0000-4000-8000-000000000004',
   sessionToken: 'e2e-admin-session-token',
-  generationName: 'e2e-gen',
-  secondGenerationName: 'e2e-gen-2',
 }
 
 /**
  * Wipes data from all mutable tables and inserts one deterministic dataset for E2E.
  */
 export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
+  const fixtureRunId = `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`
+  const projectId = randomUUID()
+  const secondProjectId = randomUUID()
+  const sessionId = randomUUID()
+  const secondSessionId = randomUUID()
+  const generationName = `e2e-gen-${fixtureRunId}`
+  const secondGenerationName = `e2e-gen-2-${fixtureRunId}`
+
   await db.execute(
     sql.raw(`
       TRUNCATE TABLE
@@ -55,9 +58,9 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     await db
       .insert(generations)
       .values({
-        name: FIXTURE_IDS.generationName,
-        startDate: '2025-01-01',
-        endDate: '2025-12-31',
+        name: generationName,
+        startDate: '2027-01-01',
+        endDate: '2027-12-31',
       })
       .returning({ id: generations.id, name: generations.name })
   )[0]!
@@ -66,7 +69,7 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     await db
       .insert(generations)
       .values({
-        name: FIXTURE_IDS.secondGenerationName,
+        name: secondGenerationName,
         startDate: '2026-01-01',
         endDate: '2026-12-31',
       })
@@ -175,7 +178,7 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   ])
 
   await db.insert(projects).values({
-    id: FIXTURE_IDS.projectId,
+    id: projectId,
     name: 'E2E Project',
     nameKo: 'E2E 프로젝트',
     description: 'Project seeded for Playwright tests',
@@ -189,7 +192,7 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   })
 
   await db.insert(projects).values({
-    id: FIXTURE_IDS.secondProjectId,
+    id: secondProjectId,
     name: 'E2E Project 2',
     nameKo: 'E2E 프로젝트 2',
     description: 'Project in second generation for scope tests',
@@ -205,20 +208,20 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   await db.insert(usersToProjects).values([
     {
       userId: FIXTURE_IDS.adminUserId,
-      projectId: FIXTURE_IDS.projectId,
+      projectId,
     },
     {
       userId: FIXTURE_IDS.memberUserId,
-      projectId: FIXTURE_IDS.projectId,
+      projectId,
     },
     {
       userId: FIXTURE_IDS.adminUserId,
-      projectId: FIXTURE_IDS.secondProjectId,
+      projectId: secondProjectId,
     },
   ])
 
   await db.insert(sessions).values({
-    id: FIXTURE_IDS.sessionId,
+    id: sessionId,
     name: 'E2E Session',
     nameKo: 'E2E 세션',
     description: 'Session seeded for Playwright tests',
@@ -237,7 +240,7 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   })
 
   await db.insert(sessions).values({
-    id: FIXTURE_IDS.secondSessionId,
+    id: secondSessionId,
     name: 'E2E Session 2',
     nameKo: 'E2E 세션 2',
     description: 'Session in second generation for scope tests',
@@ -251,13 +254,13 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     displayOnWebsite: true,
     location: 'Room 202',
     locationKo: '202호',
-    startAt: new Date('2026-06-01T10:00:00.000Z'),
-    endAt: new Date('2026-06-01T12:00:00.000Z'),
+    startAt: new Date('2026-12-01T10:00:00.000Z'),
+    endAt: new Date('2026-12-01T12:00:00.000Z'),
   })
 
   await db.insert(userToSession).values({
     userId: FIXTURE_IDS.memberUserId,
-    sessionId: FIXTURE_IDS.sessionId,
+    sessionId,
   })
 
   await db.insert(authSessions).values({
@@ -273,10 +276,10 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     secondGenerationName: secondGeneration.name,
     partId: part.id,
     secondPartId: secondPart.id,
-    projectId: FIXTURE_IDS.projectId,
-    secondProjectId: FIXTURE_IDS.secondProjectId,
-    sessionId: FIXTURE_IDS.sessionId,
-    secondSessionId: FIXTURE_IDS.secondSessionId,
+    projectId,
+    secondProjectId,
+    sessionId,
+    secondSessionId,
     adminUserId: FIXTURE_IDS.adminUserId,
     memberUserId: FIXTURE_IDS.memberUserId,
     pendingApproveUserId: FIXTURE_IDS.pendingApproveUserId,

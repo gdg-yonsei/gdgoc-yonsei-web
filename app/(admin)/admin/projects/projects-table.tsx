@@ -1,21 +1,18 @@
-import {
-  getProjects,
-} from '@/lib/server/fetcher/admin/get-projects'
+import { getProjects } from '@/lib/server/fetcher/admin/get-projects'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import {
-  getAdminLocale,
-  getAdminMessages,
-} from '@/lib/admin-i18n/server'
+import { type AdminMessages } from '@/lib/admin-i18n'
+import { type Locale } from '@/i18n-config'
 import ProjectsTableClient from './projects-table-client'
 
 export default async function ProjectsTable({
   scope,
+  locale,
+  t,
 }: {
   scope: AdminGenerationScope | null
+  locale: Locale
+  t: AdminMessages
 }) {
-  const locale = await getAdminLocale()
-  const t = getAdminMessages(locale)
-  // 프로젝트 데이터 가져오기
   const projectsData = await getProjects(scope)
 
   return (
@@ -27,4 +24,3 @@ export default async function ProjectsTable({
     />
   )
 }
-

@@ -10,7 +10,7 @@ import {
 import { getSiteEnv } from '@/lib/server/env'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
-import { getPublishedSessionsByGeneration } from '@/lib/server/queries/public/sessions'
+import { getPublishedSessionsForSitemap } from '@/lib/server/queries/public/sessions'
 
 const siteEnv = getSiteEnv()
 
@@ -37,9 +37,12 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   )
 
   const baseLocale = i18n.defaultLocale
-  const generationList = await getGenerationSummaries(baseLocale)
-  const projectList = await getProjects(baseLocale)
   const visibilityBucket = getSessionVisibilityBucket()
+  const [generationList, projectList, sessionList] = await Promise.all([
+    getGenerationSummaries(baseLocale),
+    getProjects(baseLocale),
+    getPublishedSessionsForSitemap(baseLocale, visibilityBucket),
+  ])
 
   const projectsList: MetadataRoute.Sitemap = projectList.map((project) => ({
     url: `/project/${project.generation.name}/${project.id}`,
@@ -51,27 +54,23 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  const sessionsList: MetadataRoute.Sitemap = []
+  const sessionsList: MetadataRoute.Sitemap = sessionList.flatMap((session) => {
+    if (!session.generationName) {
+      return []
+    }
 
-  for (const generation of generationList) {
-    const sessions = await getPublishedSessionsByGeneration(
-      generation.name,
-      baseLocale,
-      visibilityBucket
-    )
-
-    for (const session of sessions) {
-      sessionsList.push({
-        url: `/session/${generation.name}/${session.id}`,
+    return [
+      {
+        url: `/session/${session.generationName}/${session.id}`,
         lastModified:
           session.updatedAt > session.createdAt
             ? session.updatedAt
             : session.createdAt,
         changeFrequency: 'monthly',
         priority: 0.8,
-      })
-    }
-  }
+      },
+    ]
+  })
 
   const centralPages: MetadataRoute.Sitemap = generationList.flatMap(
     (generation) => [

@@ -16,6 +16,7 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { auth } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
+import { connection } from 'next/server'
 
 export const metadata: Metadata = {
   title: 'Edit Part',
@@ -38,6 +39,7 @@ export default async function EditPartPage({
 }: {
   params: Promise<{ partId: string }>
 }) {
+  await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params

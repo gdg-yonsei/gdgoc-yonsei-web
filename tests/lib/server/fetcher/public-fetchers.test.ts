@@ -44,9 +44,19 @@ vi.mock('@/lib/server/cache', async () => {
 function createSelectChainWithOrderByResult(result: unknown) {
   const chain = {
     from: vi.fn(() => chain),
+    innerJoin: vi.fn(() => chain),
     leftJoin: vi.fn(() => chain),
     where: vi.fn(() => chain),
     orderBy: vi.fn(async () => result),
+  }
+
+  return chain
+}
+
+function createSelectChainWithJoinResult(result: unknown) {
+  const chain = {
+    from: vi.fn(() => chain),
+    innerJoin: vi.fn(async () => result),
   }
 
   return chain
@@ -97,21 +107,37 @@ describe('public queries', () => {
     expect(mockGenerationsFindFirst).toHaveBeenCalledTimes(1)
   })
 
-  it('fetches projects list with generation relation', async () => {
-    mockProjectsFindMany.mockResolvedValue([{ id: 'project-1' }])
+  it('fetches projects list with generation metadata only', async () => {
+    const createdAt = new Date('2026-01-01T00:00:00.000Z')
+    const updatedAt = new Date('2026-01-02T00:00:00.000Z')
+    const chain = createSelectChainWithJoinResult([
+      {
+        id: 'project-1',
+        createdAt,
+        updatedAt,
+        generationName: '5th',
+      },
+    ])
+    mockSelect.mockReturnValue(chain)
+
     const { getProjects } = await import('@/lib/server/queries/public/projects')
 
     const result = await getProjects('ko')
 
-    expect(result).toEqual([{ id: 'project-1' }])
+    expect(result).toEqual([
+      {
+        id: 'project-1',
+        createdAt,
+        updatedAt,
+        generation: {
+          name: '5th',
+        },
+      },
+    ])
     expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
       'project:list:ko',
     ])
-    expect(mockProjectsFindMany).toHaveBeenCalledWith({
-      with: {
-        generation: true,
-      },
-    })
+    expect(chain.innerJoin).toHaveBeenCalledTimes(1)
   })
 
   it('fetches project detail with contributor relation', async () => {
@@ -128,10 +154,24 @@ describe('public queries', () => {
     expect(mockProjectsFindFirst).toHaveBeenCalledWith({
       where: expect.anything(),
       with: {
-        generation: true,
+        generation: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
         usersToProjects: {
+          columns: {
+            userId: true,
+          },
           with: {
-            user: true,
+            user: {
+              columns: expect.objectContaining({
+                id: true,
+                firstName: true,
+                isForeigner: true,
+              }),
+            },
           },
         },
       },
@@ -150,7 +190,14 @@ describe('public queries', () => {
       'project:list:ko',
       'project:generation:5th:ko',
     ])
-    expect(mockGenerationsFindFirst).toHaveBeenCalledTimes(1)
+    expect(mockGenerationsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        columns: {
+          id: true,
+          name: true,
+        },
+      })
+    )
   })
 
   it('fetches visible sessions with generation relation and bucketed cache input', async () => {
@@ -167,10 +214,25 @@ describe('public queries', () => {
 
     const query = mockSessionsFindMany.mock.calls[0]![0]
     expect(query).toMatchObject({
+      columns: {
+        id: true,
+        name: true,
+        nameKo: true,
+      },
       with: {
         part: {
+          columns: {
+            id: true,
+            name: true,
+            generationsId: true,
+          },
           with: {
-            generation: true,
+            generation: {
+              columns: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -193,6 +255,15 @@ describe('public queries', () => {
       'session:item:session-1:ko',
     ])
     expect(mockSessionsFindFirst).toHaveBeenCalledTimes(1)
+    expect(mockSessionsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        columns: expect.objectContaining({
+          id: true,
+          images: true,
+          locationKo: true,
+        }),
+      })
+    )
   })
 
   it('fetches published sessions by generation with locale-specific tags', async () => {
@@ -213,6 +284,26 @@ describe('public queries', () => {
       'session:list:ko',
       'session:generation:6th:ko',
     ])
+    expect(chain.leftJoin).toHaveBeenCalledTimes(2)
+    expect(chain.where).toHaveBeenCalledTimes(1)
+  })
+
+  it('fetches published sessions for sitemap in one query', async () => {
+    const chain = createSelectChainWithOrderByResult([
+      { id: 'session-1', generationName: '6th' },
+    ])
+    mockSelect.mockReturnValue(chain)
+
+    const { getPublishedSessionsForSitemap } =
+      await import('@/lib/server/queries/public/sessions')
+
+    const result = await getPublishedSessionsForSitemap(
+      'ko',
+      '2026-03-07T00:00:00.000Z'
+    )
+
+    expect(result).toEqual([{ id: 'session-1', generationName: '6th' }])
+    expect(mockCacheQuery).toHaveBeenCalledWith('sitemap', ['session:list:ko'])
     expect(chain.leftJoin).toHaveBeenCalledTimes(2)
     expect(chain.where).toHaveBeenCalledTimes(1)
   })

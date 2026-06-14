@@ -22,9 +22,13 @@ vi.mock('@/app/components/admin/refresh-all-data-button', () => ({
 describe('DataForm and admin menu components', () => {
   it('submits form data through server action and renders action error', async () => {
     const action = vi.fn(
-      async (_prevState: { error: string }, _formData: FormData) => ({
-        error: 'Validation failed',
-      })
+      async (state: { error: string }, formData: FormData) => {
+        void state
+        void formData
+        return {
+          error: 'Validation failed',
+        }
+      }
     )
     const user = userEvent.setup()
 
@@ -48,9 +52,13 @@ describe('DataForm and admin menu components', () => {
 
   it('blocks submit when required bilingual fields are missing', async () => {
     const action = vi.fn(
-      async (_prevState: { error: string }, _formData: FormData) => ({
-        error: '',
-      })
+      async (state: { error: string }, formData: FormData) => {
+        void state
+        void formData
+        return {
+          error: '',
+        }
+      }
     )
     const user = userEvent.setup()
     const { container } = render(

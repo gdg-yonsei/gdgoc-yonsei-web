@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden } from 'next/navigation'
+import { connection } from 'next/server'
 
 /**
  * `EditPartLayout` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -21,6 +22,7 @@ export default async function EditPartLayout({
   children: ReactNode
 }) {
   // 사용자가 parts 를 수정할 권한이 있는지 확인
+  await connection()
   const session = await auth()
   if (!(await handlePermission(session?.user?.id, 'put', 'parts'))) {
     forbidden()

@@ -3,6 +3,7 @@ import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { forbidden, notFound } from 'next/navigation'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
+import { connection } from 'next/server'
 
 /**
  * `EditProjectLayout` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -23,6 +24,7 @@ export default async function EditProjectLayout({
   children: ReactNode
   params: Promise<{ projectId: string }>
 }) {
+  await connection()
   const session = await auth()
   const { projectId } = await params
   const projectData = await getProject(projectId)

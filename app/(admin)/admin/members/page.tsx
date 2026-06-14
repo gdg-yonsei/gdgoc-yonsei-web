@@ -31,17 +31,13 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function MembersPage() {
-  const locale = await getAdminLocale()
+  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
   const t = getAdminMessages(locale)
-  const session = await auth()
-  const canAccept = await handlePermission(
-    session?.user?.id,
-    'put',
-    'membersRole'
-  )
-  const resolvedScope = session?.user?.id
-    ? await resolveAdminGenerationScope(session.user.id)
-    : null
+  const userId = session?.user?.id
+  const [canAccept, resolvedScope] = await Promise.all([
+    handlePermission(userId, 'put', 'membersRole'),
+    userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
+  ])
 
   return (
     <AdminDefaultLayout className={'p-4'}>
@@ -66,7 +62,11 @@ export default async function MembersPage() {
           />
         }
       >
-        <MembersTable scope={resolvedScope?.scope ?? null} />
+        <MembersTable
+          scope={resolvedScope?.scope ?? null}
+          locale={locale}
+          t={t}
+        />
       </Suspense>
     </AdminDefaultLayout>
   )

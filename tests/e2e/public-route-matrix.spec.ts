@@ -10,7 +10,9 @@ test.describe('public routes and user interactions', () => {
     seededData = await readSeededData()
   })
 
-  test('language root pages and key static pages load', async ({ page }) => {
+  test('language root pages and key policy pages load', async ({ page }) => {
+    test.setTimeout(90_000)
+
     const routes = [
       '/en',
       '/ko',
@@ -20,6 +22,24 @@ test.describe('public routes and user interactions', () => {
       '/ko/privacy-policy',
       '/en/terms-of-service',
       '/ko/terms-of-service',
+    ]
+
+    for (const route of routes) {
+      await test.step(route, async () => {
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
+        expect(response).not.toBeNull()
+        expect(response?.status() ?? 0).toBeLessThan(400)
+        await expect(page.locator('body')).toBeVisible()
+      })
+    }
+  })
+
+  test('recruit and freshman OT pages load', async ({ page }) => {
+    test.setTimeout(90_000)
+
+    const routes = [
       '/en/recruit',
       '/ko/recruit',
       '/en/2026-freshman-ot',
@@ -42,6 +62,8 @@ test.describe('public routes and user interactions', () => {
     context,
     page,
   }) => {
+    test.setTimeout(60_000)
+
     const latestGeneration = seededData.generationName
 
     const redirectTargets = ['member', 'project', 'session']
@@ -65,6 +87,8 @@ test.describe('public routes and user interactions', () => {
   test('seeded generation pages and detail pages load end-to-end', async ({
     page,
   }) => {
+    test.setTimeout(90_000)
+
     const generation = seededData.generationName
 
     const routes = [

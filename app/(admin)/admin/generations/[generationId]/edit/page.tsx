@@ -9,6 +9,7 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataForm from '@/app/components/data-form'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import { connection } from 'next/server'
 
 export const metadata: Metadata = {
   title: 'Edit Generation',
@@ -31,6 +32,7 @@ export default async function EditGenerationPage({
 }: {
   params: Promise<{ generationId: string }>
 }) {
+  await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { generationId } = await params
