@@ -1,11 +1,16 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import '../../globals.css'
-import type LayoutProps from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import languageParamChecker from '@/lib/language-param-checker'
+
+type LangLayoutProps = {
+  children: ReactNode
+  params: Promise<{ lang: string }>
+}
 
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -21,7 +26,7 @@ import languageParamChecker from '@/lib/language-param-checker'
  */
 export async function generateMetadata({
   params,
-}: LayoutProps<'/[lang]'>): Promise<Metadata> {
+}: LangLayoutProps): Promise<Metadata> {
   const lang = (await params).lang
 
   if (lang === 'ko') {
@@ -66,7 +71,7 @@ const googleSans = localFont({
 export default async function RootLayout({
   children,
   params,
-}: LayoutProps<'/[lang]'>) {
+}: LangLayoutProps) {
   // 언어 설정
   const lang = languageParamChecker((await params).lang)
 

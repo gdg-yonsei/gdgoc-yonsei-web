@@ -15,6 +15,7 @@ import DataForm from '@/app/components/data-form'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { connection } from 'next/server'
 
 export const metadata: Metadata = {
   title: 'Edit Member',
@@ -37,6 +38,7 @@ export default async function EditMemberPage({
 }: {
   params: Promise<{ memberId: string }>
 }) {
+  await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { memberId } = await params

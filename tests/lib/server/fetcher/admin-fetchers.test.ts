@@ -4,6 +4,7 @@ const mockNoStore = vi.fn()
 
 const mockGenerationsFindMany = vi.fn()
 const mockProjectsFindMany = vi.fn()
+const mockProjectsFindFirst = vi.fn()
 const mockPartsFindMany = vi.fn()
 const mockPartsFindFirst = vi.fn()
 const mockSessionsFindFirst = vi.fn()
@@ -22,6 +23,7 @@ const mockDb = {
     },
     projects: {
       findMany: mockProjectsFindMany,
+      findFirst: mockProjectsFindFirst,
     },
     parts: {
       findMany: mockPartsFindMany,
@@ -50,6 +52,7 @@ function createSelectChainWithOrderByResult(result: unknown) {
     innerJoin: vi.fn(() => chain),
     leftJoin: vi.fn(() => chain),
     where: vi.fn(() => chain),
+    groupBy: vi.fn(() => chain),
     orderBy: vi.fn(async () => result),
   }
 
@@ -153,20 +156,18 @@ describe('admin fetchers', () => {
   })
 
   it('maps parts into flat list items with member counts', async () => {
-    mockPartsFindMany.mockResolvedValue([
+    const chain = createSelectChainWithOrderByResult([
       {
         id: 5,
         name: 'Frontend',
         description: 'UI work',
         displayOrder: 1,
-        generationsId: 11,
-        generation: {
-          id: 11,
-          name: '11th',
-        },
-        usersToParts: [{}, {}],
+        memberCount: 2,
+        generationId: 11,
+        generationName: '11th',
       },
     ])
+    mockSelect.mockReturnValue(chain)
 
     const { getParts } = await import('@/lib/server/fetcher/admin/get-parts')
 
@@ -182,7 +183,8 @@ describe('admin fetchers', () => {
       },
     ])
     expect(mockNoStore).toHaveBeenCalledTimes(1)
-    expect(mockPartsFindMany).toHaveBeenCalledTimes(1)
+    expect(chain.leftJoin).toHaveBeenCalledTimes(2)
+    expect(chain.groupBy).toHaveBeenCalledTimes(1)
   })
 
   it('fetches admin members scoped by generation and keeps one row per user per generation', async () => {
@@ -297,10 +299,7 @@ describe('admin fetchers', () => {
   })
 
   it('fetches project detail and returns first matched result', async () => {
-    mockProjectsFindMany.mockResolvedValue([
-      { id: 'project-1', name: 'First' },
-      { id: 'project-2', name: 'Second' },
-    ])
+    mockProjectsFindFirst.mockResolvedValue({ id: 'project-1', name: 'First' })
 
     const { getProject } =
       await import('@/lib/server/fetcher/admin/get-project')
@@ -308,6 +307,7 @@ describe('admin fetchers', () => {
 
     expect(result).toEqual({ id: 'project-1', name: 'First' })
     expect(mockNoStore).toHaveBeenCalledTimes(1)
+    expect(mockProjectsFindFirst).toHaveBeenCalledTimes(1)
   })
 
   it('fetches member detail and returns first row', async () => {
@@ -337,8 +337,8 @@ describe('admin fetchers', () => {
       id: 'session-1',
       authorId: 'author-1',
       userToSession: [],
+      author: { id: 'author-1', name: 'Author' },
     })
-    mockUsersFindFirst.mockResolvedValue({ id: 'author-1', name: 'Author' })
 
     const { getSession } =
       await import('@/lib/server/fetcher/admin/get-session')
@@ -351,8 +351,14 @@ describe('admin fetchers', () => {
       author: { id: 'author-1', name: 'Author' },
     })
     expect(mockNoStore).toHaveBeenCalledTimes(1)
-    expect(mockSessionsFindFirst).toHaveBeenCalledTimes(1)
-    expect(mockUsersFindFirst).toHaveBeenCalledTimes(1)
+    expect(mockSessionsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        with: expect.objectContaining({
+          author: true,
+        }),
+      })
+    )
+    expect(mockUsersFindFirst).not.toHaveBeenCalled()
   })
 
   it('returns null when session detail does not exist', async () => {

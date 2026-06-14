@@ -13,6 +13,7 @@ import {
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { connection } from 'next/server'
 
 /**
  * `RegisterSessionPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -31,6 +32,7 @@ export default async function RegisterSessionPage({
 }: {
   params: Promise<{ sessionId: string }>
 }) {
+  await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { sessionId } = await params

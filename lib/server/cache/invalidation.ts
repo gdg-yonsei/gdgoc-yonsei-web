@@ -1,7 +1,6 @@
 import 'server-only'
 
-import { revalidatePath, revalidateTag, updateTag } from 'next/cache'
-import type { Locale } from '@/i18n-config'
+import { revalidatePath } from 'next/cache'
 import { i18n } from '@/i18n-config'
 import {
   generationLatestTag,
@@ -18,49 +17,15 @@ import {
   sessionTag,
   sitemapTag,
 } from '@/lib/server/cache/tags'
-
-type LocalizedPublicRoute = `/${string}`
-
-function uniqueStrings(values: readonly string[]): string[] {
-  return [...new Set(values)]
-}
-
-function toLocalizedPublicRoute(pathname: string): LocalizedPublicRoute {
-  return pathname as LocalizedPublicRoute
-}
-
-function updateCacheTags(tags: readonly string[]) {
-  for (const tag of uniqueStrings(tags)) {
-    updateTag(tag)
-  }
-}
-
-function revalidateCacheTags(tags: readonly string[]) {
-  for (const tag of uniqueStrings(tags)) {
-    revalidateTag(tag, 'max')
-  }
-}
-
-function revalidateLocalizedPublicPaths(paths: readonly string[]) {
-  for (const path of uniqueStrings(paths)) {
-    revalidatePath(path)
-  }
-}
-
-function publicPath(
-  pathname: LocalizedPublicRoute,
-  locale: Locale
-): LocalizedPublicRoute {
-  return toLocalizedPublicRoute(`/${locale}${pathname}`)
-}
-
-function localizedPublicPaths(
-  pathnames: readonly LocalizedPublicRoute[]
-): string[] {
-  return i18n.locales.flatMap((locale) =>
-    pathnames.map((pathname) => publicPath(pathname, locale))
-  )
-}
+import {
+  type LocalizedPublicRoute,
+  localizedPublicPaths,
+  revalidateCacheTags,
+  revalidateLocalizedPublicPaths,
+  toLocalizedPublicRoute,
+  uniqueStrings,
+  updateCacheTags,
+} from '@/lib/server/cache/utils'
 
 function generationScopedPaths(
   generationNames: readonly string[]

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { cookies } from 'next/headers'
+import { headers } from 'next/headers'
 import { desc, eq } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -57,6 +57,27 @@ function parseRequestedGenerationScope(
   }
 }
 
+function getCookieFromHeader(
+  cookieHeader: string | null,
+  cookieName: string
+): string | undefined {
+  if (!cookieHeader) {
+    return undefined
+  }
+
+  const encodedCookieName = `${cookieName}=`
+  const cookie = cookieHeader
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(encodedCookieName))
+
+  if (!cookie) {
+    return undefined
+  }
+
+  return decodeURIComponent(cookie.slice(encodedCookieName.length))
+}
+
 async function loadAccessibleGenerationOptions(
   userId: string,
   canAccessAll: boolean
@@ -111,9 +132,12 @@ export async function resolveAdminGenerationScope(
     }
   }
 
-  const cookieStore = await cookies()
+  const headerStore = await headers()
   const requestedScope = parseRequestedGenerationScope(
-    cookieStore.get(ADMIN_GENERATION_SCOPE_COOKIE)?.value,
+    getCookieFromHeader(
+      headerStore.get('cookie'),
+      ADMIN_GENERATION_SCOPE_COOKIE
+    ),
     options,
     canAccessAll
   )

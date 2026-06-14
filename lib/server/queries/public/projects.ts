@@ -18,11 +18,24 @@ export async function getProjects(locale: Locale) {
 
   cacheQuery(publicCachePolicy.projectList, [projectListTag(locale)])
 
-  return db.query.projects.findMany({
-    with: {
-      generation: true,
+  const rows = await db
+    .select({
+      id: projects.id,
+      createdAt: projects.createdAt,
+      updatedAt: projects.updatedAt,
+      generationName: generations.name,
+    })
+    .from(projects)
+    .innerJoin(generations, eq(projects.generationId, generations.id))
+
+  return rows.map((project) => ({
+    id: project.id,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+    generation: {
+      name: project.generationName,
     },
-  })
+  }))
 }
 
 export async function getProjectsByGeneration(
@@ -38,8 +51,22 @@ export async function getProjectsByGeneration(
 
   return db.query.generations.findFirst({
     where: eq(generations.name, generationName),
+    columns: {
+      id: true,
+      name: true,
+    },
     with: {
       projects: {
+        columns: {
+          id: true,
+          name: true,
+          nameKo: true,
+          description: true,
+          descriptionKo: true,
+          mainImage: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         orderBy: desc(projects.updatedAt),
       },
     },
@@ -54,10 +81,28 @@ export async function getProjectById(projectId: string, locale: Locale) {
   return db.query.projects.findFirst({
     where: eq(projects.id, projectId),
     with: {
-      generation: true,
+      generation: {
+        columns: {
+          id: true,
+          name: true,
+        },
+      },
       usersToProjects: {
+        columns: {
+          userId: true,
+        },
         with: {
-          user: true,
+          user: {
+            columns: {
+              id: true,
+              name: true,
+              firstName: true,
+              firstNameKo: true,
+              lastName: true,
+              lastNameKo: true,
+              isForeigner: true,
+            },
+          },
         },
       },
     },

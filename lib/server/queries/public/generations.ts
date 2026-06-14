@@ -36,3 +36,17 @@ export async function getLatestGeneration(locale: Locale) {
     orderBy: desc(generations.startDate),
   })
 }
+
+export async function getLatestGenerationForRedirect() {
+  const rows = await db
+    .select({
+      id: generations.id,
+      name: generations.name,
+      startDate: generations.startDate,
+    })
+    .from(generations)
+    .orderBy(desc(generations.startDate))
+    .limit(1)
+
+  return rows[0] ?? null
+}

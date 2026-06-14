@@ -32,18 +32,13 @@ export const metadata: Metadata = {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function SessionsPage() {
-  const locale = await getAdminLocale()
+  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
   const t = getAdminMessages(locale)
-  const session = await auth()
-  // 사용자가 Session 을 생성할 권한이 있는지 확인
-  const canCreate = await handlePermission(
-    session?.user?.id,
-    'post',
-    'sessions'
-  )
-  const resolvedScope = session?.user?.id
-    ? await resolveAdminGenerationScope(session.user.id)
-    : null
+  const userId = session?.user?.id
+  const [canCreate, resolvedScope] = await Promise.all([
+    handlePermission(userId, 'post', 'sessions'),
+    userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
+  ])
   const canCreateInCurrentScope =
     canCreate && resolvedScope?.scope?.kind === 'generation'
 
@@ -97,7 +92,11 @@ export default async function SessionsPage() {
           />
         }
       >
-        <SessionsTable scope={resolvedScope?.scope ?? null} />
+        <SessionsTable
+          scope={resolvedScope?.scope ?? null}
+          locale={locale}
+          t={t}
+        />
       </Suspense>
     </AdminDefaultLayout>
   )

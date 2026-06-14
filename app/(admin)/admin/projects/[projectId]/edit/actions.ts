@@ -1,47 +1,42 @@
 'use server'
 
-import { auth } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
 import { projectValidation } from '@/lib/validations/project'
-import { z } from 'zod'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { eq } from 'drizzle-orm'
-import r2Client from '@/lib/server/r2-client'
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { getR2BucketEnv } from '@/lib/server/env'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import {
   getGenerationNameById,
   getProjectCacheContext,
 } from '@/lib/server/services/cache-context'
-import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
+import {
+  authorizeAdminAction,
+  deleteRemovedR2Images,
+  getZodActionError,
+  replaceRelationRows,
+  stripHtmlCharacters,
+} from '@/lib/server/actions/admin'
 
-/**
- * Update Project Action
- * @param projectId - project id
- * @param prevState - previous state for form error
- * @param formData - project data
- */
 export async function updateProjectAction(
   projectId: string,
   _prevState: { error: string },
   formData: FormData
 ) {
-  const session = await auth()
-  // 사용자가 project 를 수정할 권한이 있는지 확인
-  if (
-    !(await handlePermission(session?.user?.id, 'put', 'projects', projectId))
-  ) {
-    return forbidden()
+  const authorization = await authorizeAdminAction({
+    action: 'put',
+    resource: 'projects',
+    dataOwnerId: projectId,
+  })
+
+  if (!authorization.ok) {
+    return authorization.response
   }
 
-  // form data 에서 project data 추출
   const {
     name,
     nameKo,
@@ -56,7 +51,6 @@ export async function updateProjectAction(
   } = getProjectFormData(formData)
 
   try {
-    // zod validation
     projectValidation.parse({
       name,
       nameKo,
@@ -70,22 +64,22 @@ export async function updateProjectAction(
       generationId,
     })
   } catch (err) {
-    // zod validation 에러 처리
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation error' }
+    const validationError = getZodActionError(err)
+    if (validationError) {
+      return { error: validationError }
     }
   }
 
   try {
-    const bucketEnv = getR2BucketEnv()
-    const previousProject = await getProjectCacheContext(projectId)
-    const existingProject = await db.query.projects.findFirst({
-      where: eq(projects.id, projectId),
-      columns: {
-        generationId: true,
-      },
-    })
+    const [previousProject, existingProject] = await Promise.all([
+      getProjectCacheContext(projectId),
+      db.query.projects.findFirst({
+        where: eq(projects.id, projectId),
+        columns: {
+          generationId: true,
+        },
+      }),
+    ])
 
     if (
       !existingProject ||
@@ -94,7 +88,6 @@ export async function updateProjectAction(
       return { error: 'Project generation cannot be changed from this screen.' }
     }
 
-    // 삭제된 이미지 R2에서 삭제
     const prevImages = (
       await db
         .select({ images: projects.images, mainImage: projects.mainImage })
@@ -107,34 +100,14 @@ export async function updateProjectAction(
       return { error: 'Project not found' }
     }
 
-    const toDeleteImages = prevImages.images.filter(
-      (prevImage) => !contentImages.includes(prevImage)
-    )
-    const deleteImagePromises = []
+    await deleteRemovedR2Images({
+      previousImages: prevImages.images,
+      nextImages: contentImages,
+      previousMainImage: prevImages.mainImage,
+      nextMainImage: mainImage,
+      prefix: 'projects',
+    })
 
-    if (prevImages.mainImage !== mainImage) {
-      toDeleteImages.push(prevImages.mainImage)
-    }
-
-    for (const imageUrl of toDeleteImages) {
-      const imageKey = normalizeR2ImageObjectKey(imageUrl, 'projects')
-      if (!imageKey) {
-        continue
-      }
-
-      deleteImagePromises.push(
-        r2Client.send(
-          new DeleteObjectCommand({
-            Bucket: bucketEnv.R2_BUCKET_NAME,
-            Key: imageKey,
-          })
-        )
-      )
-    }
-
-    await Promise.all(deleteImagePromises)
-
-    // project 업데이트
     await db
       .update(projects)
       .set({
@@ -142,10 +115,8 @@ export async function updateProjectAction(
         nameKo: nameKo!,
         description: description!,
         descriptionKo: descriptionKo!,
-        content: content ? content.replaceAll('<', '').replaceAll('>', '') : '',
-        contentKo: contentKo
-          ? contentKo.replaceAll('<', '').replaceAll('>', '')
-          : '',
+        content: stripHtmlCharacters(content),
+        contentKo: stripHtmlCharacters(contentKo),
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),
@@ -153,18 +124,17 @@ export async function updateProjectAction(
       })
       .where(eq(projects.id, projectId))
 
-    // project 참여자 업데이트
-    // 기존 참여자 삭제
-    await db
-      .delete(usersToProjects)
-      .where(eq(usersToProjects.projectId, projectId))
-
-    // 새로운 참여자 추가
-    await db
-      .insert(usersToProjects)
-      .values(
-        participants.map((user) => ({ projectId: projectId, userId: user }))
-      )
+    await replaceRelationRows({
+      deleteRows: () =>
+        db
+          .delete(usersToProjects)
+          .where(eq(usersToProjects.projectId, projectId)),
+      rows: participants.map((user) => ({
+        projectId,
+        userId: user,
+      })),
+      insertRows: (rows) => db.insert(usersToProjects).values(rows),
+    })
 
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
@@ -179,6 +149,6 @@ export async function updateProjectAction(
     })
     return { error: 'DB Update Error' }
   }
-  // 성공 시 해당 project 로 이동
+
   redirect(await getLocalizedAdminPath(`/admin/projects/${projectId}`))
 }

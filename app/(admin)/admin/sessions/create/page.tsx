@@ -8,33 +8,25 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
-import MDXEditor from '@/app/components/admin/mdx-editor'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { auth } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
+import GenerationField from '@/app/components/admin/generation-field'
+import {
+  BilingualInputField,
+  BilingualMdxField,
+} from '@/app/components/admin/bilingual-fields'
+import { dedupeById } from '@/lib/admin/member-options'
 
 export const metadata: Metadata = {
   title: 'Create Session',
 }
 
-/**
- * `CreateSessionPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function CreateSessionPage() {
-  const t = getAdminMessages(await getAdminLocale())
-  const session = await auth()
+  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
+  const t = getAdminMessages(locale)
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)
     : null
@@ -61,13 +53,11 @@ export default async function CreateSessionPage() {
     )
   }
 
-  const generationData = await getGeneration(
-    resolvedScope.selectedGeneration.id
-  )
-  const membersData = await getMembers(null)
-  const uniqueMembers = Array.from(
-    new Map(membersData.map((m) => [m.id, m])).values()
-  )
+  const [generationData, membersData] = await Promise.all([
+    getGeneration(resolvedScope.selectedGeneration.id),
+    getMembers(null),
+  ])
+  const uniqueMembers = dedupeById(membersData)
 
   const scopedParts =
     generationData?.parts.map((part) => ({
@@ -98,72 +88,32 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'member-data-grid gap-2'}
       >
-        <div
-          className={
-            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
-            {resolvedScope.selectedGeneration.name}
-          </div>
-        </div>
-        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
-          <BilingualPanel
-            enTitle={t.english}
-            koTitle={t.korean}
-            fieldLabel={t.name}
-            requiredBoth={true}
-            enFieldNames={['name']}
-            koFieldNames={['nameKo']}
-            enContent={
-              <DataInput
-                title={t.nameEn}
-                defaultValue={''}
-                name={'name'}
-                placeholder={t.nameEn}
-                required={true}
-              />
-            }
-            koContent={
-              <DataInput
-                title={t.nameKo}
-                defaultValue={''}
-                name={'nameKo'}
-                placeholder={t.nameKo}
-                required={true}
-              />
-            }
-          />
-        </div>
-        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
-          <BilingualPanel
-            enTitle={t.english}
-            koTitle={t.korean}
-            fieldLabel={t.location}
-            requiredBoth={true}
-            enFieldNames={['location']}
-            koFieldNames={['locationKo']}
-            enContent={
-              <DataInput
-                title={t.locationEn}
-                defaultValue={''}
-                name={'location'}
-                placeholder={t.locationEn}
-                required={true}
-              />
-            }
-            koContent={
-              <DataInput
-                title={t.locationKo}
-                defaultValue={''}
-                name={'locationKo'}
-                placeholder={t.locationKo}
-                required={true}
-              />
-            }
-          />
-        </div>
+        <GenerationField
+          title={t.generation}
+          value={resolvedScope.selectedGeneration.name}
+        />
+        <BilingualInputField
+          t={t}
+          fieldLabel={t.name}
+          enName={'name'}
+          koName={'nameKo'}
+          enTitle={t.nameEn}
+          koTitle={t.nameKo}
+          enPlaceholder={t.nameEn}
+          koPlaceholder={t.nameKo}
+          required={true}
+        />
+        <BilingualInputField
+          t={t}
+          fieldLabel={t.location}
+          enName={'location'}
+          koName={'locationKo'}
+          enTitle={t.locationEn}
+          koTitle={t.locationKo}
+          enPlaceholder={t.locationEn}
+          koPlaceholder={t.locationKo}
+          required={true}
+        />
         <DataSelectInput
           data={[
             { name: t.generalSession, value: 'General Session' },
@@ -181,30 +131,16 @@ export default async function CreateSessionPage() {
           type={'checkbox'}
           isChecked={false}
         />
-        <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
-          <BilingualPanel
-            enTitle={t.english}
-            koTitle={t.korean}
-            fieldLabel={t.description}
-            requiredBoth={true}
-            enFieldNames={['description']}
-            koFieldNames={['descriptionKo']}
-            enContent={
-              <MDXEditor
-                title={t.descriptionEn}
-                name={'description'}
-                placeholder={'Write the session description in English.'}
-              />
-            }
-            koContent={
-              <MDXEditor
-                title={t.descriptionKo}
-                name={'descriptionKo'}
-                placeholder={'세션 설명을 한국어로 작성하세요.'}
-              />
-            }
-          />
-        </div>
+        <BilingualMdxField
+          t={t}
+          fieldLabel={t.description}
+          enName={'description'}
+          koName={'descriptionKo'}
+          enTitle={t.descriptionEn}
+          koTitle={t.descriptionKo}
+          enPlaceholder={'Write the session description in English.'}
+          koPlaceholder={'세션 설명을 한국어로 작성하세요.'}
+        />
         <div className={'flex flex-col gap-1'}>
           <DataInput
             title={t.internalOpen}

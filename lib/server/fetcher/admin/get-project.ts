@@ -22,7 +22,7 @@ export const preloadAdminProjectById = (projectId: string) => {
  */
 export async function getProject(projectId: string) {
   noStore()
-  const result = await db.query.projects.findMany({
+  return db.query.projects.findFirst({
     where: eq(projects.id, projectId),
     with: {
       usersToProjects: {
@@ -33,5 +33,4 @@ export async function getProject(projectId: string) {
       generation: true,
     },
   })
-  return result[0]
 }

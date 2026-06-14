@@ -4,7 +4,6 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import {
   FormEvent,
   ReactNode,
-  startTransition,
   useActionState,
   useState,
 } from 'react'
@@ -144,7 +143,6 @@ export default function DataForm({
    * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
     const formElement = event.currentTarget
     const formData = new FormData(formElement)
     const missingBilingualPanels = getMissingBilingualPanels(
@@ -153,6 +151,7 @@ export default function DataForm({
     )
 
     if (missingBilingualPanels.length > 0) {
+      event.preventDefault()
       setClientError(
         toBilingualValidationMessage(missingBilingualPanels, locale)
       )
@@ -160,13 +159,12 @@ export default function DataForm({
     }
 
     setClientError('')
-    startTransition(() => formAction(formData))
   }
 
   const errorMessage = clientError || state.error
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form action={formAction} onSubmit={handleSubmit} className={className}>
       {children}
       {errorMessage ? (
         <p className={'m-auto text-red-500'}>{errorMessage}</p>

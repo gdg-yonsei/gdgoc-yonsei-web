@@ -22,6 +22,7 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['127.0.0.1'],
   cacheComponents: true,
   cacheHandler: hasSharedRedisCache
     ? require.resolve('./lib/server/cache/handlers/incremental-redis-cache-handler.cjs')

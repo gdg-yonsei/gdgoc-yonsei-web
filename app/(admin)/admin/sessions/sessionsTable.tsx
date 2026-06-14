@@ -1,17 +1,18 @@
-import {
-  getSessions,
-} from '@/lib/server/fetcher/admin/get-sessions'
+import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import { type AdminMessages } from '@/lib/admin-i18n'
+import { type Locale } from '@/i18n-config'
 import SessionsTableClient from './sessions-table-client'
 
 export default async function SessionsTable({
   scope,
+  locale,
+  t,
 }: {
   scope: AdminGenerationScope | null
+  locale: Locale
+  t: AdminMessages
 }) {
-  const locale = await getAdminLocale()
-  const t = getAdminMessages(locale)
   const sessionsData = await getSessions(scope)
 
   return (
@@ -23,4 +24,3 @@ export default async function SessionsTable({
     />
   )
 }
-
