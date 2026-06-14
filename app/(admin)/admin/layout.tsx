@@ -59,8 +59,12 @@ export default async function AdminLayout({
   return (
     <AdminI18nProvider locale={locale} messages={messages}>
       <AuthProvider>
-        <Header navigations={navigations} locale={locale} />
         <JotaiProvider>
+          <Header
+            navigations={navigations}
+            locale={locale}
+            resolvedScope={resolvedScope}
+          />
           <Sidebar
             navigations={navigations}
             locale={locale}

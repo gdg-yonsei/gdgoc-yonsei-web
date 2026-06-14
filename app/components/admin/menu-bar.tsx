@@ -41,19 +41,22 @@ function MenuBarNavigator({
 export default function MenuBar({
   navigations,
   locale,
+  children,
 }: {
   navigations: NavigationItem[]
   locale: Locale
+  children?: ReactNode
 }) {
   const [isOpen, setIsOpen] = useAtom(menuBarState)
 
   return (
     <>
       <div
-        className={`flex w-full justify-center bg-neutral-100 transition-all ${isOpen ? 'h-[70vh]' : 'h-0'}`}
+        className={`flex w-full justify-center bg-neutral-100 transition-all overflow-y-auto ${isOpen ? 'h-[70vh]' : 'h-0'}`}
       >
         {isOpen && (
           <div className={'flex w-full max-w-4xl flex-col gap-4 p-4'}>
+            {children}
             {navigations.map((item, i) => (
               <MenuBarNavigator
                 key={i}
