@@ -5,7 +5,7 @@ import { afterEach, vi } from 'vitest'
 
 process.env.AUTH_DRIZZLE_URL ??=
   'postgres://postgres:postgres@localhost:5432/test'
-process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.test'
+process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.yonsei.ac.kr'
 process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
 process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'
 process.env.R2_ACCESS_KEY ??= 'test-access-key'
