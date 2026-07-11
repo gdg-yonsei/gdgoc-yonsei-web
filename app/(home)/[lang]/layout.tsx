@@ -48,12 +48,20 @@ export async function generateMetadata({
   }
 }
 
-// Google Product Sans 폰트
-const googleSans = localFont({
-  src: '../../fonts/google-sans.woff2',
+// 본문 서체: Pretendard Variable (self-hosted)
+const pretendard = localFont({
+  src: '../../fonts/pretendard-variable.woff2',
   display: 'swap',
-  variable: '--font-sans',
-  weight: '100 900',
+  variable: '--font-pretendard',
+  weight: '45 920',
+})
+
+// 데이터·라벨 서체: JetBrains Mono Variable (self-hosted)
+const jetbrainsMono = localFont({
+  src: '../../fonts/jetbrains-mono-variable.woff2',
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+  weight: '100 800',
 })
 
 /**
@@ -78,7 +86,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
+      className={`text-gdg-black bg-neutral-50 font-sans ${pretendard.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body>

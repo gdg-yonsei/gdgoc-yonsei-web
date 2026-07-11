@@ -62,6 +62,15 @@
   --color-gdg-black: #1e1e1e;
 }
 
+@theme inline {
+  --font-sans:
+    var(--font-pretendard), 'Pretendard Variable', 'Apple SD Gothic Neo',
+    'Noto Sans KR', system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular,
+    Menlo, monospace;
+}
+
 .h-home-screen {
   height: calc(100vh - 4.2rem);
 }
