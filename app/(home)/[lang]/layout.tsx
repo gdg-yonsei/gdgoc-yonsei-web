@@ -86,7 +86,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`text-gdg-black bg-neutral-50 font-sans ${pretendard.variable} ${jetbrainsMono.variable}`}
+      className={`bg-surface text-ink font-sans ${pretendard.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body>

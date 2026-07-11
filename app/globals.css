@@ -1,6 +1,13 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+:root {
+  --surface: #f6f7fb;
+  --surface-raised: #ffffff;
+  --ink: #0b1220;
+  --yonsei-blue: #1b3a75;
+}
+
 @layer components {
   .button-black {
     @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-white transition-all disabled:bg-neutral-800;
@@ -42,6 +49,10 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+  }
 }
 
 @theme {
@@ -69,10 +80,21 @@
   --font-mono:
     var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular,
     Menlo, monospace;
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-yonsei-blue: var(--yonsei-blue);
 }
 
 .h-home-screen {
   height: calc(100vh - 4.2rem);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--yonsei-blue);
+    outline-offset: 2px;
+  }
 }
 
 /* Home shooting star background (CSS-only to avoid client JS) */
