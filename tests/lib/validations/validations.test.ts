@@ -192,6 +192,7 @@ describe('validation schemas', () => {
       partId: '1',
       participantId: ['u1'],
       type: 'Part Session' as const,
+      category: 'part_session' as const,
       displayOnWebsite: true,
     }
 

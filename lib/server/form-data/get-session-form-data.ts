@@ -2,6 +2,16 @@
  * @file This file contains a function to extract session data from a FormData object.
  */
 
+const ACTIVITY_CATEGORIES = [
+  'tech_talk',
+  'part_session',
+  'hackathon',
+  'demo_day',
+  'devrel',
+] as const
+
+export type ActivityCategoryFormValue = (typeof ACTIVITY_CATEGORIES)[number]
+
 function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
   if (typeof value !== 'string' || value.length === 0) {
     return []
@@ -43,6 +53,7 @@ export default function getSessionFormData(formData: FormData): {
   partId: string | null
   participantId: string[]
   type: 'Part Session' | 'General Session'
+  category: ActivityCategoryFormValue
   displayOnWebsite: boolean
 } {
   const name = formData.get('name') as string | null
@@ -64,6 +75,13 @@ export default function getSessionFormData(formData: FormData): {
   if (type === 'General Session') {
     sessionType = 'General Session'
   }
+
+  const rawCategory = formData.get('category')
+  const category: ActivityCategoryFormValue = ACTIVITY_CATEGORIES.includes(
+    rawCategory as ActivityCategoryFormValue
+  )
+    ? (rawCategory as ActivityCategoryFormValue)
+    : 'tech_talk'
 
   // Safely parse contentImages JSON string
   const contentImagesArray = parseStringArrayFromJson(
@@ -89,6 +107,7 @@ export default function getSessionFormData(formData: FormData): {
     startAt,
     endAt,
     type: sessionType,
+    category,
     displayOnWebsite,
   }
 }

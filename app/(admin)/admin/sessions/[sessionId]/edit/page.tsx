@@ -145,6 +145,18 @@ export default async function EditSessionPage({
           title={t.sessionType}
           defaultValue={sessionData.type ? sessionData.type : 'Part Session'}
         />
+        <DataSelectInput
+          data={[
+            { name: 'Tech Talk (T19)', value: 'tech_talk' },
+            { name: 'Part Session', value: 'part_session' },
+            { name: 'Hackathon', value: 'hackathon' },
+            { name: 'Demo Day', value: 'demo_day' },
+            { name: 'DevRel / Social', value: 'devrel' },
+          ]}
+          name={'category'}
+          title={'Activity Category'}
+          defaultValue={sessionData.category ?? 'tech_talk'}
+        />
         <DataInput
           title={t.displayOnWebsite}
           defaultValue={'true'}

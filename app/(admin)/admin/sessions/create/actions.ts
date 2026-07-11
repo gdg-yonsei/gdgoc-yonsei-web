@@ -56,6 +56,7 @@ export async function createSessionAction(
     partId,
     participantId,
     type,
+    category,
     displayOnWebsite,
   } = getSessionFormData(formData)
 
@@ -82,6 +83,7 @@ export async function createSessionAction(
       partId,
       participantId,
       type,
+      category,
       displayOnWebsite,
     })
   } catch (err) {
@@ -138,6 +140,7 @@ export async function createSessionAction(
         partId: Number(partId),
         displayOnWebsite: displayOnWebsite,
         type: type,
+        category: category,
       })
       .returning({ id: sessions.id })
 

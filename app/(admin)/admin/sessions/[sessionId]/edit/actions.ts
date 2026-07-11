@@ -55,6 +55,7 @@ export async function updateSessionAction(
     partId,
     participantId,
     type,
+    category,
     displayOnWebsite,
   } = getSessionFormData(formData)
 
@@ -76,6 +77,7 @@ export async function updateSessionAction(
       partId,
       participantId,
       type,
+      category,
       displayOnWebsite,
     })
   } catch (err) {
@@ -155,6 +157,7 @@ export async function updateSessionAction(
         startAt: startAt!,
         endAt: endAt!,
         type: type,
+        category: category,
         displayOnWebsite: displayOnWebsite,
       })
       .where(eq(sessions.id, sessionId))
