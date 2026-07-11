@@ -22,6 +22,8 @@ export const projects = pgTable('projects', {
   contentKo: text('contentKo').notNull().default(''),
   mainImage: text('mainImage').notNull().default('/project-default.png'),
   images: jsonb('images').$type<string[]>().notNull().default([]),
+  repoUrl: text('repoUrl'),
+  demoUrl: text('demoUrl'),
   authorId: text('authorId')
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),

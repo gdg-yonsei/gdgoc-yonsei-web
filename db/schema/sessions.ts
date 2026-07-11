@@ -20,6 +20,14 @@ export const sessionTypeEnum = pgEnum('sessionType', [
   'Part Session',
 ])
 
+export const activityCategoryEnum = pgEnum('activityCategory', [
+  'tech_talk',
+  'part_session',
+  'hackathon',
+  'demo_day',
+  'devrel',
+])
+
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   name: text('name').notNull(),
@@ -38,6 +46,7 @@ export const sessions = pgTable('sessions', {
   location: text('location'),
   locationKo: text('locationKo'),
   type: sessionTypeEnum('type').default('Part Session'),
+  category: activityCategoryEnum('category').notNull().default('tech_talk'),
   displayOnWebsite: boolean('displayOnWebsite').default(true),
   startAt: timestamp(),
   endAt: timestamp(),
