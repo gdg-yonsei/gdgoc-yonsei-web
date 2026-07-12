@@ -155,6 +155,8 @@ describe('validation schemas', () => {
         contentImages: ['/1.png'],
         participants: ['u1'],
         generationId: '10',
+        repoUrl: null,
+        demoUrl: null,
       }).success
     ).toBe(true)
 

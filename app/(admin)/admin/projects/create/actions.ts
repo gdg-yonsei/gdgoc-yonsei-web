@@ -47,6 +47,8 @@ export async function createProjectAction(
     contentImages,
     participants,
     generationId,
+    repoUrl,
+    demoUrl,
   } = getProjectFormData(formData)
 
   const resolvedScope = await resolveAdminGenerationScope(session.user.id)
@@ -69,6 +71,8 @@ export async function createProjectAction(
       contentImages,
       participants,
       generationId,
+      repoUrl,
+      demoUrl,
     })
   } catch (err) {
     const validationError = getZodActionError(err, 'Validation failed')
@@ -98,6 +102,8 @@ export async function createProjectAction(
           mainImage: mainImage!,
           content: stripHtmlCharacters(content),
           contentKo: stripHtmlCharacters(contentKo),
+          repoUrl: repoUrl,
+          demoUrl: demoUrl,
         })
         .returning({ id: projects.id })
     )[0]

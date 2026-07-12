@@ -48,6 +48,8 @@ export async function updateProjectAction(
     mainImage,
     participants,
     generationId,
+    repoUrl,
+    demoUrl,
   } = getProjectFormData(formData)
 
   try {
@@ -62,6 +64,8 @@ export async function updateProjectAction(
       mainImage,
       participants,
       generationId,
+      repoUrl,
+      demoUrl,
     })
   } catch (err) {
     const validationError = getZodActionError(err)
@@ -120,6 +124,8 @@ export async function updateProjectAction(
         images: contentImages,
         mainImage: mainImage!,
         generationId: Number(generationId),
+        repoUrl: repoUrl,
+        demoUrl: demoUrl,
         updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))
