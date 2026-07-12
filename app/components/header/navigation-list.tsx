@@ -51,6 +51,15 @@ export default function NavigationList({
       <div className="min-h-0 overflow-hidden">
         <MotionLink state={isMenuOpen}>
           <Link
+            href={`/${lang}/about`}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={'w-full'}
+          >
+            {lang === 'ko' ? '소개' : 'About'}
+          </Link>
+        </MotionLink>
+        <MotionLink state={isMenuOpen}>
+          <Link
             href={`/${lang}/session${lastGeneration ? '/' + lastGeneration : ''}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={'w-full'}

@@ -23,7 +23,11 @@ export default async function Header({ lang }: { lang: Locale }) {
   const isMember = !!(await auth())?.user?.id
 
   return (
-    <div className={'fixed top-0 left-0 z-10 w-full bg-neutral-100'}>
+    <div
+      className={
+        'border-ink/5 bg-surface/80 fixed top-0 left-0 z-10 w-full border-b backdrop-blur-md'
+      }
+    >
       <div className={'flex items-center justify-between p-4'}>
         <GDGLogoLinkButton />
         <MenuBarButton />

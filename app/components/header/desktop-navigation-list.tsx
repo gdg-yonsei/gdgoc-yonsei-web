@@ -31,6 +31,7 @@ export default async function DesktopNavigationList({
       <Suspense>
         <AdminDashboardLink lang={lang} />
       </Suspense>
+      <Link href={`/${lang}/about`}>{lang === 'ko' ? '소개' : 'About'}</Link>
       <Link
         href={`/${lang}/session${lastGeneration ? '/' + lastGeneration.name : ''}`}
       >

@@ -155,7 +155,7 @@ describe('common components', () => {
     const mailLink = screen.getByRole('link', {
       name: /gdsc\.yonsei\.univ@gmail\.com/i,
     })
-    const linkedInLink = screen.getByRole('link', { name: /go to LinkedIn/i })
+    const linkedInLink = screen.getByRole('link', { name: /LinkedIn/i })
     const instagramLink = screen.getByRole('link', {
       name: /@gdg\.yonseiuniv/i,
     })
