@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useAtom } from 'jotai'
 import { homeMenuBarState } from '@/lib/atoms'
 import { ReactNode } from 'react'
@@ -17,14 +17,14 @@ function MotionLink({
 }) {
   const shouldReduce = useReducedMotion()
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: state ? 1 : 0 }}
       transition={shouldReduce ? { duration: 0 } : undefined}
       className={'flex w-full p-1 px-4 last:pb-4'}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 

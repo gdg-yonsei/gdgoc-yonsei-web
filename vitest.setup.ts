@@ -74,9 +74,30 @@ const createMotionProxy = () =>
     }
   )
 
-vi.mock('motion/react', () => ({
-  motion: createMotionProxy(),
-}))
+vi.mock('motion/react', () => {
+  const proxy = createMotionProxy()
+  return {
+    motion: proxy,
+    m: proxy,
+    LazyMotion: ({ children }: React.PropsWithChildren) => children,
+    AnimatePresence: ({ children }: React.PropsWithChildren) => children,
+    domAnimation: {},
+    domMax: {},
+    useReducedMotion: () => true,
+    useScroll: () => ({
+      scrollYProgress: { get: () => 0, on: () => () => {} },
+    }),
+    useTransform: () => 0,
+    animate: (
+      _from: number,
+      to: number,
+      options?: { onUpdate?: (value: number) => void }
+    ) => {
+      options?.onUpdate?.(to)
+      return { stop: () => {} }
+    },
+  }
+})
 
 vi.mock('motion/react-client', () => createMotionProxy())
 
@@ -107,6 +128,22 @@ Object.defineProperty(globalThis.HTMLElement.prototype, 'scrollTo', {
   writable: true,
   value: vi.fn(),
 })
+
+if (!window.matchMedia) {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  )
+}
 
 afterEach(() => {
   cleanup()

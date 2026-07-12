@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import '../../globals.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
+import LazyMotionProvider from '@/app/components/motion/lazy-motion-provider'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import languageParamChecker from '@/lib/language-param-checker'
@@ -90,9 +91,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <Header lang={lang} />
-        {children}
-        <Footer />
+        <LazyMotionProvider>
+          <Header lang={lang} />
+          {children}
+          <Footer />
+        </LazyMotionProvider>
       </body>
       <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
