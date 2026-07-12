@@ -23,12 +23,8 @@ function CountUp({ target, start }: { target: number; start: boolean }) {
     if (!start) {
       return
     }
-    if (shouldReduce || target === 0) {
-      setValue(target)
-      return
-    }
     const controls = animate(0, target, {
-      duration: 1.2,
+      duration: shouldReduce || target === 0 ? 0 : 1.2,
       ease: 'easeOut',
       onUpdate: (latest) => setValue(Math.round(latest)),
     })
