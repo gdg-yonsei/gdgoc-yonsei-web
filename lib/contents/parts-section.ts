@@ -43,4 +43,69 @@ const partsSectionContent = [
   },
 ]
 
+export type BentoPart = {
+  key: string
+  title: string
+  span: 'wide' | 'default'
+  accentClass: string
+  content: { en: string; ko: string }
+}
+
+function byTitle(title: string) {
+  const part = partsSectionContent.find((entry) => entry.title === title)
+  if (!part) {
+    throw new Error(`Unknown part title: ${title}`)
+  }
+  return part
+}
+
+/** 홈 bento 6칸 (프롬프트 고정 구성 — Organizer 포함, DB parts와 무관한 정적 콘텐츠) */
+export const bentoParts: BentoPart[] = [
+  {
+    key: 'organizer',
+    title: 'Organizer',
+    span: 'wide',
+    accentClass: 'bg-yonsei-blue',
+    content: {
+      en: 'Leads GDGoC Yonsei end to end — designing programs like T19 and demo days, partnering with Google and other chapters, and keeping the community healthy.',
+      ko: 'GDGoC Yonsei 운영 전반을 이끕니다 — T19·데모데이 같은 프로그램 설계, 구글·타 챕터와의 협력, 커뮤니티 운영까지 담당합니다.',
+    },
+  },
+  {
+    key: 'frontend',
+    title: 'Front-End',
+    span: 'default',
+    accentClass: 'bg-gdg-blue-300',
+    content: byTitle('Front-End').content,
+  },
+  {
+    key: 'backend',
+    title: 'Back-End',
+    span: 'default',
+    accentClass: 'bg-gdg-green-300',
+    content: byTitle('Back-End').content,
+  },
+  {
+    key: 'ml-ai',
+    title: 'ML/AI',
+    span: 'default',
+    accentClass: 'bg-gdg-red-200',
+    content: byTitle('ML/AI').content,
+  },
+  {
+    key: 'ui-ux',
+    title: 'UI/UX',
+    span: 'default',
+    accentClass: 'bg-gdg-red-300',
+    content: byTitle('UI/UX').content,
+  },
+  {
+    key: 'devrel',
+    title: 'DevRel',
+    span: 'default',
+    accentClass: 'bg-gdg-yellow-300',
+    content: byTitle('DevRel').content,
+  },
+]
+
 export default partsSectionContent
