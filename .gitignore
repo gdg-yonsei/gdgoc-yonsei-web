@@ -35,6 +35,3 @@ next-env.d.ts
 
 # WebStorm
 .idea
-
-# Sentry Config File
-.env.sentry-build-plugin
