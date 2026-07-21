@@ -28,7 +28,6 @@ npm-debug.log*
 .env
 .env.production
 .env.development
-.env.sentry-build-plugin
 
 # typescript
 *.tsbuildinfo
