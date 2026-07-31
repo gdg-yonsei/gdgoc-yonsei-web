@@ -76,8 +76,6 @@ test('all sitemap URLs return successful responses', async ({
     '/ko/project',
     '/en/session',
     '/ko/session',
-    '/en/recruit',
-    '/ko/recruit',
     '/en/2026-freshman-ot',
     '/ko/2026-freshman-ot',
   ]) {

@@ -102,12 +102,6 @@ export default function Footer({ lang }: { lang: Locale }) {
             </Link>
             <Link
               className="inline-flex min-h-11 items-center underline underline-offset-4"
-              href={`/${lang}/recruit`}
-            >
-              {lang === 'ko' ? '코어 멤버 모집' : 'Core recruitment'}
-            </Link>
-            <Link
-              className="inline-flex min-h-11 items-center underline underline-offset-4"
               href={`/${lang}/2026-freshman-ot`}
             >
               {lang === 'ko' ? '2026 신입생 OT' : '2026 Freshman Orientation'}
