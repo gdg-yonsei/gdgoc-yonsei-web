@@ -111,7 +111,9 @@ export default async function ProjectsPage({ params }: Props) {
             <Link
               href={`/${paramsData.lang}/project/${paramsData.generation}/${data.id}`}
               key={data.id}
-              className={'ring-gdg-white rounded-lg bg-white ring-2'}
+              className={
+                'interactive-card focus-ring ring-gdg-white block rounded-lg bg-white ring-2'
+              }
             >
               <Image
                 src={data.mainImage}

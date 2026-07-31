@@ -10,7 +10,7 @@ export function PartCard({
   content: string
 }) {
   return (
-    <details className="group min-h-80 overflow-hidden rounded-2xl bg-white ring-2 ring-white">
+    <details className="disclosure-card group min-h-80 overflow-hidden rounded-2xl bg-white ring-2 ring-white">
       <summary className="flex min-h-80 cursor-pointer list-none flex-col items-center justify-center gap-6 p-6 text-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-blue-600">
         <h3 className="text-3xl font-semibold md:text-4xl">{title}</h3>
         <span

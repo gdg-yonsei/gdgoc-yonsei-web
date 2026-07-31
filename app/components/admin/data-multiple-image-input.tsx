@@ -165,7 +165,7 @@ export default function DataMultipleImageInput({
       {prevImageUrls.length > 0 && (
         <div className={'grid w-full grid-cols-1 gap-2'}>
           {prevImageUrls.map((url, index) => (
-            <div key={index} className={'relative w-full'}>
+            <div key={index} className={'notice-scale-enter relative w-full'}>
               <button
                 type={'button'}
                 className={

@@ -2,7 +2,8 @@
 
 import { useAtom } from 'jotai'
 import { modalState } from '@/lib/atoms'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
@@ -20,6 +21,22 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 export default function Modal() {
   const [modal, setModal] = useAtom(modalState)
   const { t } = useAdminI18n()
+  const shouldReduce = useReducedMotion()
+
+  // 모션을 줄이는 사용자에게는 확대/축소 없이 페이드만 남깁니다.
+  const panelMotion = shouldReduce
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.12 },
+      }
+    : {
+        initial: { opacity: 0, scale: 0.97 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.97 },
+        transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const },
+      }
 
   /**
    * `closeModal` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -38,17 +55,20 @@ export default function Modal() {
   }
 
   return (
-    <>
+    <AnimatePresence>
       {modal.text && (
         <motion.div
+          key={'admin-modal'}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
           className={
             'fixed top-0 left-0 z-30 flex h-screen w-screen items-center justify-center bg-neutral-500/50 p-4'
           }
         >
-          <div
+          <motion.div
+            {...panelMotion}
             className={
               'flex h-full max-h-1/2 w-full max-w-2xl flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
             }
@@ -76,9 +96,9 @@ export default function Modal() {
                 {t('cancel')}
               </button>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       )}
-    </>
+    </AnimatePresence>
   )
 }

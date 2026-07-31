@@ -116,12 +116,12 @@ export default function BookingForm() {
       </div>
 
       {error && (
-        <div className="rounded-xl bg-red-100 p-4 text-sm text-red-700">
+        <div className="notice-enter rounded-xl bg-red-100 p-4 text-sm text-red-700">
           오류: {error}
         </div>
       )}
       {success && (
-        <div className="rounded-xl bg-green-100 p-4 text-sm text-green-700">
+        <div className="notice-enter rounded-xl bg-green-100 p-4 text-sm text-green-700">
           신청이 접수되었습니다! 예약 스케줄러가 자동으로 실행됩니다.
         </div>
       )}
