@@ -23,7 +23,6 @@ const staticPages: SitemapPathEntry[] = [
   { path: '/session' },
   { path: '/privacy-policy' },
   { path: '/terms-of-service' },
-  { path: '/recruit' },
   { path: '/2026-freshman-ot' },
 ]
 

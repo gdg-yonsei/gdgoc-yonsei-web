@@ -5,8 +5,6 @@ const extraPublicRoutes = [
   '/ko/privacy-policy',
   '/en/terms-of-service',
   '/ko/terms-of-service',
-  '/en/recruit',
-  '/ko/recruit',
   '/en/2026-freshman-ot',
   '/ko/2026-freshman-ot',
 ]

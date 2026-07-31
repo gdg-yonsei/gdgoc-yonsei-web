@@ -36,15 +36,10 @@ test.describe('public routes and user interactions', () => {
     }
   })
 
-  test('recruit and freshman OT pages load', async ({ page }) => {
+  test('freshman OT pages load', async ({ page }) => {
     test.setTimeout(90_000)
 
-    const routes = [
-      '/en/recruit',
-      '/ko/recruit',
-      '/en/2026-freshman-ot',
-      '/ko/2026-freshman-ot',
-    ]
+    const routes = ['/en/2026-freshman-ot', '/ko/2026-freshman-ot']
 
     for (const route of routes) {
       await test.step(route, async () => {
