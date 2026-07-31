@@ -61,6 +61,50 @@
       transform: translateY(-0.375rem);
     }
   }
+  /* 조건부로 마운트되는 알림/미리보기가 갑자기 끼어들어 아래 내용을 밀어내지 않도록
+     `.mobile-navigation`과 같은 `@starting-style` 진입을 재사용합니다. */
+  .notice-enter {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(-0.375rem);
+    }
+  }
+  .notice-scale-enter {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    @starting-style {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+  /* 네이티브 disclosure가 열릴 때 카드 높이가 튀지 않게 합니다.
+     `::details-content`를 지원하지 않는 브라우저는 기존처럼 즉시 열립니다. */
+  .disclosure-card {
+    interpolate-size: allow-keywords;
+  }
+  .disclosure-card::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      block-size 260ms cubic-bezier(0.23, 1, 0.32, 1),
+      opacity 260ms cubic-bezier(0.23, 1, 0.32, 1),
+      content-visibility 260ms allow-discrete;
+  }
+  .disclosure-card[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
   .admin-title {
     @apply text-3xl font-bold;
   }
@@ -92,7 +136,9 @@
     background-color: rgb(229 229 229 / 0.8);
   }
 
-  .interactive-card:hover {
+  /* `:not(:active)`가 없으면 이 블록이 `@layer components` 바깥(=우선순위 우위)에 있어
+     누르는 동안에도 hover 이동이 `:active`의 축소를 덮어씁니다. */
+  .interactive-card:hover:not(:active) {
     transform: translateY(-0.125rem);
     border-color: rgb(212 212 212);
     box-shadow:
@@ -232,5 +278,18 @@
   .mobile-navigation {
     transform: none;
     transition-duration: 0.01ms;
+  }
+
+  /* 진입 애니메이션은 완전히 끄는 대신 이동/확대만 제거하고 짧은 페이드는 남깁니다. */
+  .notice-enter,
+  .notice-scale-enter {
+    transform: none;
+    transition: opacity 120ms ease;
+  }
+
+  .disclosure-card::details-content {
+    transition:
+      opacity 120ms ease,
+      content-visibility 120ms allow-discrete;
   }
 }

@@ -101,7 +101,7 @@ export default function DataImageInput({
           alt={'Project Main Image'}
           width={600}
           height={400}
-          className={'w-full'}
+          className={'notice-scale-enter w-full'}
           placeholder={'blur'}
           blurDataURL={'/default-image.png'}
         />
