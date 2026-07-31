@@ -3,10 +3,63 @@
 
 @layer components {
   .button-black {
-    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-white transition-all disabled:bg-neutral-800;
+    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-white disabled:bg-neutral-800;
   }
   .button-white {
-    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 text-black transition-all disabled:bg-neutral-200;
+    @apply flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 text-black disabled:bg-neutral-200;
+  }
+  .button-black,
+  .button-white,
+  .pressable {
+    transition:
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .button-black:active:not(:disabled),
+  .button-white:active:not(:disabled),
+  .pressable:active {
+    transform: scale(0.97);
+  }
+  .button-black:focus-visible,
+  .button-white:focus-visible,
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-logo-blue);
+    outline-offset: 4px;
+  }
+  .navigation-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    border-radius: 0.75rem;
+    padding-inline: 0.875rem;
+    transition:
+      transform 150ms cubic-bezier(0.23, 1, 0.32, 1),
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+  .interactive-card {
+    transition:
+      transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .interactive-card:active {
+    transform: scale(0.98);
+  }
+  .mobile-navigation {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(-0.375rem);
+    }
   }
   .admin-title {
     @apply text-3xl font-bold;
@@ -31,6 +84,20 @@
   }
   .home-about-box {
     @apply flex flex-col rounded-2xl border-3 p-4 text-lg md:p-0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navigation-link:hover {
+    background-color: rgb(229 229 229 / 0.8);
+  }
+
+  .interactive-card:hover {
+    transform: translateY(-0.125rem);
+    border-color: rgb(212 212 212);
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.08),
+      0 4px 6px -4px rgb(0 0 0 / 0.08);
   }
 }
 
@@ -149,4 +216,21 @@
 
 .shooting-star-br {
   animation-name: shooting-br;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shooting-star {
+    animation: none;
+    opacity: 0.18;
+  }
+
+  .button-black,
+  .button-white,
+  .pressable,
+  .navigation-link,
+  .interactive-card,
+  .mobile-navigation {
+    transform: none;
+    transition-duration: 0.01ms;
+  }
 }

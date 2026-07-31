@@ -1,5 +1,7 @@
 import HomePageBackground from '@/app/(home)/[lang]/home-page-background'
 import GDGLogo from '@/app/components/svg/gdg-logo'
+import Link from 'next/link'
+import type { Locale } from '@/i18n-config'
 
 /**
  * `WelcomePage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -13,7 +15,7 @@ import GDGLogo from '@/app/components/svg/gdg-logo'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function WelcomePage() {
+export default function WelcomePage({ lang }: { lang: Locale }) {
   return (
     <section
       className={
@@ -21,23 +23,44 @@ export default function WelcomePage() {
       }
     >
       <HomePageBackground />
-      <div className={'flex items-center gap-4 p-4'}>
-        <GDGLogo svgKey={'main'} className={'w-40 md:w-64'} />
+      <div className={'flex items-center gap-3 p-2 sm:gap-4 sm:p-4'}>
+        <GDGLogo svgKey={'main'} className={'w-28 sm:w-40 md:w-64'} />
         <h1 className={'flex flex-col gap-4'}>
-          <span className={'text-2xl md:text-4xl'}>Welcome to</span>
+          <span className={'text-2xl md:text-4xl'}>
+            {lang === 'ko' ? '연세대학교' : 'Welcome to'}
+          </span>
           <span
             className={
-              'flex flex-col gap-3 text-4xl font-semibold md:text-6xl lg:flex-row'
+              'flex flex-col gap-3 text-3xl font-semibold sm:text-4xl md:text-6xl lg:flex-row'
             }
           >
             <span>Google</span>
             <span>Developer</span>
             <span>Group</span>
           </span>
-          <span className={'text-logo-blue text-2xl md:text-4xl'}>
-            Yonsei University
+          <span
+            className={
+              'text-logo-blue text-xl whitespace-nowrap sm:text-2xl md:text-4xl'
+            }
+          >
+            {lang === 'ko' ? '학생 개발자 커뮤니티' : 'Yonsei University'}
           </span>
         </h1>
+      </div>
+
+      <div className="relative z-10 flex flex-wrap justify-center gap-3">
+        <Link
+          href={`/${lang}/session`}
+          className="pressable focus-ring bg-logo-blue inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold text-white shadow-sm hover:bg-blue-600 hover:shadow-md"
+        >
+          {lang === 'ko' ? '기술 세션 보기' : 'Explore sessions'}
+        </Link>
+        <Link
+          href={`/${lang}/project`}
+          className="pressable focus-ring inline-flex min-h-12 items-center rounded-full border-2 border-neutral-800 bg-white/90 px-6 py-3 font-semibold text-neutral-900 shadow-sm hover:bg-white hover:shadow-md"
+        >
+          {lang === 'ko' ? '프로젝트 보기' : 'Explore projects'}
+        </Link>
       </div>
 
       {/* 2026 Freshman OT Banner */}

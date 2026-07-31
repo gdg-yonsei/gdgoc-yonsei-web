@@ -12,6 +12,10 @@ type LangLayoutProps = {
   params: Promise<{ lang: string }>
 }
 
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
 /**
  * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
  *
@@ -27,24 +31,26 @@ type LangLayoutProps = {
 export async function generateMetadata({
   params,
 }: LangLayoutProps): Promise<Metadata> {
-  const lang = (await params).lang
+  const lang = languageParamChecker((await params).lang)
 
   if (lang === 'ko') {
     return {
       title: {
-        default: 'GDGoC Yonsei',
+        default: 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티',
         template: '%s | GDGoC Yonsei',
       },
-      description: 'Google Developer Group on Campus 연세대학교',
+      description:
+        '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
     }
   }
 
   return {
     title: {
-      default: 'GDGoC Yonsei',
+      default: 'GDGoC Yonsei | Yonsei University Developer Community',
       template: '%s | GDGoC Yonsei',
     },
-    description: 'Google Developer Group on Campus Yonsei University',
+    description:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, projects, members, events, and activities.",
   }
 }
 
@@ -83,10 +89,10 @@ export default async function RootLayout({
     >
       <body>
         <Header lang={lang} />
-        {children}
-        <Footer />
+        <main>{children}</main>
+        <Footer lang={lang} />
+        <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
       </body>
-      <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
   )
 }

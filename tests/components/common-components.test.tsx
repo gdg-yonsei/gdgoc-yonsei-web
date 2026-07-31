@@ -150,14 +150,16 @@ describe('common components', () => {
   })
 
   it('renders footer links', () => {
-    render(<Footer />)
+    render(<Footer lang="en" />)
 
     const mailLink = screen.getByRole('link', {
-      name: /gdsc\.yonsei\.univ@gmail\.com/i,
+      name: 'Email GDGoC Yonsei',
     })
-    const linkedInLink = screen.getByRole('link', { name: /go to LinkedIn/i })
+    const linkedInLink = screen.getByRole('link', {
+      name: 'GDGoC Yonsei LinkedIn',
+    })
     const instagramLink = screen.getByRole('link', {
-      name: /@gdg\.yonseiuniv/i,
+      name: 'GDGoC Yonsei Instagram',
     })
 
     expect(mailLink).toHaveAttribute(

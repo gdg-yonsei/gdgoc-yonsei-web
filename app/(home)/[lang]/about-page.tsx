@@ -28,7 +28,9 @@ export default function AboutPage({ lang }: { lang: Locale }) {
       >
         <div className={'flex w-full max-w-4xl flex-col gap-4 md:w-1/2'}>
           <h2 className={'text-2xl font-semibold md:text-4xl'}>
-            Google Developer Group
+            {lang === 'ko'
+              ? 'GDG on Campus란 무엇인가요?'
+              : 'What is GDG on Campus?'}
           </h2>
           <p className={'rounded-lg bg-white p-4'}>
             {aboutSectionContents.gdg[lang]}
@@ -41,13 +43,20 @@ export default function AboutPage({ lang }: { lang: Locale }) {
       <div className={'flex w-full max-w-4xl flex-col gap-8 py-24'}>
         <div className={'flex items-center gap-4'}>
           <GDGLogo className={'w-24 md:w-36'} />
-          <h2 className={'text-2xl font-semibold md:text-4xl'}>
-            <p>Google Developer Group</p>
-            <p className={'text-logo-blue text-xl font-light md:text-2xl'}>
-              Yonsei University
-            </p>
+          <h2 className={'flex flex-col text-2xl font-semibold md:text-4xl'}>
+            <span>
+              {lang === 'ko'
+                ? 'GDGoC Yonsei는 어떤 커뮤니티인가요?'
+                : 'What is GDGoC Yonsei?'}
+            </span>
+            <span className={'text-logo-blue text-xl font-light md:text-2xl'}>
+              Google Developer Group on Campus Yonsei University
+            </span>
           </h2>
         </div>
+        <p className="rounded-lg bg-white p-5 leading-7">
+          {aboutSectionContents.gdgYonsei[lang]}
+        </p>
         <div className={'grid grid-cols-1 gap-4 md:grid-cols-3'}>
           <div className={'ring-gdg-red-300 rounded-lg bg-white p-4 ring-2'}>
             <h3 className={'text-xl font-semibold'}>Community</h3>

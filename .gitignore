@@ -10,6 +10,9 @@
 /blob-report
 /tests/e2e/.auth
 
+# local SEO audit cache
+/.seo-cache/
+
 # next.js
 /.next/
 /out/

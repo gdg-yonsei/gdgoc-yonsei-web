@@ -5,8 +5,22 @@ import formatUserName from '@/lib/format-user-name'
 import SafeMDX from '@/app/components/safe-mdx'
 import NavigationButton from '@/app/components/navigation-button'
 import type { Metadata } from 'next'
-import { connection } from 'next/server'
 import { getProjectById } from '@/lib/server/queries/public/projects'
+import languageParamChecker from '@/lib/language-param-checker'
+import {
+  createLocalizedMetadata,
+  getAbsoluteUrl,
+  getLocalizedUrl,
+  getSiteUrl,
+  summarizeForMetadata,
+} from '@/lib/seo/metadata'
+import JsonLd from '@/app/components/json-ld'
+
+// 이 라우트는 렌더링 전에 기수/상세 ID를 DB로 검증해 `notFound()`를 호출하므로,
+// Suspense 경계 밖에서 캐시되지 않은 데이터(params, 검증 쿼리)에 접근합니다.
+// cacheComponents 환경에서는 그런 접근이 프리렌더 오류이므로 blocking 라우트로 선언합니다.
+// (`notFound()`는 noindex 404 페이지를 렌더링하지만, 셸이 이미 전송된 뒤라 상태 코드는 200입니다.)
+export const unstable_instant = false
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
@@ -26,37 +40,32 @@ type Props = {
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
+  const locale = languageParamChecker(lang)
 
-  const projectData = await getProjectById(
-    projectId,
-    lang === 'ko' ? 'ko' : 'en'
+  const projectData = await getProjectById(projectId, locale)
+
+  if (!projectData || projectData.generation.name !== generation) {
+    notFound()
+  }
+
+  const title =
+    locale === 'ko' ? projectData.nameKo || projectData.name : projectData.name
+  const fallbackDescription =
+    locale === 'ko'
+      ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
+      : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
+  const description = summarizeForMetadata(
+    locale === 'ko' ? projectData.descriptionKo : projectData.description,
+    fallbackDescription
   )
 
-  if (!projectData) {
-    if (lang === 'ko') {
-      return {
-        title: `${generation} 프로젝트`,
-        description: `GDGoC Yonsei ${generation} 프로젝트`,
-      }
-    } else {
-      return {
-        title: `${generation} Projects`,
-        description: `GDGoC Yonsei ${generation} Projects`,
-      }
-    }
-  }
-
-  if (lang === 'ko') {
-    return {
-      title: `${projectData.nameKo}`,
-      description: `${projectData.descriptionKo}`,
-    }
-  }
-
-  return {
-    title: `${projectData.name}`,
-    description: `${projectData.description}`,
-  }
+  return createLocalizedMetadata({
+    locale,
+    path: `/project/${generation}/${projectId}`,
+    title,
+    description,
+    image: projectData.mainImage,
+  })
 }
 
 /**
@@ -72,28 +81,70 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
 export default async function ProjectPage({ params }: Props) {
-  await connection()
   const { projectId, lang, generation } = await params
   const projectData = await getProjectById(
     projectId,
     lang === 'ko' ? 'ko' : 'en'
   )
 
-  if (!projectData) {
+  if (!projectData || projectData.generation.name !== generation) {
     return notFound()
+  }
+
+  const locale = lang === 'ko' ? 'ko' : 'en'
+  const title =
+    locale === 'ko' ? projectData.nameKo || projectData.name : projectData.name
+  const description = summarizeForMetadata(
+    locale === 'ko' ? projectData.descriptionKo : projectData.description,
+    locale === 'ko'
+      ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
+      : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
+  )
+  const canonical = getLocalizedUrl(
+    locale,
+    `/project/${generation}/${projectId}`
+  )
+  const projectImages = [projectData.mainImage, ...projectData.images]
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    '@id': `${canonical}#creative-work`,
+    url: canonical,
+    name: title,
+    description,
+    image: projectImages.map(getAbsoluteUrl),
+    inLanguage: locale,
+    dateCreated: projectData.createdAt.toISOString(),
+    dateModified: projectData.updatedAt.toISOString(),
+    creator: projectData.usersToProjects.map(({ user }) => ({
+      '@type': 'Person',
+      name:
+        locale === 'ko'
+          ? formatUserName(
+              user.name,
+              user.firstNameKo,
+              user.lastNameKo,
+              user.isForeigner,
+              true
+            )
+          : formatUserName(
+              user.name,
+              user.firstName,
+              user.lastName,
+              user.isForeigner
+            ),
+    })),
+    publisher: { '@id': `${getSiteUrl()}#organization` },
   }
 
   return (
     <div className={'min-h-screen w-full pt-20'}>
+      <JsonLd id="project-structured-data" data={structuredData} />
       <NavigationButton href={`/${lang}/project/${generation}`}>
-        <p>Projects</p>
+        <p>{locale === 'ko' ? '프로젝트' : 'Projects'}</p>
       </NavigationButton>
-      <PageTitle>
-        {lang === 'ko' ? projectData.nameKo : projectData.name}
-      </PageTitle>
-      <ImageSliderGallery
-        images={[projectData.mainImage, ...projectData.images]}
-      />
+      <PageTitle>{title}</PageTitle>
+      <ImageSliderGallery images={projectImages} alt={title} />
       <div className={'flex flex-col gap-8 py-8'}>
         <div className={'flex flex-col'}>
           <div className={'border-gdg-white flex w-full border-b-2'}>

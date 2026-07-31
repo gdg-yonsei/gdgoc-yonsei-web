@@ -20,8 +20,11 @@ export default function generateRobots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/en/admin/', '/ko/admin/'],
+      // Admin and auth pages remain crawlable so bots can observe their
+      // X-Robots-Tag/meta noindex directives. Authentication protects access.
+      disallow: ['/api'],
     },
     sitemap: `${siteEnv.NEXT_PUBLIC_SITE_URL}/sitemap.xml`,
+    host: siteEnv.NEXT_PUBLIC_SITE_URL,
   }
 }

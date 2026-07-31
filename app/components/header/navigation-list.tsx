@@ -1,102 +1,81 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'motion/react'
 import { useAtom } from 'jotai'
 import { homeMenuBarState } from '@/lib/atoms'
 import { ReactNode } from 'react'
 import { Locale } from '@/i18n-config'
-import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
+import { usePathname } from 'next/navigation'
 
-function MotionLink({
+function MobileLink({
   children,
-  state,
+  href,
+  isCurrent,
+  onSelect,
 }: {
   children: ReactNode
-  state: boolean
+  href: string
+  isCurrent: boolean
+  onSelect: () => void
 }) {
-  const shouldReduce = useReducedMotion()
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: state ? 1 : 0 }}
-      transition={shouldReduce ? { duration: 0 } : undefined}
-      className={'flex w-full p-1 px-4 last:pb-4'}
+    <Link
+      href={href}
+      onClick={onSelect}
+      aria-current={isCurrent ? 'page' : undefined}
+      className={`pressable focus-ring flex min-h-12 w-full items-center rounded-xl px-4 ${
+        isCurrent ? 'bg-neutral-200 font-semibold' : 'hover:bg-neutral-200/70'
+      }`}
     >
       {children}
-    </motion.div>
+    </Link>
   )
 }
 
-export default function NavigationList({
-  lang,
-  lastGeneration,
-  isMember,
-}: {
-  lang: Locale
-  lastGeneration: string | undefined
-  isMember: boolean
-}) {
+export default function NavigationList({ lang }: { lang: Locale }) {
   const [isMenuOpen, setIsMenuOpen] = useAtom(homeMenuBarState)
+  const pathname = usePathname()
+
+  if (!isMenuOpen) {
+    return null
+  }
+
+  const links = [
+    { href: `/${lang}/session`, label: lang === 'ko' ? '세션' : 'Sessions' },
+    {
+      href: `/${lang}/project`,
+      label: lang === 'ko' ? '프로젝트' : 'Projects',
+    },
+    {
+      href: `/${lang}/calendar`,
+      label: lang === 'ko' ? '캘린더' : 'Calendar',
+    },
+    { href: `/${lang}/member`, label: lang === 'ko' ? '구성원' : 'Members' },
+    { href: `/${lang}/admin`, label: 'GYMS' },
+  ]
 
   return (
-    <div
-      className={
-        'grid w-full flex-col gap-2 text-lg transition-[grid-template-rows] duration-200 md:hidden'
+    <nav
+      id="mobile-primary-navigation"
+      aria-label={
+        lang === 'ko' ? '모바일 주 메뉴' : 'Mobile primary navigation'
       }
-      style={{
-        gridTemplateRows: isMenuOpen ? '1fr' : '0fr',
-      }}
+      className="mobile-navigation w-full border-t border-neutral-200 p-2 text-lg md:hidden"
     >
-      <div className="min-h-0 overflow-hidden">
-        <MotionLink state={isMenuOpen}>
-          <Link
-            href={`/${lang}/session${lastGeneration ? '/' + lastGeneration : ''}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={'w-full'}
+      <div className="grid gap-1">
+        {links.map(({ href, label }) => (
+          <MobileLink
+            key={href}
+            href={href}
+            isCurrent={
+              pathname === href || pathname.startsWith(`${href}/`)
+            }
+            onSelect={() => setIsMenuOpen(false)}
           >
-            {lang === 'ko' ? '세션' : 'Sessions'}
-          </Link>
-        </MotionLink>
-        <MotionLink state={isMenuOpen}>
-          <Link
-            href={`/${lang}/project${lastGeneration ? '/' + lastGeneration : ''}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={'w-full'}
-          >
-            {lang === 'ko' ? '프로젝트' : 'Projects'}
-          </Link>
-        </MotionLink>
-        <MotionLink state={isMenuOpen}>
-          <Link
-            href={`/${lang}/calendar`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={'w-full'}
-          >
-            {lang === 'ko' ? '캘린더' : 'Calendar'}
-          </Link>
-        </MotionLink>
-        <MotionLink state={isMenuOpen}>
-          <Link
-            href={`/${lang}/member${lastGeneration ? '/' + lastGeneration : ''}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={'w-full'}
-          >
-            {lang === 'ko' ? '구성원' : 'Members'}
-          </Link>
-        </MotionLink>
-        {isMember && (
-          <MotionLink state={isMenuOpen}>
-            <Link
-              href={`/${lang}/admin`}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={'w-full'}
-            >
-              GYMS
-            </Link>
-          </MotionLink>
-        )}
+            {label}
+          </MobileLink>
+        ))}
       </div>
-    </div>
+    </nav>
   )
 }

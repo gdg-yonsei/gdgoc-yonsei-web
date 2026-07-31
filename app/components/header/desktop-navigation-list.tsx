@@ -1,8 +1,71 @@
+'use client'
+
 import Link from 'next/link'
-import AdminDashboardLink from '@/app/components/header/gyms-navigation'
-import { Suspense } from 'react'
 import type { Locale } from '@/i18n-config'
-import { getLatestGeneration } from '@/lib/server/queries/public/generations'
+import { usePathname } from 'next/navigation'
+
+function isCurrentPath(pathname: string | null, href: string) {
+  if (!pathname) {
+    return false
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+function DesktopNavigation({
+  lang,
+  pathname,
+}: {
+  lang: Locale
+  pathname: string | null
+}) {
+  const links = [
+    { href: `/${lang}/admin`, label: 'GYMS' },
+    { href: `/${lang}/session`, label: lang === 'ko' ? '세션' : 'Sessions' },
+    {
+      href: `/${lang}/project`,
+      label: lang === 'ko' ? '프로젝트' : 'Projects',
+    },
+    {
+      href: `/${lang}/calendar`,
+      label: lang === 'ko' ? '캘린더' : 'Calendar',
+    },
+    { href: `/${lang}/member`, label: lang === 'ko' ? '구성원' : 'Members' },
+  ]
+
+  return (
+    <nav
+      aria-label={lang === 'ko' ? '주 메뉴' : 'Primary navigation'}
+      className="flex items-center gap-1 text-base not-md:hidden lg:text-lg"
+    >
+      {links.map(({ href, label }) => {
+        const isCurrent = isCurrentPath(pathname, href)
+
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={isCurrent ? 'page' : undefined}
+            className={`navigation-link pressable focus-ring ${
+              isCurrent ? 'bg-neutral-200 font-semibold text-neutral-950' : ''
+            }`}
+          >
+            {label}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
+/**
+ * `usePathname`은 `generateStaticParams`로 알 수 없는 동적 세그먼트 라우트의 프리렌더
+ * 중에는 값을 확정할 수 없어 suspend 됩니다. 정적 셸에도 탐색 링크가 HTML로 남아
+ * 크롤러가 따라갈 수 있도록, 활성 표시만 제외한 동일한 메뉴를 fallback으로 제공합니다.
+ */
+export function DesktopNavigationListFallback({ lang }: { lang: Locale }) {
+  return <DesktopNavigation lang={lang} pathname={null} />
+}
 
 /**
  * `DesktopNavigationList` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -16,39 +79,6 @@ import { getLatestGeneration } from '@/lib/server/queries/public/generations'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default async function DesktopNavigationList({
-  lang,
-}: {
-  lang: Locale
-}) {
-  const lastGeneration = await getLatestGeneration(lang)
-  return (
-    <div
-      className={
-        'flex items-center gap-2 text-lg *:p-1 *:px-4 not-md:hidden *:hover:underline'
-      }
-    >
-      <Suspense>
-        <AdminDashboardLink lang={lang} />
-      </Suspense>
-      <Link
-        href={`/${lang}/session${lastGeneration ? '/' + lastGeneration.name : ''}`}
-      >
-        {lang === 'ko' ? '세션' : 'Session'}
-      </Link>
-      <Link
-        href={`/${lang}/project${lastGeneration ? '/' + lastGeneration.name : ''}`}
-      >
-        {lang === 'ko' ? '프로젝트' : 'Project'}
-      </Link>
-      <Link href={`/${lang}/calendar`}>
-        {lang === 'ko' ? '캘린더' : 'Calendar'}
-      </Link>
-      <Link
-        href={`/${lang}/member${lastGeneration ? '/' + lastGeneration.name : ''}`}
-      >
-        {lang === 'ko' ? '구성원' : 'Member'}
-      </Link>
-    </div>
-  )
+export default function DesktopNavigationList({ lang }: { lang: Locale }) {
+  return <DesktopNavigation lang={lang} pathname={usePathname()} />
 }

@@ -16,7 +16,13 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function ImageSliderGallery({ images }: { images: string[] }) {
+export default function ImageSliderGallery({
+  images,
+  alt,
+}: {
+  images: string[]
+  alt: string
+}) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
@@ -139,8 +145,10 @@ export default function ImageSliderGallery({ images }: { images: string[] }) {
           >
             <Image
               src={image}
-              alt=""
+              alt={`${alt} — image ${i + 1} of ${images.length}`}
               fill
+              priority={i === 0}
+              sizes="(max-width: 768px) 100vw, 576px"
               className="absolute top-0 left-0 h-full w-full object-contain"
             />
           </div>
@@ -152,20 +160,24 @@ export default function ImageSliderGallery({ images }: { images: string[] }) {
           <button
             type={'button'}
             onClick={() => scrollByDirection('left')}
+            disabled={currentImageIndex === 0}
+            aria-label="Previous image"
             className={
-              'rounded-full p-1 transition-colors hover:bg-neutral-100'
+              'rounded-full p-1 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40'
             }
           >
-            <ChevronLeftIcon className={'size-8'} />
+            <ChevronLeftIcon className={'size-8'} aria-hidden="true" />
           </button>
           <button
             type={'button'}
             onClick={() => scrollByDirection('right')}
+            disabled={currentImageIndex === images.length - 1}
+            aria-label="Next image"
             className={
-              'rounded-full p-1 transition-colors hover:bg-neutral-100'
+              'rounded-full p-1 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40'
             }
           >
-            <ChevronRightIcon className={'size-8'} />
+            <ChevronRightIcon className={'size-8'} aria-hidden="true" />
           </button>
         </div>
         {/*Image Preview*/}
@@ -175,15 +187,23 @@ export default function ImageSliderGallery({ images }: { images: string[] }) {
           }
         >
           {images.map((image, i) => (
-            <Image
-              key={i}
-              src={image}
-              alt={'Preview'}
-              width={100}
-              height={100}
-              className={`aspect-square size-24 rounded-lg object-cover transition-all ${currentImageIndex === i && 'brightness-50 grayscale'}`}
+            <button
+              key={`${image}-${i}`}
+              type="button"
+              aria-label={`Show ${alt} image ${i + 1}`}
+              aria-current={currentImageIndex === i ? 'true' : undefined}
               onClick={() => handlePreviewImageClick(i)}
-            />
+              className="shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <Image
+                src={image}
+                alt=""
+                width={100}
+                height={100}
+                sizes="96px"
+                className={`aspect-square size-24 rounded-lg object-cover transition-all ${currentImageIndex === i && 'brightness-50 grayscale'}`}
+              />
+            </button>
           ))}
         </div>
       </div>

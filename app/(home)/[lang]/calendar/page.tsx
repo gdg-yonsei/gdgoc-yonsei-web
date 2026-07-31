@@ -3,6 +3,7 @@ import GoogleCalendar from '@/app/(home)/[lang]/calendar/google-calendar'
 import languageParamChecker from '@/lib/language-param-checker'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
+import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
 type Props = {
   params: Promise<{ lang: string }>
@@ -21,19 +22,25 @@ type Props = {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lang = (await params).lang
+  const lang = languageParamChecker((await params).lang)
 
   if (lang === 'ko') {
-    return {
+    return createLocalizedMetadata({
+      locale: lang,
+      path: '/calendar',
       title: '캘린더',
-      description: 'GDGoC Yonsei 일정 캘린더',
-    }
+      description:
+        'GDGoC Yonsei의 기술 세션, 워크숍, 프로젝트 행사와 커뮤니티 활동 일정을 공식 캘린더에서 확인하세요.',
+    })
   }
 
-  return {
+  return createLocalizedMetadata({
+    locale: lang,
+    path: '/calendar',
     title: 'Calendar',
-    description: 'GDGoC Yonsei Calendar',
-  }
+    description:
+      'Check upcoming GDGoC Yonsei technical sessions, workshops, project events, and community activities on the official chapter calendar.',
+  })
 }
 
 // SSG를 위해 params 값 지정

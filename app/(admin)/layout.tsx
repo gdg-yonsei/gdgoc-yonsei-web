@@ -1,6 +1,17 @@
 import '../globals.css'
 import { ReactNode } from 'react'
 import localFont from 'next/font/local'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+  },
+}
 
 const googleSans = localFont({
   src: '../fonts/google-sans.woff2',

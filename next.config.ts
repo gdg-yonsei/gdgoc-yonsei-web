@@ -19,6 +19,17 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=31536000; includeSubDomains',
+  },
+]
+
+const noIndexHeaders = [
+  {
+    key: 'X-Robots-Tag',
+    value: 'noindex, nofollow, noarchive, nosnippet, noimageindex',
+  },
 ]
 
 const nextConfig: NextConfig = {
@@ -64,6 +75,25 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         headers: securityHeaders,
+      },
+      {
+        source: '/admin/:path*',
+        headers: noIndexHeaders,
+      },
+      {
+        // `/en/admin/...`, `/ko/admin/...`는 proxy에서 `/admin/...`으로 rewrite 되므로
+        // URL 자체가 크롤링 가능한 상태로 남습니다. robots.txt가 더 이상 admin 경로를
+        // 막지 않기 때문에 지역화된 경로에도 동일한 noindex 헤더가 필요합니다.
+        source: '/:lang(en|ko)/admin/:path*',
+        headers: noIndexHeaders,
+      },
+      {
+        source: '/auth/:path*',
+        headers: noIndexHeaders,
+      },
+      {
+        source: '/api/:path*',
+        headers: noIndexHeaders,
       },
     ]
   },

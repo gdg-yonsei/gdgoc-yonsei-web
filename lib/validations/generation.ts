@@ -15,9 +15,10 @@ export const generationValidation = z
       .trim()
       .nonempty('Name is required')
       .max(50, 'Name is too long')
-      .refine((value) => !value.includes('/') && !value.includes('\\'), {
-        message: 'Name cannot include slashes',
-      }),
+      .regex(
+        /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/,
+        'Name must be URL-safe and contain only letters, numbers, or single hyphens'
+      ),
     startDate: generationDateSchema,
     endDate: z
       .string()

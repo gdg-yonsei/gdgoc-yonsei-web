@@ -1,10 +1,50 @@
 import { Metadata } from 'next'
 import GDGLogo from '@/app/components/svg/gdg-logo'
+import languageParamChecker from '@/lib/language-param-checker'
+import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
-export const metadata: Metadata = {
-  title: 'Recruit 2025-2026 GDGoC Yonsei Core Members',
-  description:
-    'We are recruiting passionate and enthusiastic individuals who have a strong interest in development at GDGoC Yonsei.',
+type Props = {
+  params: Promise<{ lang: string }>
+}
+
+const fields = {
+  en: [
+    'Front-End Core',
+    'Back-End Core',
+    'Mobile Core',
+    'ML/AI Core',
+    'DevRel Core',
+    'Design Core',
+  ],
+  ko: [
+    '프론트엔드 코어',
+    '백엔드 코어',
+    '모바일 코어',
+    'ML/AI 코어',
+    'DevRel 코어',
+    '디자인 코어',
+  ],
+} as const
+
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = languageParamChecker((await params).lang)
+
+  return createLocalizedMetadata({
+    locale,
+    path: '/recruit',
+    title:
+      locale === 'ko'
+        ? '2025-2026 코어 멤버 모집'
+        : '2025-2026 Core Member Recruitment',
+    description:
+      locale === 'ko'
+        ? 'GDGoC Yonsei 2025-2026 코어 멤버 모집 분야와 학생 개발자 커뮤니티의 프론트엔드, 백엔드, 모바일, AI, DevRel, 디자인 팀을 소개합니다.'
+        : 'Explore the 2025-2026 GDGoC Yonsei core member recruitment fields across front-end, back-end, mobile, AI, DevRel, and design teams.',
+  })
 }
 
 /**
@@ -19,7 +59,9 @@ export const metadata: Metadata = {
  * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
  * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
  */
-export default function RecruitPage() {
+export default async function RecruitPage({ params }: Props) {
+  const lang = languageParamChecker((await params).lang)
+
   return (
     <div className={'min-h-screen w-full'}>
       <div
@@ -30,14 +72,14 @@ export default function RecruitPage() {
         <div className={'flex items-center justify-center gap-8'}>
           <GDGLogo className={'w-80'} />
           <h1 className={'text-4xl font-semibold'}>
-            Recruit
+            {lang === 'ko' ? '모집' : 'Recruit'}
             <br />
             2025-2026
             <br />
             <span className={'text-5xl font-bold'}>
               GDGoC Yonsei
               <br />
-              Core Members
+              {lang === 'ko' ? '코어 멤버' : 'Core Members'}
             </span>
           </h1>
         </div>
@@ -49,50 +91,18 @@ export default function RecruitPage() {
       >
         <div className={'grid grid-cols-3 gap-4'}>
           <h2 className={'col-span-3 p-8 text-center text-4xl font-semibold'}>
-            Recruitment Fields
+            {lang === 'ko' ? '모집 분야' : 'Recruitment Fields'}
           </h2>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>Front-End Core</h3>
-          </div>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>Back-End Core</h3>
-          </div>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>Mobile Core</h3>
-          </div>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>ML/AI Core</h3>
-          </div>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>DevRel Core</h3>
-          </div>
-          <div
-            className={
-              'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
-            }
-          >
-            <h3 className={'text-2xl font-semibold'}>Design Core</h3>
-          </div>
+          {fields[lang].map((field) => (
+            <div
+              key={field}
+              className={
+                'flex items-center justify-center rounded-xl border-2 border-white bg-white/50 p-8 px-12 backdrop-blur-sm'
+              }
+            >
+              <h3 className={'text-2xl font-semibold'}>{field}</h3>
+            </div>
+          ))}
         </div>
       </div>
     </div>

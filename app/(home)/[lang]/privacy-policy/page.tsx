@@ -1,5 +1,6 @@
 import languageParamChecker from '@/lib/language-param-checker'
 import { Metadata } from 'next'
+import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
 type Props = {
   params: Promise<{ lang: string }>
@@ -34,19 +35,25 @@ export function generateStaticParams() {
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { lang } = await params
+  const lang = languageParamChecker((await params).lang)
 
   if (lang === 'ko') {
-    return {
+    return createLocalizedMetadata({
+      locale: lang,
+      path: '/privacy-policy',
       title: `개인정보처리방침`,
-      description: `GDGoC Yonsei 개인정보처리방침`,
-    }
+      description:
+        'GDGoC Yonsei 웹사이트의 개인정보 수집, 이용, 보관, 파기 절차와 이용자 권리 및 개인정보 보호 조치를 안내합니다.',
+    })
   }
 
-  return {
+  return createLocalizedMetadata({
+    locale: lang,
+    path: '/privacy-policy',
     title: `Privacy Policy`,
-    description: `GDGoC Yonsei Privacy Policy`,
-  }
+    description:
+      'Read how the GDGoC Yonsei website collects, uses, stores, protects, and deletes personal information, including your privacy rights and choices.',
+  })
 }
 
 /**
@@ -73,9 +80,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
             <>
               {/* Intro */}
               <section className="mb-8 space-y-4">
-                <h2 className="text-2xl font-bold tracking-tight">
+                <h1 className="text-2xl font-bold tracking-tight">
                   웹사이트 개인정보처리방침
-                </h2>
+                </h1>
                 <p className="leading-7">
                   본 개인정보처리방침은{' '}
                   <strong>
@@ -91,9 +98,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* Table of Contents */}
               <nav aria-label="섹션 목록" className="mb-10">
-                <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                <h2 className="mb-3 text-sm font-semibold text-gray-700">
                   목차
-                </h3>
+                </h2>
                 <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-700">
                   <li>
                     <a
@@ -164,9 +171,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 1. Purpose */}
               <section id="purpose" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   1. 개인정보의 수집 및 이용 목적
-                </h3>
+                </h2>
                 <p className="leading-7">
                   ‘GDGoC Yonsei’는 다음의 목적을 위해 최소한의 개인정보를
                   수집하고 이용합니다. 수집된 개인정보는 다음 목적 이외의
@@ -191,9 +198,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 2. Items */}
               <section id="items" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   2. 수집하는 개인정보 항목 및 수집 방법
-                </h3>
+                </h2>
                 <p className="leading-7">
                   ‘GDGoC Yonsei’는 회원가입 및 GDGoC Yonsei 이용 과정에서 다음과
                   같은 개인정보를 수집합니다.
@@ -219,9 +226,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 3. Retention */}
               <section id="retention" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   3. 개인정보의 처리 및 보유 기간
-                </h3>
+                </h2>
                 <p className="leading-7">
                   ‘GDGoC Yonsei’는 법령에 따른 보유·이용 기간 또는 동의받은 기간
                   내에서 개인정보를 처리하고 보유합니다.
@@ -239,9 +246,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 4. Outsourcing */}
               <section id="outsourcing" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   4. 개인정보의 제3자 제공 및 처리 위탁
-                </h3>
+                </h2>
                 <p className="leading-7">
                   ‘GDGoC Yonsei’는 동의 없이 개인정보를 외부에 제공하지
                   않습니다. 다만, 법률에 특별한 규정이 있는 경우는 예외입니다.
@@ -258,9 +265,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 5. Rights */}
               <section id="rights" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   5. 정보주체와 법정대리인의 권리·의무 및 행사 방법
-                </h3>
+                </h2>
                 <p className="leading-7">
                   이용자는 언제든지 개인정보 열람, 정정, 삭제, 처리정지 요구를
                   할 수 있습니다.
@@ -269,9 +276,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 6. Security */}
               <section id="security" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   6. 개인정보의 안전성 확보 조치
-                </h3>
+                </h2>
                 <ul className="mt-4 list-disc space-y-2 pl-6">
                   <li>관리적 조치: 내부관리계획 수립·시행</li>
                   <li>기술적 조치: 접근권한 관리, 암호화, 보안프로그램 설치</li>
@@ -281,9 +288,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 7. DPO */}
               <section id="dpo" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   7. 개인정보 보호책임자
-                </h3>
+                </h2>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>성명: 전현우</li>
                   <li>직책: Organizer 및 전산 시스템 담당자</li>
@@ -294,9 +301,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 8. Change */}
               <section id="change" className="mb-6 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   8. 개인정보처리방침의 변경
-                </h3>
+                </h2>
                 <p className="leading-7">
                   법령 및 방침 변경 시 공지사항을 통해 고지합니다.
                 </p>
@@ -315,9 +322,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
               {/* English Version */}
               {/* Intro */}
               <section className="mb-8 space-y-4">
-                <h2 className="text-2xl font-bold tracking-tight">
+                <h1 className="text-2xl font-bold tracking-tight">
                   Website Privacy Policy
-                </h2>
+                </h1>
                 <p className="leading-7">
                   This Privacy Policy describes how{' '}
                   <strong>
@@ -334,9 +341,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* Table of Contents */}
               <nav aria-label="Table of Contents" className="mb-10">
-                <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                <h2 className="mb-3 text-sm font-semibold text-gray-700">
                   Table of Contents
-                </h3>
+                </h2>
                 <ol className="list-decimal space-y-1 pl-5 text-sm text-gray-700">
                   <li>
                     <a
@@ -410,9 +417,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 1. Purpose */}
               <section id="purpose" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   1. Purpose of Collection and Use of Personal Information
-                </h3>
+                </h2>
                 <p className="leading-7">
                   &#39;GDGoC Yonsei&#39; collects and uses the minimum amount of
                   personal information for the following purposes. The collected
@@ -441,10 +448,10 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 2. Items */}
               <section id="items" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   2. Items of Personal Information Collected and Collection
                   Methods
-                </h3>
+                </h2>
                 <p className="leading-7">
                   &#39;GDGoC Yonsei&#39; collects the following personal
                   information during membership registration and service use.
@@ -471,9 +478,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 3. Retention */}
               <section id="retention" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   3. Processing and Retention Period of Personal Information
-                </h3>
+                </h2>
                 <p className="leading-7">
                   &#39;GDGoC Yonsei&#39; processes and retains personal
                   information within the period of retention and use stipulated
@@ -494,10 +501,10 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 4. Outsourcing */}
               <section id="outsourcing" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   4. Provision and Outsourcing of Personal Information to Third
                   Parties
-                </h3>
+                </h2>
                 <p className="leading-7">
                   &#39;GDGoC Yonsei&#39; does not provide personal information
                   to external parties without the user&#39;s consent, except in
@@ -522,10 +529,10 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 5. Rights */}
               <section id="rights" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   5. Rights and Obligations of Data Subjects and Their Legal
                   Representatives
-                </h3>
+                </h2>
                 <p className="leading-7">
                   Users may at any time request to view, correct, delete, or
                   suspend the processing of their personal information.
@@ -534,9 +541,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 6. Security */}
               <section id="security" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   6. Measures to Ensure the Security of Personal Information
-                </h3>
+                </h2>
                 <ul className="mt-4 list-disc space-y-2 pl-6">
                   <li>
                     Administrative Measures: Establishment and implementation of
@@ -552,9 +559,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 7. DPO */}
               <section id="dpo" className="mb-10 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   7. Data Protection Officer
-                </h3>
+                </h2>
                 <ul className="list-disc space-y-1 pl-6">
                   <li>Name: Hyunwoo Jeon</li>
                   <li>Title: Organizer & System Administrator</li>
@@ -565,9 +572,9 @@ export default async function PrivacyPolicyPage({ params }: Props) {
 
               {/* 8. Change */}
               <section id="change" className="mb-6 scroll-mt-24">
-                <h3 className="mb-3 text-xl font-semibold">
+                <h2 className="mb-3 text-xl font-semibold">
                   8. Changes to the Privacy Policy
-                </h3>
+                </h2>
                 <p className="leading-7">
                   Any changes to this Privacy Policy will be announced through
                   notices on the website.

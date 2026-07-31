@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import languageParamChecker from '@/lib/language-param-checker'
 import FreshmanOTPresentation from './presentation'
+import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
 /**
  * `generateStaticParams` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
@@ -35,19 +36,25 @@ type Props = { params: Promise<{ lang: string }> }
  * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lang = (await params).lang
+  const lang = languageParamChecker((await params).lang)
 
   if (lang === 'ko') {
-    return {
-      title: '2026 신입생 OT | GDGoC Yonsei',
-      description: 'GDGoC Yonsei 2026 첨단컴퓨팅학부 신입생 OT 프레젠테이션',
-    }
+    return createLocalizedMetadata({
+      locale: lang,
+      path: '/2026-freshman-ot',
+      title: '2026 신입생 OT',
+      description:
+        'GDGoC Yonsei가 연세대학교 첨단컴퓨팅학부 2026학번 신입생에게 커뮤니티, 기술 세션, 프로젝트, 해커톤과 지원 분야를 소개합니다.',
+    })
   }
 
-  return {
-    title: '2026 Freshman Orientation | GDGoC Yonsei',
-    description: 'GDGoC Yonsei 2026 School of Computing Freshman Orientation',
-  }
+  return createLocalizedMetadata({
+    locale: lang,
+    path: '/2026-freshman-ot',
+    title: '2026 Freshman Orientation',
+    description:
+      'GDGoC Yonsei introduces the community, technical sessions, projects, hackathons, future plans, and recruitment tracks to the 2026 School of Computing class.',
+  })
 }
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
