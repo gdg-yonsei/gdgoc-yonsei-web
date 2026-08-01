@@ -29,9 +29,9 @@ export default async function RegisterSession() {
   )
 
   return (
-    <div className={'pb-8'}>
-      <div className={'admin-title'}>{t.joinSession}</div>
-      <div className={'member-data-grid w-full gap-2 pt-2'}>
+    <section className={'flex flex-col gap-3'}>
+      <h2 className={'type-heading-3 text-ink'}>{t.joinSession}</h2>
+      <div className={'admin-form-grid w-full'}>
         {notEnrolledSessions.map((session) => (
           <RegisterSessionCard
             key={session.id}
@@ -46,11 +46,13 @@ export default async function RegisterSession() {
           />
         ))}
         {notEnrolledSessions.length === 0 && (
-          <div className={'col-span-2'}>
-            <p className={'text-neutral-800'}>{t.noSessionsToJoin}</p>
-          </div>
+          <p
+            className={'admin-form-grid-full type-body-sm text-ink-muted py-2'}
+          >
+            {t.noSessionsToJoin}
+          </p>
         )}
       </div>
-    </div>
+    </section>
   )
 }

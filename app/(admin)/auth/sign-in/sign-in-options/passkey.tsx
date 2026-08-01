@@ -40,15 +40,15 @@ export default function PasskeySignInButton() {
         setIsAuthenticating(true)
         signIn('passkey').then(stopLoadingState).catch(stopLoadingState)
       }}
-      className={'button-white'}
+      className={'admin-btn-secondary w-full'}
       disabled={isLoading || isAuthenticating}
     >
       {isLoading ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-neutral-300 border-t-black'}
+          className={'size-5 border-2 border-current/30 border-t-current'}
         />
       ) : (
-        <KeyIcon className={'size-6'} />
+        <KeyIcon className={'size-5'} aria-hidden={'true'} />
       )}
       <p>Sign in with Passkey</p>
     </button>

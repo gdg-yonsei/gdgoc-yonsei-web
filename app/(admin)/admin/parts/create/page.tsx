@@ -45,7 +45,7 @@ export default async function CreatePartPage() {
         <div className={'admin-title'}>
           {t.create} {t.part}
         </div>
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+        <div className={'admin-panel'}>
           <div className={'font-semibold'}>
             {t.selectSpecificGenerationToCreate}
           </div>
@@ -64,7 +64,7 @@ export default async function CreatePartPage() {
       <div className={'admin-title'}>
         {t.create} {t.part}
       </div>
-      <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
+      <DataForm action={createPartAction} className={'admin-form-grid gap-2'}>
         <input
           hidden={true}
           name={'generationId'}
@@ -82,13 +82,9 @@ export default async function CreatePartPage() {
           name={'description'}
           placeholder={'e.g. This is a part for Android developers.'}
         />
-        <div
-          className={
-            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-form-grid-full admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>
             {resolvedScope.selectedGeneration.name}
           </div>
         </div>

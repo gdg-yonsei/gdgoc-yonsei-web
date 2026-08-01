@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 /**
  * Data Multiple Select Input Component
@@ -30,6 +32,7 @@ export default function DataSelectMultipleInput({
   title: string
   defaultValue: string[]
 }) {
+  const { t } = useAdminI18n()
   const [search, setSearch] = useState('')
   // input ref
   const inputRef = useRef<HTMLInputElement>(null)
@@ -71,31 +74,38 @@ export default function DataSelectMultipleInput({
   )
 
   return (
-    <div
-      className={
-        'col-span-1 flex flex-col gap-2 sm:col-span-2 md:col-span-3 lg:col-span-4'
-      }
-    >
-      <div className={'member-data-title'}>{title}</div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label'}>{title}</div>
       <input
         type="text"
-        placeholder="이름으로 검색..."
+        placeholder={t('searchPlaceholder')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="member-data-input mb-2 max-w-xs"
+        className="admin-input mb-2 max-w-xs"
       />
       <input name={name} hidden={true} ref={inputRef} />
-      <div className={'member-data-grid gap-2'}>
+      <div className={'admin-form-grid gap-2'}>
         {filteredData.map((d, i) => (
           <button
             type={'button'}
             key={i}
-            className={`flex flex-col items-start rounded-xl p-2 px-4 ${value.includes(d.value) ? 'bg-neutral-900 font-medium text-white' : 'bg-white'}`}
+            aria-pressed={value.includes(d.value)}
+            className={cn(
+              'admin-btn h-auto flex-col items-start gap-0.5 py-2 text-left',
+              value.includes(d.value)
+                ? 'bg-primary text-on-primary'
+                : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+            )}
             onClick={() => handleClick(d.value)}
           >
             {d.generation || d.part ? (
               <div
-                className={`text-left text-xs ${value.includes(d.value) ? 'text-neutral-300' : 'text-neutral-500'}`}
+                className={cn(
+                  'type-eyebrow text-left font-normal',
+                  value.includes(d.value)
+                    ? 'text-on-primary/75'
+                    : 'text-ink-muted'
+                )}
               >
                 {d.generation ? `${d.generation} ` : ''}
                 {d.part ? `· ${d.part}` : ''}

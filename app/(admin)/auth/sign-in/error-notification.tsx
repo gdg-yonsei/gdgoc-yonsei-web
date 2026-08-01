@@ -18,5 +18,9 @@ export default function ErrorNotification() {
   const searchParams = useSearchParams()
 
   const search = searchParams.get('error')
-  return <p className={'text-sm text-red-600'}>{search}</p>
+  return (
+    <p role={'alert'} className={'type-body-sm text-danger'}>
+      {search}
+    </p>
+  )
 }

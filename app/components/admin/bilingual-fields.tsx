@@ -23,7 +23,7 @@ function BilingualFieldShell({
   koContent,
 }: BilingualFieldShellProps) {
   return (
-    <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+    <div className={'admin-form-grid-full'}>
       <BilingualPanel
         enTitle={t.english}
         koTitle={t.korean}

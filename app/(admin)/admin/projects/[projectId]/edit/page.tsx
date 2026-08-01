@@ -88,7 +88,7 @@ export default async function EditProjectPage({
       </div>
       <DataForm
         action={updateProjectActionWithProjectId}
-        className={'member-data-grid w-full gap-4'}
+        className={'admin-form-grid w-full gap-4'}
       >
         <BilingualInputField
           t={t}

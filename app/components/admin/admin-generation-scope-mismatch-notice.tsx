@@ -29,7 +29,7 @@ export default function AdminGenerationScopeMismatchNotice({
   return (
     <div
       className={
-        'mb-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950'
+        'border-warning/30 bg-warning-soft text-warning type-body-sm mb-4 flex flex-col gap-3 rounded-xl border p-4'
       }
     >
       <div className={'flex flex-col gap-1'}>

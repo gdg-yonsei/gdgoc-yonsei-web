@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 /**
  * Role 변경 버튼 컴포넌트
@@ -23,7 +24,12 @@ function RoleButton({
     <button
       type={'button'}
       onClick={() => setRole(value)}
-      className={`${value === role ? 'bg-neutral-900 text-white' : ''} rounded-lg border-2 border-neutral-900 p-2 text-sm transition-all`}
+      className={cn(
+        'admin-btn',
+        value === role
+          ? 'bg-primary text-on-primary'
+          : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+      )}
     >
       {value}
     </button>
@@ -41,10 +47,8 @@ export default function MemberRoleManager({ userRole }: { userRole: string }) {
   const [role, setRole] = useState<string>(userRole)
 
   return (
-    <div className={'col-span-1 flex flex-col sm:col-span-2'}>
-      <p className={'px-1 text-sm font-semibold text-neutral-700'}>
-        {t('role')}
-      </p>
+    <div className={'flex flex-col sm:col-span-2'}>
+      <p className={'admin-field-label px-0.5'}>{t('role')}</p>
       <input
         name={'role'}
         hidden={true}

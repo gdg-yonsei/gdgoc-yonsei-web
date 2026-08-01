@@ -78,7 +78,7 @@ export default async function RegisterSessionPage({
         <div className={'admin-title'}>{t.sessionRegistration}</div>
       </div>
       <div className={'grid w-full grid-cols-1 gap-2 md:grid-cols-2'}>
-        <div className={'w-full rounded-xl bg-white p-2'}>
+        <div className={'bg-surface w-full rounded-xl p-2'}>
           <h2>{t.sessionInformation}</h2>
           <BilingualPanel
             className={'py-1'}
@@ -86,13 +86,13 @@ export default async function RegisterSessionPage({
             koTitle={t.korean}
             enContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.session}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.session}</p>
                 <p>{sessionData.name}</p>
               </div>
             }
             koContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.session}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.session}</p>
                 <p>{sessionData.nameKo}</p>
               </div>
             }
@@ -103,13 +103,13 @@ export default async function RegisterSessionPage({
             koTitle={t.korean}
             enContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.description}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.description}</p>
                 <p>{sessionData.description}</p>
               </div>
             }
             koContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.description}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.description}</p>
                 <p>{sessionData.descriptionKo}</p>
               </div>
             }
@@ -120,19 +120,19 @@ export default async function RegisterSessionPage({
             koTitle={t.korean}
             enContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.location}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.location}</p>
                 <p>{sessionData.location}</p>
               </div>
             }
             koContent={
               <div>
-                <p className={'text-sm text-neutral-700'}>{t.location}</p>
+                <p className={'text-ink-secondary text-sm'}>{t.location}</p>
                 <p>{sessionData.locationKo}</p>
               </div>
             }
           />
           <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>{t.schedule}</p>
+            <p className={'text-ink-secondary text-sm'}>{t.schedule}</p>
             <p>
               {t.start}:{' '}
               {sessionData.startAt
@@ -161,7 +161,7 @@ export default async function RegisterSessionPage({
             </p>
           </div>
           <div className={'py-1'}>
-            <p className={'text-sm text-neutral-700'}>{t.participants}</p>
+            <p className={'text-ink-secondary text-sm'}>{t.participants}</p>
             <div
               className={
                 'grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
@@ -171,7 +171,7 @@ export default async function RegisterSessionPage({
                 <p
                   key={user.userId}
                   className={
-                    'rounded-lg border-2 border-neutral-500 bg-white p-1 px-2 text-center'
+                    'border-hairline bg-surface rounded-lg border-2 p-1 px-2 text-center'
                   }
                 >
                   {user.user.firstNameKo
@@ -195,7 +195,7 @@ export default async function RegisterSessionPage({
         </div>
         <div
           className={
-            'flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-white p-2'
+            'bg-surface flex w-full flex-col items-center justify-center gap-2 rounded-xl p-2'
           }
         >
           <div className={'text-2xl'}>
@@ -205,11 +205,7 @@ export default async function RegisterSessionPage({
             action={registerSessionActionWithSessionId}
             className={'w-full'}
           >
-            <SubmitButton
-              className={
-                'flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 p-1 text-xl text-white'
-              }
-            >
+            <SubmitButton className={'admin-btn-primary w-full'}>
               {t.register}
             </SubmitButton>
           </DataForm>

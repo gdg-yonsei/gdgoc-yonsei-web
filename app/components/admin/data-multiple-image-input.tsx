@@ -142,12 +142,8 @@ export default function DataMultipleImageInput({
   }
 
   return (
-    <div
-      className={'col-span-1 flex flex-col gap-2 sm:col-span-3 lg:col-span-4'}
-    >
-      <div className={'px-1 text-sm font-semibold text-neutral-700'}>
-        {title}
-      </div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label px-0.5'}>{title}</div>
       <input
         ref={inputRef}
         type={'file'}
@@ -168,12 +164,14 @@ export default function DataMultipleImageInput({
             <div key={index} className={'notice-scale-enter relative w-full'}>
               <button
                 type={'button'}
+                aria-label={t('delete')}
+                title={t('delete')}
                 className={
-                  'absolute top-1 right-1 cursor-pointer rounded-lg bg-red-500 p-1'
+                  'bg-danger focus-visible:outline-primary absolute top-2 right-2 cursor-pointer rounded-md p-1.5 text-white transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2'
                 }
                 onClick={() => deleteContentImage(index)}
               >
-                <TrashIcon className={'size-6 text-white'} />
+                <TrashIcon className={'size-5'} aria-hidden={'true'} />
               </button>
               <Image
                 src={url}
@@ -190,7 +188,7 @@ export default function DataMultipleImageInput({
       )}
       <button
         type={'button'}
-        className={'rounded-xl bg-neutral-900 p-2 text-sm text-white'}
+        className={'admin-btn-primary w-fit'}
         onClick={() => inputRef.current?.click()}
         disabled={isLoading}
       >

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { cn } from '@/lib/cn'
 
 /**
  * Data Single Select Input Component
@@ -34,19 +35,21 @@ export default function DataSelectInput({
   }, [value])
 
   return (
-    <div
-      className={
-        'col-span-1 flex flex-col gap-2 md:col-span-2 lg:col-span-4 xl:col-span-5'
-      }
-    >
-      <div className={'member-data-title'}>{title}</div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label'}>{title}</div>
       <input name={name} hidden={true} ref={inputRef} />
-      <div className={'member-data-grid gap-2'}>
+      <div className={'admin-form-grid gap-2'}>
         {data?.map((d, i) => (
           <button
             type={'button'}
             key={i}
-            className={`rounded-xl p-2 px-4 ${value === d.value ? 'bg-neutral-900 text-white' : 'bg-white'}`}
+            aria-pressed={value === d.value}
+            className={cn(
+              'admin-btn justify-start text-left',
+              value === d.value
+                ? 'bg-primary text-on-primary'
+                : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+            )}
             onClick={() => {
               setValue(d.value)
             }}

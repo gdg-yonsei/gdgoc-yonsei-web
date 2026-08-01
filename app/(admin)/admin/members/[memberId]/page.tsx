@@ -105,7 +105,7 @@ export default async function MemberPage({
           href={localizeAdminHref(`/admin/members/${memberId}/edit`, locale)}
         />
       </div>
-      <div className={'member-data-grid w-full gap-2 py-2'}>
+      <div className={'admin-form-grid w-full gap-2 py-2'}>
         <div className={'row-span-2 flex items-center justify-center'}>
           <UserProfileImage
             src={memberData.image}
@@ -115,21 +115,21 @@ export default async function MemberPage({
             className={'aspect-square w-40 rounded-full'}
           />
         </div>
-        <div className={'member-data-col-span'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
               <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
-                <div className={'member-data-box'}>
-                  <div className={'member-data-title'}>{t.firstNameEn}</div>
-                  <div className={'member-data-content'}>
+                <div className={'admin-card'}>
+                  <div className={'admin-field-label'}>{t.firstNameEn}</div>
+                  <div className={'admin-field-value'}>
                     {memberData.firstName}
                   </div>
                 </div>
-                <div className={'member-data-box'}>
-                  <div className={'member-data-title'}>{t.lastNameEn}</div>
-                  <div className={'member-data-content'}>
+                <div className={'admin-card'}>
+                  <div className={'admin-field-label'}>{t.lastNameEn}</div>
+                  <div className={'admin-field-value'}>
                     {memberData.lastName}
                   </div>
                 </div>
@@ -137,15 +137,15 @@ export default async function MemberPage({
             }
             koContent={
               <div className={'grid grid-cols-1 gap-2 sm:grid-cols-2'}>
-                <div className={'member-data-box'}>
-                  <div className={'member-data-title'}>{t.firstNameKo}</div>
-                  <div className={'member-data-content'}>
+                <div className={'admin-card'}>
+                  <div className={'admin-field-label'}>{t.firstNameKo}</div>
+                  <div className={'admin-field-value'}>
                     {memberData.firstNameKo}
                   </div>
                 </div>
-                <div className={'member-data-box'}>
-                  <div className={'member-data-title'}>{t.lastNameKo}</div>
-                  <div className={'member-data-content'}>
+                <div className={'admin-card'}>
+                  <div className={'admin-field-label'}>{t.lastNameKo}</div>
+                  <div className={'admin-field-value'}>
                     {memberData.lastNameKo}
                   </div>
                 </div>
@@ -153,49 +153,49 @@ export default async function MemberPage({
             }
           />
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.email}</div>
-          <div className={'member-data-content'}>{memberData.email}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.email}</div>
+          <div className={'admin-field-value'}>{memberData.email}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.role}</div>
-          <div className={'member-data-content'}>{memberData.role}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.role}</div>
+          <div className={'admin-field-value'}>{memberData.role}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>{memberData.generation}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>{memberData.generation}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.part}</div>
-          <div className={'member-data-content'}>{memberData.part}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.part}</div>
+          <div className={'admin-field-value'}>{memberData.part}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.githubId}</div>
-          <div className={'member-data-content'}>{memberData.githubId}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.githubId}</div>
+          <div className={'admin-field-value'}>{memberData.githubId}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.instagramId}</div>
-          <div className={'member-data-content'}>{memberData.instagramId}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.instagramId}</div>
+          <div className={'admin-field-value'}>{memberData.instagramId}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.linkedInProfileUrl}</div>
-          <div className={'member-data-content'}>{memberData.linkedInId}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.linkedInProfileUrl}</div>
+          <div className={'admin-field-value'}>{memberData.linkedInId}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.major}</div>
-          <div className={'member-data-content'}>{memberData.major}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.major}</div>
+          <div className={'admin-field-value'}>{memberData.major}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.studentId}</div>
-          <div className={'member-data-content'}>{memberData.studentId}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.studentId}</div>
+          <div className={'admin-field-value'}>{memberData.studentId}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.telephone}</div>
-          <div className={'member-data-content'}>{memberData.telephone}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.telephone}</div>
+          <div className={'admin-field-value'}>{memberData.telephone}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.foreigner}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.foreigner}</div>
+          <div className={'admin-field-value'}>
             {memberData.isForeigner ? t.trueValue : t.falseValue}
           </div>
         </div>

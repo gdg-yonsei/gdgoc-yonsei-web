@@ -76,12 +76,8 @@ export default function DataImageInput({
   }
 
   return (
-    <div
-      className={'col-span-1 flex flex-col gap-2 sm:col-span-2 lg:col-span-3'}
-    >
-      <div className={'px-1 text-sm font-semibold text-neutral-700'}>
-        {title}
-      </div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label px-0.5'}>{title}</div>
       <input
         type={'file'}
         accept={'image'}
@@ -109,7 +105,7 @@ export default function DataImageInput({
       <button
         type={'button'}
         onClick={() => inputRef.current?.click()}
-        className={`rounded-xl p-2 px-3 text-sm text-white ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
+        className={'admin-btn-primary w-fit'}
         disabled={isLoading}
       >
         {isLoading ? t('uploading') : children}

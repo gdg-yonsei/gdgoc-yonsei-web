@@ -1,4 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
+import AdminPageHeader from '@/app/components/admin/page-header'
+import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import { Suspense } from 'react'
 import PartsTable from '@/app/(admin)/admin/parts/parts-table'
 import handlePermission from '@/lib/server/permission/handle-permission'
@@ -43,37 +45,29 @@ export default async function PartsPage() {
 
   return (
     <AdminDefaultLayout>
-      <div className={'flex items-center gap-2 pb-2'}>
-        <div className={'admin-title'}>{t.parts}</div>
-        {canCreateInCurrentScope && (
-          <Link
-            href={localizeAdminHref('/admin/parts/create', locale)}
-            className={
-              'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
-            }
-          >
-            <PlusCircleIcon className={'size-5'} />
-            <p>{t.create}</p>
-          </Link>
-        )}
-        {canCreate && !canCreateInCurrentScope && (
-          <div
-            className={
-              'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'
-            }
-          >
-            {t.selectSpecificGenerationToCreate}
-          </div>
-        )}
-      </div>
-
-      <Suspense
-        fallback={
-          <div
-            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
-          />
+      <AdminPageHeader
+        title={t.parts}
+        actions={
+          <>
+            {canCreateInCurrentScope && (
+              <Link
+                href={localizeAdminHref('/admin/parts/create', locale)}
+                className={'admin-btn-primary'}
+              >
+                <PlusCircleIcon className={'size-5'} aria-hidden={'true'} />
+                {t.create}
+              </Link>
+            )}
+            {canCreate && !canCreateInCurrentScope && (
+              <p className={'admin-badge-warning py-1.5'}>
+                {t.selectSpecificGenerationToCreate}
+              </p>
+            )}
+          </>
         }
-      >
+      />
+
+      <Suspense fallback={<AdminTableSkeleton />}>
         <PartsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>

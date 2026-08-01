@@ -24,15 +24,15 @@ export default function GithubSubmitButton() {
   return (
     <button
       type={'submit'}
-      className={'button-black'}
+      className={'admin-btn-primary w-full'}
       disabled={pending || isAuthenticating}
     >
       {pending ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-neutral-700 border-t-white'}
+          className={'size-5 border-2 border-white/30 border-t-white'}
         />
       ) : (
-        <Github className={'size-6'} fill={'white'} />
+        <Github className={'size-5'} fill={'currentColor'} />
       )}
       <p>Sign in with Github</p>
     </button>

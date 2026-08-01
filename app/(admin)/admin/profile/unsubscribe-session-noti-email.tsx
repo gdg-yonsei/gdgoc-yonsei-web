@@ -36,7 +36,7 @@ export default async function UnsubscribeSessionNotiEmailPage() {
       action={toggleSessionNotificationEmailAction}
     >
       <button
-        className={`rounded-full border-2 ${userData.sessionNotiEmail ? 'border-red-500 bg-red-50 text-red-800 hover:bg-red-200' : 'border-green-500 bg-green-50 text-green-800 hover:bg-green-200'} p-2 px-4 text-sm transition-colors`}
+        className={`rounded-full border-2 ${userData.sessionNotiEmail ? 'border-danger bg-danger-soft text-danger hover:bg-danger-soft' : 'border-success bg-success-soft text-success hover:bg-success-soft'} p-2 px-4 text-sm transition-colors`}
       >
         {userData.sessionNotiEmail ? t.unsubscribe : t.subscribe}{' '}
         {t.sessionNotificationEmails}

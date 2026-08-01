@@ -60,6 +60,20 @@ vi.mock('next/link', () => ({
     ),
 }))
 
+/** motion 전용 props는 DOM으로 흘려보내면 React가 unknown-prop 경고를 냅니다. */
+const MOTION_ONLY_PROPS = new Set([
+  'initial',
+  'animate',
+  'exit',
+  'transition',
+  'variants',
+  'whileHover',
+  'whileTap',
+  'whileInView',
+  'layout',
+  'layoutId',
+])
+
 const createMotionProxy = () =>
   new Proxy(
     {},
@@ -70,12 +84,23 @@ const createMotionProxy = () =>
           children,
           ...props
         }: React.PropsWithChildren<Record<string, unknown>>) =>
-          React.createElement(tag, props, children),
+          React.createElement(
+            tag,
+            Object.fromEntries(
+              Object.entries(props).filter(
+                ([key]) => !MOTION_ONLY_PROPS.has(key)
+              )
+            ),
+            children
+          ),
     }
   )
 
 vi.mock('motion/react', () => ({
   motion: createMotionProxy(),
+  // AnimatePresence는 테스트에서 exit 애니메이션 없이 자식을 그대로 통과시킵니다.
+  AnimatePresence: ({ children }: React.PropsWithChildren) => children,
+  useReducedMotion: () => false,
 }))
 
 vi.mock('motion/react-client', () => createMotionProxy())

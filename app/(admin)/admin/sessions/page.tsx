@@ -1,4 +1,9 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
+import {
+  AdminCardSkeleton,
+  AdminTableSkeleton,
+} from '@/app/components/admin/skeleton'
+import AdminPageHeader from '@/app/components/admin/page-header'
 import { auth } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
@@ -43,61 +48,46 @@ export default async function SessionsPage() {
     canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
-    <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
-      <Suspense
-        fallback={
-          <div
-            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
-          />
+    // 목록이 먼저 오고, 개인 일정(참여 중/참여 가능)은 그 아래 보조 섹션으로
+    // 둡니다. 이전에는 두 섹션이 페이지 제목보다 위에 있어 실제 세션 목록이
+    // 화면 밖으로 밀려나 있었습니다.
+    <AdminDefaultLayout className={'gap-6'}>
+      <AdminPageHeader
+        title={t.sessions}
+        actions={
+          <>
+            {canCreateInCurrentScope && (
+              <Link
+                href={localizeAdminHref('/admin/sessions/create', locale)}
+                className={'admin-btn-primary'}
+              >
+                <PlusCircleIcon className={'size-5'} aria-hidden={'true'} />
+                {t.create}
+              </Link>
+            )}
+            {canCreate && !canCreateInCurrentScope && (
+              <p className={'admin-badge-warning py-1.5'}>
+                {t.selectSpecificGenerationToCreate}
+              </p>
+            )}
+          </>
         }
-      >
-        <UpcomingSessions />
-      </Suspense>
-      <Suspense
-        fallback={
-          <div
-            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
-          />
-        }
-      >
-        <RegisterSession />
-      </Suspense>
-      <div className={'flex items-center gap-2 pb-2'}>
-        <div className={'admin-title'}>{t.sessions}</div>
-        {canCreateInCurrentScope && (
-          <Link
-            href={localizeAdminHref('/admin/sessions/create', locale)}
-            className={
-              'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
-            }
-          >
-            <PlusCircleIcon className={'size-5'} />
-            <p>{t.create}</p>
-          </Link>
-        )}
-        {canCreate && !canCreateInCurrentScope && (
-          <div
-            className={
-              'rounded-xl bg-neutral-200 px-3 py-2 text-sm text-neutral-700'
-            }
-          >
-            {t.selectSpecificGenerationToCreate}
-          </div>
-        )}
-      </div>
-      <Suspense
-        fallback={
-          <div
-            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
-          />
-        }
-      >
+      />
+      <Suspense fallback={<AdminTableSkeleton />}>
         <SessionsTable
           scope={resolvedScope?.scope ?? null}
           locale={locale}
           t={t}
         />
       </Suspense>
+      <div className={'border-hairline flex flex-col gap-6 border-t pt-6'}>
+        <Suspense fallback={<AdminCardSkeleton />}>
+          <UpcomingSessions />
+        </Suspense>
+        <Suspense fallback={<AdminCardSkeleton />}>
+          <RegisterSession />
+        </Suspense>
+      </div>
     </AdminDefaultLayout>
   )
 }

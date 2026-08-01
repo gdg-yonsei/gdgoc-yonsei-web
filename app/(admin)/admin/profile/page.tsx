@@ -33,14 +33,12 @@ export default async function ProfilePage() {
   const t = getAdminMessages(locale)
 
   return (
-    <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
+    <AdminDefaultLayout>
       <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{t.profile}</div>
         <Link
           href={localizeAdminHref('/admin/profile/edit', locale)}
-          className={
-            'flex items-center gap-2 rounded-full bg-neutral-900 p-2 px-4 text-white transition-all hover:bg-neutral-800'
-          }
+          className={'admin-btn-primary'}
         >
           <PencilSquareIcon className={'size-5'} />
           <p>{t.edit}</p>
@@ -48,17 +46,17 @@ export default async function ProfilePage() {
       </div>
       <Suspense
         fallback={
-          <div className={'member-data-grid gap-2 py-4'}>
+          <div className={'admin-form-grid gap-2 py-4'}>
             <div
               className={
-                'mx-auto size-48 animate-pulse rounded-lg bg-neutral-200'
+                'bg-surface-sunken mx-auto size-48 animate-pulse rounded-lg'
               }
             />
             {new Array(11).fill(0).map((_, i) => (
               <div
                 key={i}
                 className={
-                  'h-20 w-full animate-pulse rounded-lg bg-neutral-200'
+                  'bg-surface-sunken h-20 w-full animate-pulse rounded-lg'
                 }
               />
             ))}

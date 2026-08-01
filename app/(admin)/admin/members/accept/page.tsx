@@ -42,15 +42,13 @@ export default async function AcceptMemberPage() {
       <div className={'admin-title'}>{t.approveMember}</div>
       <div className={'flex w-full flex-col gap-2 py-4'}>
         {unacceptedMembers.length === 0 && (
-          <div className={'mx-auto text-xl text-neutral-800'}>
-            {t.noUsersToApprove}
-          </div>
+          <div className={'text-ink mx-auto text-xl'}>{t.noUsersToApprove}</div>
         )}
         {unacceptedMembers.map((member) => (
           <div
             key={member.id}
             className={
-              'flex items-center justify-between gap-2 rounded-lg bg-white p-2 not-md:flex-col not-md:items-start'
+              'bg-surface flex items-center justify-between gap-2 rounded-lg p-2 not-md:flex-col not-md:items-start'
             }
           >
             <div className={'flex items-center gap-2'}>

@@ -75,7 +75,7 @@ export default async function EditMemberPage({
       <div className={'flex flex-col gap-4'}>
         <DataForm
           action={updateMemberActionWithMemberId}
-          className={'member-data-grid w-full gap-4'}
+          className={'admin-form-grid w-full gap-4'}
         >
           <ImageUpload
             image={memberData.image}
@@ -88,7 +88,7 @@ export default async function EditMemberPage({
             name={'name'}
             placeholder={t.githubName}
           />
-          <div className={'col-span-1 sm:col-span-2 lg:col-span-4'}>
+          <div className={'admin-form-grid-full'}>
             <BilingualPanel
               enTitle={t.english}
               koTitle={t.korean}

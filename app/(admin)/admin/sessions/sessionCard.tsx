@@ -32,27 +32,29 @@ export default function SessionCard({
   return (
     <Link
       href={localizeAdminHref(`/admin/sessions/${session.id}`, locale)}
-      className={'flex flex-col rounded-xl bg-white'}
+      className={
+        'border-hairline bg-surface hover:border-primary/40 hover:shadow-soft flex flex-col overflow-hidden rounded-lg border transition-all'
+      }
     >
       <Image
         src={session.mainImage}
         alt={'Main Image'}
         width={600}
         height={400}
-        className={'aspect-3/2 w-full rounded-t-xl object-cover'}
+        className={'aspect-3/2 w-full object-cover'}
         placeholder={'blur'}
         blurDataURL={'/default-image.png'}
       />
-      <div
-        className={'flex h-full flex-col items-start justify-between p-2 px-4'}
-      >
-        <div>
-          <div className={'text-xl font-semibold'}>{session.name}</div>
+      <div className={'flex h-full flex-col items-start gap-2 p-3'}>
+        <div className={'flex min-w-0 flex-col gap-1'}>
+          <div className={'type-title text-ink'}>{session.name}</div>
           {session.partName && (
-            <div className={'text-sm text-neutral-600'}>{session.partName}</div>
+            <span className={'admin-badge-primary w-fit'}>
+              {session.partName}
+            </span>
           )}
         </div>
-        <div className={'flex flex-col text-sm'}>
+        <div className={'type-caption text-ink-muted mt-auto'}>
           {session.startAt
             ? formatAdminDate(session.startAt, locale, {
                 year: 'numeric',

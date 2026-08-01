@@ -1,10 +1,18 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import SessionCard from '@/app/(admin)/admin/sessions/sessionCard'
+import Image from 'next/image'
+import AdminDataTable, {
+  type AdminColumn,
+} from '@/app/components/admin/data-table'
+import AdminEmptyState from '@/app/components/admin/empty-state'
 import { type AdminSessionListItem } from '@/lib/server/fetcher/admin/get-sessions'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { formatAdminDate, type AdminMessages } from '@/lib/admin-i18n'
+import {
+  formatAdminDate,
+  localizeAdminHref,
+  type AdminMessages,
+} from '@/lib/admin-i18n'
 import { Locale } from '@/i18n-config'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
 import {
@@ -110,6 +118,74 @@ export default function SessionsTableClient({
     compareGroups: compareSessionGroups,
   })
 
+  const columns = useMemo<AdminColumn<AdminSessionListItem>[]>(
+    () => [
+      {
+        key: 'name',
+        header: t.columnName,
+        width: 'minmax(0,2.5fr)',
+        primary: true,
+        render: (session) => (
+          <span className={'flex min-w-0 items-center gap-3'}>
+            <Image
+              src={session.mainImage}
+              alt={''}
+              width={160}
+              height={107}
+              className={
+                'border-hairline aspect-3/2 w-14 shrink-0 rounded-sm border object-cover'
+              }
+              placeholder={'blur'}
+              blurDataURL={'/default-image.png'}
+            />
+            <span className={'flex min-w-0 flex-col'}>
+              <span className={'truncate'}>{session.name}</span>
+              {session.nameKo && (
+                <span className={'type-eyebrow text-ink-muted truncate'}>
+                  {session.nameKo}
+                </span>
+              )}
+            </span>
+          </span>
+        ),
+      },
+      {
+        key: 'schedule',
+        header: t.columnSchedule,
+        width: '11rem',
+        render: (session) =>
+          session.startAt
+            ? formatAdminDate(session.startAt, locale, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : t.tbd,
+      },
+      {
+        key: 'part',
+        header: t.columnPart,
+        width: 'minmax(0,1fr)',
+        render: (session) =>
+          session.partName ? (
+            <span className={'admin-badge-primary'}>{session.partName}</span>
+          ) : (
+            <span className={'admin-badge-neutral'}>{t.generalSession}</span>
+          ),
+      },
+      {
+        key: 'generation',
+        header: t.columnGeneration,
+        width: '8rem',
+        hideOnMobile: scope?.kind !== 'all',
+        render: (session) => session.generationName ?? '—',
+      },
+    ],
+    [t, locale, scope]
+  )
+
   const handleExportCsv = () => {
     downloadCsv({
       filenamePrefix: 'sessions',
@@ -181,34 +257,28 @@ export default function SessionsTableClient({
       />
 
       {filteredAndSortedSessions.length === 0 ? (
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700 shadow-sm'}>
-          <div className={'font-semibold'}>{t.noScopedResults}</div>
-          <div className={'pt-1 text-sm text-neutral-500'}>
-            {t.noScopedResultsHint}
-          </div>
-        </div>
+        <AdminEmptyState
+          title={t.noScopedResults}
+          description={t.noScopedResultsHint}
+        />
       ) : (
         <div className={'flex w-full flex-col gap-6'}>
           {groupedSessions.map((group) => (
             <div key={group.generationName} className={'flex flex-col gap-2'}>
               {scope?.kind === 'all' && (
-                <div
-                  className={
-                    'border-b border-neutral-200 pb-1 text-sm font-semibold text-neutral-600'
-                  }
-                >
+                <h2 className={'admin-field-label'}>
                   {t.generation}: {group.generationName}
-                </div>
+                </h2>
               )}
-              <div className={'member-data-grid w-full gap-4 pt-2'}>
-                {group.sessions.map((session) => (
-                  <SessionCard
-                    session={session}
-                    key={session.id}
-                    locale={locale}
-                  />
-                ))}
-              </div>
+              <AdminDataTable
+                items={group.sessions}
+                caption={`${t.sessions} — ${group.generationName}`}
+                getKey={(session) => session.id}
+                getHref={(session) =>
+                  localizeAdminHref(`/admin/sessions/${session.id}`, locale)
+                }
+                columns={columns}
+              />
             </div>
           ))}
         </div>

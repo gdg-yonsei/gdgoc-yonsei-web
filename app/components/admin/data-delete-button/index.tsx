@@ -47,9 +47,7 @@ export default async function DataDeleteButton({
             readOnly={true}
           />
           <SubmitButton
-            className={
-              'flex items-center gap-2 rounded-lg bg-red-600 p-1 px-3 text-white transition-all hover:bg-red-500 hover:px-4'
-            }
+            className={'admin-btn-danger min-h-9 px-3'}
             questionText={t.deleteConfirm}
           >
             {t.delete}

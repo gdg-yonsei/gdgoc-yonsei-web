@@ -41,17 +41,16 @@ export default function RegisterSessionCard({
   return (
     <Link
       href={localizeAdminHref(`/admin/sessions/${sessionId}/register`, locale)}
-      className={'rounded-xl border-2 border-neutral-950 bg-white'}
+      className={
+        'border-hairline bg-surface hover:border-primary/40 hover:shadow-soft flex flex-col gap-3 rounded-lg border p-4 transition-all'
+      }
     >
-      <div
-        className={'rounded-t-lg bg-neutral-900 p-1 px-3 text-sm text-white'}
-      >
-        {part} {t.part}
+      <div className={'flex items-start justify-between gap-2'}>
+        <h3 className={'type-title text-ink min-w-0'}>{sessionName}</h3>
+        <span className={'admin-badge-primary shrink-0'}>{part}</span>
       </div>
-      <div className={'flex flex-col gap-2 p-2'}>
-        <h3 className={'mx-auto p-2 text-xl font-bold'}>{sessionName}</h3>
-
-        <div className={'ml-auto text-sm'}>
+      <div className={'flex items-end justify-between gap-2'}>
+        <div className={'type-caption text-ink-muted'}>
           <p>
             {t.start}:{' '}
             {startAt
@@ -80,9 +79,9 @@ export default function RegisterSessionCard({
           </p>
         </div>
 
-        <div className={'ml-auto'}>
-          {participants} / {maxCapacity}
-        </div>
+        <span className={'admin-badge-neutral shrink-0'}>
+          {participants} / {maxCapacity ?? '∞'}
+        </span>
       </div>
     </Link>
   )

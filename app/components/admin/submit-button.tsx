@@ -6,6 +6,7 @@ import { useAtom } from 'jotai'
 import { isLoadingState } from '@/lib/atoms'
 import { ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 /**
  * Form Submit Button Component
@@ -25,21 +26,15 @@ export default function SubmitButton({
   return (
     <button
       type={'submit'}
-      className={
-        className
-          ? className
-          : 'col-span-1 flex items-center justify-center gap-2 rounded-xl bg-neutral-950 p-2 px-4 text-lg text-white transition-all hover:not-disabled:bg-neutral-800 disabled:bg-neutral-600 sm:col-span-2'
-      }
+      className={cn('admin-btn-primary admin-form-grid-full', className)}
       disabled={pending || isLoading}
     >
       {pending ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-neutral-700 border-t-white'}
+          className={'size-5 border-2 border-white/40 border-t-white'}
         />
-      ) : (
-        ''
-      )}
-      <p>{isLoading ? t('suspend') : (children ?? t('submit'))}</p>
+      ) : null}
+      <span>{isLoading ? t('suspend') : (children ?? t('submit'))}</span>
     </button>
   )
 }

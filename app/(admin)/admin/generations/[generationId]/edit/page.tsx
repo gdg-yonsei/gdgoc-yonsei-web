@@ -63,7 +63,7 @@ export default async function EditGenerationPage({
       </div>
       <DataForm
         action={updateGenerationActionWithGenerationId}
-        className={'member-data-grid w-full gap-4'}
+        className={'admin-form-grid w-full gap-4'}
       >
         <DataInput
           title={t.generation}

@@ -44,7 +44,7 @@ export default async function CreateSessionPage() {
         <div className={'admin-title'}>
           {t.create} {t.session}
         </div>
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+        <div className={'admin-panel'}>
           <div className={'font-semibold'}>
             {t.selectSpecificGenerationToCreate}
           </div>
@@ -86,7 +86,7 @@ export default async function CreateSessionPage() {
       </div>
       <DataForm
         action={createSessionAction}
-        className={'member-data-grid gap-2'}
+        className={'admin-form-grid gap-2'}
       >
         <GenerationField
           title={t.generation}

@@ -97,24 +97,24 @@ export default async function GenerationPage({
           'mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
         }
       >
-        <div className={'member-data-box col-span-1 sm:col-span-2'}>
-          <div className={'member-data-title'}>{t.activityPeriod}</div>
+        <div className={'admin-card sm:col-span-2'}>
+          <div className={'admin-field-label'}>{t.activityPeriod}</div>
           <GenerationActivityPeriod
-            className={'member-data-content flex items-center gap-2'}
+            className={'admin-field-value flex items-center gap-2'}
             startDate={generationData.startDate}
             endDate={generationData.endDate}
           />
         </div>
-        <div className={'col-span-4 flex flex-col gap-2 py-4'}>
-          <div className={'member-data-title'}>{t.parts}</div>
+        <div className={'admin-form-grid-full flex flex-col gap-2 py-4'}>
+          <div className={'admin-field-label'}>{t.parts}</div>
           <div
             className={
               'grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
             }
           >
             {generationData.parts.map((part) => (
-              <div key={part.id} className={'member-data-box'}>
-                <div className={'member-data-content'}>{part.name}</div>
+              <div key={part.id} className={'admin-card'}>
+                <div className={'admin-field-value'}>{part.name}</div>
                 <div>
                   {t.member}: {part.usersToParts.length}
                 </div>

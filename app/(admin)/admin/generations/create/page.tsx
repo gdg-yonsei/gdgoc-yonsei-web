@@ -34,7 +34,7 @@ export default async function CreateGenerationPage() {
       </div>
       <DataForm
         action={createGenerationAction}
-        className={'member-data-grid gap-2'}
+        className={'admin-form-grid gap-2'}
       >
         <DataInput
           title={t.generation}

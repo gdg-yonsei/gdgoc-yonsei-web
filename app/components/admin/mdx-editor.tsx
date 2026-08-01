@@ -54,12 +54,8 @@ export default function MDXEditor({
   }
 
   return (
-    <div
-      className={
-        'col-span-1 flex w-full flex-col gap-2 sm:col-span-2 lg:col-span-4 xl:col-span-5'
-      }
-    >
-      <div className={'member-data-title'}>{title}</div>
+    <div className={'admin-form-grid-full flex w-full flex-col gap-2'}>
+      <div className={'admin-field-label'}>{title}</div>
       <div className={'flex flex-col items-start gap-2 lg:flex-row'}>
         <div className={'w-full'}>
           <div>{locale === 'ko' ? '에디터' : 'Editor'}</div>
@@ -72,7 +68,7 @@ export default function MDXEditor({
             }}
             defaultValue={defaultValue ? defaultValue : ''}
             className={
-              'member-data-input h-auto min-h-96 resize-none overflow-hidden'
+              'admin-input h-auto min-h-96 resize-none overflow-hidden'
             }
           />
         </div>
@@ -80,7 +76,7 @@ export default function MDXEditor({
           <div>{locale === 'ko' ? '미리보기' : 'Preview'}</div>
           <div
             className={
-              'prose min-h-96 w-full rounded-lg border-2 border-sky-900 p-4'
+              'prose border-hairline min-h-96 w-full rounded-lg border-2 p-4'
             }
           >
             <Markdown>{content}</Markdown>
