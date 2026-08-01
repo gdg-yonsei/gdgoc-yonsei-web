@@ -1,6 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
-import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import AdminPageHeader from '@/app/components/admin/page-header'
+import AdminEmptyState from '@/app/components/admin/empty-state'
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
@@ -35,33 +35,36 @@ export default async function AcceptMemberPage() {
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/members'}>
-        <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>{t.members}</p>
-      </AdminNavigationButton>
-      <div className={'admin-title'}>{t.approveMember}</div>
-      <div className={'flex w-full flex-col gap-2 py-4'}>
+      <AdminPageHeader
+        title={t.approveMember}
+        backHref={'/admin/members'}
+        backLabel={t.members}
+      />
+      <div className={'flex w-full flex-col gap-2'}>
         {unacceptedMembers.length === 0 && (
-          <div className={'text-ink mx-auto text-xl'}>{t.noUsersToApprove}</div>
+          <AdminEmptyState title={t.noUsersToApprove} />
         )}
         {unacceptedMembers.map((member) => (
           <div
             key={member.id}
             className={
-              'bg-surface flex items-center justify-between gap-2 rounded-lg p-2 not-md:flex-col not-md:items-start'
+              'border-hairline bg-surface flex flex-col gap-3 rounded-lg border p-3 lg:flex-row lg:items-center lg:justify-between'
             }
           >
-            <div className={'flex items-center gap-2'}>
+            <div className={'flex min-w-0 items-center gap-2.5'}>
               <Image
                 src={member.image ? member.image : '/default-user-profile.png'}
-                alt={'Profile Image'}
+                alt={''}
                 width={100}
                 height={100}
-                className={'size-12 rounded-lg object-cover'}
+                className={'size-10 shrink-0 rounded-lg object-cover'}
               />
-              <div>{member.name}</div>
+              <div className={'type-body-sm text-ink truncate font-semibold'}>
+                {member.name}
+              </div>
             </div>
-            <div className={'flex items-center gap-2'}>
+            {/* 좁은 화면에서 버튼이 압축되어 라벨이 줄바꿈되지 않도록 감쌉니다. */}
+            <div className={'flex flex-wrap items-center gap-2'}>
               <AcceptForm userId={member.id} />
               <DeleteForm userId={member.id} />
             </div>

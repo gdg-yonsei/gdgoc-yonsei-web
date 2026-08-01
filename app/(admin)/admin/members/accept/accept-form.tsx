@@ -63,8 +63,12 @@ export default function AcceptForm({ userId }: { userId: string }) {
   const [role, setRole] = useState('member')
 
   return (
-    <DataForm action={acceptMemberAction} className={'flex items-center gap-2'}>
-      <div className={'text-lg font-semibold'}>{t('role')}</div>
+    // 모바일에서는 버튼이 쪼그라들지 않고 줄로 넘어가야 합니다.
+    <DataForm
+      action={acceptMemberAction}
+      className={'flex flex-wrap items-center gap-2'}
+    >
+      <span className={'admin-field-label'}>{t('role')}</span>
       <RoleButton role={role} setRole={setRole} value={'member'}>
         {t('roleMember')}
       </RoleButton>
@@ -89,11 +93,7 @@ export default function AcceptForm({ userId }: { userId: string }) {
         value={userId}
         name={'userId'}
       />
-      <SubmitButton
-        className={
-          'hover:bg-canvas flex items-center gap-2 rounded-lg border-2 p-1 px-3 font-semibold transition-colors'
-        }
-      />
+      <SubmitButton className={'admin-btn-secondary min-h-9 px-3'} />
     </DataForm>
   )
 }
