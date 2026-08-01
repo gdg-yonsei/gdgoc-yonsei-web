@@ -22,11 +22,7 @@ export default function DeleteForm({ userId }: { userId: string }) {
   return (
     <DataForm action={deleteUserAction}>
       <input hidden={true} name={'userId'} value={userId} readOnly={true} />
-      <SubmitButton
-        className={
-          'flex items-center gap-1 rounded-lg bg-red-500 p-1 px-3 text-neutral-50 transition-colors hover:bg-red-600'
-        }
-      >
+      <SubmitButton className={'admin-btn-danger min-h-9 px-3'}>
         {t('delete')}
       </SubmitButton>
     </DataForm>

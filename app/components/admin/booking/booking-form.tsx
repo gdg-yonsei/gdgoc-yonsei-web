@@ -94,12 +94,12 @@ export default function BookingForm() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-2xl bg-neutral-100 p-6 md:w-fit">
+    <div className="bg-canvas flex w-full flex-col gap-6 rounded-2xl p-6 md:w-fit">
       <h2 className="text-xl font-bold">대관 예약 신청</h2>
-      <p className="text-sm text-neutral-600">
+      <p className="text-ink-muted text-sm">
         연세대학교 공관 대관 시스템 공간 대관 예약
       </p>
-      <p className="text-sm text-neutral-600">
+      <p className="text-ink-muted text-sm">
         장소의 공실 여부는{' '}
         <Link
           href={'https://space.yonsei.ac.kr'}
@@ -110,27 +110,27 @@ export default function BookingForm() {
         </Link>
         에 접속해서 미리 확인해야 합니다.
       </p>
-      <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      <div className="bg-warning-soft text-warning rounded-xl px-4 py-3 text-sm">
         오늘부터 2주 이내의 날짜는 대관 예약이 불가합니다. 예약 시스템이 2주
         전에 자동으로 대관을 신청하므로, 최소 2주 뒤의 날짜를 선택해주세요.
       </div>
 
       {error && (
-        <div className="notice-enter rounded-xl bg-red-100 p-4 text-sm text-red-700">
+        <div className="notice-enter bg-danger-soft text-danger rounded-xl p-4 text-sm">
           오류: {error}
         </div>
       )}
       {success && (
-        <div className="notice-enter rounded-xl bg-green-100 p-4 text-sm text-green-700">
+        <div className="notice-enter bg-success-soft text-success rounded-xl p-4 text-sm">
           신청이 접수되었습니다! 예약 스케줄러가 자동으로 실행됩니다.
         </div>
       )}
 
       <form action={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">캠퍼스</p>
+          <p className="admin-field-label px-0.5">캠퍼스</p>
           <select
-            className="member-data-input"
+            className="admin-input"
             value={selectedCampus}
             onChange={(e) => {
               const val = e.target.value
@@ -152,12 +152,10 @@ export default function BookingForm() {
         </div>
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            건물 (예: 학생회관)
-          </p>
+          <p className="admin-field-label px-0.5">건물 (예: 학생회관)</p>
           <select
             name="building"
-            className="member-data-input"
+            className="admin-input"
             value={selectedBuilding}
             onChange={(e) => setSelectedBuilding(e.target.value)}
             required
@@ -171,10 +169,8 @@ export default function BookingForm() {
         </div>
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            공간 이름
-          </p>
-          <select name="roomName" className="member-data-input" required>
+          <p className="admin-field-label px-0.5">공간 이름</p>
+          <select name="roomName" className="admin-input" required>
             {venuesData?.[selectedCampus]?.rooms
               .filter((r) => r.building.startsWith(selectedBuilding))
               .map((r) => (
@@ -186,12 +182,10 @@ export default function BookingForm() {
         </div>
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            시작 날짜
-          </p>
+          <p className="admin-field-label px-0.5">시작 날짜</p>
           <input
             type="date"
-            className="member-data-input"
+            className="admin-input"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             min={(() => {
@@ -204,11 +198,9 @@ export default function BookingForm() {
         </div>
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            시작 시간
-          </p>
+          <p className="admin-field-label px-0.5">시작 시간</p>
           <select
-            className="member-data-input"
+            className="admin-input"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
@@ -222,11 +214,9 @@ export default function BookingForm() {
         </div>
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            대관 시간
-          </p>
+          <p className="admin-field-label px-0.5">대관 시간</p>
           <select
-            className="member-data-input"
+            className="admin-input"
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(Number(e.target.value))}
             required
@@ -246,7 +236,7 @@ export default function BookingForm() {
         </div>
 
         {startDate && (
-          <div className="flex flex-col gap-1 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">
+          <div className="bg-primary-soft text-primary flex flex-col gap-1 rounded-lg px-4 py-3 text-sm">
             <p>
               <span className="font-medium">시작:</span> {startDate} {startTime}
             </p>
@@ -265,10 +255,8 @@ export default function BookingForm() {
         />
 
         <div className="flex flex-col">
-          <p className="px-1 text-sm font-semibold text-neutral-700">
-            행사 유형
-          </p>
-          <select name="eventType" className="member-data-input" required>
+          <p className="admin-field-label px-0.5">행사 유형</p>
+          <select name="eventType" className="admin-input" required>
             <option value="행사 및 회의">행사 및 회의</option>
             <option value="기타">기타</option>
           </select>
@@ -290,7 +278,7 @@ export default function BookingForm() {
           required
         />
 
-        <SubmitButton className="mt-4 w-full rounded-xl bg-blue-600 p-3 text-white transition-all hover:bg-blue-700">
+        <SubmitButton className="bg-primary hover:bg-primary mt-4 w-full rounded-xl p-3 text-white transition-all">
           예약 신청하기
         </SubmitButton>
       </form>

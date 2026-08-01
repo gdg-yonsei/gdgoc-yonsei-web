@@ -43,7 +43,7 @@ export default async function CreateProjectPage() {
         <div className={'admin-title'}>
           {t.create} {t.project}
         </div>
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+        <div className={'admin-panel'}>
           <div className={'font-semibold'}>
             {t.selectSpecificGenerationToCreate}
           </div>
@@ -66,7 +66,7 @@ export default async function CreateProjectPage() {
       </div>
       <DataForm
         action={createProjectAction}
-        className={'member-data-grid gap-2'}
+        className={'admin-form-grid gap-2'}
       >
         <ResourceImageFields
           mainImageBaseUrl={'/api/admin/projects/main-image'}

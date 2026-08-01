@@ -80,6 +80,8 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/api/') ||
     pathname === '/auth' ||
     pathname.startsWith('/auth/') ||
+    // 정적 폰트 에셋(Pretendard 서브셋 92개)은 로케일 프리픽스를 붙이면 안 됩니다.
+    pathname.startsWith('/fonts/') ||
     UNLOCALIZED_PUBLIC_PATHS.has(pathname)
   ) {
     return NextResponse.next()

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import formatUserName from '@/lib/format-user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 type MemberOption = {
   id: string
@@ -26,19 +27,15 @@ export default function MembersSelectInput({
   const [participants, setParticipants] = useState<string[]>(defaultValue)
 
   return (
-    <div
-      className={
-        'col-span-1 flex flex-col gap-2 sm:col-span-2 md:col-span-3 lg:col-span-4'
-      }
-    >
-      <div className={'member-data-title'}>{t('participants')}</div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label'}>{t('participants')}</div>
       <input
         hidden={true}
         name={'participants'}
         readOnly={true}
         value={JSON.stringify(participants)}
       />
-      <div className={'member-data-grid gap-2'}>
+      <div className={'admin-form-grid gap-2'}>
         {members.map((member) => {
           const selected = participants.includes(member.id)
 
@@ -46,7 +43,13 @@ export default function MembersSelectInput({
             <button
               type={'button'}
               key={member.id}
-              className={`rounded-xl p-2 px-4 text-left ${selected ? 'bg-neutral-900 text-white' : 'bg-white'}`}
+              aria-pressed={selected}
+              className={cn(
+                'admin-btn h-auto flex-col items-start gap-0.5 py-2 text-left',
+                selected
+                  ? 'bg-primary text-on-primary'
+                  : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+              )}
               onClick={() => {
                 setParticipants((current) =>
                   current.includes(member.id)

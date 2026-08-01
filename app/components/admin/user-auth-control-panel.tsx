@@ -30,10 +30,10 @@ async function UserProfile() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={'w-full rounded-xl border-2 border-neutral-900 bg-white p-4'}
+      className={'border-hairline bg-canvas w-full rounded-lg border p-3'}
     >
-      <div className={'flex flex-col gap-1 pb-2 text-sm break-all'}>
-        <div className={'text-lg font-semibold'}>
+      <div className={'flex min-w-0 flex-col gap-0.5 pb-2.5'}>
+        <div className={'type-body-sm text-ink truncate font-semibold'}>
           {formatUserName(
             userData.name,
             userData.firstName,
@@ -41,14 +41,16 @@ async function UserProfile() {
             userData.isForeigner
           )}
         </div>
-        <div>{session?.user?.email}</div>
-        <div>{userData.role}</div>
+        <div className={'type-eyebrow text-ink-muted truncate font-normal'}>
+          {session?.user?.email}
+        </div>
+        <div className={'pt-1'}>
+          <span className={'admin-badge-primary'}>{userData.role}</span>
+        </div>
       </div>
       <SignOutButton
-        className={
-          'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-1 px-2 text-sm transition-all hover:bg-neutral-800 hover:text-white disabled:bg-neutral-600'
-        }
-        spinnerClassName={'size-4 border-2 border-t-white border-neutral-700'}
+        className={'admin-btn-secondary type-eyebrow min-h-9 w-full px-3'}
+        spinnerClassName={'size-4 border-2 border-t-current border-current/30'}
         label={t.signOut}
       />
     </motion.div>
@@ -65,7 +67,7 @@ export default async function UserAuthControlPanel() {
       fallback={
         <div
           className={
-            'h-[120px] w-full animate-pulse rounded-xl border-2 border-neutral-900 bg-neutral-300 p-4'
+            'border-hairline bg-surface-sunken h-[124px] w-full animate-pulse rounded-lg border'
           }
         />
       }

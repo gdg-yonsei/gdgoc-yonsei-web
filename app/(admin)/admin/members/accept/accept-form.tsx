@@ -5,6 +5,7 @@ import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 /**
  * `RoleButton` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
@@ -31,7 +32,12 @@ function RoleButton({
 }) {
   return (
     <button
-      className={`rounded-lg p-1 px-2 ${role === value ? 'bg-neutral-900 text-white' : 'bg-neutral-100'} transition-colors`}
+      className={cn(
+        'admin-btn min-h-9 px-3',
+        role === value
+          ? 'bg-primary text-on-primary'
+          : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+      )}
       type={'button'}
       onClick={() => setRole(value)}
     >
@@ -85,7 +91,7 @@ export default function AcceptForm({ userId }: { userId: string }) {
       />
       <SubmitButton
         className={
-          'flex items-center gap-2 rounded-lg border-2 p-1 px-3 font-semibold transition-colors hover:bg-neutral-100'
+          'hover:bg-canvas flex items-center gap-2 rounded-lg border-2 p-1 px-3 font-semibold transition-colors'
         }
       />
     </DataForm>

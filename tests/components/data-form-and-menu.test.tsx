@@ -2,13 +2,10 @@ import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import Link from 'next/link'
 import DataForm from '@/app/components/data-form'
 import MenuBar from '@/app/components/admin/menu-bar'
 import ToggleMenubarButton from '@/app/components/admin/toggle-menubar-button'
-
-vi.mock('@/app/components/admin/user-auth-control-panel-client', () => ({
-  default: () => React.createElement('div', {}, 'User Panel'),
-}))
 
 vi.mock('@/app/components/admin/home-page-button', () => ({
   default: () => React.createElement('button', { type: 'button' }, 'Home'),
@@ -97,21 +94,14 @@ describe('DataForm and admin menu components', () => {
     })
   })
 
-  it('opens and closes mobile admin menu through toggle and backdrop', async () => {
+  it('opens and closes mobile admin menu through toggle, backdrop and Escape', async () => {
     const user = userEvent.setup()
     const { container } = render(
       <>
         <ToggleMenubarButton />
-        <MenuBar
-          navigations={[
-            {
-              name: 'Generations',
-              path: '/admin/generations',
-              dataResource: 'generationsPage',
-            } as never,
-          ]}
-          locale={'en'}
-        />
+        <MenuBar>
+          <Link href="/admin/generations">Generations</Link>
+        </MenuBar>
       </>
     )
 
@@ -119,19 +109,30 @@ describe('DataForm and admin menu components', () => {
       screen.queryByRole('link', { name: 'Generations' })
     ).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('button'))
+    await user.click(screen.getByRole('button', { name: 'Open menu' }))
     await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeVisible()
       expect(screen.getByRole('link', { name: 'Generations' })).toBeVisible()
-      expect(screen.getByText('User Panel')).toBeVisible()
     })
 
-    const overlay = container.querySelector('.backdrop-blur') as HTMLElement
+    const overlay = container.querySelector(
+      '[class*="backdrop-blur"]'
+    ) as HTMLElement
     await user.click(overlay)
 
     await waitFor(() => {
       expect(
         screen.queryByRole('link', { name: 'Generations' })
       ).not.toBeInTheDocument()
+    })
+
+    // 드로어는 ESC로도 닫혀야 합니다.
+    await user.click(screen.getByRole('button', { name: 'Open menu' }))
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeVisible())
+
+    await user.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })
 })

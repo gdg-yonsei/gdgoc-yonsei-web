@@ -1,81 +1,51 @@
-import Link from 'next/link'
-import { ReactNode } from 'react'
-import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel'
-import AdminGenerationScopeBar from '@/app/components/admin/admin-generation-scope-bar'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
-import GDGLogo from '@/app/components/svg/gdg-logo'
-import RefreshAllDataButton from '@/app/components/admin/refresh-all-data-button'
-import HomePageButton from '@/app/components/admin/home-page-button'
+import SidebarContent, {
+  AdminBrand,
+} from '@/app/components/admin/sidebar-content'
+import ThemeToggle from '@/app/components/admin/theme-toggle'
 import { Locale } from '@/i18n-config'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import type { AdminTheme } from '@/lib/admin-theme'
 
 /**
- * 사이드 바 내비게이터
- * @param href
- * @param children
- * @constructor
- */
-function SidebarNavigator({
-  href,
-  children,
-}: {
-  href: string
-  children: ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className={
-        'rounded-lg p-2 px-4 text-lg font-semibold transition-all hover:bg-neutral-200'
-      }
-    >
-      {children}
-    </Link>
-  )
-}
-
-/**
- * 데스크탑 화면에서 보이는 사이드 바
- * @constructor
+ * 데스크탑(lg 이상) 고정 사이드바.
+ *
+ * DESIGN.md의 figure/ground를 따라 사이드바는 `surface`(흰 면),
+ * 페이지 본문은 따뜻한 `canvas`를 씁니다. 경계는 그림자가 아닌 hairline입니다.
+ *
+ * 폭은 `w-64`로, `app/(admin)/admin/layout.tsx`의 `lg:pl-64`와 정확히 맞춥니다.
+ * (이전에는 `w-60` 사이드바에 `lg:pl-64` 본문이라 16px이 어긋나 있었습니다.)
  */
 export default function Sidebar({
   navigations,
   locale,
   resolvedScope,
+  theme,
 }: {
   navigations: NavigationItem[]
   locale: Locale
   resolvedScope: ResolvedAdminGenerationScope
+  theme: AdminTheme
 }) {
   return (
     <div
       className={
-        'fixed top-0 left-0 hidden h-screen w-60 overflow-y-auto bg-neutral-100 p-4 lg:block'
+        'border-hairline bg-surface fixed top-0 left-0 z-20 hidden h-dvh w-64 flex-col border-r lg:flex'
       }
     >
-      {/*관리자 페이지 사이드바 제목*/}
-      <div className={'flex w-full items-center gap-2'}>
-        <GDGLogo className={'w-12'} />
-        <div className={'text-2xl font-bold'}>GYMS</div>
+      <div
+        className={
+          'border-hairline flex h-14 shrink-0 items-center justify-between border-b pr-2 pl-4'
+        }
+      >
+        <AdminBrand locale={locale} />
+        <ThemeToggle theme={theme} />
       </div>
-      <div className={'pt-4'}>
-        <AdminGenerationScopeBar
-          locale={locale}
-          resolvedScope={resolvedScope}
-          variant={'sidebar'}
-        />
-      </div>
-      {/*관리자 페이지 내비게이터 리스트*/}
-      <div className={'flex w-full flex-col gap-2 pt-4'}>
-        {navigations.map((item, i) => (
-          <SidebarNavigator href={item.path} key={i}>
-            {item.name}
-          </SidebarNavigator>
-        ))}
-        <UserAuthControlPanel />
-        <HomePageButton locale={locale} />
-        <RefreshAllDataButton />
-      </div>
+      <SidebarContent
+        navigations={navigations}
+        locale={locale}
+        resolvedScope={resolvedScope}
+      />
     </div>
   )
 }

@@ -18,9 +18,7 @@ export default function AdminGenerationScopeSwitchButton({
   return (
     <button
       type={'button'}
-      className={
-        'rounded-lg bg-neutral-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-400'
-      }
+      className={'admin-btn-primary min-h-9'}
       disabled={isPending}
       onClick={() => {
         startTransition(async () => {

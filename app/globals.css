@@ -1,5 +1,96 @@
 @import 'tailwindcss';
+/* 한글 본문용 Pretendard. unicode-range로 쪼개진 92개 서브셋이라
+   브라우저가 실제 사용된 글자 범위의 청크만 내려받습니다. */
+@import './pretendard.css';
 @plugin "@tailwindcss/typography";
+
+/* 관리자 셸에서만 <html class="dark">로 켜지는 수동 다크 모드.
+   공개 사이트에는 .dark가 붙지 않으므로 영향이 없습니다. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Admin design tokens — app/(admin)/DESIGN.md
+   라이트/다크로 값이 바뀌는 원시 변수를 :root/.dark에 두고,
+   아래 `@theme inline`에서 유틸리티로 노출합니다.
+   `inline`이 없으면 유틸이 var(--color-*)를 그대로 참조해
+   .dark 오버라이드가 상속되지 않습니다.
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --canvas: #f6f5f4; /* DESIGN.md canvas-soft — 따뜻한 종이톤 페이지 바탕 */
+    --surface: #ffffff; /* 카드 · 입력 · 사이드바 */
+    --surface-sunken: #efeeec; /* URL/코드 박스 등 눌린 면 */
+    --ink: #1a1a1a; /* DESIGN.md ink (순검정 95% 근사) */
+    --ink-secondary: #31302e;
+    --ink-muted: #615d59;
+    --ink-faint: #a39e98;
+    --hairline: #e6e6e6;
+    --primary: #0075de; /* 유일한 구조적 액센트 */
+    --primary-active: #005bab;
+    --primary-soft: #e6f1fb;
+    --on-primary: #ffffff;
+    --success: #148a2e;
+    --success-soft: #e8f7ec;
+    --warning: #b34800;
+    --warning-soft: #fdf0e6;
+    --danger: #c92a20;
+    --danger-soft: #fdecea;
+  }
+
+  .dark {
+    --canvas: #18181a;
+    --surface: #212124;
+    --surface-sunken: #2a2a2e;
+    --ink: #f2f1ef;
+    --ink-secondary: #d6d3ce;
+    --ink-muted: #a8a29b;
+    --ink-faint: #7d7873;
+    --hairline: #37373d;
+    --primary: #6bb4f5;
+    --primary-active: #98cbf9;
+    --primary-soft: #16324a;
+    --on-primary: #08192a;
+    --success: #5cd07a;
+    --success-soft: #16301d;
+    --warning: #f2954a;
+    --warning-soft: #34210f;
+    --danger: #f4796a;
+    --danger-soft: #361916;
+  }
+
+  /* 다크 모드에서 네이티브 컨트롤(select 화살표, 스크롤바, 캘린더 피커)도 함께 뒤집습니다. */
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* `.dark`는 `<html>`이 아니라 관리자 서브트리 래퍼에 붙습니다.
+     오버스크롤 영역까지 어둡게 유지하려면 문서 루트도 함께 맞춰야 합니다. */
+  html:has(.dark) {
+    color-scheme: dark;
+    background-color: #18181a;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-hairline: var(--hairline);
+  --color-primary: var(--primary);
+  --color-primary-active: var(--primary-active);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+}
 
 @layer components {
   .button-black {
@@ -105,29 +196,221 @@
     block-size: auto;
     opacity: 1;
   }
-  .admin-title {
-    @apply text-3xl font-bold;
-  }
-  .member-data-box {
-    @apply rounded-lg bg-white p-4;
-  }
-  .member-data-title {
-    @apply text-sm font-semibold text-neutral-600;
-  }
-  .member-data-content {
-    @apply text-lg font-bold break-all;
-  }
-  .member-data-input {
-    @apply w-full rounded-lg border-sky-500 bg-white p-2 px-3 text-lg font-semibold focus:border-2 focus:outline-none;
-  }
-  .member-data-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
-  }
-  .member-data-col-span {
-    @apply col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4;
-  }
   .home-about-box {
     @apply flex flex-col rounded-2xl border-3 p-4 text-lg md:p-0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Admin design system — app/(admin)/DESIGN.md
+   Tailwind v4에서는 `@layer components`의 클래스를 `@apply`로 조합할 수
+   없습니다. 서로 조합되어야 하는 프리미티브는 `@utility`로 등록해
+   `lg:type-heading-1` 같은 variant까지 쓸 수 있게 합니다.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ───────────── Typography scale ───────────── */
+@utility type-heading-1 {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+@utility type-heading-2 {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.23;
+  letter-spacing: -0.625px;
+}
+@utility type-heading-3 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.27;
+  letter-spacing: -0.25px;
+}
+@utility type-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.125px;
+}
+@utility type-body {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+@utility type-body-sm {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.33;
+}
+@utility type-caption {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.43;
+}
+@utility type-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: 0.125px;
+}
+
+/* ───────────── Surfaces ───────────── */
+@utility admin-title {
+  @apply type-heading-2 lg:type-heading-1 text-ink;
+}
+@utility admin-card {
+  @apply border-hairline bg-surface rounded-lg border p-4;
+}
+@utility admin-panel {
+  @apply border-hairline bg-surface shadow-soft rounded-xl border p-6;
+}
+@utility admin-field-label {
+  @apply type-caption text-ink-muted font-semibold;
+}
+@utility admin-field-value {
+  @apply type-title text-ink break-all;
+}
+@utility admin-form-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3;
+}
+@utility admin-form-grid-full {
+  @apply col-span-full;
+}
+
+/* ───────────── Form controls ─────────────
+   기존 `focus:border-2`는 포커스 시 테두리가 1px→2px로 늘어나며
+   레이아웃을 밀어냈습니다. 테두리는 항상 1px로 두고 링으로 표시합니다. */
+@utility admin-input {
+  @apply border-hairline bg-surface text-ink placeholder:text-ink-faint type-body w-full rounded-xs border px-3 py-2 outline-none;
+  @apply transition-[border-color,box-shadow] duration-150;
+  @apply disabled:bg-surface-sunken disabled:text-ink-faint disabled:cursor-not-allowed;
+
+  &:focus,
+  &:focus-visible {
+    @apply border-primary ring-primary/25 ring-2;
+  }
+}
+
+/* ───────────── Buttons ─────────────
+   DESIGN.md: 마케팅용 pill이 아니라 유틸리티 버튼의 8px 반경을 씁니다. */
+@utility admin-btn {
+  @apply type-body-sm inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-md px-4 py-2 font-medium;
+  @apply transition-[background-color,border-color,color,box-shadow,transform] duration-150;
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+@utility admin-btn-primary {
+  @apply admin-btn bg-primary text-on-primary hover:not-disabled:bg-primary-active;
+}
+@utility admin-btn-secondary {
+  @apply admin-btn border-hairline bg-surface text-ink hover:not-disabled:bg-canvas border;
+}
+@utility admin-btn-ghost {
+  @apply admin-btn text-ink-secondary hover:not-disabled:bg-canvas hover:not-disabled:text-ink;
+}
+@utility admin-btn-danger {
+  @apply admin-btn bg-danger text-white hover:not-disabled:brightness-110;
+}
+
+/* ───────────── Badges ───────────── */
+@utility admin-badge {
+  @apply type-eyebrow inline-flex items-center gap-1 rounded-full px-2 py-0.5 whitespace-nowrap;
+}
+@utility admin-badge-neutral {
+  @apply admin-badge bg-surface-sunken text-ink-muted;
+}
+@utility admin-badge-primary {
+  @apply admin-badge bg-primary-soft text-primary;
+}
+@utility admin-badge-success {
+  @apply admin-badge bg-success-soft text-success;
+}
+@utility admin-badge-warning {
+  @apply admin-badge bg-warning-soft text-warning;
+}
+@utility admin-badge-danger {
+  @apply admin-badge bg-danger-soft text-danger;
+}
+
+/* ───────────── Skip link ───────────── */
+@utility admin-skip-link {
+  @apply bg-surface text-ink shadow-elevated sr-only rounded-md px-4 py-2;
+  @apply focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50;
+}
+
+/* ───────────── Responsive data table ─────────────
+   단일 DOM으로 데스크탑은 조밀한 표 행, 모바일은 카드로 리플로우합니다.
+   행 하나당 <a> 하나이므로 링크 중첩 없이 행 전체가 클릭 가능합니다.
+   열 구성은 인라인 스타일 `--admin-table-cols`로 주입합니다. */
+@layer components {
+  .admin-table {
+    @apply border-hairline bg-surface overflow-hidden rounded-xl border;
+  }
+  .admin-table-head {
+    @apply bg-canvas border-hairline type-eyebrow text-ink-muted hidden border-b uppercase;
+    grid-template-columns: var(--admin-table-cols);
+    column-gap: 1rem;
+    padding: 0.625rem 1rem;
+  }
+  .admin-table-body > li + li {
+    @apply border-hairline border-t;
+  }
+  .admin-table-row {
+    @apply text-ink type-body-sm flex flex-col gap-1 px-4 py-3 transition-colors;
+  }
+  .admin-table-row:hover {
+    @apply bg-canvas;
+  }
+  .admin-table-row:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+  .admin-table-cell {
+    @apply text-ink-secondary min-w-0 break-words;
+  }
+  .admin-table-cell[data-label]::before {
+    content: attr(data-label) ' ';
+    @apply type-eyebrow text-ink-faint uppercase;
+  }
+  .admin-table-cell-primary {
+    @apply type-title text-ink;
+  }
+  .admin-table-cell-primary[data-label]::before {
+    content: none;
+  }
+
+  @media (min-width: 64rem) {
+    .admin-table-head {
+      display: grid;
+    }
+    .admin-table-row {
+      display: grid;
+      grid-template-columns: var(--admin-table-cols);
+      column-gap: 1rem;
+      align-items: center;
+    }
+    .admin-table-cell[data-label]::before {
+      content: none;
+    }
+    /* 데스크탑 표에서는 한 행이 한 줄을 유지해야 스캔이 쉽습니다.
+       긴 값(기수 슬러그 등)이 행 높이를 밀어 올리지 않도록 잘라냅니다. */
+    .admin-table-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .admin-table-cell-primary {
+      @apply type-body-sm text-ink font-semibold;
+      white-space: normal;
+    }
   }
 }
 
@@ -158,6 +441,27 @@
 }
 
 @theme {
+  /* DESIGN.md rounded scale — 입력 4px / 메뉴행 5px / 버튼 8px / 카드 12px / 컨테이너 16px */
+  --radius-xs: 4px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* DESIGN.md "barely-there" elevation — 거의 투명한 레이어를 여러 겹 */
+  --shadow-soft:
+    0 0.175px 1.041px rgb(0 0 0 / 0.01), 0 0.8px 2.925px rgb(0 0 0 / 0.02),
+    0 2.025px 7.847px rgb(0 0 0 / 0.027), 0 4px 18px rgb(0 0 0 / 0.04);
+  --shadow-elevated:
+    0 2px 6px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.05),
+    0 23px 52px rgb(0 0 0 / 0.05);
+
+  /* 라틴 글리프는 Google Sans, 한글은 Pretendard가 담당합니다.
+     Google Sans에 한글이 없으므로 브라우저가 자동으로 다음 패밀리로 넘어갑니다. */
+  --font-sans:
+    var(--font-google-sans), 'Pretendard Variable', ui-sans-serif, system-ui,
+    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+
   --color-logo-blue: #4285f4;
   --color-gdg-blue-100: #c3ecf6;
   --color-gdg-blue-200: #57caff;

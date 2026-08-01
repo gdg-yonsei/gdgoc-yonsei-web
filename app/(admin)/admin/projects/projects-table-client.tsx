@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
+import AdminDataTable, {
+  type AdminColumn,
+} from '@/app/components/admin/data-table'
+import AdminEmptyState from '@/app/components/admin/empty-state'
 import { type AdminProjectListItem } from '@/lib/server/fetcher/admin/get-projects'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import {
@@ -102,6 +105,71 @@ export default function ProjectsTableClient({
     compareGroups: compareProjectGroups,
   })
 
+  const columns = useMemo<AdminColumn<AdminProjectListItem>[]>(
+    () => [
+      {
+        key: 'name',
+        header: t.columnName,
+        width: 'minmax(0,2.5fr)',
+        primary: true,
+        render: (project) => (
+          <span className={'flex min-w-0 items-center gap-3'}>
+            <Image
+              src={project.mainImage}
+              alt={''}
+              width={160}
+              height={107}
+              className={
+                'border-hairline aspect-3/2 w-14 shrink-0 rounded-sm border object-cover'
+              }
+              placeholder={'blur'}
+              blurDataURL={'/default-image.png'}
+            />
+            <span className={'flex min-w-0 flex-col'}>
+              <span className={'truncate'}>{project.name}</span>
+              {project.nameKo && (
+                <span className={'type-eyebrow text-ink-muted truncate'}>
+                  {project.nameKo}
+                </span>
+              )}
+            </span>
+          </span>
+        ),
+      },
+      {
+        key: 'generation',
+        header: t.columnGeneration,
+        width: '8rem',
+        hideOnMobile: scope?.kind !== 'all',
+        render: (project) => project.generationName ?? '—',
+      },
+      {
+        key: 'updated',
+        header: t.columnUpdated,
+        width: '9rem',
+        render: (project) =>
+          formatAdminDate(project.updatedAt, locale, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+      },
+      {
+        key: 'created',
+        header: t.columnCreated,
+        width: '9rem',
+        hideOnMobile: true,
+        render: (project) =>
+          formatAdminDate(project.createdAt, locale, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+      },
+    ],
+    [t, locale, scope]
+  )
+
   const handleExportCsv = () => {
     downloadCsv({
       filenamePrefix: 'projects',
@@ -152,86 +220,28 @@ export default function ProjectsTableClient({
       />
 
       {filteredAndSortedProjects.length === 0 ? (
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700 shadow-sm'}>
-          <div className={'font-semibold'}>{t.noScopedResults}</div>
-          <div className={'pt-1 text-sm text-neutral-500'}>
-            {t.noScopedResultsHint}
-          </div>
-        </div>
+        <AdminEmptyState
+          title={t.noScopedResults}
+          description={t.noScopedResultsHint}
+        />
       ) : (
         <div className={'flex flex-col gap-6'}>
           {groupedProjects.map((group) => (
             <div key={group.generationName} className={'flex flex-col gap-2'}>
               {scope?.kind === 'all' && (
-                <div
-                  className={
-                    'border-b border-neutral-200 pb-1 text-sm font-semibold text-neutral-600'
-                  }
-                >
+                <h2 className={'admin-field-label'}>
                   {t.generation}: {group.generationName}
-                </div>
+                </h2>
               )}
-              <div className={'member-data-grid w-full gap-4 pt-2'}>
-                {group.projects.map((project) => (
-                  <Link
-                    href={localizeAdminHref(
-                      `/admin/projects/${project.id}`,
-                      locale
-                    )}
-                    key={project.id}
-                    className={
-                      'flex flex-col rounded-xl border border-neutral-100 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md'
-                    }
-                  >
-                    <Image
-                      src={project.mainImage}
-                      alt={'Main Image'}
-                      width={600}
-                      height={400}
-                      className={'aspect-3/2 w-full rounded-t-xl object-cover'}
-                      placeholder={'blur'}
-                      blurDataURL={'/default-image.png'}
-                    />
-
-                    <div className={'p-4'}>
-                      <div className={'text-xl font-semibold text-neutral-900'}>
-                        {project.name}
-                      </div>
-                      {project.nameKo && (
-                        <div
-                          className={
-                            'pb-4 text-base font-medium text-neutral-600'
-                          }
-                        >
-                          {project.nameKo}
-                        </div>
-                      )}
-                      <div
-                        className={
-                          'flex flex-col gap-0.5 text-xs text-neutral-500'
-                        }
-                      >
-                        <div>
-                          {t.createdAt}:{' '}
-                          {formatAdminDate(project.createdAt, locale, {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </div>
-                        <div>
-                          {t.updatedAt}:{' '}
-                          {formatAdminDate(project.updatedAt, locale, {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <AdminDataTable
+                items={group.projects}
+                caption={`${t.projects} — ${group.generationName}`}
+                getKey={(project) => project.id}
+                getHref={(project) =>
+                  localizeAdminHref(`/admin/projects/${project.id}`, locale)
+                }
+                columns={columns}
+              />
             </div>
           ))}
         </div>

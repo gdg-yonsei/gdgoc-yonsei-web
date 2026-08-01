@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import formatUserName from '@/lib/format-user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { cn } from '@/lib/cn'
 
 type PartOption = {
   id: number
@@ -73,10 +74,14 @@ export default function SessionPartParticipantsInput({
 
       <div
         className={
-          'col-span-1 flex h-56 w-full items-start justify-between gap-4 sm:col-span-3 md:col-span-4 xl:col-span-5'
+          'admin-form-grid-full flex w-full flex-col items-stretch gap-3 lg:h-56 lg:flex-row lg:items-start'
         }
       >
-        <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
+        <div
+          className={
+            'border-hairline bg-surface flex max-h-72 w-full flex-col rounded-lg border p-2 lg:h-full lg:max-h-none'
+          }
+        >
           <p>{t('parts')}</p>
           <div className={'flex-1 overflow-y-auto'}>
             <div className={'flex w-full flex-col gap-2 pt-2'}>
@@ -88,7 +93,13 @@ export default function SessionPartParticipantsInput({
                     setPartId(part.id)
                     setSelectedMembers(part.members.map((member) => member.id))
                   }}
-                  className={`${partId === part.id ? 'bg-neutral-950 text-white' : 'bg-neutral-100'} rounded-lg p-2 text-left`}
+                  aria-pressed={partId === part.id}
+                  className={cn(
+                    'admin-btn w-full justify-start text-left',
+                    partId === part.id
+                      ? 'bg-primary text-on-primary'
+                      : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+                  )}
                 >
                   <div>{part.name}</div>
                   <div className={'text-xs opacity-70'}>
@@ -100,7 +111,11 @@ export default function SessionPartParticipantsInput({
           </div>
         </div>
 
-        <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
+        <div
+          className={
+            'border-hairline bg-surface flex max-h-72 w-full flex-col rounded-lg border p-2 lg:h-full lg:max-h-none'
+          }
+        >
           <p>{t('members')}</p>
           <div className={'flex-1 overflow-y-auto'}>
             <div className={'flex flex-col gap-1 pt-2'}>
@@ -111,7 +126,13 @@ export default function SessionPartParticipantsInput({
                   <button
                     key={member.id}
                     type={'button'}
-                    className={`w-full rounded-lg p-2 text-left ${selected ? 'bg-neutral-950 text-white' : 'bg-neutral-100'}`}
+                    aria-pressed={selected}
+                    className={cn(
+                      'admin-btn w-full justify-start text-left',
+                      selected
+                        ? 'bg-primary text-on-primary'
+                        : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+                    )}
                     onClick={() => {
                       setSelectedMembers((current) =>
                         current.includes(member.id)
@@ -144,10 +165,14 @@ export default function SessionPartParticipantsInput({
 
       <div
         className={
-          'col-span-1 flex h-80 w-full items-start justify-between gap-4 sm:col-span-3 md:col-span-4 xl:col-span-5'
+          'admin-form-grid-full flex w-full flex-col items-stretch gap-3 lg:h-80 lg:flex-row lg:items-start'
         }
       >
-        <div className={'flex h-full w-full flex-col rounded-lg bg-white p-2'}>
+        <div
+          className={
+            'border-hairline bg-surface flex max-h-72 w-full flex-col rounded-lg border p-2 lg:h-full lg:max-h-none'
+          }
+        >
           <p>{t('participants')}</p>
           <div className={'flex-1 overflow-y-auto'}>
             <div
@@ -162,7 +187,13 @@ export default function SessionPartParticipantsInput({
                   <button
                     key={member.id}
                     type={'button'}
-                    className={`w-full rounded-lg border-2 border-neutral-200 p-2 text-left ${selected ? 'bg-neutral-950 text-white' : 'bg-white'}`}
+                    aria-pressed={selected}
+                    className={cn(
+                      'admin-btn w-full justify-start text-left',
+                      selected
+                        ? 'bg-primary text-on-primary'
+                        : 'border-hairline bg-surface text-ink hover:bg-canvas border'
+                    )}
                     onClick={() => {
                       setSelectedMembers((current) =>
                         current.includes(member.id)

@@ -89,25 +89,23 @@ export default async function PartPage({
           dataId={partId}
         />
       </div>
-      <div className={'member-data-grid gap-2'}>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
-            {partData.generation?.name}
-          </div>
+      <div className={'admin-form-grid gap-2'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>{partData.generation?.name}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.description}</div>
-          <div className={'member-data-content'}>{partData.description}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.description}</div>
+          <div className={'admin-field-value'}>{partData.description}</div>
         </div>
-        <div className={'col-span-4'}>
-          <div className={'member-data-title'}>{t.members}</div>
-          <div className={'member-data-grid gap-2'}>
+        <div className={'admin-form-grid-full'}>
+          <div className={'admin-field-label'}>{t.members}</div>
+          <div className={'admin-form-grid gap-2'}>
             {partData.usersToParts
               .filter((userToPart) => userToPart.userType === 'Primary')
               .map((user) => (
-                <div key={user.user.id} className={'member-data-box'}>
-                  <div className={'member-data-content'}>
+                <div key={user.user.id} className={'admin-card'}>
+                  <div className={'admin-field-value'}>
                     {user.user.firstNameKo
                       ? formatUserName(
                           user.user.name,
@@ -127,14 +125,14 @@ export default async function PartPage({
               ))}
           </div>
         </div>
-        <div className={'col-span-4'}>
-          <div className={'member-data-title'}>{t.doubleBoardMembers}</div>
-          <div className={'member-data-grid gap-2'}>
+        <div className={'admin-form-grid-full'}>
+          <div className={'admin-field-label'}>{t.doubleBoardMembers}</div>
+          <div className={'admin-form-grid gap-2'}>
             {partData.usersToParts
               .filter((userToPart) => userToPart.userType === 'Secondary')
               .map((user) => (
-                <div key={user.user.id} className={'member-data-box'}>
-                  <div className={'member-data-content'}>
+                <div key={user.user.id} className={'admin-card'}>
+                  <div className={'admin-field-value'}>
                     {user.user.firstNameKo
                       ? formatUserName(
                           user.user.name,

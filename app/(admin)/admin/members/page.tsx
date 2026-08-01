@@ -1,4 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
+import AdminPageHeader from '@/app/components/admin/page-header'
+import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import MembersTable from '@/app/(admin)/admin/members/members-table'
 import { Suspense } from 'react'
 import Link from 'next/link'
@@ -40,28 +42,22 @@ export default async function MembersPage() {
   ])
 
   return (
-    <AdminDefaultLayout className={'p-4'}>
-      <div className={'flex items-center gap-2 pb-2'}>
-        <div className={'admin-title'}>{t.members}</div>
-        {canAccept && (
-          <Link
-            href={localizeAdminHref('/admin/members/accept', locale)}
-            className={
-              'flex items-center gap-1 rounded-xl bg-neutral-900 p-2 px-3 text-sm text-white transition-all hover:bg-neutral-800'
-            }
-          >
-            <UsersIcon className={'size-5'} />
-            <p>{t.approveMember}</p>
-          </Link>
-        )}
-      </div>
-      <Suspense
-        fallback={
-          <div
-            className={'h-28 w-full animate-pulse rounded-xl bg-neutral-200'}
-          />
+    <AdminDefaultLayout>
+      <AdminPageHeader
+        title={t.members}
+        actions={
+          canAccept && (
+            <Link
+              href={localizeAdminHref('/admin/members/accept', locale)}
+              className={'admin-btn-primary'}
+            >
+              <UsersIcon className={'size-5'} aria-hidden={'true'} />
+              {t.approveMember}
+            </Link>
+          )
         }
-      >
+      />
+      <Suspense fallback={<AdminTableSkeleton />}>
         <MembersTable
           scope={resolvedScope?.scope ?? null}
           locale={locale}

@@ -17,9 +17,7 @@ export default function ResourceImageFields({
 }) {
   return (
     <div
-      className={
-        'member-data-col-span col-span-1 grid grid-cols-1 gap-2 sm:col-span-3 sm:grid-cols-2 md:col-span-4'
-      }
+      className={'admin-form-grid-full grid grid-cols-1 gap-2 sm:grid-cols-2'}
     >
       <div>
         <DataImageInput

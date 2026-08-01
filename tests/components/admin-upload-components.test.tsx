@@ -137,9 +137,9 @@ describe('admin upload components', () => {
       ])
     })
 
-    const deleteButtons = screen
-      .getAllByRole('button')
-      .filter((button) => button.className.includes('bg-red-500'))
+    // 삭제 버튼은 접근 가능한 이름으로 찾습니다. 이전에는 Tailwind 클래스
+    // (`bg-red-500`)로 찾고 있어 색만 바꿔도 테스트가 깨졌습니다.
+    const deleteButtons = screen.getAllByRole('button', { name: 'Delete' })
     fireEvent.click(deleteButtons[0]!)
 
     await waitFor(() => {

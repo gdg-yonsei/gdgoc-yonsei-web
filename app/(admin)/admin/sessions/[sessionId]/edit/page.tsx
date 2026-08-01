@@ -109,7 +109,7 @@ export default async function EditSessionPage({
       </div>
       <DataForm
         action={updateSessionActionWithSessionId}
-        className={'member-data-grid w-full gap-4'}
+        className={'admin-form-grid w-full gap-4'}
       >
         <GenerationField title={t.generation} value={actualGeneration?.name} />
         <BilingualInputField

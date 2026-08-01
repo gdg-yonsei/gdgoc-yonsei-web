@@ -34,15 +34,23 @@ export default function AdminGenerationScopeSelect({
   return (
     <label className={'flex w-full min-w-0 flex-col gap-1'}>
       {showLabel && (
-        <span className={'text-xs font-semibold text-neutral-500'}>
-          {label}
+        <span className={'flex items-baseline justify-between gap-2'}>
+          <span className={'admin-field-label'}>{label}</span>
+          <span
+            aria-live={'polite'}
+            className={'type-eyebrow text-ink-faint font-normal'}
+          >
+            {isPending ? pendingLabel : ''}
+          </span>
         </span>
       )}
+      {/*
+        네이티브 <select>를 유지합니다. e2e 헬퍼가 `aria-label`로 이 요소를 찾아
+        `selectOption()`을 호출하므로 커스텀 리스트박스로 대체하면 안 됩니다.
+      */}
       <select
         aria-label={label}
-        className={
-          'w-full max-w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 transition outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:bg-neutral-100'
-        }
+        className={'admin-input type-body-sm cursor-pointer font-medium'}
         defaultValue={selectedValue}
         disabled={disabled || isPending}
         onChange={(event) => {
@@ -63,9 +71,6 @@ export default function AdminGenerationScopeSelect({
           </option>
         ))}
       </select>
-      <span className={'text-xs text-neutral-500'}>
-        {isPending ? pendingLabel : ''}
-      </span>
     </label>
   )
 }

@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
 import formatUserName from '@/lib/format-user-name'
 import UserProfileImage from '@/app/components/user-profile-image'
+import AdminDataTable, {
+  type AdminColumn,
+} from '@/app/components/admin/data-table'
+import AdminEmptyState from '@/app/components/admin/empty-state'
 import { type AdminMemberListItem } from '@/lib/server/fetcher/admin/get-members'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { localizeAdminHref, type AdminMessages } from '@/lib/admin-i18n'
@@ -151,6 +154,67 @@ export default function MembersTableClient({
     compareGroups: compareMemberGroups,
   })
 
+  const columns = useMemo<AdminColumn<AdminMemberListItem>[]>(
+    () => [
+      {
+        key: 'name',
+        header: t.columnName,
+        width: 'minmax(0,2fr)',
+        primary: true,
+        render: (member) => (
+          <span className={'flex min-w-0 items-center gap-2.5'}>
+            <UserProfileImage
+              src={member.image}
+              alt={''}
+              width={80}
+              height={80}
+              className={'aspect-square w-8 shrink-0 rounded-full object-cover'}
+            />
+            <span className={'flex min-w-0 flex-col'}>
+              {/* e2e가 `getByText(name, { exact: true })`로 찾으므로
+                  이름은 반드시 단일 요소의 텍스트로 남아야 합니다. */}
+              <span className={'truncate'}>{getEnglishMemberName(member)}</span>
+              {getKoreanMemberName(member) && (
+                <span className={'type-eyebrow text-ink-muted truncate'}>
+                  {getKoreanMemberName(member)}
+                </span>
+              )}
+            </span>
+          </span>
+        ),
+      },
+      {
+        key: 'part',
+        header: t.columnPart,
+        width: 'minmax(0,1fr)',
+        render: (member) =>
+          member.part ? (
+            <span className={'admin-badge-primary'}>{member.part}</span>
+          ) : (
+            <span className={'text-ink-faint'}>—</span>
+          ),
+      },
+      {
+        key: 'role',
+        header: t.columnRole,
+        width: '7rem',
+        render: (member) => (
+          <span className={'admin-badge-neutral'}>
+            {member.role.toUpperCase()}
+          </span>
+        ),
+      },
+      {
+        key: 'generation',
+        header: t.columnGeneration,
+        width: '8rem',
+        hideOnMobile: scope?.kind !== 'all',
+        render: (member) => member.generation ?? '—',
+      },
+    ],
+    [t, scope]
+  )
+
   const handleExportCsv = () => {
     downloadCsv({
       filenamePrefix: 'members',
@@ -211,105 +275,28 @@ export default function MembersTableClient({
       />
 
       {filteredAndSortedMembers.length === 0 ? (
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700 shadow-sm'}>
-          <div className={'font-semibold'}>{t.noScopedResults}</div>
-          <div className={'pt-1 text-sm text-neutral-500'}>
-            {t.noScopedResultsHint}
-          </div>
-        </div>
+        <AdminEmptyState
+          title={t.noScopedResults}
+          description={t.noScopedResultsHint}
+        />
       ) : (
-        <div className={'flex flex-col gap-6 pt-2'}>
+        <div className={'flex flex-col gap-6'}>
           {groupedMembers.map((group) => (
             <div key={group.generation} className={'flex flex-col gap-2'}>
               {scope?.kind === 'all' && (
-                <div
-                  className={
-                    'border-b border-neutral-200 pb-1 text-sm font-semibold text-neutral-600'
-                  }
-                >
+                <h2 className={'admin-field-label'}>
                   {t.generation}: {group.generation}
-                </div>
+                </h2>
               )}
-              <div
-                className={
-                  'grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+              <AdminDataTable
+                items={group.members}
+                caption={`${t.members} — ${group.generation}`}
+                getKey={(member) => member.id}
+                getHref={(member) =>
+                  localizeAdminHref(`/admin/members/${member.id}`, locale)
                 }
-              >
-                {group.members.map((member) => (
-                  <Link
-                    href={localizeAdminHref(
-                      `/admin/members/${member.id}`,
-                      locale
-                    )}
-                    key={`${group.generation}-${member.id}`}
-                    className={
-                      'flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md'
-                    }
-                  >
-                    <UserProfileImage
-                      src={member.image}
-                      alt={`${member.name} Profile Image`}
-                      width={100}
-                      height={100}
-                      className={'aspect-square w-14 rounded-full object-cover'}
-                    />
-                    <div className={'min-w-0 flex-1'}>
-                      <div
-                        className={
-                          'truncate text-base font-semibold text-neutral-900'
-                        }
-                      >
-                        {formatUserName(
-                          member.name,
-                          member.firstName,
-                          member.lastName,
-                          member.isForeigner
-                        )}
-                      </div>
-                      <div className={'truncate text-sm text-neutral-500'}>
-                        {member.firstNameKo && member.lastNameKo
-                          ? formatUserName(
-                              member.name,
-                              member.firstNameKo,
-                              member.lastNameKo,
-                              member.isForeigner,
-                              true
-                            )
-                          : ''}
-                      </div>
-                      <div
-                        className={
-                          'flex items-center gap-1.5 pt-1 text-xs text-neutral-600'
-                        }
-                      >
-                        {scope?.kind === 'all' && member?.generation && (
-                          <span
-                            className={'rounded bg-neutral-100 px-1 py-0.5'}
-                          >
-                            {member.generation}
-                          </span>
-                        )}
-                        {member?.part && (
-                          <span
-                            className={
-                              'rounded bg-blue-50 px-1 py-0.5 text-blue-700'
-                            }
-                          >
-                            {member.part}
-                          </span>
-                        )}
-                        <span
-                          className={
-                            'rounded bg-neutral-100 px-1 py-0.5 font-mono'
-                          }
-                        >
-                          {member?.role.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                columns={columns}
+              />
             </div>
           ))}
         </div>

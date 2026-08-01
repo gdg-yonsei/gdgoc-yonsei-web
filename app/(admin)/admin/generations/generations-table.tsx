@@ -1,11 +1,8 @@
 import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
-import Link from 'next/link'
-import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'
-import {
-  getAdminLocale,
-  getAdminMessages,
-  localizeAdminHref,
-} from '@/lib/admin-i18n/server'
+import GenerationsTableClient, {
+  type AdminGenerationListItem,
+} from '@/app/(admin)/admin/generations/generations-table-client'
+import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
  * Generations 를 보여주는 Table 컴포넌트
@@ -18,29 +15,10 @@ export default async function GenerationsTable() {
   const generationsData = await getGenerations()
 
   return (
-    <div className={'member-data-grid w-full gap-2'}>
-      {generationsData.map((generation) => (
-        <Link
-          href={localizeAdminHref(
-            `/admin/generations/${generation.id}`,
-            locale
-          )}
-          key={generation.id}
-          aria-label={`${t.generation}: ${generation.name}`}
-          className={
-            'flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-4'
-          }
-        >
-          <div className={'text-xl font-bold'}>{generation.name}</div>
-          <div>
-            <div className={'text-sm text-neutral-600'}>{t.activityPeriod}</div>
-            <GenerationActivityPeriod
-              startDate={generation.startDate}
-              endDate={generation.endDate}
-            />
-          </div>
-        </Link>
-      ))}
-    </div>
+    <GenerationsTableClient
+      generationsData={generationsData as AdminGenerationListItem[]}
+      locale={locale}
+      t={t}
+    />
   )
 }

@@ -104,7 +104,7 @@ export default async function EditPartPage({
       </div>
       <DataForm
         action={updatePartActionWithPartId}
-        className={'member-data-grid w-full gap-4'}
+        className={'admin-form-grid w-full gap-4'}
       >
         <input
           hidden={true}
@@ -123,13 +123,9 @@ export default async function EditPartPage({
           name={'description'}
           placeholder={'Description'}
         />
-        <div
-          className={
-            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>{actualGeneration?.name}</div>
+        <div className={'admin-form-grid-full admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>{actualGeneration?.name}</div>
         </div>
         <DataSelectMultipleInput
           data={uniqueMembers.map((member) => ({

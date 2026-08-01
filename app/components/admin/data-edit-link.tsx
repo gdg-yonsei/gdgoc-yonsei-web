@@ -45,9 +45,7 @@ export default async function DataEditLink({
       {canEdit && (
         <Link
           href={localizeAdminHref(href, locale)}
-          className={
-            'rounded-lg bg-neutral-900 p-1 px-3 text-white transition-all hover:bg-neutral-800 hover:px-4'
-          }
+          className={'admin-btn-secondary min-h-9 px-3'}
         >
           {t.edit}
         </Link>

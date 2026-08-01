@@ -94,44 +94,42 @@ export default async function SessionPage({
           dataId={sessionId}
         />
       </div>
-      <div className={'member-data-grid gap-2'}>
-        <div className={'member-data-col-span'}>
+      <div className={'admin-form-grid gap-2'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.nameEn}</div>
-                <div className={'member-data-content'}>{sessionData.name}</div>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.nameEn}</div>
+                <div className={'admin-field-value'}>{sessionData.name}</div>
               </div>
             }
             koContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.nameKo}</div>
-                <div className={'member-data-content'}>
-                  {sessionData.nameKo}
-                </div>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.nameKo}</div>
+                <div className={'admin-field-value'}>{sessionData.nameKo}</div>
               </div>
             }
           />
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.part}</div>
-          <div className={'member-data-content'}>{sessionData?.part?.name}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.part}</div>
+          <div className={'admin-field-value'}>{sessionData?.part?.name}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>
             {sessionData?.part?.generation?.name}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.maxCapacity}</div>
-          <div className={'member-data-content'}>{sessionData.maxCapacity}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.maxCapacity}</div>
+          <div className={'admin-field-value'}>{sessionData.maxCapacity}</div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.author}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.author}</div>
+          <div className={'admin-field-value'}>
             {formatUserName(
               sessionData.author?.name,
               sessionData.author?.firstName,
@@ -140,12 +138,12 @@ export default async function SessionPage({
             )}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>
             {t.participants} {sessionData.userToSession.length}/
             {sessionData.maxCapacity}
           </div>
-          <div className={'member-data-content max-h-48 overflow-y-auto'}>
+          <div className={'admin-field-value max-h-48 overflow-y-auto'}>
             {sessionData.userToSession.map((user) => (
               <div key={user.userId}>
                 {user.user.firstNameKo
@@ -166,21 +164,21 @@ export default async function SessionPage({
             ))}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.internalOpen}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.internalOpen}</div>
+          <div className={'admin-field-value'}>
             {sessionData.internalOpen ? t.trueValue : t.falseValue}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.publicOpen}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.publicOpen}</div>
+          <div className={'admin-field-value'}>
             {sessionData.publicOpen ? t.trueValue : t.falseValue}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.sessionType}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.sessionType}</div>
+          <div className={'admin-field-value'}>
             {sessionData.type === 'General Session'
               ? t.generalSession
               : sessionData.type === 'Part Session'
@@ -188,37 +186,37 @@ export default async function SessionPage({
                 : sessionData.type}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.displayOnWebsite}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.displayOnWebsite}</div>
+          <div className={'admin-field-value'}>
             {sessionData.displayOnWebsite ? t.trueValue : t.falseValue}
           </div>
         </div>
-        <div className={'member-data-col-span'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.locationEn}</div>
-                <div className={'member-data-content'}>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.locationEn}</div>
+                <div className={'admin-field-value'}>
                   {sessionData.location}
                 </div>
               </div>
             }
             koContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.locationKo}</div>
-                <div className={'member-data-content'}>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.locationKo}</div>
+                <div className={'admin-field-value'}>
                   {sessionData.locationKo}
                 </div>
               </div>
             }
           />
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.startTime}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.startTime}</div>
+          <div className={'admin-field-value'}>
             {sessionData?.startAt
               ? formatAdminDate(sessionData.startAt, locale, {
                   year: 'numeric',
@@ -230,9 +228,9 @@ export default async function SessionPage({
               : t.tbd}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.endTime}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.endTime}</div>
+          <div className={'admin-field-value'}>
             {sessionData?.endAt
               ? formatAdminDate(sessionData.endAt, locale, {
                   year: 'numeric',
@@ -244,9 +242,9 @@ export default async function SessionPage({
               : t.tbd}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.createdAt}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.createdAt}</div>
+          <div className={'admin-field-value'}>
             {formatAdminDate(sessionData.createdAt, locale, {
               year: 'numeric',
               month: 'long',
@@ -256,9 +254,9 @@ export default async function SessionPage({
             })}
           </div>
         </div>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.updatedAt}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.updatedAt}</div>
+          <div className={'admin-field-value'}>
             {formatAdminDate(sessionData.updatedAt, locale, {
               year: 'numeric',
               month: 'long',
@@ -268,19 +266,19 @@ export default async function SessionPage({
             })}
           </div>
         </div>
-        <div className={'member-data-col-span'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
-              <div className={'member-data-box prose max-w-none'}>
-                <div className={'member-data-title'}>{t.descriptionEn}</div>
+              <div className={'admin-card prose max-w-none'}>
+                <div className={'admin-field-label'}>{t.descriptionEn}</div>
                 <SafeMDX source={sessionData.description!} />
               </div>
             }
             koContent={
-              <div className={'member-data-box prose max-w-none'}>
-                <div className={'member-data-title'}>{t.descriptionKo}</div>
+              <div className={'admin-card prose max-w-none'}>
+                <div className={'admin-field-label'}>{t.descriptionKo}</div>
                 <SafeMDX source={sessionData.descriptionKo!} />
               </div>
             }
@@ -289,10 +287,10 @@ export default async function SessionPage({
       </div>
 
       <div
-        className={'member-data-col-span grid grid-cols-1 gap-2 sm:grid-cols-2'}
+        className={'admin-form-grid-full grid grid-cols-1 gap-2 sm:grid-cols-2'}
       >
         <div className={'mx-auto flex w-full max-w-lg flex-col py-2'}>
-          <div className={'member-data-title'}>{t.mainImage}</div>
+          <div className={'admin-field-label'}>{t.mainImage}</div>
           <Image
             src={sessionData.mainImage}
             alt={sessionData.mainImage}
@@ -304,7 +302,7 @@ export default async function SessionPage({
           />
         </div>
         <div className={'mx-auto flex w-full max-w-lg flex-col py-2'}>
-          <div className={'member-data-title'}>{t.contentImages}</div>
+          <div className={'admin-field-label'}>{t.contentImages}</div>
           {sessionData.images.map((image, index) => (
             <Image
               key={index}
