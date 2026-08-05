@@ -25,11 +25,11 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
-    "@aws-sdk/client-s3": "^3.1100.0",
-    "@aws-sdk/s3-request-presigner": "^3.1100.0",
+    "@aws-sdk/client-s3": "^3.1103.0",
+    "@aws-sdk/s3-request-presigner": "^3.1103.0",
     "@formatjs/intl-localematcher": "^0.6.2",
     "@heroicons/react": "^2.2.0",
-    "@next/third-parties": "^16.2.12",
+    "@next/third-parties": "^16.3.0",
     "@react-email/components": "0.5.3",
     "@simplewebauthn/browser": "9.0.1",
     "@simplewebauthn/server": "9.0.3",
@@ -39,11 +39,11 @@
     "jotai": "^2.20.2",
     "motion": "^12.43.0",
     "negotiator": "^1.0.0",
-    "next": "^16.2.12",
+    "next": "^16.3.0",
     "next-auth": "5.0.0-beta.30",
     "postgres": "^3.4.9",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
     "react-qr-code": "^2.2.0",
     "redis": "^5.12.1",
@@ -60,13 +60,13 @@
     "@tailwindcss/typography": "^0.5.20",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "^14.6.3",
     "@types/negotiator": "^0.6.4",
     "@types/node": "^22.20.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@vitest/coverage-v8": "^4.1.10",
-    "baseline-browser-mapping": "^2.11.8",
+    "baseline-browser-mapping": "^2.11.12",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.39.5",
@@ -85,11 +85,5 @@
   "engines": {
     "node": ">=20.0.0 <=24"
   },
-  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be",
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.2.2",
-      "@types/react-dom": "19.2.2"
-    }
-  }
+  "packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee"
 }

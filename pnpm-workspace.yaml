@@ -1,3 +1,27 @@
+allowBuilds:
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+overrides:
+  '@types/react': 19.2.2
+  '@types/react-dom': 19.2.2
+minimumReleaseAgeExclude:
+  - '@aws-sdk/checksums@3.1000.26'
+  - '@aws-sdk/client-s3@3.1103.0'
+  - '@aws-sdk/core@3.977.6'
+  - '@aws-sdk/credential-provider-env@3.972.67'
+  - '@aws-sdk/credential-provider-http@3.972.69'
+  - '@aws-sdk/credential-provider-ini@3.973.12'
+  - '@aws-sdk/credential-provider-login@3.972.74'
+  - '@aws-sdk/credential-provider-node@3.972.78'
+  - '@aws-sdk/credential-provider-process@3.972.67'
+  - '@aws-sdk/credential-provider-sso@3.973.11'
+  - '@aws-sdk/credential-provider-web-identity@3.972.73'
+  - '@aws-sdk/middleware-sdk-s3@3.972.72'
+  - '@aws-sdk/nested-clients@3.997.41'
+  - '@aws-sdk/s3-request-presigner@3.1103.0'
+  - '@aws-sdk/token-providers@3.1103.0'
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild

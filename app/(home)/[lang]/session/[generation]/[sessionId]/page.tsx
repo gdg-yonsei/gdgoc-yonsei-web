@@ -22,7 +22,7 @@ import JsonLd from '@/app/components/json-ld'
 // Suspense 경계 밖에서 캐시되지 않은 데이터(params, 검증 쿼리)에 접근합니다.
 // cacheComponents 환경에서는 그런 접근이 프리렌더 오류이므로 blocking 라우트로 선언합니다.
 // (`notFound()`는 noindex 404 페이지를 렌더링하지만, 셸이 이미 전송된 뒤라 상태 코드는 200입니다.)
-export const unstable_instant = false
+export const instant = false
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
