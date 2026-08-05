@@ -22,8 +22,3 @@ minimumReleaseAgeExclude:
   - '@aws-sdk/nested-clients@3.997.41'
   - '@aws-sdk/s3-request-presigner@3.1103.0'
   - '@aws-sdk/token-providers@3.1103.0'
-onlyBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - esbuild
-  - sharp
-  - unrs-resolver
