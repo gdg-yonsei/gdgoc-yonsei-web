@@ -1,16 +1,16 @@
 'use server'
 
 import db from '@/db'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import { generations } from '@/db/schema/generations'
 import { generationValidation } from '@/lib/validations/generation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateGenerationPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
+import { parseActionInput } from '@/lib/server/actions/admin'
 
 /**
  * Update Generation Action
@@ -24,38 +24,18 @@ export async function updateGenerationAction(
   formData: FormData
 ) {
   // 사용자 권한 확인
-  const session = await auth()
-  if (
-    !(await handlePermission(
-      session?.user?.id,
-      'put',
-      'generations',
-      generationId
-    ))
-  ) {
-    return forbidden()
+  await requirePermission('put', 'generations', generationId)
+
+  // form data 에서 generation data 추출 후 검증
+  const parsed = parseActionInput(
+    generationValidation,
+    getGenerationFormData(formData)
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
   }
 
-  // form data 에서 generation data 추출
-  const { name, startDate, endDate } = getGenerationFormData(formData)
-
-  // zod validation
-  const parsedGenerationDataResult = generationValidation.safeParse({
-    name,
-    startDate,
-    endDate,
-  })
-
-  if (!parsedGenerationDataResult.success) {
-    console.log(parsedGenerationDataResult.error.issues)
-    return {
-      error:
-        parsedGenerationDataResult.error.issues[0]?.message ??
-        'Validation error',
-    }
-  }
-
-  const parsedGenerationData = parsedGenerationDataResult.data
+  const parsedGenerationData = parsed.data
 
   // generation data 업데이트
   try {

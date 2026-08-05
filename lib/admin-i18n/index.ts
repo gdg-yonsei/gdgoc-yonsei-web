@@ -194,6 +194,7 @@ const adminMessages = {
     errorOccurred: 'Something went wrong',
     errorOccurredHint:
       'The page could not be loaded. Try again, and contact a lead if it keeps happening.',
+    uploadFailed: 'The image could not be uploaded. Please try again.',
     tryAgain: 'Try again',
     noResults: 'No results',
     noResultsHint: 'Try a different search term or filter.',
@@ -414,6 +415,7 @@ const adminMessages = {
     errorOccurred: '문제가 발생했습니다',
     errorOccurredHint:
       '페이지를 불러오지 못했습니다. 다시 시도해 보고, 계속 발생하면 리드에게 알려주세요.',
+    uploadFailed: '이미지를 업로드하지 못했습니다. 다시 시도해 주세요.',
     tryAgain: '다시 시도',
     noResults: '결과가 없습니다',
     noResultsHint: '다른 검색어나 필터를 사용해 보세요.',
@@ -462,10 +464,6 @@ export function localizeAdminHref(href: string, locale: Locale): string {
     return href
   }
   return `/${locale}${href}`
-}
-
-export function getAdminRootPath(locale: Locale): string {
-  return `/${locale}/admin`
 }
 
 export function getAdminIntlLocale(locale: Locale): string {

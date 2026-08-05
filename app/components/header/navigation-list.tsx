@@ -67,9 +67,7 @@ export default function NavigationList({ lang }: { lang: Locale }) {
           <MobileLink
             key={href}
             href={href}
-            isCurrent={
-              pathname === href || pathname.startsWith(`${href}/`)
-            }
+            isCurrent={pathname === href || pathname.startsWith(`${href}/`)}
             onSelect={() => setIsMenuOpen(false)}
           >
             {label}

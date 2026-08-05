@@ -18,7 +18,7 @@ import {
 import {
   authorizeAdminAction,
   deleteRemovedR2Images,
-  getZodActionError,
+  parseActionInput,
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
@@ -36,6 +36,14 @@ export async function updateSessionAction(
 
   if (!authorization.ok) {
     return authorization.response
+  }
+
+  const parsed = parseActionInput(
+    sessionValidation,
+    getSessionFormData(formData)
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
   }
 
   const {
@@ -56,34 +64,7 @@ export async function updateSessionAction(
     participantId,
     type,
     displayOnWebsite,
-  } = getSessionFormData(formData)
-
-  try {
-    sessionValidation.parse({
-      name,
-      nameKo,
-      description,
-      descriptionKo,
-      contentImages,
-      mainImage,
-      startAt,
-      endAt,
-      location,
-      locationKo,
-      maxCapacity,
-      internalOpen,
-      publicOpen,
-      partId,
-      participantId,
-      type,
-      displayOnWebsite,
-    })
-  } catch (err) {
-    const validationError = getZodActionError(err)
-    if (validationError) {
-      return { error: validationError }
-    }
-  }
+  } = parsed.data
 
   try {
     const [previousSession, existingSession, selectedPart] = await Promise.all([
@@ -139,23 +120,25 @@ export async function updateSessionAction(
     await db
       .update(sessions)
       .set({
-        name: name!,
-        nameKo: nameKo!,
+        name,
+        nameKo,
         description: stripHtmlCharacters(description),
         descriptionKo: stripHtmlCharacters(descriptionKo),
         images: contentImages,
-        mainImage: mainImage!,
+        // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
+        // 값이 없으면 넘기지 않고 기존 값을 유지한다.
+        ...(mainImage ? { mainImage } : {}),
         updatedAt: new Date(),
         location,
         locationKo,
         maxCapacity,
-        internalOpen: internalOpen,
-        publicOpen: publicOpen,
-        partId: Number(partId)!,
-        startAt: startAt!,
-        endAt: endAt!,
-        type: type,
-        displayOnWebsite: displayOnWebsite,
+        internalOpen,
+        publicOpen,
+        partId: Number(partId),
+        startAt,
+        endAt,
+        type,
+        displayOnWebsite,
       })
       .where(eq(sessions.id, sessionId))
 

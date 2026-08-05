@@ -68,13 +68,6 @@ const resendEnvSchema = z.object({
   RESEND_API_KEY: requiredStringEnv('RESEND_API_KEY'),
 })
 
-const redisEnvSchema = z.object({
-  REDIS_URL: requiredStringEnv('REDIS_URL').regex(
-    /^redis(s)?:\/\//,
-    'REDIS_URL must start with redis:// or rediss://'
-  ),
-})
-
 type BaseServerEnv = z.infer<typeof baseServerEnvSchema>
 
 let cachedBaseEnv: BaseServerEnv | null = null
@@ -89,10 +82,6 @@ function getBaseServerEnv(): BaseServerEnv {
   }
 
   return cachedBaseEnv
-}
-
-export function getServerEnv() {
-  return getBaseServerEnv()
 }
 
 export function getSiteEnv() {
@@ -117,8 +106,4 @@ export function getR2BucketEnv() {
 
 export function getResendEnv() {
   return resendEnvSchema.parse(getBaseServerEnv())
-}
-
-export function getRedisEnv() {
-  return redisEnvSchema.safeParse(getBaseServerEnv())
 }

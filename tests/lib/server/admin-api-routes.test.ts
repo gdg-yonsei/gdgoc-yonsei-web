@@ -99,9 +99,9 @@ describe('admin api route validations', () => {
 
     expect(response.status).toBe(200)
     expect(json.uploadUrl).toBe('https://upload.example')
-    expect(json.fileName).toMatch(
-      /^https:\/\/cdn\.example\/users\/user-1\/.+\.png$/
-    )
+    // fileName 은 다른 업로드 API 와 동일하게 객체 키만 담는다.
+    // 공개 URL 조합은 lib/upload-image.ts 가 담당한다.
+    expect(json.fileName).toMatch(/^users\/user-1\/.+\.png$/)
   })
 
   it('rejects disallowed member profile image extension', async () => {
@@ -243,7 +243,8 @@ describe('admin api route validations', () => {
     const json = await response.json()
 
     expect(response.status).toBe(200)
-    expect(json.message).toBe('success')
+    // 모든 관리자 API 는 성공을 { success: true } 한 가지 형태로 응답한다.
+    expect(json.success).toBe(true)
     expect(mockR2Send).toHaveBeenCalledTimes(1)
   })
 

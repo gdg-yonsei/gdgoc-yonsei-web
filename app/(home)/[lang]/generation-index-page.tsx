@@ -81,11 +81,11 @@ export default function GenerationIndexPage({
               <li key={generation.id}>
                 <Link
                   href={`/${lang}/${basePath}/${generation.name}`}
-                  className="interactive-card focus-ring group flex min-h-36 h-full flex-col justify-between gap-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm active:scale-[0.98] sm:p-6"
+                  className="interactive-card focus-ring group flex h-full min-h-36 flex-col justify-between gap-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm active:scale-[0.98] sm:p-6"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <span className="mb-3 block size-2.5 rounded-full bg-logo-blue" />
+                      <span className="bg-logo-blue mb-3 block size-2.5 rounded-full" />
                       <h2 className="text-2xl leading-tight font-semibold break-words">
                         {generation.name}
                       </h2>

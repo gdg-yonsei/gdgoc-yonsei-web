@@ -2,6 +2,8 @@
  * @file This file contains a function to extract part data from a FormData object.
  */
 
+import { logger } from '@/lib/server/logger'
+
 function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
   if (typeof value !== 'string' || value.length === 0) {
     return []
@@ -14,7 +16,7 @@ function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
     }
     return parsed.filter((item): item is string => typeof item === 'string')
   } catch (error) {
-    console.error('Failed to parse array field:', error)
+    logger.error('form-data.part', error, { field: 'array' })
     return []
   }
 }

@@ -18,10 +18,6 @@ export type AdminPartListItem = {
   generationName: string | null
 }
 
-export const preloadParts = (scope?: AdminGenerationScope | null) => {
-  void getParts(scope)
-}
-
 export async function getParts(scope?: AdminGenerationScope | null) {
   noStore()
 
