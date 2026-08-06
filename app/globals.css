@@ -295,7 +295,9 @@
 /* ───────────── Buttons ─────────────
    DESIGN.md: 마케팅용 pill이 아니라 유틸리티 버튼의 8px 반경을 씁니다. */
 @utility admin-btn {
-  @apply type-body-sm inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-md px-4 py-2 font-medium;
+  /* 버튼 라벨은 줄바꿈되면 안 됩니다. 좁은 화면에서는 버튼이 쪼그라드는 대신
+     부모가 `flex-wrap`으로 줄을 바꿔야 합니다. */
+  @apply type-body-sm inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md px-4 py-2 font-medium whitespace-nowrap;
   @apply transition-[background-color,border-color,color,box-shadow,transform] duration-150;
   @apply disabled:cursor-not-allowed disabled:opacity-60;
 
