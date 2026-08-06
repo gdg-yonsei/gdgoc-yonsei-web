@@ -96,12 +96,34 @@ const createMotionProxy = () =>
     }
   )
 
-vi.mock('motion/react', () => ({
-  motion: createMotionProxy(),
-  // AnimatePresence는 테스트에서 exit 애니메이션 없이 자식을 그대로 통과시킵니다.
-  AnimatePresence: ({ children }: React.PropsWithChildren) => children,
-  useReducedMotion: () => false,
-}))
+vi.mock('motion/react', () => {
+  const proxy = createMotionProxy()
+  return {
+    motion: proxy,
+    m: proxy,
+    // LazyMotion/AnimatePresence는 테스트에서 애니메이션 없이 자식을 그대로 통과시킵니다.
+    LazyMotion: ({ children }: React.PropsWithChildren) => children,
+    AnimatePresence: ({ children }: React.PropsWithChildren) => children,
+    domAnimation: {},
+    domMax: {},
+    // jsdom에는 뷰포트 관측이 없어 `onViewportEnter`가 발화하지 않습니다.
+    // reduced-motion을 켠 것으로 두면 진입 애니메이션 없이 최종 상태가 바로 렌더됩니다.
+    useReducedMotion: () => true,
+    useScroll: () => ({
+      scrollYProgress: { get: () => 0, on: () => () => {} },
+    }),
+    useTransform: () => 0,
+    // 카운터 애니메이션은 최종값으로 즉시 수렴시킵니다.
+    animate: (
+      _from: number,
+      to: number,
+      options?: { onUpdate?: (value: number) => void }
+    ) => {
+      options?.onUpdate?.(to)
+      return { stop: () => {} }
+    },
+  }
+})
 
 vi.mock('motion/react-client', () => createMotionProxy())
 
@@ -132,6 +154,22 @@ Object.defineProperty(globalThis.HTMLElement.prototype, 'scrollTo', {
   writable: true,
   value: vi.fn(),
 })
+
+if (!window.matchMedia) {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  )
+}
 
 afterEach(() => {
   cleanup()

@@ -17,6 +17,7 @@ import {
 
 const staticPages: SitemapPathEntry[] = [
   { path: '' },
+  { path: '/about' },
   { path: '/calendar' },
   { path: '/member' },
   { path: '/project' },

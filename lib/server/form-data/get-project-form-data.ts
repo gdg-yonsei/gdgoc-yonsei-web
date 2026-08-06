@@ -4,6 +4,15 @@
 
 import { logger } from '@/lib/server/logger'
 
+function getNullableUrl(formData: FormData, key: string): string | null {
+  const value = formData.get(key)
+  if (typeof value !== 'string') {
+    return null
+  }
+  const trimmed = value.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
 /**
  * Extracts project-related data from a FormData object.
  * This function handles both regular fields and JSON string fields for arrays.
@@ -22,6 +31,8 @@ export default function getProjectFormData(formData: FormData): {
   generationId: string | null
   contentImages: string[]
   participants: string[]
+  repoUrl: string | null
+  demoUrl: string | null
 } {
   const name = formData.get('name') as string | null
   const nameKo = formData.get('nameKo') as string | null
@@ -52,6 +63,8 @@ export default function getProjectFormData(formData: FormData): {
   }
 
   const generationId = formData.get('generationId') as string | null
+  const repoUrl = getNullableUrl(formData, 'repoUrl')
+  const demoUrl = getNullableUrl(formData, 'demoUrl')
 
   return {
     name,
@@ -64,5 +77,7 @@ export default function getProjectFormData(formData: FormData): {
     generationId,
     contentImages: contentImagesArray,
     participants: participantsArray,
+    repoUrl,
+    demoUrl,
   }
 }

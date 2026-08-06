@@ -2,6 +2,14 @@ import { z } from 'zod'
 
 const SessionTypeEnum = z.enum(['Part Session', 'General Session'])
 
+const ActivityCategoryEnum = z.enum([
+  'tech_talk',
+  'part_session',
+  'hackathon',
+  'demo_day',
+  'devrel',
+])
+
 export const sessionValidation = z
   .object({
     name: z.string().trim().nonempty('Name is required'),
@@ -34,6 +42,7 @@ export const sessionValidation = z
         message: 'Participant list must be unique.',
       }),
     type: SessionTypeEnum,
+    category: ActivityCategoryEnum,
     displayOnWebsite: z.boolean(),
   })
   .refine((data) => data.startAt < data.endAt, {

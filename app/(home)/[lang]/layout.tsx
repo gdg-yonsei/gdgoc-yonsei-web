@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import '../../globals.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
+import LazyMotionProvider from '@/app/components/motion/lazy-motion-provider'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import languageParamChecker from '@/lib/language-param-checker'
@@ -42,12 +43,21 @@ export async function generateMetadata({
   }
 }
 
-// Google Product Sans 폰트
+// 라틴 본문 서체: Google Sans. 한글은 globals.css가 @import 하는 Pretendard
+// 서브셋(`--font-sans` 스택의 다음 패밀리)이 이어받습니다.
 const googleSans = localFont({
   src: '../../fonts/google-sans.woff2',
   display: 'swap',
-  variable: '--font-sans',
+  variable: '--font-google-sans',
   weight: '100 900',
+})
+
+// 데이터·라벨 서체: JetBrains Mono Variable (self-hosted)
+const jetbrainsMono = localFont({
+  src: '../../fonts/jetbrains-mono-variable.woff2',
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+  weight: '100 800',
 })
 
 export default async function RootLayout({
@@ -60,13 +70,15 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
+      className={`bg-canvas text-ink font-sans ${googleSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body>
-        <Header lang={lang} />
-        <main>{children}</main>
-        <Footer lang={lang} />
+        <LazyMotionProvider>
+          <Header lang={lang} />
+          <main>{children}</main>
+          <Footer lang={lang} />
+        </LazyMotionProvider>
         <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
       </body>
     </html>

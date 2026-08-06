@@ -63,6 +63,7 @@ export async function updateSessionAction(
     partId,
     participantId,
     type,
+    category,
     displayOnWebsite,
   } = parsed.data
 
@@ -138,6 +139,7 @@ export async function updateSessionAction(
         startAt,
         endAt,
         type,
+        category,
         displayOnWebsite,
       })
       .where(eq(sessions.id, sessionId))

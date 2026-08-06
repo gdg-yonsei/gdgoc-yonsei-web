@@ -157,6 +157,8 @@ describe('form-data parsers', () => {
       generationId: '10',
       contentImages: ['/1.png', '/2.png'],
       participants: ['u1', 'u2'],
+      repoUrl: null,
+      demoUrl: null,
     })
   })
 

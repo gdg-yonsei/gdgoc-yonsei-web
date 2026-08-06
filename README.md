@@ -49,7 +49,24 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
    pnpm db:push
    ```
 
-5. Start Development Server
+5. (Optional) Seed local development data
+
+   Populates a **local** Postgres with realistic dev data (1 generation, 7
+   parts, ~60 sessions, 8 projects) so the home Activity Heatmap, projects
+   showcase, and About stats/timeline render with content.
+
+   ```
+   pnpm db:seed
+   ```
+
+   - Re-runnable: only the previous `dev-seed-` marked rows are removed and
+     re-inserted (never `TRUNCATE`).
+   - Local guard: refuses to run unless the DB host is localhost-like; pass
+     `--force` to override for a non-local host.
+   - Playwright e2e (`pnpm test:e2e`) resets the database, so re-run
+     `pnpm db:seed` afterward.
+
+6. Start Development Server
 
    ```
    pnpm dev

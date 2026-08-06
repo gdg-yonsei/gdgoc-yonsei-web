@@ -66,6 +66,8 @@ export async function createProjectAction(
     contentImages,
     participants,
     generationId,
+    repoUrl,
+    demoUrl,
   } = parsed.data
 
   try {
@@ -85,6 +87,8 @@ export async function createProjectAction(
           mainImage,
           content: stripHtmlCharacters(content),
           contentKo: stripHtmlCharacters(contentKo),
+          repoUrl,
+          demoUrl,
         })
         .returning({ id: projects.id })
     )[0]

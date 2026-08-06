@@ -56,6 +56,8 @@ export async function updateProjectAction(
     mainImage,
     participants,
     generationId,
+    repoUrl,
+    demoUrl,
   } = parsed.data
 
   try {
@@ -108,6 +110,8 @@ export async function updateProjectAction(
         images: contentImages,
         mainImage,
         generationId: Number(generationId),
+        repoUrl,
+        demoUrl,
         updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))

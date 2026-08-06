@@ -24,4 +24,10 @@ export const projectValidation = z.object({
     .refine((id) => Number(id) >= 1, {
       message: 'Generation is required',
     }),
+  repoUrl: z
+    .string()
+    .trim()
+    .url('Repository URL must be a valid URL')
+    .nullable(),
+  demoUrl: z.string().trim().url('Demo URL must be a valid URL').nullable(),
 })

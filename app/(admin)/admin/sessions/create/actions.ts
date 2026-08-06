@@ -69,6 +69,7 @@ export async function createSessionAction(
     partId,
     participantId,
     type,
+    category,
     displayOnWebsite,
   } = parsed.data
 
@@ -117,6 +118,7 @@ export async function createSessionAction(
         partId: Number(partId),
         displayOnWebsite,
         type,
+        category,
       })
       .returning({ id: sessions.id })
 

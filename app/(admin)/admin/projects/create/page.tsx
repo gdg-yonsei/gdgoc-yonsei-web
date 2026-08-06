@@ -4,6 +4,7 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import { createProjectAction } from '@/app/(admin)/admin/projects/create/actions'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import DataInput from '@/app/components/admin/data-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
@@ -90,6 +91,20 @@ export default async function CreateProjectPage() {
           koName={'descriptionKo'}
           enPlaceholder={t.descriptionEn}
           koPlaceholder={t.descriptionKo}
+        />
+        <DataInput
+          title={'Repository URL'}
+          defaultValue={null}
+          name={'repoUrl'}
+          placeholder={'https://github.com/gdg-yonsei/...'}
+          type={'url'}
+        />
+        <DataInput
+          title={'Demo URL'}
+          defaultValue={null}
+          name={'demoUrl'}
+          placeholder={'https://...'}
+          type={'url'}
         />
         <GenerationField
           title={t.generation}

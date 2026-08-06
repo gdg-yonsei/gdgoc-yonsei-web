@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useState } from 'react'
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
 
 export default function ShowMoreContent({ children }: { children: ReactNode }) {
@@ -23,7 +23,7 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
           gridTemplateRows: showMore ? '1fr' : '0fr',
         }}
       >
-        <motion.div
+        <m.div
           className="min-h-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: showMore ? 1 : 0 }}
@@ -34,7 +34,7 @@ export default function ShowMoreContent({ children }: { children: ReactNode }) {
           }
         >
           {children}
-        </motion.div>
+        </m.div>
       </div>
       <div className={'not-md:hidden'}>{children}</div>
     </>
