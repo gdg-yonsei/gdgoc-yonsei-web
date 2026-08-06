@@ -2,8 +2,7 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
+import { requireOwnPermission } from '@/lib/server/permission/require-permission'
 import { forbidden, notFound } from 'next/navigation'
 import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
@@ -18,30 +17,14 @@ export const metadata: Metadata = {
   title: 'Edit Profile',
 }
 
-/**
- * `EditProfilePage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function EditProfilePage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  // 사용자 로그인 정보 확인
-  const session = await auth()
-
+  // 본인 프로필이므로 데이터 소유자는 로그인한 사용자 자신이다.
+  const session = await requireOwnPermission('put', 'members')
   const memberId = session?.user?.id
 
-  if (
-    !memberId ||
-    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
-  ) {
+  if (!memberId) {
     return forbidden()
   }
   // Member 정보 가져오기

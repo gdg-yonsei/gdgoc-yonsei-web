@@ -103,20 +103,6 @@ describe('admin fetchers', () => {
     expect(orderBy).toHaveBeenCalledTimes(1)
   })
 
-  it('preloads generations', async () => {
-    const orderBy = vi.fn().mockResolvedValue([])
-    const from = vi.fn().mockReturnValue({ orderBy })
-    mockSelect.mockReturnValue({ from })
-
-    const { preloadAdminGenerations } =
-      await import('@/lib/server/fetcher/admin/get-generations')
-    preloadAdminGenerations()
-
-    await vi.waitFor(() => {
-      expect(orderBy).toHaveBeenCalledTimes(1)
-    })
-  })
-
   it('maps project list items with generation metadata', async () => {
     const createdAt = new Date('2025-01-01T00:00:00.000Z')
     const updatedAt = new Date('2025-01-02T00:00:00.000Z')
@@ -239,19 +225,6 @@ describe('admin fetchers', () => {
     ])
     expect(chain.from).toHaveBeenCalledTimes(1)
     expect(chain.leftJoin).toHaveBeenCalledTimes(3)
-  })
-
-  it('preloads admin members', async () => {
-    const chain = createDistinctOnChainWithOrderByResult([])
-    mockSelectDistinctOn.mockReturnValue(chain)
-
-    const { preloadAdminMembers } =
-      await import('@/lib/server/fetcher/admin/get-members')
-    preloadAdminMembers()
-
-    await vi.waitFor(() => {
-      expect(chain.orderBy).toHaveBeenCalledTimes(1)
-    })
   })
 
   it('fetches sessions as flat list items with part and generation data', async () => {

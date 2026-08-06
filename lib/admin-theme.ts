@@ -2,8 +2,6 @@ export const ADMIN_THEME_COOKIE = 'admin-theme'
 
 export type AdminTheme = 'light' | 'dark'
 
-export const ADMIN_THEMES: readonly AdminTheme[] = ['light', 'dark']
-
 export function isAdminTheme(
   value: string | undefined | null
 ): value is AdminTheme {

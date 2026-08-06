@@ -5,7 +5,7 @@ import QRCodeGenerator from '@/app/components/admin/qr-code-generator'
 import DashboardStats, {
   DashboardStatsSkeleton,
 } from '@/app/(admin)/admin/dashboard-stats'
-import UpcomingSessions from '@/app/(admin)/admin/sessions/upcomingSessions'
+import UpcomingSessions from '@/app/(admin)/admin/sessions/upcoming-sessions'
 import { AdminCardSkeleton } from '@/app/components/admin/skeleton'
 import Link from 'next/link'
 import { eq } from 'drizzle-orm'

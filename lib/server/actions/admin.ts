@@ -54,15 +54,31 @@ export async function authorizeAdminAction({
   }
 }
 
-export function getZodActionError(
-  error: unknown,
+/**
+ * 서버 액션 입력값을 검증하고, **검증을 통과한 값**을 돌려준다.
+ *
+ * 이전에는 각 액션이 `schema.parse()` 를 try/catch 로 감싸고 결과를 버린 뒤
+ * 원본 폼 값을 그대로 DB 에 넣었다. 스키마에 걸린 `.trim()` 이나 `.transform()` 이
+ * 통째로 유실됐고(예: `"  Web  "` 이 공백째로 저장), ZodError 가 아닌 예외는
+ * catch 가 삼킨 뒤 `return` 없이 빠져나가 검증되지 않은 값으로 DB 쓰기까지 진행됐다.
+ *
+ * 검증 결과를 반환값으로 강제해 두 문제를 구조적으로 막는다.
+ */
+export function parseActionInput<Output>(
+  schema: z.ZodType<Output>,
+  input: unknown,
   fallback = 'Validation error'
-) {
-  if (error instanceof z.ZodError) {
-    return error.issues[0]?.message ?? fallback
+): { ok: true; data: Output } | { ok: false; error: string } {
+  const result = schema.safeParse(input)
+
+  if (!result.success) {
+    return {
+      ok: false,
+      error: result.error.issues[0]?.message ?? fallback,
+    }
   }
 
-  return null
+  return { ok: true, data: result.data }
 }
 
 export function stripHtmlCharacters(value: string | null | undefined) {

@@ -15,10 +15,6 @@ export type AdminProjectListItem = {
   generationName: string | null
 }
 
-export const preloadAdminProjects = (scope?: AdminGenerationScope | null) => {
-  void getProjects(scope)
-}
-
 export async function getProjects(scope?: AdminGenerationScope | null) {
   noStore()
 

@@ -21,10 +21,6 @@ export type AdminSessionListItem = {
   generationName: string | null
 }
 
-export const preloadAdminSessions = (scope?: AdminGenerationScope | null) => {
-  void getSessions(scope)
-}
-
 export async function getSessions(scope?: AdminGenerationScope | null) {
   noStore()
 

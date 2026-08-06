@@ -35,15 +35,15 @@
     "@simplewebauthn/server": "9.0.3",
     "@tailwindcss/postcss": "^4.3.3",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.41.0",
+    "drizzle-orm": "^0.45.2",
     "jotai": "^2.20.2",
     "motion": "^12.43.0",
     "negotiator": "^1.0.0",
     "next": "^16.3.0",
-    "next-auth": "5.0.0-beta.30",
+    "next-auth": "5.0.0-beta.32",
     "postgres": "^3.4.9",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-markdown": "^10.1.0",
     "react-qr-code": "^2.2.0",
     "redis": "^5.12.1",
@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
-    "@react-email/preview-server": "4.2.11",
+    "@react-email/preview-server": "5.2.10",
     "@tailwindcss/typography": "^0.5.20",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -68,7 +68,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "baseline-browser-mapping": "^2.11.12",
     "dotenv": "^16.6.1",
-    "drizzle-kit": "^0.30.6",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.0.0",
     "jsdom": "^28.1.0",
@@ -76,14 +76,14 @@
     "pretendard": "^1.3.9",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "react-email": "4.2.11",
+    "react-email": "6.9.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.10"
   },
   "engines": {
-    "node": ">=20.0.0 <=24"
+    "node": ">=22.13.0 <=24"
   },
   "packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee"
 }

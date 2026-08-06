@@ -2,12 +2,11 @@
 
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
 import { memberValidation } from '@/lib/validations/member'
-import { z } from 'zod'
+import { parseActionInput } from '@/lib/server/actions/admin'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateMemberPublicCache } from '@/lib/server/cache'
@@ -26,14 +25,18 @@ export async function updateProfileAction(
   formData: FormData
 ) {
   // 사용자가 member 를 수정할 권한이 있는지 확인
-  const session = await auth()
-  if (
-    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
-  ) {
-    return forbidden()
+  await requirePermission('put', 'members', memberId)
+
+  // form data 에서 member data 추출 후 검증.
+  // 본인 프로필 수정에서는 역할을 바꿀 수 없으므로 role 은 항상 null 로 고정한다.
+  const parsed = parseActionInput(memberValidation, {
+    ...getMemberFormData(formData),
+    role: null,
+  })
+  if (!parsed.ok) {
+    return { error: parsed.error }
   }
 
-  // form data 에서 member data 추출
   const {
     name,
     firstName,
@@ -49,34 +52,8 @@ export async function updateProfileAction(
     telephone,
     isForeigner,
     profileImage,
-  } = getMemberFormData(formData)
+  } = parsed.data
 
-  try {
-    // zod validation
-    memberValidation.parse({
-      name,
-      firstName,
-      firstNameKo,
-      lastName,
-      lastNameKo,
-      email,
-      githubId,
-      instagramId,
-      linkedInId,
-      major,
-      studentId,
-      telephone,
-      isForeigner,
-      profileImage,
-      role: null,
-    })
-  } catch (err) {
-    // 데이터 형식이 맞지 않을 경우 오류 반환
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation error' }
-    }
-  }
   // member data 업데이트 쿼리
   try {
     const generationNames = await getGenerationNamesForUserId(memberId)
