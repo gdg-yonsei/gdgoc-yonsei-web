@@ -33,12 +33,19 @@ test.describe('authenticated admin routes', () => {
     await page.goto('/admin', { waitUntil: 'domcontentloaded' })
 
     await expect(page).toHaveURL(/\/admin$/)
-    await expect(page.getByRole('link', { name: /Generations/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Parts/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Members/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Sessions/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Projects/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /Profile/i })).toBeVisible()
+
+    // 대시보드에도 각 목록으로 가는 통계 타일 링크가 있으므로, 이 테스트가
+    // 검증하려는 대상인 사이드바 내비게이션으로 범위를 좁힙니다.
+    const mainNav = page.getByRole('navigation', { name: 'Main navigation' })
+
+    await expect(
+      mainNav.getByRole('link', { name: /Generations/i })
+    ).toBeVisible()
+    await expect(mainNav.getByRole('link', { name: /Parts/i })).toBeVisible()
+    await expect(mainNav.getByRole('link', { name: /Members/i })).toBeVisible()
+    await expect(mainNav.getByRole('link', { name: /Sessions/i })).toBeVisible()
+    await expect(mainNav.getByRole('link', { name: /Projects/i })).toBeVisible()
+    await expect(mainNav.getByRole('link', { name: /Profile/i })).toBeVisible()
   })
 
   test('all primary admin list pages are reachable', async ({ page }) => {
@@ -61,10 +68,7 @@ test.describe('authenticated admin routes', () => {
   }) => {
     test.setTimeout(90_000)
 
-    const createRoutes = [
-      '/admin/generations/create',
-      '/admin/parts/create',
-    ]
+    const createRoutes = ['/admin/generations/create', '/admin/parts/create']
 
     for (const route of createRoutes) {
       await test.step(route, async () => {
@@ -81,10 +85,7 @@ test.describe('authenticated admin routes', () => {
   }) => {
     test.setTimeout(150_000)
 
-    const createRoutes = [
-      '/admin/sessions/create',
-      '/admin/projects/create',
-    ]
+    const createRoutes = ['/admin/sessions/create', '/admin/projects/create']
 
     for (const route of createRoutes) {
       await test.step(route, async () => {
@@ -127,9 +128,7 @@ test.describe('authenticated admin routes', () => {
     await expectAdminRoutesReachable(page, routes)
   })
 
-  test('seeded member detail/edit pages are reachable', async ({
-    page,
-  }) => {
+  test('seeded member detail/edit pages are reachable', async ({ page }) => {
     test.setTimeout(150_000)
 
     const routes = [

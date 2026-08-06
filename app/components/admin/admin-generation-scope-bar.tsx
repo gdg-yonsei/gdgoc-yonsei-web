@@ -1,4 +1,5 @@
 import AdminGenerationScopeSelect from '@/app/components/admin/admin-generation-scope-select'
+import { cn } from '@/lib/cn'
 import { getAdminMessages } from '@/lib/admin-i18n'
 import { Locale } from '@/i18n-config'
 import {
@@ -20,15 +21,14 @@ export default function AdminGenerationScopeBar({
 
   return (
     <div
-      className={`rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm ${
-        isSidebar ? 'w-full' : ''
-      }`}
+      className={cn(
+        isSidebar
+          ? 'border-hairline bg-canvas w-full rounded-lg border p-3'
+          : 'border-hairline bg-surface shadow-soft rounded-xl border p-4'
+      )}
     >
       {isSidebar ? (
-        <div className={'flex flex-col gap-2'}>
-          <div className={'text-sm font-semibold text-neutral-700'}>
-            {t.generation}
-          </div>
+        <div className={'flex flex-col gap-1.5'}>
           {resolvedScope.options.length > 0 ? (
             <AdminGenerationScopeSelect
               allGenerationsLabel={t.allGenerations}
@@ -37,12 +37,11 @@ export default function AdminGenerationScopeBar({
               options={resolvedScope.options}
               pendingLabel={t.refreshing}
               selectedValue={serializeAdminGenerationScope(resolvedScope.scope)}
-              showLabel={false}
             />
           ) : (
             <div
               className={
-                'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'
+                'bg-surface-sunken text-ink-muted type-caption rounded-md px-3 py-2'
               }
             >
               {t.noAccessibleGenerations}
@@ -67,7 +66,7 @@ export default function AdminGenerationScopeBar({
           ) : (
             <div
               className={
-                'rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-600'
+                'bg-surface-sunken text-ink-muted type-caption rounded-md px-3 py-2'
               }
             >
               {t.noAccessibleGenerations}

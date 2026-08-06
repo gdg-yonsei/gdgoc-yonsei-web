@@ -147,5 +147,20 @@ export async function getSessionById(
       createdAt: true,
       updatedAt: true,
     },
+    with: {
+      part: {
+        columns: {
+          id: true,
+        },
+        with: {
+          generation: {
+            columns: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
   })
 }

@@ -16,31 +16,17 @@ export const metadata: Metadata = {
   title: 'Profile',
 }
 
-/**
- * `ProfilePage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function ProfilePage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
 
   return (
-    <AdminDefaultLayout className={'flex flex-col gap-2 p-4'}>
+    <AdminDefaultLayout>
       <div className={'flex items-center gap-2'}>
         <div className={'admin-title'}>{t.profile}</div>
         <Link
           href={localizeAdminHref('/admin/profile/edit', locale)}
-          className={
-            'flex items-center gap-2 rounded-full bg-neutral-900 p-2 px-4 text-white transition-all hover:bg-neutral-800'
-          }
+          className={'admin-btn-primary'}
         >
           <PencilSquareIcon className={'size-5'} />
           <p>{t.edit}</p>
@@ -48,17 +34,17 @@ export default async function ProfilePage() {
       </div>
       <Suspense
         fallback={
-          <div className={'member-data-grid gap-2 py-4'}>
+          <div className={'admin-form-grid gap-2 py-4'}>
             <div
               className={
-                'mx-auto size-48 animate-pulse rounded-lg bg-neutral-200'
+                'bg-surface-sunken mx-auto size-48 animate-pulse rounded-lg'
               }
             />
             {new Array(11).fill(0).map((_, i) => (
               <div
                 key={i}
                 className={
-                  'h-20 w-full animate-pulse rounded-lg bg-neutral-200'
+                  'bg-surface-sunken h-20 w-full animate-pulse rounded-lg'
                 }
               />
             ))}

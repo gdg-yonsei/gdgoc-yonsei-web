@@ -38,15 +38,10 @@ test.describe('public routes and user interactions', () => {
     }
   })
 
-  test('recruit and freshman OT pages load', async ({ page }) => {
+  test('freshman OT pages load', async ({ page }) => {
     test.setTimeout(90_000)
 
-    const routes = [
-      '/en/recruit',
-      '/ko/recruit',
-      '/en/2026-freshman-ot',
-      '/ko/2026-freshman-ot',
-    ]
+    const routes = ['/en/2026-freshman-ot', '/ko/2026-freshman-ot']
 
     for (const route of routes) {
       await test.step(route, async () => {
@@ -60,7 +55,7 @@ test.describe('public routes and user interactions', () => {
     }
   })
 
-  test('top-level member/project/session routes redirect to latest generation', async ({
+  test('top-level member/project/session routes are stable generation indexes', async ({
     context,
     page,
   }) => {
@@ -68,15 +63,15 @@ test.describe('public routes and user interactions', () => {
 
     const latestGeneration = seededData.generationName
 
-    const redirectTargets = ['member', 'project', 'session']
+    const indexTargets = ['member', 'project', 'session']
 
-    for (const target of redirectTargets) {
+    for (const target of indexTargets) {
       const routePage = await context.newPage()
       await routePage.goto(`/en/${target}`, { waitUntil: 'domcontentloaded' })
-      await expect(routePage).toHaveURL(
-        new RegExp(`/en/${target}/${latestGeneration}$`),
-        { timeout: 15_000 }
-      )
+      await expect(routePage).toHaveURL(new RegExp(`/en/${target}$`))
+      await expect(
+        routePage.locator(`a[href="/en/${target}/${latestGeneration}"]`)
+      ).toBeVisible()
       await routePage.close()
     }
 
@@ -138,15 +133,15 @@ test.describe('public routes and user interactions', () => {
   test('home navigation buttons route to major sections', async ({ page }) => {
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
 
-    await page.locator('a[href^="/en/member/"]').first().click()
-    await expect(page).toHaveURL(/\/en\/member\//)
+    await page.locator('a[href="/en/member"]').first().click()
+    await expect(page).toHaveURL(/\/en\/member$/)
 
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
-    await page.locator('a[href^="/en/project/"]').first().click()
-    await expect(page).toHaveURL(/\/en\/project\//)
+    await page.locator('a[href="/en/project"]').first().click()
+    await expect(page).toHaveURL(/\/en\/project$/)
 
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
-    await page.locator('a[href^="/en/session/"]').first().click()
-    await expect(page).toHaveURL(/\/en\/session\//)
+    await page.locator('a[href="/en/session"]').first().click()
+    await expect(page).toHaveURL(/\/en\/session$/)
   })
 })

@@ -1,11 +1,8 @@
 'use server'
 
-import { auth } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
 import db from '@/db'
 import { parts } from '@/db/schema/parts'
-import { forbidden, redirect } from 'next/navigation'
-import { z } from 'zod'
+import { redirect } from 'next/navigation'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/server/form-data/get-part-form-data'
@@ -14,6 +11,8 @@ import { invalidatePartPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { getGenerationNameById } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { parseActionInput } from '@/lib/server/actions/admin'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 
 /**
  * Create Part Action
@@ -24,49 +23,36 @@ export async function createPartAction(
   _prev: { error: string },
   formData: FormData
 ) {
-  const session = await auth()
-  // 사용자가 part 를 수정할 권한이 있는지 확인
-  if (!(await handlePermission(session?.user?.id, 'put', 'parts'))) {
-    return forbidden()
-  }
+  // 사용자가 part 를 생성할 권한이 있는지 확인
+  const session = await requirePermission('post', 'parts')
 
   if (!session?.user?.id) {
     return { error: 'User not found' }
   }
 
   // form data 에서 part data 추출
+  const formValues = getPartFormData(formData)
+
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (
+    resolvedScope.scope?.kind !== 'generation' ||
+    resolvedScope.scope.generationId !== formValues.generationId
+  ) {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
+
+  const parsed = parseActionInput(partValidation, formValues)
+  if (!parsed.ok) {
+    return { error: parsed.error }
+  }
+
   const {
     name,
     description,
     generationId,
     membersList,
     doubleBoardMembersList,
-  } = getPartFormData(formData)
-
-  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
-  if (
-    resolvedScope.scope?.kind !== 'generation' ||
-    resolvedScope.scope.generationId !== generationId
-  ) {
-    return { error: 'Select a specific generation scope before creating data.' }
-  }
-
-  try {
-    // zod validation
-    partValidation.parse({
-      name,
-      description,
-      generationId,
-      membersList,
-      doubleBoardMembersList,
-    })
-  } catch (err) {
-    // zod validation 에러 처리
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation error' }
-    }
-  }
+  } = parsed.data
 
   try {
     const generation = await getGenerationNameById(generationId)
@@ -75,8 +61,8 @@ export async function createPartAction(
     const createPart = await db
       .insert(parts)
       .values({
-        name: name!,
-        description: description,
+        name,
+        description,
         generationsId: generationId,
       })
       .returning({ id: parts.id })

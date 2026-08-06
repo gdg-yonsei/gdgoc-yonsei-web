@@ -60,6 +60,20 @@ vi.mock('next/link', () => ({
     ),
 }))
 
+/** motion 전용 props는 DOM으로 흘려보내면 React가 unknown-prop 경고를 냅니다. */
+const MOTION_ONLY_PROPS = new Set([
+  'initial',
+  'animate',
+  'exit',
+  'transition',
+  'variants',
+  'whileHover',
+  'whileTap',
+  'whileInView',
+  'layout',
+  'layoutId',
+])
+
 const createMotionProxy = () =>
   new Proxy(
     {},
@@ -70,7 +84,15 @@ const createMotionProxy = () =>
           children,
           ...props
         }: React.PropsWithChildren<Record<string, unknown>>) =>
-          React.createElement(tag, props, children),
+          React.createElement(
+            tag,
+            Object.fromEntries(
+              Object.entries(props).filter(
+                ([key]) => !MOTION_ONLY_PROPS.has(key)
+              )
+            ),
+            children
+          ),
     }
   )
 
@@ -79,15 +101,19 @@ vi.mock('motion/react', () => {
   return {
     motion: proxy,
     m: proxy,
+    // LazyMotion/AnimatePresence는 테스트에서 애니메이션 없이 자식을 그대로 통과시킵니다.
     LazyMotion: ({ children }: React.PropsWithChildren) => children,
     AnimatePresence: ({ children }: React.PropsWithChildren) => children,
     domAnimation: {},
     domMax: {},
+    // jsdom에는 뷰포트 관측이 없어 `onViewportEnter`가 발화하지 않습니다.
+    // reduced-motion을 켠 것으로 두면 진입 애니메이션 없이 최종 상태가 바로 렌더됩니다.
     useReducedMotion: () => true,
     useScroll: () => ({
       scrollYProgress: { get: () => 0, on: () => () => {} },
     }),
     useTransform: () => 0,
+    // 카운터 애니메이션은 최종값으로 즉시 수렴시킵니다.
     animate: (
       _from: number,
       to: number,

@@ -29,7 +29,7 @@ export default function ProgramsSection({ lang }: { lang: Locale }) {
         <Reveal key={program.key}>
           <article
             className={
-              'bg-surface-raised relative h-full overflow-hidden rounded-2xl p-6 pl-7'
+              'bg-surface relative h-full overflow-hidden rounded-2xl p-6 pl-7'
             }
             style={{ contain: 'layout style paint' }}
           >

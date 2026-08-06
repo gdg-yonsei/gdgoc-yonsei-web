@@ -4,20 +4,11 @@ import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
 import { uploadSingleImageState } from '@/lib/atoms'
-import { ProjectMainImagePostRequest } from '@/app/api/admin/projects/main-image/route'
+import { deleteUploadedImage, uploadSingleImage } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
- * `DataImageInput` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
+ * 이미지 한 장을 업로드하고, 공개 URL 을 히든 필드에 실어 폼과 함께 전송한다.
  */
 export default function DataImageInput({
   children,
@@ -37,54 +28,55 @@ export default function DataImageInput({
   const [previewImageUrl, setPreviewImageUrl] = useState(defaultValue)
   const [uploadedImageUrl, setUploadedImageUrl] = useState(defaultValue)
   const [isLoading, setIsLoading] = useAtom(uploadSingleImageState)
+  const [hasFailed, setHasFailed] = useState(false)
   const { t } = useAdminI18n()
 
   /**
-   * 선택한 이미지 파일을 주소로 변환하는 함수
+   * 선택한 이미지 파일을 업로드하고 공개 URL 을 폼 값으로 반영하는 함수
    */
   const saveImgFile = async () => {
-    const fileData = inputRef?.current?.files?.[0]
-    if (fileData) {
-      setIsLoading(true)
+    const fileData = inputRef.current?.files?.[0]
+    if (!fileData) return
+
+    const previousImageUrl = uploadedImageUrl
+
+    setIsLoading(true)
+    setHasFailed(false)
+    try {
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
         setPreviewImageUrl(reader.result as string)
       }
-      if (uploadedImageUrl.includes('https')) {
-        await fetch(baseUrl, {
-          method: 'DELETE',
-          body: JSON.stringify({ imageUrl: uploadedImageUrl }),
+
+      if (previousImageUrl.startsWith('http')) {
+        // 이전 이미지 정리는 실패해도 새 업로드를 막지 않는다.
+        // 최악의 경우 R2 에 고아 객체가 남을 뿐이고, 사용자가 할 수 있는 조치도 없다.
+        await deleteUploadedImage(baseUrl, previousImageUrl).catch((error) => {
+          console.warn('Failed to delete the previous image', error)
         })
       }
-      // upload new image
-      const requestUploadUrl = await fetch(baseUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          fileName: fileData.name,
-          type: fileData.type,
-        } as ProjectMainImagePostRequest),
-      })
-      const { uploadUrl, fileName } = await requestUploadUrl.json()
-      await fetch(uploadUrl, {
-        method: 'PUT',
-        body: fileData,
-      })
-      setUploadedImageUrl(process.env.NEXT_PUBLIC_IMAGE_URL + fileName)
+
+      setUploadedImageUrl(await uploadSingleImage(baseUrl, fileData))
+    } catch (error) {
+      console.error(error)
+      // 업로드에 실패했으면 이전 값을 유지한다.
+      // 깨진 URL 이 폼에 실려 그대로 저장되는 것을 막는 지점이다.
+      setPreviewImageUrl(previousImageUrl)
+      setHasFailed(true)
+    } finally {
       setIsLoading(false)
+      // 같은 파일을 다시 선택해도 onChange 가 동작하도록 리셋
+      if (inputRef.current) inputRef.current.value = ''
     }
   }
 
   return (
-    <div
-      className={'col-span-1 flex flex-col gap-2 sm:col-span-2 lg:col-span-3'}
-    >
-      <div className={'px-1 text-sm font-semibold text-neutral-700'}>
-        {title}
-      </div>
+    <div className={'admin-form-grid-full flex flex-col gap-2'}>
+      <div className={'admin-field-label px-0.5'}>{title}</div>
       <input
         type={'file'}
-        accept={'image'}
+        accept={'image/*'}
         hidden={true}
         ref={inputRef}
         onChange={saveImgFile}
@@ -101,7 +93,7 @@ export default function DataImageInput({
           alt={'Project Main Image'}
           width={600}
           height={400}
-          className={'w-full'}
+          className={'notice-scale-enter w-full'}
           placeholder={'blur'}
           blurDataURL={'/default-image.png'}
         />
@@ -109,11 +101,16 @@ export default function DataImageInput({
       <button
         type={'button'}
         onClick={() => inputRef.current?.click()}
-        className={`rounded-xl p-2 px-3 text-sm text-white ${isLoading ? 'bg-neutral-800' : 'bg-neutral-900'} transition-all`}
+        className={'admin-btn-primary w-fit'}
         disabled={isLoading}
       >
         {isLoading ? t('uploading') : children}
       </button>
+      {hasFailed && (
+        <p role={'alert'} className={'type-caption text-danger font-semibold'}>
+          {t('uploadFailed')}
+        </p>
+      )}
     </div>
   )
 }

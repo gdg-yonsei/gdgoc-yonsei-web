@@ -8,12 +8,11 @@ import type { ActionResult } from '@/lib/server/actions/types'
 import { revalidatePath } from 'next/cache'
 import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
+import { logger } from '@/lib/server/logger'
 
 const deleteBookingSchema = z.object({
   bookingId: z.string().uuid('Invalid booking ID'),
 })
-
-export type DeleteBookingInput = z.infer<typeof deleteBookingSchema>
 
 export async function deleteBookingAction(
   bookingId: string
@@ -59,7 +58,7 @@ export async function deleteBookingAction(
     return { success: true, data: undefined }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('Delete booking failed:', message)
+    logger.error('booking.delete', error)
     return { success: false, error: message || '삭제에 실패했습니다' }
   }
 }

@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
+import { cn } from '@/lib/cn'
 
 /**
- * 관리자 페이지 기본 레이아웃
+ * 관리자 페이지 콘텐츠 컨테이너
  *
- * 모바일에서 상단 바 사이즈 만큼 padding-top 추가
- * 데스크탑에서는 좌측 사이드바 사이즈 만큼 padding-left 추가
+ * 사이드바/앱바/하단 탭 바에 대한 오프셋은 `app/(admin)/admin/layout.tsx`의
+ * `<main>`이 소유합니다. 이 컴포넌트는 페이지 콘텐츠의 세로 리듬만 담당합니다.
  * @param children - 레이아웃에 포함될 컴포넌트
  * @param className - 추가 CSS 클래스
  * @constructor
@@ -17,9 +18,7 @@ export default async function AdminDefaultLayout({
   className?: string
 }) {
   return (
-    <div
-      className={`min-h-screen w-full pt-20 lg:pt-4 lg:pl-64 ${className} p-4`}
-    >
+    <div className={cn('flex w-full flex-col gap-4', className)}>
       {children}
     </div>
   )

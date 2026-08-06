@@ -2,6 +2,8 @@
  * @file This file contains a function to extract project data from a FormData object.
  */
 
+import { logger } from '@/lib/server/logger'
+
 function getNullableUrl(formData: FormData, key: string): string | null {
   const value = formData.get(key)
   if (typeof value !== 'string') {
@@ -46,7 +48,7 @@ export default function getProjectFormData(formData: FormData): {
   try {
     contentImagesArray = JSON.parse(contentImages) as string[]
   } catch (error) {
-    console.error('Failed to parse contentImages:', error)
+    logger.error('form-data.project', error, { field: 'contentImages' })
     // Handle error appropriately, maybe default to an empty array
   }
 
@@ -56,7 +58,7 @@ export default function getProjectFormData(formData: FormData): {
   try {
     participantsArray = JSON.parse(participants) as string[]
   } catch (error) {
-    console.error('Failed to parse participants:', error)
+    logger.error('form-data.project', error, { field: 'participants' })
     // Handle error appropriately
   }
 

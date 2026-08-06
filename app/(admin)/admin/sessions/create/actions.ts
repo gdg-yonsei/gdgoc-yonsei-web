@@ -16,8 +16,8 @@ import { getGenerationNameForPartId } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import {
   authorizeAdminAction,
-  getZodActionError,
   insertRowsIfAny,
+  parseActionInput,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
 
@@ -26,7 +26,7 @@ export async function createSessionAction(
   formData: FormData
 ) {
   const authorization = await authorizeAdminAction({
-    action: 'put',
+    action: 'post',
     resource: 'sessions',
   })
 
@@ -37,6 +37,19 @@ export async function createSessionAction(
   const { session } = authorization
   if (!session?.user?.id) {
     return { error: 'User not found' }
+  }
+
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (resolvedScope.scope?.kind !== 'generation') {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
+
+  const parsed = parseActionInput(
+    sessionValidation,
+    getSessionFormData(formData)
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
   }
 
   const {
@@ -58,47 +71,10 @@ export async function createSessionAction(
     type,
     category,
     displayOnWebsite,
-  } = getSessionFormData(formData)
-
-  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
-  if (resolvedScope.scope?.kind !== 'generation') {
-    return { error: 'Select a specific generation scope before creating data.' }
-  }
-
-  try {
-    sessionValidation.parse({
-      name,
-      nameKo,
-      description,
-      descriptionKo,
-      mainImage,
-      contentImages,
-      startAt,
-      endAt,
-      location,
-      locationKo,
-      maxCapacity,
-      internalOpen,
-      publicOpen,
-      partId,
-      participantId,
-      type,
-      category,
-      displayOnWebsite,
-    })
-  } catch (err) {
-    const validationError = getZodActionError(err)
-    if (validationError) {
-      return { error: validationError }
-    }
-  }
+  } = parsed.data
 
   let sessionId = ''
   try {
-    if (!name || !description) {
-      return { error: 'Name and Description are required' }
-    }
-
     const [selectedPart, nextGenerationName] = await Promise.all([
       db.query.parts.findFirst({
         where: eq(parts.id, Number(partId)),
@@ -123,24 +99,26 @@ export async function createSessionAction(
     const createSession = await db
       .insert(sessions)
       .values({
-        name: name,
-        nameKo: nameKo!,
+        name,
+        nameKo,
         description: stripHtmlCharacters(description),
         descriptionKo: stripHtmlCharacters(descriptionKo),
         authorId: session.user.id,
         images: contentImages,
-        ...(mainImage ? { mainImage: mainImage } : {}),
-        startAt: startAt,
-        endAt: endAt,
-        location: location!,
-        locationKo: locationKo!,
-        maxCapacity: maxCapacity,
-        internalOpen: internalOpen,
-        publicOpen: publicOpen,
+        // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
+        // 값이 없으면 넘기지 않고 컬럼 기본값을 그대로 쓴다.
+        ...(mainImage ? { mainImage } : {}),
+        startAt,
+        endAt,
+        location,
+        locationKo,
+        maxCapacity,
+        internalOpen,
+        publicOpen,
         partId: Number(partId),
-        displayOnWebsite: displayOnWebsite,
-        type: type,
-        category: category,
+        displayOnWebsite,
+        type,
+        category,
       })
       .returning({ id: sessions.id })
 
@@ -168,7 +146,7 @@ export async function createSessionAction(
     return { error: 'DB Update Error' }
   }
 
-  if (internalOpen && endAt && endAt > new Date()) {
+  if (internalOpen && endAt > new Date()) {
     const partGeneration = await db.query.parts.findFirst({
       where: eq(parts.id, Number(partId)),
       with: {
@@ -225,10 +203,10 @@ export async function createSessionAction(
           subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
           react: NewSession({
             session: {
-              name: name,
-              location: locationKo!,
-              startAt: startAt ? startAt?.toISOString() : 'TBD',
-              endAt: endAt ? endAt?.toISOString() : 'TBD',
+              name,
+              location: locationKo,
+              startAt: startAt.toISOString(),
+              endAt: endAt.toISOString(),
               leftCapacity: maxCapacity - participantId.length,
             },
             part: partGeneration.name,

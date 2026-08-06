@@ -165,6 +165,69 @@ const adminMessages = {
     sortByDate: 'Date',
     sortByUpdated: 'Last Updated',
     sortByCreated: 'Last Created',
+
+    // ── Shell / chrome ──
+    skipToContent: 'Skip to content',
+    mainNavigation: 'Main navigation',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    menu: 'Menu',
+    more: 'More',
+    theme: 'Theme',
+    lightMode: 'Switch to light mode',
+    darkMode: 'Switch to dark mode',
+    account: 'Account',
+
+    // ── Dashboard ──
+    dashboard: 'Dashboard',
+    overview: 'Overview',
+    totalMembers: 'Members',
+    totalSessions: 'Sessions',
+    totalProjects: 'Projects',
+    totalParts: 'Parts',
+    quickActions: 'Quick actions',
+    pendingApprovals: 'Pending approvals',
+    viewAll: 'View all',
+    tools: 'Tools',
+
+    // ── States ──
+    errorOccurred: 'Something went wrong',
+    errorOccurredHint:
+      'The page could not be loaded. Try again, and contact a lead if it keeps happening.',
+    uploadFailed: 'The image could not be uploaded. Please try again.',
+    tryAgain: 'Try again',
+    noResults: 'No results',
+    noResultsHint: 'Try a different search term or filter.',
+    loading: 'Loading',
+    required: 'Required',
+    optional: 'Optional',
+
+    // ── Table headers ──
+    columnName: 'Name',
+    columnPart: 'Part',
+    columnRole: 'Role',
+    columnGeneration: 'Generation',
+    columnStudentId: 'Student ID',
+    columnUpdated: 'Updated',
+    columnCreated: 'Created',
+    columnAuthor: 'Author',
+    columnSchedule: 'Schedule',
+    columnLocation: 'Location',
+    columnCapacity: 'Capacity',
+    columnVisibility: 'Visibility',
+    columnPeriod: 'Period',
+    columnMembers: 'Members',
+    columnStatus: 'Status',
+
+    // ── Bilingual panel ──
+    written: 'Done',
+    notWritten: 'Missing',
+
+    // ── Sign in ──
+    signInTitle: 'GDGoC Yonsei',
+    signInSubtitle: 'Management System',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Terms of Service',
   },
   ko: {
     confirm: '확인',
@@ -323,6 +386,69 @@ const adminMessages = {
     sortByDate: '날짜순',
     sortByUpdated: '최근 수정순',
     sortByCreated: '최근 생성순',
+
+    // ── Shell / chrome ──
+    skipToContent: '본문으로 건너뛰기',
+    mainNavigation: '주요 메뉴',
+    openMenu: '메뉴 열기',
+    closeMenu: '메뉴 닫기',
+    menu: '메뉴',
+    more: '더보기',
+    theme: '테마',
+    lightMode: '라이트 모드로 전환',
+    darkMode: '다크 모드로 전환',
+    account: '계정',
+
+    // ── Dashboard ──
+    dashboard: '대시보드',
+    overview: '한눈에 보기',
+    totalMembers: '멤버',
+    totalSessions: '세션',
+    totalProjects: '프로젝트',
+    totalParts: '파트',
+    quickActions: '빠른 작업',
+    pendingApprovals: '승인 대기',
+    viewAll: '전체 보기',
+    tools: '도구',
+
+    // ── States ──
+    errorOccurred: '문제가 발생했습니다',
+    errorOccurredHint:
+      '페이지를 불러오지 못했습니다. 다시 시도해 보고, 계속 발생하면 리드에게 알려주세요.',
+    uploadFailed: '이미지를 업로드하지 못했습니다. 다시 시도해 주세요.',
+    tryAgain: '다시 시도',
+    noResults: '결과가 없습니다',
+    noResultsHint: '다른 검색어나 필터를 사용해 보세요.',
+    loading: '불러오는 중',
+    required: '필수',
+    optional: '선택',
+
+    // ── Table headers ──
+    columnName: '이름',
+    columnPart: '파트',
+    columnRole: '권한',
+    columnGeneration: '기수',
+    columnStudentId: '학번',
+    columnUpdated: '수정일',
+    columnCreated: '생성일',
+    columnAuthor: '작성자',
+    columnSchedule: '일정',
+    columnLocation: '장소',
+    columnCapacity: '정원',
+    columnVisibility: '공개',
+    columnPeriod: '활동 기간',
+    columnMembers: '멤버',
+    columnStatus: '상태',
+
+    // ── Bilingual panel ──
+    written: '작성됨',
+    notWritten: '미작성',
+
+    // ── Sign in ──
+    signInTitle: 'GDGoC Yonsei',
+    signInSubtitle: 'Management System',
+    privacyPolicy: '개인정보 처리방침',
+    termsOfService: '이용약관',
   },
 } as const satisfies Record<Locale, Record<string, string>>
 
@@ -338,10 +464,6 @@ export function localizeAdminHref(href: string, locale: Locale): string {
     return href
   }
   return `/${locale}${href}`
-}
-
-export function getAdminRootPath(locale: Locale): string {
-  return `/${locale}/admin`
 }
 
 export function getAdminIntlLocale(locale: Locale): string {

@@ -10,11 +10,7 @@ export default function GenerationField({
   inputValue?: string | number | null
 }) {
   return (
-    <div
-      className={
-        'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
-      }
-    >
+    <div className={'admin-form-grid-full admin-card'}>
       {inputName && inputValue != null && (
         <input
           hidden={true}
@@ -23,8 +19,8 @@ export default function GenerationField({
           value={String(inputValue)}
         />
       )}
-      <div className={'member-data-title'}>{title}</div>
-      <div className={'member-data-content'}>{value}</div>
+      <div className={'admin-field-label'}>{title}</div>
+      <div className={'admin-field-value'}>{value}</div>
     </div>
   )
 }

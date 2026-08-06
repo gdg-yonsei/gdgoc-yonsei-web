@@ -17,18 +17,6 @@ import {
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
-/**
- * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
 export async function generateMetadata({
   params,
 }: {
@@ -43,18 +31,6 @@ export async function generateMetadata({
   }
 }
 
-/**
- * `ProjectPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function ProjectPage({
   params,
 }: {
@@ -101,7 +77,7 @@ export default async function ProjectPage({
             href={`/ko/project/${projectData.generation.name}/${projectId}`}
             target={'_blank'}
             rel={'noreferrer noopener'}
-            className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
+            className={'bg-primary rounded-lg p-1 px-3 text-sm text-white'}
           >
             {t.viewPublishedKo}
           </Link>
@@ -109,55 +85,53 @@ export default async function ProjectPage({
             href={`/en/project/${projectData.generation.name}/${projectId}`}
             target={'_blank'}
             rel={'noreferrer noopener'}
-            className={'rounded-lg bg-sky-700 p-1 px-3 text-sm text-white'}
+            className={'bg-primary rounded-lg p-1 px-3 text-sm text-white'}
           >
             {t.viewPublishedEn}
           </Link>
         </div>
       </div>
-      <div className={'member-data-grid gap-2'}>
-        <div className={'member-data-box'}>
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
+      <div className={'admin-form-grid gap-2'}>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>
             {projectData.generation?.name}
           </div>
         </div>
-        <div className={'member-data-col-span'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.nameEn}</div>
-                <div className={'member-data-content'}>{projectData.name}</div>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.nameEn}</div>
+                <div className={'admin-field-value'}>{projectData.name}</div>
               </div>
             }
             koContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.nameKo}</div>
-                <div className={'member-data-content'}>
-                  {projectData.nameKo}
-                </div>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.nameKo}</div>
+                <div className={'admin-field-value'}>{projectData.nameKo}</div>
               </div>
             }
           />
         </div>
-        <div className={'member-data-col-span'}>
+        <div className={'admin-form-grid-full'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.descriptionEn}</div>
-                <div className={'member-data-content'}>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.descriptionEn}</div>
+                <div className={'admin-field-value'}>
                   {projectData.description}
                 </div>
               </div>
             }
             koContent={
-              <div className={'member-data-box'}>
-                <div className={'member-data-title'}>{t.descriptionKo}</div>
-                <div className={'member-data-content'}>
+              <div className={'admin-card'}>
+                <div className={'admin-field-label'}>{t.descriptionKo}</div>
+                <div className={'admin-field-value'}>
                   {projectData.descriptionKo}
                 </div>
               </div>
@@ -165,11 +139,11 @@ export default async function ProjectPage({
           />
         </div>
 
-        <div className={'member-data-col-span'}>
-          <div className={'member-data-title'}>{t.participants}</div>
-          <div className={'member-data-grid gap-2'}>
+        <div className={'admin-form-grid-full'}>
+          <div className={'admin-field-label'}>{t.participants}</div>
+          <div className={'admin-form-grid gap-2'}>
             {projectData.usersToProjects.map((user) => (
-              <div key={user.user.id} className={'member-data-box'}>
+              <div key={user.user.id} className={'admin-card'}>
                 {formatUserName(
                   user.user.name,
                   user.user.firstName,
@@ -182,11 +156,11 @@ export default async function ProjectPage({
         </div>
         <div
           className={
-            'member-data-col-span grid grid-cols-1 gap-2 sm:grid-cols-2'
+            'admin-form-grid-full grid grid-cols-1 gap-2 sm:grid-cols-2'
           }
         >
           <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
-            <div className={'member-data-title'}>{t.mainImage}</div>
+            <div className={'admin-field-label'}>{t.mainImage}</div>
             <Image
               src={projectData.mainImage}
               alt={projectData.mainImage}
@@ -198,7 +172,7 @@ export default async function ProjectPage({
             />
           </div>
           <div className={'mx-auto flex w-full max-w-lg flex-col gap-2'}>
-            <div className={'member-data-title'}>{t.contentImages}</div>
+            <div className={'admin-field-label'}>{t.contentImages}</div>
             {projectData.images.map((image, index) => (
               <Image
                 key={index}
@@ -213,19 +187,19 @@ export default async function ProjectPage({
             ))}
           </div>
         </div>
-        <div className={'member-data-col-span py-8'}>
+        <div className={'admin-form-grid-full py-8'}>
           <BilingualPanel
             enTitle={t.english}
             koTitle={t.korean}
             enContent={
               <div className={'prose w-full max-w-none'}>
-                <div className={'member-data-title'}>{t.contentEn}</div>
+                <div className={'admin-field-label'}>{t.contentEn}</div>
                 <SafeMDX source={projectData.content} />
               </div>
             }
             koContent={
               <div className={'prose w-full max-w-none'}>
-                <div className={'member-data-title'}>{t.contentKo}</div>
+                <div className={'admin-field-label'}>{t.contentKo}</div>
                 <SafeMDX source={projectData.contentKo} />
               </div>
             }

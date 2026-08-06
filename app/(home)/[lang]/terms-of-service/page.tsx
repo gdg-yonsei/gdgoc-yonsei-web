@@ -1,38 +1,30 @@
 import languageParamChecker from '@/lib/language-param-checker'
+import type { Metadata } from 'next'
+import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
-/**
- * `generateStaticParams` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
+type Props = {
+  params: Promise<{ lang: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = languageParamChecker((await params).lang)
+
+  return createLocalizedMetadata({
+    locale,
+    path: '/terms-of-service',
+    title: locale === 'ko' ? '이용약관' : 'Terms of Service',
+    description:
+      locale === 'ko'
+        ? 'GDGoC Yonsei 웹사이트와 회원 서비스 이용에 적용되는 조건, 이용자와 운영진의 권리 및 의무, 책임과 정책을 확인하세요.'
+        : 'Review the terms governing the GDGoC Yonsei website and member services, including user responsibilities, community rules, rights, and policies.',
+  })
+}
+
 export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
 }
 
-/**
- * `TermsOfServicePage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
-export default async function TermsOfServicePage({
-  params,
-}: {
-  params: Promise<{ lang: string }>
-}) {
+export default async function TermsOfServicePage({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
   const isKorean = lang === 'ko'
 
@@ -42,9 +34,9 @@ export default async function TermsOfServicePage({
         <article className="card rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
           {/* Intro */}
           <section className="mb-8 space-y-4">
-            <h2 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight">
               {isKorean ? '웹사이트 이용약관' : 'Website Terms of Service'}
-            </h2>
+            </h1>
             <p className="leading-7">
               {isKorean ? (
                 <>
@@ -74,9 +66,9 @@ export default async function TermsOfServicePage({
 
           {/* Purpose */}
           <section id="purpose" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean ? '제1조 (목적)' : 'Article 1 (Purpose)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '본 약관은 ‘GDGoC Yonsei’가 제공하는 모든 서비스의 이용 조건 및 절차, 회원과 ‘GDGoC Yonsei’의 권리, 의무, 책임사항과 기타 필요한 사항을 규정함을 목적으로 합니다.'
@@ -86,9 +78,9 @@ export default async function TermsOfServicePage({
 
           {/* Membership */}
           <section id="membership" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean ? '제2조 (회원가입)' : 'Article 2 (Membership)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '회원으로 가입하고자 하는 자는 ‘GDGoC Yonsei’가 정한 가입 양식에 따라 회원 정보를 기입하고 약관에 동의해야 합니다.'
@@ -98,11 +90,11 @@ export default async function TermsOfServicePage({
 
           {/* Obligations */}
           <section id="obligations" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean
                 ? '제3조 (회원의 의무)'
                 : 'Article 3 (Member Obligations)'}
-            </h3>
+            </h2>
             <ul className="list-disc space-y-2 pl-5 leading-7">
               {isKorean ? (
                 <>
@@ -135,11 +127,11 @@ export default async function TermsOfServicePage({
 
           {/* Privacy */}
           <section id="privacy" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean
                 ? '제4조 (개인정보보호)'
                 : 'Article 4 (Privacy Protection)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '‘GDGoC Yonsei’는 회원의 개인정보를 보호하며, 관련 법령에 따라 개인정보처리방침을 따릅니다.'
@@ -149,9 +141,9 @@ export default async function TermsOfServicePage({
 
           {/* Service Use */}
           <section id="service-use" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean ? '제5조 (서비스 이용)' : 'Article 5 (Use of Service)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '서비스의 이용은 연중무휴, 1일 24시간을 원칙으로 합니다. 다만, 시스템 점검이나 기술적 사유로 서비스 이용이 제한될 수 있습니다.'
@@ -161,11 +153,11 @@ export default async function TermsOfServicePage({
 
           {/* Suspension */}
           <section id="suspension" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean
                 ? '제6조 (서비스 제공의 중지)'
                 : 'Article 6 (Suspension of Service)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '‘GDGoC Yonsei’는 다음 각 호에 해당하는 경우 서비스 제공을 중지할 수 있습니다: 시스템 점검, 장애, 불가항력 사유.'
@@ -175,11 +167,11 @@ export default async function TermsOfServicePage({
 
           {/* Termination */}
           <section id="termination" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean
                 ? '제7조 (이용계약 해지 및 제한)'
                 : 'Article 7 (Termination and Restrictions)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '회원이 본 약관을 위반하거나 서비스 운영을 방해한 경우 ‘GDGoC Yonsei’는 사전 통보 없이 이용계약을 해지하거나 서비스 이용을 제한할 수 있습니다.'
@@ -189,9 +181,9 @@ export default async function TermsOfServicePage({
 
           {/* Copyright */}
           <section id="copyright" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean ? '제8조 (저작권)' : 'Article 8 (Copyright)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '서비스에 게재된 모든 콘텐츠에 대한 저작권은 ‘GDGoC Yonsei’ 또는 해당 저작권자에게 있으며, 무단 복제 및 배포를 금합니다.'
@@ -201,9 +193,9 @@ export default async function TermsOfServicePage({
 
           {/* Changes */}
           <section id="changes" className="mb-10 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean ? '제9조 (약관의 변경)' : 'Article 9 (Amendments)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '‘GDGoC Yonsei’는 필요 시 약관을 변경할 수 있으며, 변경된 약관은 공지사항을 통해 회원에게 안내됩니다.'
@@ -213,11 +205,11 @@ export default async function TermsOfServicePage({
 
           {/* Law & Jurisdiction */}
           <section id="law" className="mb-6 scroll-mt-24">
-            <h3 className="mb-3 text-xl font-semibold">
+            <h2 className="mb-3 text-xl font-semibold">
               {isKorean
                 ? '제10조 (준거법 및 재판관할)'
                 : 'Article 10 (Governing Law and Jurisdiction)'}
-            </h3>
+            </h2>
             <p className="leading-7">
               {isKorean
                 ? '‘GDGoC Yonsei’와 회원 간에 발생한 분쟁에 대하여는 대한민국 법을 준거법으로 합니다. 본 약관과 관련하여 발생하는 모든 분쟁은 서울중앙지방법원을 전속 관할 법원으로 합니다.'
@@ -226,11 +218,11 @@ export default async function TermsOfServicePage({
             <div className="mt-4 rounded-xl bg-gray-50 p-4 text-sm ring-1 ring-gray-200">
               <p>
                 <strong>{isKorean ? '공고일자:' : 'Date of Notice:'}</strong>{' '}
-                2025년 8월 27일
+                {isKorean ? '2025년 8월 27일' : 'August 27, 2025'}
               </p>
               <p>
                 <strong>{isKorean ? '시행일자:' : 'Effective Date:'}</strong>{' '}
-                2025년 8월 27일
+                {isKorean ? '2025년 8월 27일' : 'August 27, 2025'}
               </p>
             </div>
           </section>

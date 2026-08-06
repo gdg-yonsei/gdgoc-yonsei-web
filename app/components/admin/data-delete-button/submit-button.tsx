@@ -50,7 +50,7 @@ export default function SubmitButton({
       >
         {pending ? (
           <LoadingSpinner
-            className={'size-6 border-2 border-neutral-700 border-t-white'}
+            className={'border-hairline size-6 border-2 border-t-white'}
           />
         ) : (
           ''

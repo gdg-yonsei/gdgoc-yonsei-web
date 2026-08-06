@@ -1,3 +1,7 @@
+'use client'
+
+import { useId } from 'react'
+
 /**
  * Textarea input component
  * @param defaultValue - 기본값
@@ -14,13 +18,16 @@ export default function DataTextarea({
   name: string
   placeholder: string
 }) {
+  const inputId = useId()
+
   return (
-    <div className={'col-span-1 flex flex-col sm:col-span-2 xl:col-span-3'}>
-      <p className={'px-1 text-sm font-semibold text-neutral-700'}>
+    <div className={'admin-form-grid-full flex flex-col gap-1'}>
+      <label htmlFor={inputId} className={'admin-field-label px-0.5'}>
         {placeholder}
-      </p>
+      </label>
       <textarea
-        className={'member-data-input h-60'}
+        id={inputId}
+        className={'admin-input min-h-40 resize-y'}
         defaultValue={defaultValue ? defaultValue : ''}
         name={name}
         placeholder={placeholder}

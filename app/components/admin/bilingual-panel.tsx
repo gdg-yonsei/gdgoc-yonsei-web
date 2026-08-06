@@ -5,10 +5,12 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
 } from 'react'
+import { cn } from '@/lib/cn'
 
 export default function BilingualPanel({
   enTitle,
@@ -32,6 +34,7 @@ export default function BilingualPanel({
   fieldLabel?: string
 }) {
   const { locale, t } = useAdminI18n()
+  const panelId = useId()
   const panelRef = useRef<HTMLDivElement | null>(null)
   const [selected, setSelected] = useState<'en' | 'ko'>(
     locale === 'ko' ? 'ko' : 'en'
@@ -133,8 +136,8 @@ export default function BilingualPanel({
     return `${label}: Please fill the ${missingLanguages.join(', ')} version.`
   }, [completion.en, completion.ko, fieldLabel, hasMissingLanguage, locale, t])
 
-  const statusDoneText = locale === 'ko' ? '작성됨' : 'Done'
-  const statusMissingText = locale === 'ko' ? '미작성' : 'Missing'
+  const statusDoneText = t('written')
+  const statusMissingText = t('notWritten')
 
   return (
     <div
@@ -150,76 +153,76 @@ export default function BilingualPanel({
       data-bilingual-field-label={fieldLabel}
     >
       <div className={'flex flex-wrap items-center gap-2 pb-2'}>
-        <div className={'member-data-title'}>{t('language')}</div>
-        <button
-          type={'button'}
-          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors ${
-            selected === 'en'
-              ? 'border-neutral-900 bg-neutral-900 text-white'
-              : completion.en || !requiredBoth
-                ? 'border-emerald-500 bg-white text-emerald-700'
-                : 'border-red-400 bg-red-50 text-red-700'
-          }`}
-          onClick={() => setSelected('en')}
+        <div className={'admin-field-label'} id={`${panelId}-lang`}>
+          {t('language')}
+        </div>
+        {/* 선택 상태가 색으로만 전달되지 않도록 tablist/tab 시맨틱을 씁니다.
+            비활성 pane은 언마운트하지 않고 `hidden`으로 남겨야 FormData에
+            두 언어가 모두 포함됩니다. */}
+        <div
+          role={'tablist'}
+          aria-labelledby={`${panelId}-lang`}
+          className={'flex flex-wrap items-center gap-2'}
         >
-          {t('english')}
-          {requiredBoth && (
-            <span
-              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                selected === 'en'
-                  ? 'bg-white/20 text-white'
-                  : completion.en
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-red-100 text-red-700'
-              }`}
-            >
-              {completion.en ? statusDoneText : statusMissingText}
-            </span>
-          )}
-        </button>
+          {(['en', 'ko'] as const).map((lang) => {
+            const isSelected = selected === lang
+            const isComplete = completion[lang]
+            return (
+              <button
+                key={lang}
+                type={'button'}
+                role={'tab'}
+                aria-selected={isSelected}
+                className={cn(
+                  'type-body-sm inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md border px-3 py-1 transition-colors',
+                  'focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2',
+                  isSelected
+                    ? 'border-primary bg-primary text-on-primary'
+                    : isComplete || !requiredBoth
+                      ? 'border-hairline bg-surface text-ink hover:bg-canvas'
+                      : 'border-danger/40 bg-danger-soft text-danger'
+                )}
+                onClick={() => setSelected(lang)}
+              >
+                {lang === 'en' ? t('english') : t('korean')}
+                {requiredBoth && (
+                  <span
+                    className={cn(
+                      'type-eyebrow rounded-full px-2 py-0.5',
+                      isSelected
+                        ? 'bg-on-primary/20 text-on-primary'
+                        : isComplete
+                          ? 'bg-success-soft text-success'
+                          : 'bg-danger-soft text-danger'
+                    )}
+                  >
+                    {isComplete ? statusDoneText : statusMissingText}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
         <button
           type={'button'}
-          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors ${
-            selected === 'ko'
-              ? 'border-neutral-900 bg-neutral-900 text-white'
-              : completion.ko || !requiredBoth
-                ? 'border-emerald-500 bg-white text-emerald-700'
-                : 'border-red-400 bg-red-50 text-red-700'
-          }`}
-          onClick={() => setSelected('ko')}
-        >
-          {t('korean')}
-          {requiredBoth && (
-            <span
-              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                selected === 'ko'
-                  ? 'bg-white/20 text-white'
-                  : completion.ko
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-red-100 text-red-700'
-              }`}
-            >
-              {completion.ko ? statusDoneText : statusMissingText}
-            </span>
-          )}
-        </button>
-        <button
-          type={'button'}
-          className={'ml-auto rounded-full border px-3 py-1 text-sm'}
+          className={'admin-btn-ghost type-body-sm ml-auto min-h-9'}
           onClick={() => setSplitView((prev) => !prev)}
         >
           {splitView ? t('singleView') : t('splitView')}
         </button>
         {showValidationMessage && hasMissingLanguage && (
-          <p className={'w-full text-xs font-semibold text-red-600'}>
+          <p
+            role={'alert'}
+            className={'type-caption text-danger w-full font-semibold'}
+          >
             {missingLanguageMessage}
           </p>
         )}
       </div>
 
       {!splitView && (
-        <div className={'rounded-xl bg-white p-2'}>
-          <div className={'member-data-title pb-2'}>{title}</div>
+        <div className={'admin-card'}>
+          <div className={'admin-field-label pb-2'}>{title}</div>
           <div className={selected === 'en' ? '' : 'hidden'}>{enContent}</div>
           <div className={selected === 'ko' ? '' : 'hidden'}>{koContent}</div>
         </div>
@@ -227,14 +230,14 @@ export default function BilingualPanel({
 
       {splitView && (
         <div className={'grid grid-cols-1 gap-2 lg:grid-cols-2'}>
-          <div className={'rounded-xl bg-white p-2'}>
-            <div className={'member-data-title pb-2'}>
+          <div className={'admin-card'}>
+            <div className={'admin-field-label pb-2'}>
               {enTitle ?? t('english')}
             </div>
             {enContent}
           </div>
-          <div className={'rounded-xl bg-white p-2'}>
-            <div className={'member-data-title pb-2'}>
+          <div className={'admin-card'}>
+            <div className={'admin-field-label pb-2'}>
               {koTitle ?? t('korean')}
             </div>
             {koContent}

@@ -27,14 +27,12 @@ export default function SaveImageButton({
       type={'button'}
       initial={{ opacity: 0 }}
       animate={{ opacity: imgFile ? 1 : 0 }}
-      className={
-        'flex items-center gap-2 rounded-xl border-2 border-neutral-900 bg-neutral-900 p-2 px-4 text-white transition-all disabled:bg-neutral-800 disabled:text-neutral-300'
-      }
+      className={'admin-btn-primary'}
       onClick={onClick}
     >
       {isLoading ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-neutral-700 border-t-white'}
+          className={'border-hairline size-6 border-2 border-t-white'}
         />
       ) : (
         <CloudArrowUpIcon className={'size-6'} />

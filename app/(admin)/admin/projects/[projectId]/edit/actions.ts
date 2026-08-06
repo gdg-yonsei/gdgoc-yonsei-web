@@ -17,7 +17,7 @@ import {
 import {
   authorizeAdminAction,
   deleteRemovedR2Images,
-  getZodActionError,
+  parseActionInput,
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
@@ -37,6 +37,14 @@ export async function updateProjectAction(
     return authorization.response
   }
 
+  const parsed = parseActionInput(
+    projectValidation,
+    getProjectFormData(formData)
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
+  }
+
   const {
     name,
     nameKo,
@@ -50,29 +58,7 @@ export async function updateProjectAction(
     generationId,
     repoUrl,
     demoUrl,
-  } = getProjectFormData(formData)
-
-  try {
-    projectValidation.parse({
-      name,
-      nameKo,
-      description,
-      descriptionKo,
-      content,
-      contentKo,
-      contentImages,
-      mainImage,
-      participants,
-      generationId,
-      repoUrl,
-      demoUrl,
-    })
-  } catch (err) {
-    const validationError = getZodActionError(err)
-    if (validationError) {
-      return { error: validationError }
-    }
-  }
+  } = parsed.data
 
   try {
     const [previousProject, existingProject] = await Promise.all([
@@ -115,17 +101,17 @@ export async function updateProjectAction(
     await db
       .update(projects)
       .set({
-        name: name!,
-        nameKo: nameKo!,
-        description: description!,
-        descriptionKo: descriptionKo!,
+        name,
+        nameKo,
+        description,
+        descriptionKo,
         content: stripHtmlCharacters(content),
         contentKo: stripHtmlCharacters(contentKo),
         images: contentImages,
-        mainImage: mainImage!,
+        mainImage,
         generationId: Number(generationId),
-        repoUrl: repoUrl,
-        demoUrl: demoUrl,
+        repoUrl,
+        demoUrl,
         updatedAt: new Date(),
       })
       .where(eq(projects.id, projectId))

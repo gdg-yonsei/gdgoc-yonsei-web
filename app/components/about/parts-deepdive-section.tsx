@@ -17,7 +17,7 @@ export default function PartsDeepdiveSection({ lang }: { lang: Locale }) {
         {allParts.map((part) => (
           <Reveal key={part.title}>
             <article
-              className={'bg-surface-raised h-full rounded-2xl p-6'}
+              className={'bg-surface h-full rounded-2xl p-6'}
               style={{ contain: 'layout style paint' }}
             >
               <h3 className={'text-ink text-lg font-semibold'}>

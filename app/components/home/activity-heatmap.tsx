@@ -77,7 +77,7 @@ export default function ActivityHeatmap({
               className={`absolute inset-0 rounded-sm ${
                 week.dominantCategory
                   ? CATEGORY_CELL_CLASS[week.dominantCategory]
-                  : 'border-ink/10 bg-surface-raised border'
+                  : 'border-ink/10 bg-surface border'
               }`}
               style={{
                 opacity: week.dominantCategory
@@ -112,7 +112,7 @@ export default function ActivityHeatmap({
         )}
         {activeWeek && (
           <div
-            className={'bg-surface-raised rounded-xl p-4 shadow-sm'}
+            className={'bg-surface rounded-xl p-4 shadow-sm'}
             style={{ contain: 'layout style paint' }}
           >
             <p className={'text-ink/50 font-mono text-xs'}>

@@ -1,61 +1,46 @@
-import { NextRequest } from 'next/server'
-import handlePermission from '@/lib/server/permission/handle-permission'
 import { auth } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
-import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
+import {
+  parseRequestBody,
+  privateError,
+  privateForbidden,
+  privateJson,
+} from '@/lib/server/http'
+import handlePermission from '@/lib/server/permission/handle-permission'
 import { getSafeImageExtension } from '@/lib/server/r2-object-key'
-import { getImageEnv } from '@/lib/server/env'
-import { privateJson } from '@/lib/server/http'
-
-export interface PostBody {
-  memberId: string
-  fileName: string
-  type: string
-}
+import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 
 /**
- * 사용자의 프로필 이미지를 업로드 할 수 있는 URL 을 반환하는 API
- * @param request
- * @constructor
+ * 사용자의 프로필 이미지를 업로드 할 수 있는 사전 서명 URL 을 반환한다.
  */
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
+  // 권한 검사에 memberId 가 필요하므로 본문 검증이 먼저다.
+  const body = parseRequestBody(
+    memberProfileImageUploadValidation,
+    await request.json().catch(() => null)
+  )
+  if (!body.ok) {
+    return body.response
+  }
+
+  const { memberId, fileName: originalFileName, type } = body.data
+
   const session = await auth()
-  const json = await request.json().catch(() => null)
-  const bodyValidationResult =
-    memberProfileImageUploadValidation.safeParse(json)
-
-  if (!bodyValidationResult.success) {
-    return privateJson(
-      {
-        error:
-          bodyValidationResult.error.issues[0]?.message ?? 'Validation failed',
-      },
-      { status: 400 }
-    )
-  }
-
-  const res = bodyValidationResult.data
-  // 사용자 권한 확인
   if (
-    !(await handlePermission(session?.user?.id, 'put', 'members', res.memberId))
+    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
   ) {
-    return privateJson({ error: 'Forbidden' }, { status: 403 })
+    return privateForbidden()
   }
 
-  // 파일 업로드 경로
-  const extension = getSafeImageExtension(res.fileName)
+  const extension = getSafeImageExtension(originalFileName)
   if (!extension) {
-    return privateJson({ error: 'Invalid file extension' }, { status: 400 })
+    return privateError('Invalid file extension', 400)
   }
-  const fileName = `users/${res.memberId}/${crypto.randomUUID()}.${extension}`
 
-  // R2 Pre Signed URL 생성
-  const uploadUrl = await getPreSignedUrl(fileName, res.type)
-  const imageEnv = getImageEnv()
+  const fileName = `users/${memberId}/${crypto.randomUUID()}.${extension}`
+  const uploadUrl = await getPreSignedUrl(fileName, type)
 
-  // Pre Signed URL 반환
-  return privateJson({
-    uploadUrl,
-    fileName: `${imageEnv.NEXT_PUBLIC_IMAGE_URL}${fileName}`,
-  })
+  // fileName 은 다른 업로드 API 와 동일하게 객체 키만 담는다.
+  // 공개 URL 조합은 호출부(lib/upload-image.ts)가 담당한다.
+  return privateJson({ uploadUrl, fileName })
 }

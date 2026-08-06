@@ -33,7 +33,7 @@ export default function PartsBentoGrid({ lang }: { lang: Locale }) {
         <m.article
           key={part.key}
           variants={cardVariants}
-          className={`group bg-surface-raised relative rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01] ${
+          className={`group bg-surface relative rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01] ${
             part.span === 'wide' ? 'md:col-span-2' : ''
           }`}
           style={{ contain: 'layout style paint' }}

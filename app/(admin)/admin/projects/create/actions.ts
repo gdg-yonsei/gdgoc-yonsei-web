@@ -13,8 +13,8 @@ import { getGenerationNameById } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import {
   authorizeAdminAction,
-  getZodActionError,
   insertRowsIfAny,
+  parseActionInput,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
 
@@ -36,6 +36,25 @@ export async function createProjectAction(
     return { error: 'User not found' }
   }
 
+  const formValues = getProjectFormData(formData)
+
+  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  if (
+    resolvedScope.scope?.kind !== 'generation' ||
+    resolvedScope.scope.generationId !== Number(formValues.generationId)
+  ) {
+    return { error: 'Select a specific generation scope before creating data.' }
+  }
+
+  const parsed = parseActionInput(
+    projectValidation,
+    formValues,
+    'Validation failed'
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
+  }
+
   const {
     name,
     nameKo,
@@ -49,61 +68,27 @@ export async function createProjectAction(
     generationId,
     repoUrl,
     demoUrl,
-  } = getProjectFormData(formData)
-
-  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
-  if (
-    resolvedScope.scope?.kind !== 'generation' ||
-    resolvedScope.scope.generationId !== Number(generationId)
-  ) {
-    return { error: 'Select a specific generation scope before creating data.' }
-  }
+  } = parsed.data
 
   try {
-    projectValidation.parse({
-      name,
-      nameKo,
-      description,
-      descriptionKo,
-      content,
-      contentKo,
-      mainImage,
-      contentImages,
-      participants,
-      generationId,
-      repoUrl,
-      demoUrl,
-    })
-  } catch (err) {
-    const validationError = getZodActionError(err, 'Validation failed')
-    if (validationError) {
-      return { error: validationError }
-    }
-  }
-
-  try {
-    if (!name || !description) {
-      return { error: 'Name and Description are required' }
-    }
-
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
     const createProject = (
       await db
         .insert(projects)
         .values({
-          name: name,
-          nameKo: nameKo!,
-          description: description!,
-          descriptionKo: descriptionKo!,
+          name,
+          nameKo,
+          description,
+          descriptionKo,
           authorId: session.user.id,
           generationId: Number(generationId),
           images: contentImages,
-          mainImage: mainImage!,
+          mainImage,
           content: stripHtmlCharacters(content),
           contentKo: stripHtmlCharacters(contentKo),
-          repoUrl: repoUrl,
-          demoUrl: demoUrl,
+          repoUrl,
+          demoUrl,
         })
         .returning({ id: projects.id })
     )[0]

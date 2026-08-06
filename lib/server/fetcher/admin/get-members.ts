@@ -31,10 +31,6 @@ const membershipPriority = sql<number>`
   END
 `
 
-export const preloadAdminMembers = (scope?: AdminGenerationScope | null) => {
-  void getMembers(scope)
-}
-
 export async function getMembers(scope?: AdminGenerationScope | null) {
   noStore()
 

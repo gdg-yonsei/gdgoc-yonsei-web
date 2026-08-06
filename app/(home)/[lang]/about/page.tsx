@@ -87,7 +87,7 @@ export default async function AboutPage({
   const lang = languageParamChecker((await params).lang)
 
   return (
-    <main className={'flex w-full flex-col overflow-x-hidden'}>
+    <div className={'flex w-full flex-col overflow-x-hidden'}>
       <AboutHero lang={lang} />
       <StorySection lang={lang} />
       <section className={'cv-auto w-full px-6 py-20'}>
@@ -117,6 +117,6 @@ export default async function AboutPage({
           <PartsDeepdiveSection lang={lang} />
         </div>
       </section>
-    </main>
+    </div>
   )
 }

@@ -1,6 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
-import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import AdminPageHeader from '@/app/components/admin/page-header'
+import AdminEmptyState from '@/app/components/admin/empty-state'
 import db from '@/db'
 import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
@@ -14,18 +14,6 @@ export const metadata: Metadata = {
   title: 'Approve Members',
 }
 
-/**
- * `AcceptMemberPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function AcceptMemberPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -35,35 +23,36 @@ export default async function AcceptMemberPage() {
 
   return (
     <AdminDefaultLayout>
-      <AdminNavigationButton href={'/admin/members'}>
-        <ChevronLeftIcon className={'size-8'} />
-        <p className={'text-lg'}>{t.members}</p>
-      </AdminNavigationButton>
-      <div className={'admin-title'}>{t.approveMember}</div>
-      <div className={'flex w-full flex-col gap-2 py-4'}>
+      <AdminPageHeader
+        title={t.approveMember}
+        backHref={'/admin/members'}
+        backLabel={t.members}
+      />
+      <div className={'flex w-full flex-col gap-2'}>
         {unacceptedMembers.length === 0 && (
-          <div className={'mx-auto text-xl text-neutral-800'}>
-            {t.noUsersToApprove}
-          </div>
+          <AdminEmptyState title={t.noUsersToApprove} />
         )}
         {unacceptedMembers.map((member) => (
           <div
             key={member.id}
             className={
-              'flex items-center justify-between gap-2 rounded-lg bg-white p-2 not-md:flex-col not-md:items-start'
+              'border-hairline bg-surface flex flex-col gap-3 rounded-lg border p-3 lg:flex-row lg:items-center lg:justify-between'
             }
           >
-            <div className={'flex items-center gap-2'}>
+            <div className={'flex min-w-0 items-center gap-2.5'}>
               <Image
                 src={member.image ? member.image : '/default-user-profile.png'}
-                alt={'Profile Image'}
+                alt={''}
                 width={100}
                 height={100}
-                className={'size-12 rounded-lg object-cover'}
+                className={'size-10 shrink-0 rounded-lg object-cover'}
               />
-              <div>{member.name}</div>
+              <div className={'type-body-sm text-ink truncate font-semibold'}>
+                {member.name}
+              </div>
             </div>
-            <div className={'flex items-center gap-2'}>
+            {/* 좁은 화면에서 버튼이 압축되어 라벨이 줄바꿈되지 않도록 감쌉니다. */}
+            <div className={'flex flex-wrap items-center gap-2'}>
               <AcceptForm userId={member.id} />
               <DeleteForm userId={member.id} />
             </div>

@@ -8,6 +8,7 @@ import type { ActionResult } from '@/lib/server/actions/types'
 import { revalidatePath } from 'next/cache'
 import { sql } from 'drizzle-orm'
 import { z } from 'zod'
+import { logger } from '@/lib/server/logger'
 
 const MIN_BOOKING_LEAD_DAYS = 15
 const MIN_BOOKING_DURATION_MINUTES = 30
@@ -83,7 +84,6 @@ const requestBookingSchema = z.object({
     ),
 })
 
-export type RequestBookingInput = z.infer<typeof requestBookingSchema>
 export type RequestBookingResult = ActionResult<{
   id: number
   status: string
@@ -218,8 +218,7 @@ export async function requestBookingAction(
         requestedById: session.user.id,
       })
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      console.error('web_booking_requests save failure:', message)
+      logger.error('booking.request.save', error)
     }
 
     revalidatePath('/admin/booking')
@@ -229,7 +228,7 @@ export async function requestBookingAction(
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('Booking request failed:', message)
+    logger.error('booking.request', error)
     return { success: false, error: message || '예약 등록에 실패했습니다' }
   }
 }

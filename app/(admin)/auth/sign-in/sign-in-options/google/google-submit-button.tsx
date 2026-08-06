@@ -24,17 +24,15 @@ export default function GoogleSubmitButton() {
   return (
     <button
       type={'submit'}
-      className={
-        'flex w-full items-center justify-center gap-2 rounded-full border-2 border-neutral-900 bg-neutral-50 p-2 px-4 transition-all disabled:bg-neutral-100'
-      }
+      className={'admin-btn-secondary w-full'}
       disabled={pending || isAuthenticating}
     >
       {pending ? (
         <LoadingSpinner
-          className={'size-6 border-2 border-neutral-700 border-t-white'}
+          className={'size-5 border-2 border-current/30 border-t-current'}
         />
       ) : (
-        <Google className={'size-6'} fill={'white'} />
+        <Google className={'size-5'} fill={'currentColor'} />
       )}
       <p>Sign in with Google</p>
     </button>

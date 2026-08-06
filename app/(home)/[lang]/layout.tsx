@@ -13,48 +13,43 @@ type LangLayoutProps = {
   params: Promise<{ lang: string }>
 }
 
-/**
- * `generateMetadata` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'ko' }]
+}
+
 export async function generateMetadata({
   params,
 }: LangLayoutProps): Promise<Metadata> {
-  const lang = (await params).lang
+  const lang = languageParamChecker((await params).lang)
 
   if (lang === 'ko') {
     return {
       title: {
-        default: 'GDGoC Yonsei',
+        default: 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티',
         template: '%s | GDGoC Yonsei',
       },
-      description: 'Google Developer Group on Campus 연세대학교',
+      description:
+        '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
     }
   }
 
   return {
     title: {
-      default: 'GDGoC Yonsei',
+      default: 'GDGoC Yonsei | Yonsei University Developer Community',
       template: '%s | GDGoC Yonsei',
     },
-    description: 'Google Developer Group on Campus Yonsei University',
+    description:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, projects, members, events, and activities.",
   }
 }
 
-// 본문 서체: Pretendard Variable (self-hosted)
-const pretendard = localFont({
-  src: '../../fonts/pretendard-variable.woff2',
+// 라틴 본문 서체: Google Sans. 한글은 globals.css가 @import 하는 Pretendard
+// 서브셋(`--font-sans` 스택의 다음 패밀리)이 이어받습니다.
+const googleSans = localFont({
+  src: '../../fonts/google-sans.woff2',
   display: 'swap',
-  variable: '--font-pretendard',
-  weight: '45 920',
+  variable: '--font-google-sans',
+  weight: '100 900',
 })
 
 // 데이터·라벨 서체: JetBrains Mono Variable (self-hosted)
@@ -65,18 +60,6 @@ const jetbrainsMono = localFont({
   weight: '100 800',
 })
 
-/**
- * `RootLayout` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(`구조 분해된 입력값`)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function RootLayout({
   children,
   params,
@@ -87,17 +70,17 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`bg-surface text-ink font-sans ${pretendard.variable} ${jetbrainsMono.variable}`}
+      className={`bg-canvas text-ink font-sans ${googleSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body>
         <LazyMotionProvider>
           <Header lang={lang} />
-          {children}
-          <Footer />
+          <main>{children}</main>
+          <Footer lang={lang} />
         </LazyMotionProvider>
+        <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
       </body>
-      <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
     </html>
   )
 }

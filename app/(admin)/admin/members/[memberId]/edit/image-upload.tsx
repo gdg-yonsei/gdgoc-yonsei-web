@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react'
 import { useAtom } from 'jotai'
 import { uploadProfileImageState } from '@/lib/atoms'
-import { PostBody } from '@/app/api/admin/members/profile-image/route'
+import { uploadProfileImage } from '@/lib/upload-image'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
 import SelectImageButton from '@/app/(admin)/admin/members/[memberId]/edit/select-image-button'
 
@@ -31,50 +32,37 @@ export default function ImageUpload({
   const [isLoading, setIsLoading] = useAtom(uploadProfileImageState)
   // 사용자 기존 프로필 이미지 URL
   const [profileImage, setProfileImage] = useState(image)
+  const [hasFailed, setHasFailed] = useState(false)
+  const { t } = useAdminI18n()
 
   /**
-   * 선택한 이미지 파일을 주소로 변환하는 함수
+   * 선택한 이미지 파일을 업로드하고 공개 URL 을 폼 값으로 반영하는 함수
    */
   const saveImgFile = async () => {
-    // 로딩 상태 변환
-    setIsLoading(true)
-    const fileData = inputRef?.current?.files?.[0]
+    const fileData = inputRef.current?.files?.[0]
+    if (!fileData) return
 
-    if (fileData) {
+    setIsLoading(true)
+    setHasFailed(false)
+    try {
       const reader = new FileReader()
       reader.readAsDataURL(fileData)
       reader.onloadend = () => {
         setImgFileUrl(reader.result as string)
       }
-      // 이미지 파일을 업로드 할 URL 요청
-      const requestUploadUrl = await fetch('/api/admin/members/profile-image', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: inputRef.current?.files?.[0]?.type,
-          fileName: inputRef.current?.files?.[0]?.name,
-          memberId: memberId,
-        } as PostBody),
-      })
-      // 이미지 파일 업로드 URL 및 난수로 생성된 파일 이름
-      const uploadUrl = (await requestUploadUrl.json()) as {
-        uploadUrl: string
-        fileName: string
-      }
 
-      // 이미지 업로드 요청
-      await fetch(uploadUrl.uploadUrl, {
-        method: 'PUT',
-        body: inputRef?.current?.files?.[0],
-      })
-
-      // 기존 프로필 이미지 변경
-      setProfileImage(uploadUrl.fileName)
-      // 이미지 파일 경로 초기화
+      // 업로드에 성공한 뒤에만 기존 프로필 이미지를 교체한다.
+      setProfileImage(await uploadProfileImage(memberId, fileData))
+    } catch (error) {
+      console.error(error)
+      setHasFailed(true)
+    } finally {
+      // 프리뷰를 정리해 저장된 이미지가 다시 보이도록 되돌린다.
       setImgFileUrl('')
+      setIsLoading(false)
+      // 같은 파일을 다시 선택해도 onChange 가 동작하도록 리셋
+      if (inputRef.current) inputRef.current.value = ''
     }
-
-    // 로딩 상태 변경
-    setIsLoading(false)
   }
 
   return (
@@ -103,6 +91,11 @@ export default function ImageUpload({
         onClick={() => inputRef.current?.click()}
         disabled={isLoading}
       />
+      {hasFailed && (
+        <p role={'alert'} className={'type-caption text-danger font-semibold'}>
+          {t('uploadFailed')}
+        </p>
+      )}
     </div>
   )
 }

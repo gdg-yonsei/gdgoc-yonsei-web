@@ -21,7 +21,7 @@ function tagPillClass(active: boolean): string {
   return `rounded-full px-3 py-1 font-mono text-xs transition-colors ${
     active
       ? 'bg-ink text-white'
-      : 'bg-surface-raised text-ink/70 border-ink/10 border'
+      : 'bg-surface text-ink/70 border-ink/10 border'
   }`
 }
 
@@ -39,7 +39,7 @@ export default function ProjectsShowcase({
     return (
       <div
         className={
-          'border-ink/10 bg-surface-raised rounded-2xl border border-dashed p-10 text-center'
+          'border-ink/10 bg-surface rounded-2xl border border-dashed p-10 text-center'
         }
       >
         <p className={'text-ink/60'}>{SHOWCASE_COPY.empty[lang]}</p>
@@ -86,7 +86,7 @@ export default function ProjectsShowcase({
               layout={!shouldReduce}
               transition={{ duration: 0.35, ease: 'easeOut' }}
               className={
-                'bg-surface-raised relative overflow-hidden rounded-2xl'
+                'bg-surface relative overflow-hidden rounded-2xl'
               }
               style={{ contain: 'layout style paint' }}
             >
@@ -128,7 +128,7 @@ export default function ProjectsShowcase({
                       <span
                         key={tag}
                         className={
-                          'bg-surface text-ink/60 rounded-full px-2 py-0.5 font-mono text-[11px]'
+                          'bg-canvas text-ink/60 rounded-full px-2 py-0.5 font-mono text-[11px]'
                         }
                       >
                         {tag}

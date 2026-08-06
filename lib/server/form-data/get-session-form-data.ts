@@ -2,6 +2,8 @@
  * @file This file contains a function to extract session data from a FormData object.
  */
 
+import { logger } from '@/lib/server/logger'
+
 const ACTIVITY_CATEGORIES = [
   'tech_talk',
   'part_session',
@@ -24,7 +26,7 @@ function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
     }
     return parsed.filter((item): item is string => typeof item === 'string')
   } catch (error) {
-    console.error('Failed to parse array field:', error)
+    logger.error('form-data.session', error, { field: 'array' })
     return []
   }
 }

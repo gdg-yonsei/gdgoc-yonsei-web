@@ -56,7 +56,7 @@ export default function StatsSection({
       {STAT_ITEMS.map((item) => (
         <div
           key={item.key}
-          className={'bg-surface-raised flex flex-col gap-1 rounded-2xl p-6'}
+          className={'bg-surface flex flex-col gap-1 rounded-2xl p-6'}
           style={{ contain: 'layout style paint' }}
         >
           <dt

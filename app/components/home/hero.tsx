@@ -86,7 +86,7 @@ export default function Hero({ lang }: { lang: Locale }) {
           <Link
             href={`/${lang}/recruit`}
             className={
-              'border-ink/15 bg-surface-raised text-ink rounded-full border px-6 py-2.5 font-semibold transition-transform hover:-translate-y-0.5'
+              'border-ink/15 bg-surface text-ink rounded-full border px-6 py-2.5 font-semibold transition-transform hover:-translate-y-0.5'
             }
           >
             {HERO_COPY.joinCta[lang]}

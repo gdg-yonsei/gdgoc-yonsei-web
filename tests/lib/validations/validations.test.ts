@@ -54,6 +54,29 @@ describe('validation schemas', () => {
 
     expect(
       generationValidation.safeParse({
+        name: '2026-spring',
+        startDate: '2025-01-01',
+        endDate: '2025-12-31',
+      }).success
+    ).toBe(true)
+
+    for (const name of [
+      '2026 spring',
+      '2026--spring',
+      '../admin',
+      '<script>',
+    ]) {
+      expect(
+        generationValidation.safeParse({
+          name,
+          startDate: '2025-01-01',
+          endDate: '2025-12-31',
+        }).success
+      ).toBe(false)
+    }
+
+    expect(
+      generationValidation.safeParse({
         name: '11th',
         startDate: '2025-01-01',
         endDate: null,

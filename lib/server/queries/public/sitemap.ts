@@ -7,26 +7,25 @@ import {
   getSessionVisibilityBucket,
   publicCachePolicy,
 } from '@/lib/server/cache/policy'
-import { getSiteEnv } from '@/lib/server/env'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
 import { getPublishedSessionsForSitemap } from '@/lib/server/queries/public/sessions'
+import {
+  localizeSitemapEntries,
+  type SitemapPathEntry,
+} from '@/lib/seo/sitemap'
 
-const siteEnv = getSiteEnv()
-
-function generateLocalizedSitemapEntries(
-  sitemapEntries: MetadataRoute.Sitemap
-): MetadataRoute.Sitemap {
-  return i18n.locales.flatMap((locale) =>
-    sitemapEntries.map((item) => ({
-      ...item,
-      url: `${siteEnv.NEXT_PUBLIC_SITE_URL}/${locale}${item.url}`,
-      lastModified: item.lastModified || new Date(),
-      changeFrequency: item.changeFrequency || 'monthly',
-      priority: item.priority || 0.5,
-    }))
-  )
-}
+const staticPages: SitemapPathEntry[] = [
+  { path: '' },
+  { path: '/about' },
+  { path: '/calendar' },
+  { path: '/member' },
+  { path: '/project' },
+  { path: '/session' },
+  { path: '/privacy-policy' },
+  { path: '/terms-of-service' },
+  { path: '/2026-freshman-ot' },
+]
 
 export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   'use cache: remote'
@@ -44,76 +43,46 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     getPublishedSessionsForSitemap(baseLocale, visibilityBucket),
   ])
 
-  const projectsList: MetadataRoute.Sitemap = projectList.map((project) => ({
-    url: `/project/${project.generation.name}/${project.id}`,
+  const projectsList: SitemapPathEntry[] = projectList.map((project) => ({
+    path: `/project/${project.generation.name}/${project.id}`,
     lastModified:
       project.updatedAt > project.createdAt
         ? project.updatedAt
         : project.createdAt,
-    changeFrequency: 'monthly',
-    priority: 0.8,
   }))
 
-  const sessionsList: MetadataRoute.Sitemap = sessionList.flatMap((session) => {
+  const sessionsList: SitemapPathEntry[] = sessionList.flatMap((session) => {
     if (!session.generationName) {
       return []
     }
 
     return [
       {
-        url: `/session/${session.generationName}/${session.id}`,
+        path: `/session/${session.generationName}/${session.id}`,
         lastModified:
           session.updatedAt > session.createdAt
             ? session.updatedAt
             : session.createdAt,
-        changeFrequency: 'monthly',
-        priority: 0.8,
       },
     ]
   })
 
-  const centralPages: MetadataRoute.Sitemap = generationList.flatMap(
+  const centralPages: SitemapPathEntry[] = generationList.flatMap(
     (generation) => [
       {
-        url: `/member/${generation.name}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.9,
+        path: `/member/${generation.name}`,
       },
       {
-        url: `/session/${generation.name}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.9,
+        path: `/session/${generation.name}`,
       },
       {
-        url: `/project/${generation.name}`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.9,
+        path: `/project/${generation.name}`,
       },
     ]
   )
 
-  return generateLocalizedSitemapEntries([
-    {
-      url: '',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: '/calendar',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: '/about',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
+  return localizeSitemapEntries([
+    ...staticPages,
     ...centralPages,
     ...projectsList,
     ...sessionsList,

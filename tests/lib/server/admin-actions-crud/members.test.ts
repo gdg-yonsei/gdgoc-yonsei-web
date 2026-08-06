@@ -4,7 +4,11 @@ const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
 const mockInvalidateMemberPublicCache = vi.fn()
 const mockRedirect = vi.fn()
-const mockForbidden = vi.fn(() => 'FORBIDDEN')
+// 실제 next/navigation 의 forbidden() 은 반환하지 않고 throw 한다.
+// 값을 반환하는 목을 쓰면 가드 이후 코드가 계속 실행돼 실제와 다른 흐름을 검증하게 된다.
+const mockForbidden = vi.fn(() => {
+  throw new Error('FORBIDDEN')
+})
 
 const mockUpdate = vi.fn()
 const mockDelete = vi.fn()
@@ -90,10 +94,11 @@ describe('members CRUD server actions', () => {
       profileImage: 'https://cdn.example/users/u1.png',
     })
 
-    const result = await updateMemberAction('member-1', { error: '' }, formData)
+    await expect(
+      updateMemberAction('member-1', { error: '' }, formData)
+    ).rejects.toThrow('FORBIDDEN')
 
     expect(mockForbidden).toHaveBeenCalled()
-    expect(result).toBe('FORBIDDEN')
     expect(mockUpdate).not.toHaveBeenCalled()
   })
 

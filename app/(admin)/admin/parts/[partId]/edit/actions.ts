@@ -1,17 +1,16 @@
 'use server'
 
 import db from '@/db'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
-import { z } from 'zod'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
 import getPartFormData from '@/lib/server/form-data/get-part-form-data'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidatePartPublicCache } from '@/lib/server/cache'
+import { parseActionInput } from '@/lib/server/actions/admin'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import { logger } from '@/lib/server/logger'
 import {
   getGenerationNameById,
@@ -30,36 +29,21 @@ export async function updatePartAction(
   formData: FormData
 ) {
   // 사용자가 part 를 수정할 권한이 있는지 확인
-  const session = await auth()
-  if (!(await handlePermission(session?.user?.id, 'put', 'parts', partId))) {
-    return forbidden()
-  }
+  await requirePermission('put', 'parts', partId)
 
   // form data 에서 part data 추출
+  const parsed = parseActionInput(partValidation, getPartFormData(formData))
+  if (!parsed.ok) {
+    return { error: parsed.error }
+  }
+
   const {
     name,
     description,
     generationId,
     membersList,
     doubleBoardMembersList,
-  } = getPartFormData(formData)
-
-  try {
-    // zod validation
-    partValidation.parse({
-      name,
-      description,
-      generationId,
-      membersList,
-      doubleBoardMembersList,
-    })
-  } catch (err) {
-    // zod validation 에러 처리
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation error' }
-    }
-  }
+  } = parsed.data
 
   try {
     const partIdNumber = Number(partId)
@@ -82,7 +66,7 @@ export async function updatePartAction(
     await db
       .update(parts)
       .set({
-        name: name!,
+        name,
         description: description,
         generationsId: generationId,
         updatedAt: new Date(),

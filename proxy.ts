@@ -6,6 +6,25 @@ import { ADMIN_LOCALE_COOKIE } from '@/lib/admin-i18n'
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
 
+const UNLOCALIZED_PUBLIC_PATHS = new Set([
+  '/default-image.png',
+  '/default-user-profile.png',
+  '/favicon.ico',
+  '/gdg-logo.svg',
+  '/gdgoc-logo.png',
+  '/gdgoc-yonsei-logo.svg',
+  '/googleda69d559d3e8d484.html',
+  '/llms.txt',
+  '/manifest.webmanifest',
+  '/naver3b021b84fe69d06591a1108d6f26afac.html',
+  '/opengraph-image.png',
+  '/project-default.png',
+  '/robots.txt',
+  '/session-default.png',
+  '/sitemap.xml',
+  '/twitter-image.png',
+])
+
 /**
  * `getLocale` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
  *
@@ -55,6 +74,18 @@ function isSupportedLocale(locale: string | undefined): locale is string {
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const useSecureCookie = process.env.NODE_ENV === 'production'
+
+  if (
+    pathname === '/api' ||
+    pathname.startsWith('/api/') ||
+    pathname === '/auth' ||
+    pathname.startsWith('/auth/') ||
+    // 정적 폰트 에셋(Pretendard 서브셋 92개)은 로케일 프리픽스를 붙이면 안 됩니다.
+    pathname.startsWith('/fonts/') ||
+    UNLOCALIZED_PUBLIC_PATHS.has(pathname)
+  ) {
+    return NextResponse.next()
+  }
 
   const pathnameSegments = pathname.split('/')
   const localeFromPath = pathnameSegments[1]
@@ -139,8 +170,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Matcher ignoring `/_next/` and `/api/`
-  matcher: [
-    '/((?!api|sitemap.xml|auth|robots.txt|_next/static|_next/image|default-image.png|project-default.png|default-user-profile.png|gdgoc-logo.png|session-default.png|favicon.ico|googleda69d559d3e8d484.html).*)',
-  ],
+  // Localize every application-looking path. Known root assets are handled by
+  // UNLOCALIZED_PUBLIC_PATHS so arbitrary dotted paths cannot impersonate a
+  // locale segment and create indexable duplicate pages.
+  matcher: ['/((?!_next/).*)'],
 }

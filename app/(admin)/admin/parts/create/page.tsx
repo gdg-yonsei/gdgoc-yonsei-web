@@ -16,18 +16,6 @@ export const metadata: Metadata = {
   title: 'Create Part',
 }
 
-/**
- * `CreatePartPage` 컴포넌트는 전달받은 props와 현재 상태를 기반으로 화면(UI)을 구성하여 렌더링합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 읽고 필요한 계산/조건 분기 로직을 수행합니다.
- * 2. 이벤트 핸들러와 상태 변화를 반영하여 어떤 UI를 보여줄지 결정합니다.
- * 3. 최종 JSX를 반환해 호출 위치의 화면에 결과를 렌더링합니다.
- *
- * 작동 결과:
- * - 사용자에게 현재 데이터/상태에 맞는 인터페이스를 제공합니다.
- * - 상위 컴포넌트와 props를 통해 연결되어 페이지 상호작용 흐름을 완성합니다.
- */
 export default async function CreatePartPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -45,7 +33,7 @@ export default async function CreatePartPage() {
         <div className={'admin-title'}>
           {t.create} {t.part}
         </div>
-        <div className={'rounded-2xl bg-white p-6 text-neutral-700'}>
+        <div className={'admin-panel'}>
           <div className={'font-semibold'}>
             {t.selectSpecificGenerationToCreate}
           </div>
@@ -64,7 +52,7 @@ export default async function CreatePartPage() {
       <div className={'admin-title'}>
         {t.create} {t.part}
       </div>
-      <DataForm action={createPartAction} className={'member-data-grid gap-2'}>
+      <DataForm action={createPartAction} className={'admin-form-grid gap-2'}>
         <input
           hidden={true}
           name={'generationId'}
@@ -82,13 +70,9 @@ export default async function CreatePartPage() {
           name={'description'}
           placeholder={'e.g. This is a part for Android developers.'}
         />
-        <div
-          className={
-            'member-data-box col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4'
-          }
-        >
-          <div className={'member-data-title'}>{t.generation}</div>
-          <div className={'member-data-content'}>
+        <div className={'admin-form-grid-full admin-card'}>
+          <div className={'admin-field-label'}>{t.generation}</div>
+          <div className={'admin-field-value'}>
             {resolvedScope.selectedGeneration.name}
           </div>
         </div>

@@ -1,8 +1,6 @@
 'use server'
 
-import { auth } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { eq } from 'drizzle-orm'
@@ -25,25 +23,13 @@ import {
   getGenerationNameForPartId,
 } from '@/lib/server/services/cache-context'
 import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 
-/**
- * `deleteResourceAction` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(없음)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
 export default async function deleteResourceAction(
   prev: { error: string },
   formData: FormData
 ) {
   void prev
-  const session = await auth()
 
   const validationResult = deleteResourceValidation.safeParse({
     dataType: formData.get('dataType'),
@@ -58,16 +44,8 @@ export default async function deleteResourceAction(
 
   const { dataType, dataId } = validationResult.data
 
-  // 데이터를 삭제할 권한이 있는지 확인
-  const canDelete = await handlePermission(
-    session?.user?.id,
-    'delete',
-    dataType
-  )
-
-  if (!canDelete) {
-    return forbidden()
-  }
+  // 삭제 대상 종류는 검증을 통과한 뒤에야 정해지므로 여기서 권한을 확인한다.
+  await requirePermission('delete', dataType)
 
   try {
     // 데이터 삭제

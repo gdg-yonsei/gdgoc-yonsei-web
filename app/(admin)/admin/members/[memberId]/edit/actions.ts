@@ -2,12 +2,12 @@
 
 import db from '@/db'
 import { users } from '@/db/schema/users'
-import { forbidden, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import { memberValidation } from '@/lib/validations/member'
-import { z } from 'zod'
+import { parseActionInput } from '@/lib/server/actions/admin'
 import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateMemberPublicCache } from '@/lib/server/cache'
@@ -25,15 +25,20 @@ export async function updateMemberAction(
   _prev: { error: string },
   formData: FormData
 ) {
-  // 사용자가 member 를 수정할 권한이 있는지 확인
-  const session = await auth()
-  if (
-    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
-  ) {
-    return forbidden()
+  // 사용자가 member 를 수정할 권한이 있는지 확인.
+  // 반환된 세션은 아래에서 역할 변경 권한까지 있는지 판단할 때 재사용한다.
+  const session = await requirePermission('put', 'members', memberId)
+
+  // form data 에서 member data 추출 후 검증
+  const parsed = parseActionInput(
+    memberValidation,
+    getMemberFormData(formData),
+    'Validation failed'
+  )
+  if (!parsed.ok) {
+    return { error: parsed.error }
   }
 
-  // form data 에서 member data 추출
   const {
     name,
     firstName,
@@ -50,34 +55,8 @@ export async function updateMemberAction(
     role,
     isForeigner,
     profileImage,
-  } = getMemberFormData(formData)
+  } = parsed.data
 
-  try {
-    // zod validation
-    memberValidation.parse({
-      name,
-      firstName,
-      firstNameKo,
-      lastName,
-      lastNameKo,
-      email,
-      githubId,
-      instagramId,
-      linkedInId,
-      major,
-      studentId,
-      telephone,
-      role,
-      isForeigner,
-      profileImage,
-    })
-  } catch (err) {
-    // 데이터 형식이 맞지 않을 경우 오류 반환
-    if (err instanceof z.ZodError) {
-      console.log(err.issues)
-      return { error: err.issues[0]?.message ?? 'Validation failed' }
-    }
-  }
   // member data 업데이트 쿼리
   try {
     const generationNames = await getGenerationNamesForUserId(memberId)

@@ -4,7 +4,11 @@ import { getLocalizedText } from '../utils'
 import { GoogleDots, ColorBar, ActivityBullet } from '../decorative'
 import { stagger, fadeUp, fadeInLeft, fadeInRight } from '../variants'
 
-export default function ActivitiesNetworkingHackathonSlide({ lang }: { lang: Locale }) {
+export default function ActivitiesNetworkingHackathonSlide({
+  lang,
+}: {
+  lang: Locale
+}) {
   return (
     <div className="relative flex min-h-full w-full items-center justify-center overflow-hidden bg-white py-16 md:py-8">
       <GoogleDots />
