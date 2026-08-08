@@ -41,7 +41,6 @@ export default function NavigationList({ lang }: { lang: Locale }) {
   }
 
   const links = [
-    { href: `/${lang}/about`, label: lang === 'ko' ? '소개' : 'About' },
     { href: `/${lang}/session`, label: lang === 'ko' ? '세션' : 'Sessions' },
     {
       href: `/${lang}/project`,

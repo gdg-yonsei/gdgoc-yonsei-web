@@ -16,8 +16,6 @@ test.describe('public routes and user interactions', () => {
     const routes = [
       '/en',
       '/ko',
-      '/en/about',
-      '/ko/about',
       '/en/calendar',
       '/ko/calendar',
       '/en/privacy-policy',
