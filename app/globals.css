@@ -440,11 +440,6 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  /* 공개 사이트의 긴 섹션은 화면 밖일 때 렌더 비용을 건너뜁니다. */
-  .cv-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 640px;
-  }
 }
 
 @theme {
@@ -469,14 +464,6 @@
     var(--font-google-sans), 'Pretendard Variable', ui-sans-serif, system-ui,
     'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 
-  /* 데이터·라벨 서체 — 히트맵 눈금, 기수 표기, 태그 pill 등에서 씁니다. */
-  --font-mono:
-    var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular,
-    Menlo, monospace;
-
-  /* 공개 사이트 액센트 (리디자인 스펙 §3) */
-  --color-yonsei-blue: #1b3a75;
-
   --color-logo-blue: #4285f4;
   --color-gdg-blue-100: #c3ecf6;
   --color-gdg-blue-200: #57caff;
@@ -496,35 +483,6 @@
 
 .h-home-screen {
   height: calc(100vh - 4.2rem);
-}
-
-/* Activity heatmap 셀 리빌 — 컴포지터 전용(opacity/transform), --i 기반 stagger */
-.heatmap-cell {
-  opacity: 0;
-  transform: scale(0.6);
-  contain: layout style paint;
-}
-
-.heatmap-grid-revealed .heatmap-cell {
-  animation: heatmap-cell-in 0.35s ease-out both;
-  animation-delay: calc(var(--i) * 12ms);
-}
-
-@keyframes heatmap-cell-in {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .heatmap-cell {
-    opacity: 1;
-    transform: none;
-  }
-  .heatmap-grid-revealed .heatmap-cell {
-    animation: none;
-  }
 }
 
 /* Home shooting star background (CSS-only to avoid client JS) */
