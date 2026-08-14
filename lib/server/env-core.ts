@@ -28,14 +28,6 @@ const baseServerEnvSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
-  // Temporary aliases keep an existing deployment usable while its environment
-  // variables are renamed from Auth.js conventions.
-  AUTH_SECRET: z.string().min(1).optional(),
-  AUTH_GITHUB_ID: z.string().min(1).optional(),
-  AUTH_GITHUB_SECRET: z.string().min(1).optional(),
-  AUTH_GOOGLE_ID: z.string().min(1).optional(),
-  AUTH_GOOGLE_SECRET: z.string().min(1).optional(),
-  AUTH_URL: z.string().url().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
   NEXT_PUBLIC_IMAGE_URL: z.string().url().optional(),
   R2_ACCESS_KEY: z.string().min(1).optional(),
@@ -116,16 +108,7 @@ export function getDatabaseEnv() {
 }
 
 export function getAuthEnv() {
-  const env = getBaseServerEnv()
-
-  return authEnvSchema.parse({
-    BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET ?? env.AUTH_SECRET,
-    BETTER_AUTH_URL: env.BETTER_AUTH_URL ?? env.AUTH_URL,
-    GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID ?? env.AUTH_GITHUB_ID,
-    GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET ?? env.AUTH_GITHUB_SECRET,
-    GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID ?? env.AUTH_GOOGLE_ID,
-    GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET ?? env.AUTH_GOOGLE_SECRET,
-  })
+  return authEnvSchema.parse(getBaseServerEnv())
 }
 
 export function getR2ClientEnv() {

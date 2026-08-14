@@ -13,7 +13,7 @@ import { getSeededAdminSessionToken, resetAndSeedE2EDatabase } from './seed-db'
 
 async function writeAuthState(baseURL: string) {
   const token = getSeededAdminSessionToken()
-  const secret = process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET
+  const secret = process.env.BETTER_AUTH_SECRET
   if (!secret) {
     throw new Error(
       'BETTER_AUTH_SECRET is required for authenticated E2E tests'
