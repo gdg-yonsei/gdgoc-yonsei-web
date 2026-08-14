@@ -264,9 +264,10 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   })
 
   await db.insert(authSessions).values({
-    sessionToken: FIXTURE_IDS.sessionToken,
+    id: 'e2e-admin-session',
+    token: FIXTURE_IDS.sessionToken,
     userId: FIXTURE_IDS.adminUserId,
-    expires: new Date('2099-01-01T00:00:00.000Z'),
+    expiresAt: new Date('2099-01-01T00:00:00.000Z'),
   })
 
   return {

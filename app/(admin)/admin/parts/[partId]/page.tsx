@@ -3,7 +3,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import formatUserName from '@/lib/format-user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
@@ -44,7 +44,7 @@ export default async function PartPage({
   }
 
   // 사용자 로그인 정보
-  const session = await auth()
+  const session = await getAuthSession()
 
   return (
     <AdminDefaultLayout>

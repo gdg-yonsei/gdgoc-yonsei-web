@@ -13,7 +13,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
 - Language: TypeScript, React 19
 - Styling: Tailwind CSS 4, Typography Plugin
 - Database: PostgreSQL + Drizzle ORM
-- Authentication: NextAuth.js v5 + Drizzle Adapter + WebAuthn
+- Authentication: Better Auth + Drizzle Adapter + Passkey
 - Email: Resend + React Email
 - Storage: Cloudflare R2 (with presigned URLs for uploads)
 - Markdown: react-markdown, rehype-sanitize

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import * as motion from 'motion/react-client'
 import formatUserName from '@/lib/format-user-name'
@@ -14,7 +14,7 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 async function UserProfile() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     notFound()

@@ -11,7 +11,7 @@ const mockInvalidateMemberPublicCache = vi.fn()
 const mockGetGenerationNamesForUserId = vi.fn()
 
 vi.mock('@/auth', () => ({
-  auth: mockAuth,
+  getAuthSession: mockAuth,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({

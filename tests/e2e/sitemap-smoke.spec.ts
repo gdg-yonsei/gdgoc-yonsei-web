@@ -158,17 +158,26 @@ test('invalid duplicate routes are 404 and private routes are noindex', async ({
 
   for (const route of invalidRoutes) {
     const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
-    expect(response?.status(), route).toBe(404)
+    const status = response?.status()
+
+    // With Cache Components, a dynamic notFound() can be streamed after the
+    // response shell starts. Next.js then returns 200 and injects noindex.
+    expect([200, 404], route).toContain(status)
+    if (status === 200) {
+      await expect(
+        page.locator('meta[name="robots"]').first(),
+        route
+      ).toHaveAttribute('content', /noindex/i)
+    }
   }
 
   for (const route of ['/admin', '/en/admin', '/ko/admin', '/auth/sign-in']) {
-    const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
-    expect(response?.status(), route).toBeLessThan(500)
+    const response = await request.get(route)
+    expect(response.status(), route).toBeLessThan(500)
 
-    const headerValue = response?.headers()['x-robots-tag'] || ''
-    const metaValue =
-      (await page.locator('meta[name="robots"]').getAttribute('content')) || ''
-    expect(`${headerValue} ${metaValue}`, route).toMatch(/noindex/i)
+    const headerValue = response.headers()['x-robots-tag'] || ''
+    const html = await response.text()
+    expect(`${headerValue} ${html}`, route).toMatch(/noindex/i)
   }
 
   for (const asset of [

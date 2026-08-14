@@ -211,6 +211,13 @@
       "when": 1783811502105,
       "tag": "0029_long_malcolm_colcord",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1786659208828,
+      "tag": "0030_huge_manta",
+      "breakpoints": true
     }
   ]
 }

@@ -1,15 +1,18 @@
-import { pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-export const verificationTokens = pgTable(
+export const verification = pgTable(
   'verificationToken',
   {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
+    value: text('token').notNull(),
+    expiresAt: timestamp('expires', { mode: 'date' }).notNull(),
+    createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow().notNull(),
+    updatedAt: timestamp('updatedAt', { mode: 'date' }).defaultNow().notNull(),
   },
-  (verificationToken) => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
-  })
+  (verificationToken) => [
+    index('verificationToken_identifier_idx').on(verificationToken.identifier),
+  ]
 )

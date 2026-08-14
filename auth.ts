@@ -1,29 +1,61 @@
-import NextAuth from 'next-auth'
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import GitHub from 'next-auth/providers/github'
-import Google from 'next-auth/providers/google'
-import Passkey from 'next-auth/providers/passkey'
+import 'server-only'
+
+import { betterAuth } from 'better-auth/minimal'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
+import { passkey } from '@better-auth/passkey'
+import { headers } from 'next/headers'
+import { cache } from 'react'
 import db from '@/db'
-import { verificationTokens } from '@/db/schema/verification-tokens'
+import { verification } from '@/db/schema/verification-tokens'
 import { authSessions } from '@/db/schema/auth-sessions'
 import { accounts } from '@/db/schema/accounts'
 import { users } from '@/db/schema/users'
+import { passkeys } from '@/db/schema/authenticators'
+import { getAuthEnv } from '@/lib/server/env-core'
 
-/**
- * NextAuth Configuration
- */
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: authSessions,
-    verificationTokensTable: verificationTokens,
+const authEnv = getAuthEnv()
+const authOrigin = new URL(authEnv.BETTER_AUTH_URL).origin
+
+export const auth = betterAuth({
+  appName: 'GDGoC Yonsei',
+  baseURL: authOrigin,
+  secret: authEnv.BETTER_AUTH_SECRET,
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    schema: {
+      user: users,
+      session: authSessions,
+      account: accounts,
+      verification,
+      passkey: passkeys,
+    },
   }),
-  providers: [GitHub, Passkey, Google],
-  experimental: { enableWebAuthn: true },
-  pages: {
-    signIn: '/auth/sign-in',
+  socialProviders: {
+    github: {
+      clientId: authEnv.GITHUB_CLIENT_ID,
+      clientSecret: authEnv.GITHUB_CLIENT_SECRET,
+    },
+    google: {
+      clientId: authEnv.GOOGLE_CLIENT_ID,
+      clientSecret: authEnv.GOOGLE_CLIENT_SECRET,
+    },
   },
-  debug: false,
-  logger: { warn() {} },
+  plugins: [
+    passkey({
+      rpID: new URL(authOrigin).hostname,
+      rpName: 'GDGoC Yonsei',
+      origin: authOrigin,
+    }),
+    // Must remain last so Better Auth response cookies are copied into Next.js
+    // Server Actions as well as Route Handler responses.
+    nextCookies(),
+  ],
+})
+
+export type AuthSession = typeof auth.$Infer.Session
+
+/** Resolve, validate, and deduplicate the current session within one request. */
+export const getAuthSession = cache(async (): Promise<AuthSession | null> => {
+  return auth.api.getSession({ headers: await headers() })
 })

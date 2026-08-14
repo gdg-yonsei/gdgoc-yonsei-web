@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { notFound } from 'next/navigation'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { toggleSessionNotificationEmailAction } from '@/app/(admin)/admin/profile/actions'
@@ -7,7 +7,7 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 export default async function UnsubscribeSessionNotiEmailPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     notFound()

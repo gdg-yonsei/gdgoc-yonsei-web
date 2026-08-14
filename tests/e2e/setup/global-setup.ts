@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import { mkdirSync } from 'node:fs'
+import { createHmac } from 'node:crypto'
 import { URL } from 'node:url'
 import type { FullConfig } from '@playwright/test'
 import {
@@ -12,24 +13,32 @@ import { getSeededAdminSessionToken, resetAndSeedE2EDatabase } from './seed-db'
 
 async function writeAuthState(baseURL: string) {
   const token = getSeededAdminSessionToken()
+  const secret = process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET
+  if (!secret) {
+    throw new Error(
+      'BETTER_AUTH_SECRET is required for authenticated E2E tests'
+    )
+  }
+
+  const signedToken = `${token}.${createHmac('sha256', secret)
+    .update(token)
+    .digest('base64')}`
   const parsedBaseURL = new URL(baseURL)
   const isSecure = parsedBaseURL.protocol === 'https:'
   const domain = parsedBaseURL.hostname
 
-  const cookieNames = isSecure
-    ? ['__Secure-authjs.session-token', '__Secure-next-auth.session-token']
-    : ['authjs.session-token', 'next-auth.session-token']
-
-  const cookies = cookieNames.map((name) => ({
-    name,
-    value: token,
-    domain,
-    path: '/',
-    httpOnly: true,
-    secure: isSecure,
-    sameSite: 'Lax' as const,
-    expires: Math.floor(new Date('2099-01-01').getTime() / 1000),
-  }))
+  const cookies = [
+    {
+      name: `${isSecure ? '__Secure-' : ''}better-auth.session_token`,
+      value: signedToken,
+      domain,
+      path: '/',
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'Lax' as const,
+      expires: Math.floor(new Date('2099-01-01').getTime() / 1000),
+    },
+  ]
 
   await fs.writeFile(
     ADMIN_STORAGE_STATE,

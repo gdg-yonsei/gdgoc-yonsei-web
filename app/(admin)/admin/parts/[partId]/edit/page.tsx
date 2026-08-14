@@ -13,7 +13,7 @@ import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple
 import formatUserName from '@/lib/format-user-name'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { connection } from 'next/server'
@@ -53,7 +53,7 @@ export default async function EditPartPage({
 
   // Part 정보 업데이트 Action
   const updatePartActionWithPartId = updatePartAction.bind(null, partId)
-  const session = await auth()
+  const session = await getAuthSession()
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)
     : null

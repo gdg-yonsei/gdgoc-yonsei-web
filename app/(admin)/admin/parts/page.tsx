@@ -5,7 +5,7 @@ import { Suspense } from 'react'
 import PartsTable from '@/app/(admin)/admin/parts/parts-table'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
 import {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default async function PartsPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
   // 사용자가 파타를 생성할 권한이 있는지 확인
   const canCreate = await handlePermission(session?.user?.id, 'post', 'parts')
   const resolvedScope = session?.user?.id

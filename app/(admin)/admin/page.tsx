@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
 import db from '@/db'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { redirect } from 'next/navigation'
 import {
   PlusCircleIcon,
@@ -36,7 +36,7 @@ const CALENDAR_ICS_URL =
 export default async function AdminPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
   if (!session?.user?.id) {
     redirect('/auth/sign-in')
   }

@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import r2Client from '@/lib/server/r2-client'
 import { getR2BucketEnv } from '@/lib/server/env'
@@ -44,7 +44,7 @@ function buildObjectKey(resource: string, fileName: string) {
 
 export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
-    const session = await auth()
+    const session = await getAuthSession()
     if (!(await handlePermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }
@@ -68,7 +68,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
   }
 
   async function DELETE(request: Request) {
-    const session = await auth()
+    const session = await getAuthSession()
     if (!(await handlePermission(session?.user?.id, 'delete', resource))) {
       return privateForbidden()
     }
@@ -106,7 +106,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
 
 export function createMultipleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
-    const session = await auth()
+    const session = await getAuthSession()
     if (!(await handlePermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }

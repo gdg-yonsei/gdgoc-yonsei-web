@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import db from '@/db'
 import { users } from '@/db/schema/users'
@@ -13,7 +13,7 @@ export async function toggleSessionNotificationEmailAction(
   _formData: FormData
 ) {
   void _formData
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     return redirect(await getLocalizedAdminPath('/admin/profile'))

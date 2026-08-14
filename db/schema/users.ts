@@ -31,9 +31,13 @@ export const users = pgTable('user', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text('name'),
-  email: text('email').unique(),
-  emailVerified: timestamp('emailVerified', { mode: 'date' }),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  // Auth.js stored a verification timestamp in `emailVerified`. Better Auth
+  // requires a boolean, so the legacy value is retained while the new field is
+  // mapped to a separate column and backfilled by the migration.
+  authjsEmailVerified: timestamp('emailVerified', { mode: 'date' }),
+  emailVerified: boolean('betterAuthEmailVerified').default(false).notNull(),
   image: text('image'),
   firstName: text('firstName'),
   firstNameKo: text('firstNameKo'),

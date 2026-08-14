@@ -5,7 +5,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import GenerationActivityPeriod from '@/app/components/admin/generation-activity-period'
 import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import {
   getAdminLocale,
@@ -42,7 +42,7 @@ export default async function GenerationPage({
     notFound()
   }
   // 사용자 권한 가져오기
-  const session = await auth()
+  const session = await getAuthSession()
 
   return (
     <AdminDefaultLayout>

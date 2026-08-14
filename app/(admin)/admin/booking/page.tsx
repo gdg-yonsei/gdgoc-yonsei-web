@@ -2,7 +2,7 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import BookingForm from '@/app/components/admin/booking/booking-form'
 import BookingList from '@/app/components/admin/booking/booking-list'
 import handlePermission from '@/lib/server/permission/handle-permission'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { redirect, forbidden } from 'next/navigation'
 import { Metadata } from 'next'
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function BookingPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     redirect('/auth/sign-in')

@@ -9,7 +9,7 @@ import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 import GenerationField from '@/app/components/admin/generation-field'
@@ -25,7 +25,10 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateProjectPage() {
-  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
+  const [locale, session] = await Promise.all([
+    getAdminLocale(),
+    getAuthSession(),
+  ])
   const t = getAdminMessages(locale)
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)

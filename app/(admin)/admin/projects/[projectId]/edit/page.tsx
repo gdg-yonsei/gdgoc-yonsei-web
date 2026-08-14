@@ -11,7 +11,7 @@ import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
@@ -37,7 +37,7 @@ export default async function EditProjectPage({
   const t = getAdminMessages(locale)
   const [projectData, session] = await Promise.all([
     getProject(projectId),
-    auth(),
+    getAuthSession(),
   ])
 
   if (!projectData) {

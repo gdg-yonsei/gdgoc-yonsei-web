@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import db from '@/db'
 import { users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
@@ -23,7 +23,7 @@ export async function PUT(
 ) {
   const { memberId } = await params
 
-  const session = await auth()
+  const session = await getAuthSession()
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
   ) {

@@ -5,6 +5,12 @@ import { afterEach, vi } from 'vitest'
 
 process.env.AUTH_DRIZZLE_URL ??=
   'postgres://postgres:postgres@localhost:5432/test'
+process.env.BETTER_AUTH_SECRET ??= 'test-secret-at-least-32-characters-long'
+process.env.BETTER_AUTH_URL ??= 'http://localhost:3000'
+process.env.GITHUB_CLIENT_ID ??= 'test-github-client-id'
+process.env.GITHUB_CLIENT_SECRET ??= 'test-github-client-secret'
+process.env.GOOGLE_CLIENT_ID ??= 'test-google-client-id'
+process.env.GOOGLE_CLIENT_SECRET ??= 'test-google-client-secret'
 process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.yonsei.ac.kr'
 process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
 process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'

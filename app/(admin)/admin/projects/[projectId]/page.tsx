@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import SafeMDX from '@/app/components/safe-mdx'
 import Image from 'next/image'
 import formatUserName from '@/lib/format-user-name'
@@ -46,7 +46,7 @@ export default async function ProjectPage({
   if (!projectData) {
     notFound()
   }
-  const session = await auth()
+  const session = await getAuthSession()
 
   return (
     <AdminDefaultLayout>

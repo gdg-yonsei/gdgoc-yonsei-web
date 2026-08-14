@@ -2,7 +2,7 @@ import handlePermission, {
   ResourceType,
 } from '@/lib/server/permission/handle-permission'
 import Link from 'next/link'
-import { Session } from 'next-auth'
+import type { AuthSession } from '@/auth'
 import {
   getAdminLocale,
   getAdminMessages,
@@ -25,7 +25,7 @@ export default async function DataEditLink({
   href,
   dataType,
 }: {
-  session: Session | null
+  session: AuthSession | null
   dataOwnerId?: string
   href: string
   dataType: ResourceType

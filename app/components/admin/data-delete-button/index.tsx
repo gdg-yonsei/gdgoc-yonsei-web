@@ -1,4 +1,4 @@
-import { Session } from 'next-auth'
+import type { AuthSession } from '@/auth'
 import handlePermission, {
   ResourceType,
 } from '@/lib/server/permission/handle-permission'
@@ -12,7 +12,7 @@ export default async function DataDeleteButton({
   dataType,
   dataId,
 }: {
-  session: Session | null
+  session: AuthSession | null
   dataType: ResourceType
   dataId: string
 }) {

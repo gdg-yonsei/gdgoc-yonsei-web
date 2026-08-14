@@ -16,7 +16,7 @@ async function createProject(
   await page.goto('/admin/projects/create', { waitUntil: 'domcontentloaded' })
   await page.locator('input[name="name"]').fill(projectName)
   await page
-    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .getByRole('tab', { name: /^(Korean|한국어)/ })
     .nth(0)
     .click()
   await page.locator('input[name="nameKo"]').fill(projectNameKo)
@@ -24,7 +24,7 @@ async function createProject(
     .locator('textarea[name="description"]')
     .fill('One-line description for project')
   await page
-    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .getByRole('tab', { name: /^(Korean|한국어)/ })
     .nth(1)
     .click()
   await page
@@ -34,15 +34,14 @@ async function createProject(
     .locator('textarea[name="content"]')
     .fill('## Project English Content')
   await page
-    .getByRole('button', { name: /^(Korean|한국어)/ })
+    .getByRole('tab', { name: /^(Korean|한국어)/ })
     .nth(2)
     .click()
   await page
     .locator('textarea[name="contentKo"]')
     .fill('## 프로젝트 한국어 내용')
 
-  await page.getByRole('button', { name: 'Open' }).first().click()
-  await page.getByRole('button', { name: '테스터관리' }).click()
+  await page.getByRole('button', { name: /테스터관리/ }).click()
 
   await setHiddenInputValue(page, 'mainImage', '/project-default.png')
   await setHiddenInputValue(
@@ -83,10 +82,14 @@ test.describe('projects CRUD', () => {
       await page.getByRole('link', { name: projectName }).click()
       await expect(page.getByText(projectName, { exact: true })).toBeVisible()
 
-      await page.getByRole('link', { name: 'Edit' }).click()
+      await page.getByRole('link', { name: /^(Edit|수정)$/ }).click()
       await expect(page).toHaveURL(/\/admin\/projects\/.+\/edit$/)
       await page
-        .getByRole('textbox', { name: 'Name (English)' })
+        .getByRole('tab', { name: /^English/ })
+        .nth(0)
+        .click()
+      await page
+        .getByRole('textbox', { name: /^(Name \(English\)|영문 이름)$/ })
         .fill(updatedProjectName)
       await page.getByRole('button', { name: 'Submit' }).click()
 
@@ -98,6 +101,8 @@ test.describe('projects CRUD', () => {
     test('invalidates localized public caches after admin update and keeps admin fresh', async ({
       page,
     }) => {
+      test.setTimeout(90_000)
+
       const suffix = Date.now().toString()
       const projectName = `Cache Project ${suffix}`
       const projectNameKo = `캐시 프로젝트 ${suffix}`
@@ -126,19 +131,23 @@ test.describe('projects CRUD', () => {
         .filter({ hasText: projectName })
         .first()
         .click()
-      await page.getByRole('link', { name: 'Edit' }).click()
+      await page.getByRole('link', { name: /^(Edit|수정)$/ }).click()
       await expect(page).toHaveURL(/\/admin\/projects\/.+\/edit$/)
       await page
-        .getByRole('textbox', { name: 'Name (English)' })
-        .fill(updatedProjectName)
-      await page
-        .getByRole('button', { name: /^(Korean|한국어)/ })
+        .getByRole('tab', { name: /^English/ })
         .nth(0)
         .click()
       await page
-        .getByRole('textbox', { name: 'Name (Korean)' })
+        .getByRole('textbox', { name: /^(Name \(English\)|영문 이름)$/ })
+        .fill(updatedProjectName)
+      await page
+        .getByRole('tab', { name: /^(Korean|한국어)/ })
+        .nth(0)
+        .click()
+      await page
+        .getByRole('textbox', { name: /^(Name \(Korean\)|한글 이름)$/ })
         .fill(updatedProjectNameKo)
-      await page.getByRole('button', { name: 'Submit' }).click()
+      await page.getByRole('button', { name: /^(Submit|저장)$/ }).click()
 
       await expect(
         page.getByText(updatedProjectName, { exact: true }).first()

@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
   cacheMaxMemorySize: hasSharedRedisCache ? 0 : undefined,
   experimental: {
     authInterrupts: true,
-    optimizePackageImports: ['motion', 'jotai', 'next-auth', 'react-qr-code'],
+    optimizePackageImports: ['motion', 'jotai', 'react-qr-code'],
   },
   images: {
     remotePatterns: [

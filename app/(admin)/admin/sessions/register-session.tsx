@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { forbidden } from 'next/navigation'
 import RegisterSessionCard from '@/app/(admin)/admin/sessions/register-session-card'
 import getUnenrolledUpcomingSessions from '@/app/(admin)/admin/sessions/get-not-enrolled-sessions'
@@ -7,7 +7,7 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 export default async function RegisterSession() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
   if (!session || !session.user?.id) {
     return forbidden()
   }

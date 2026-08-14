@@ -12,7 +12,7 @@ import SessionPartParticipantsInput from '@/app/components/admin/session-part-pa
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
@@ -39,7 +39,7 @@ export default async function EditSessionPage({
   const t = getAdminMessages(locale)
   const [sessionData, session] = await Promise.all([
     getSession(sessionId),
-    auth(),
+    getAuthSession(),
   ])
 
   if (!sessionData) {

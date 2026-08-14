@@ -10,7 +10,7 @@ import SessionPartParticipantsInput from '@/app/components/admin/session-part-pa
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import GenerationField from '@/app/components/admin/generation-field'
@@ -25,7 +25,10 @@ export const metadata: Metadata = {
 }
 
 export default async function CreateSessionPage() {
-  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
+  const [locale, session] = await Promise.all([
+    getAdminLocale(),
+    getAuthSession(),
+  ])
   const t = getAdminMessages(locale)
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)

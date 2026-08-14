@@ -3,7 +3,7 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import formatUserName from '@/lib/format-user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import {
@@ -42,7 +42,7 @@ export default async function MemberPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { memberId } = await params
-  const currentSession = await auth()
+  const currentSession = await getAuthSession()
   const resolvedScope = currentSession?.user?.id
     ? await resolveAdminGenerationScope(currentSession.user.id)
     : null

@@ -51,8 +51,8 @@ export default function SignInPage() {
 
         <div className={'border-hairline flex flex-col gap-2 border-t pt-4'}>
           <p className={'type-caption text-ink-muted'}>
-            To log in using a passkey, you must first sign in with GitHub and
-            then register a passkey.
+            To log in using a passkey, first sign in with GitHub or Google and
+            register a passkey from your profile.
           </p>
           <p className={'type-caption text-ink-faint'}>
             By signing up, you agree to our{' '}

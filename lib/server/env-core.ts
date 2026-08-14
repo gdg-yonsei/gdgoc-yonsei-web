@@ -5,8 +5,7 @@ function requiredStringEnv(envName: string) {
 
   return z
     .string({
-      required_error: message,
-      invalid_type_error: message,
+      error: message,
     })
     .min(1, message)
 }
@@ -23,6 +22,14 @@ const redisUrlSchema = z
 
 const baseServerEnvSchema = z.object({
   AUTH_DRIZZLE_URL: z.string().min(1).optional(),
+  BETTER_AUTH_SECRET: z.string().min(1).optional(),
+  BETTER_AUTH_URL: z.string().url().optional(),
+  GITHUB_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  // Temporary aliases keep an existing deployment usable while its environment
+  // variables are renamed from Auth.js conventions.
   AUTH_SECRET: z.string().min(1).optional(),
   AUTH_GITHUB_ID: z.string().min(1).optional(),
   AUTH_GITHUB_SECRET: z.string().min(1).optional(),
@@ -52,6 +59,18 @@ const imageEnvSchema = z.object({
 
 const databaseEnvSchema = z.object({
   AUTH_DRIZZLE_URL: requiredStringEnv('AUTH_DRIZZLE_URL'),
+})
+
+const authEnvSchema = z.object({
+  BETTER_AUTH_SECRET: requiredStringEnv('BETTER_AUTH_SECRET').min(
+    32,
+    'BETTER_AUTH_SECRET must be at least 32 characters.'
+  ),
+  BETTER_AUTH_URL: requiredUrlEnv('BETTER_AUTH_URL'),
+  GITHUB_CLIENT_ID: requiredStringEnv('GITHUB_CLIENT_ID'),
+  GITHUB_CLIENT_SECRET: requiredStringEnv('GITHUB_CLIENT_SECRET'),
+  GOOGLE_CLIENT_ID: requiredStringEnv('GOOGLE_CLIENT_ID'),
+  GOOGLE_CLIENT_SECRET: requiredStringEnv('GOOGLE_CLIENT_SECRET'),
 })
 
 const r2ClientEnvSchema = z.object({
@@ -94,6 +113,19 @@ export function getImageEnv() {
 
 export function getDatabaseEnv() {
   return databaseEnvSchema.parse(getBaseServerEnv())
+}
+
+export function getAuthEnv() {
+  const env = getBaseServerEnv()
+
+  return authEnvSchema.parse({
+    BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET ?? env.AUTH_SECRET,
+    BETTER_AUTH_URL: env.BETTER_AUTH_URL ?? env.AUTH_URL,
+    GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID ?? env.AUTH_GITHUB_ID,
+    GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET ?? env.AUTH_GITHUB_SECRET,
+    GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID ?? env.AUTH_GOOGLE_ID,
+    GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET ?? env.AUTH_GOOGLE_SECRET,
+  })
 }
 
 export function getR2ClientEnv() {

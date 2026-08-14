@@ -1,10 +1,9 @@
 import 'server-only'
 
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
-import type { Session } from 'next-auth'
 import { forbidden } from 'next/navigation'
 import { z } from 'zod'
-import { auth } from '@/auth'
+import { getAuthSession, type AuthSession } from '@/auth'
 import handlePermission, {
   type ActionType,
   type ResourceType,
@@ -12,8 +11,6 @@ import handlePermission, {
 import r2Client from '@/lib/server/r2-client'
 import { getR2BucketEnv } from '@/lib/server/env'
 import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
-
-type AuthSession = Session | null
 
 export async function authorizeAdminAction({
   action,
@@ -26,14 +23,14 @@ export async function authorizeAdminAction({
 }): Promise<
   | {
       ok: true
-      session: AuthSession
+      session: AuthSession | null
     }
   | {
       ok: false
       response: ReturnType<typeof forbidden>
     }
 > {
-  const session = await auth()
+  const session = await getAuthSession()
   const allowed = await handlePermission(
     session?.user?.id,
     action,

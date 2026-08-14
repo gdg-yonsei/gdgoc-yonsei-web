@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import {
   parseRequestBody,
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   const { memberId, fileName: originalFileName, type } = body.data
 
-  const session = await auth()
+  const session = await getAuthSession()
   if (
     !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
   ) {

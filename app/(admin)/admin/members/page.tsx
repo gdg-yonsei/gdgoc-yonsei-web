@@ -5,7 +5,7 @@ import MembersTable from '@/app/(admin)/admin/members/members-table'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { UsersIcon } from '@heroicons/react/24/outline'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 
 import { Metadata } from 'next'
@@ -21,7 +21,10 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
-  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
+  const [locale, session] = await Promise.all([
+    getAdminLocale(),
+    getAuthSession(),
+  ])
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canAccept, resolvedScope] = await Promise.all([

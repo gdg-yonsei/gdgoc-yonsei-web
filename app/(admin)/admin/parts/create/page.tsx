@@ -9,7 +9,7 @@ import formatUserName from '@/lib/format-user-name'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function CreatePartPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)
     : null

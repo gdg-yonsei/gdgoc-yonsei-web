@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
 const mockRevalidatePath = vi.fn()
-const mockCookies = vi.fn()
 // 실제 next/navigation 의 forbidden() 은 반환하지 않고 throw 한다.
 // 값을 반환하는 목을 쓰면 가드 이후 코드가 계속 실행돼 실제와 다른 흐름을 검증하게 된다.
 const mockForbidden = vi.fn(() => {
@@ -24,7 +23,7 @@ const mockDbSelectLimit = vi.fn()
 const mockFetch = vi.fn()
 
 vi.mock('@/auth', () => ({
-  auth: mockAuth,
+  getAuthSession: mockAuth,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -33,10 +32,6 @@ vi.mock('@/lib/server/permission/handle-permission', () => ({
 
 vi.mock('next/cache', () => ({
   revalidatePath: mockRevalidatePath,
-}))
-
-vi.mock('next/headers', () => ({
-  cookies: mockCookies,
 }))
 
 vi.mock('next/navigation', () => ({
@@ -108,6 +103,9 @@ describe('booking-related server actions', () => {
         id: 'lead-user-id',
         email: 'lead@gdgoc.test',
       },
+      session: {
+        token: 'session-token',
+      },
     })
     mockHandlePermission.mockResolvedValue(true)
 
@@ -122,13 +120,6 @@ describe('booking-related server actions', () => {
     mockDbSelectWhere.mockReturnValue({ limit: mockDbSelectLimit })
     mockDbSelectFrom.mockReturnValue({ where: mockDbSelectWhere })
     mockDbSelect.mockReturnValue({ from: mockDbSelectFrom })
-
-    mockCookies.mockResolvedValue({
-      get: (name: string) =>
-        name === 'authjs.session-token'
-          ? { value: 'session-token' }
-          : undefined,
-    })
 
     mockFetch.mockResolvedValue(
       new Response(JSON.stringify({ campus: { buildings: [], rooms: [] } }), {

@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import db from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
 import handlePermission from '@/lib/server/permission/handle-permission'
@@ -109,7 +109,7 @@ export async function requestBookingAction(
     }
   }
 
-  const session = await auth()
+  const session = await getAuthSession()
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized: User not authenticated' }
   }

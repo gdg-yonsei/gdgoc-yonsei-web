@@ -13,7 +13,7 @@ const mockDeleteWhere = vi.fn()
 const mockGenerationFindFirst = vi.fn()
 
 vi.mock('@/auth', () => ({
-  auth: mockAuth,
+  getAuthSession: mockAuth,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({

@@ -1,27 +1,46 @@
-import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
+import {
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core'
 import { users } from '@/db/schema/users'
-import { AdapterAccountType } from 'next-auth/adapters'
 
 export const accounts = pgTable(
   'account',
   {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccountType>().notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
-    refresh_token: text('refresh_token'),
-    access_token: text('access_token'),
-    expires_at: integer('expires_at'),
-    token_type: text('token_type'),
+    accountId: text('providerAccountId').notNull(),
+    providerId: text('provider').notNull(),
+    accessToken: text('access_token'),
+    refreshToken: text('refresh_token'),
+    idToken: text('id_token'),
+    accessTokenExpiresAt: timestamp('accessTokenExpiresAt', { mode: 'date' }),
+    refreshTokenExpiresAt: timestamp('refreshTokenExpiresAt', { mode: 'date' }),
     scope: text('scope'),
-    id_token: text('id_token'),
-    session_state: text('session_state'),
+    password: text('password'),
+    createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow().notNull(),
+    updatedAt: timestamp('updatedAt', { mode: 'date' }).defaultNow().notNull(),
+
+    // Retained during the migration so existing Auth.js account data remains
+    // recoverable. Better Auth does not read or write these fields.
+    authjsType: text('type'),
+    authjsExpiresAt: integer('expires_at'),
+    authjsTokenType: text('token_type'),
+    authjsSessionState: text('session_state'),
   },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  })
+  (account) => [
+    index('account_userId_idx').on(account.userId),
+    uniqueIndex('account_provider_providerAccountId_unique').on(
+      account.providerId,
+      account.accountId
+    ),
+  ]
 )

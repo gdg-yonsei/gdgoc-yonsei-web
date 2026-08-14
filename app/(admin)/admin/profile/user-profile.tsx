@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import UserProfileImage from '@/app/components/user-profile-image'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { notFound } from 'next/navigation'
@@ -12,7 +12,7 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 export default async function UserProfile() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
 
   if (!session?.user?.id) {
     notFound()

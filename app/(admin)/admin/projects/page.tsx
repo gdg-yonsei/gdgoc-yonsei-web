@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { Suspense } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 }
 
 export default async function ProjectsPage() {
-  const [locale, session] = await Promise.all([getAdminLocale(), auth()])
+  const [locale, session] = await Promise.all([
+    getAdminLocale(),
+    getAuthSession(),
+  ])
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canCreate, resolvedScope] = await Promise.all([

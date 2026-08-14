@@ -1,4 +1,4 @@
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { forbidden } from 'next/navigation'
 import SessionCard from '@/app/(admin)/admin/sessions/session-card'
 import AdminEmptyState from '@/app/components/admin/empty-state'
@@ -8,7 +8,7 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 export default async function UpcomingSessions() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const session = await auth()
+  const session = await getAuthSession()
   if (!session || !session.user?.id) {
     return forbidden()
   }

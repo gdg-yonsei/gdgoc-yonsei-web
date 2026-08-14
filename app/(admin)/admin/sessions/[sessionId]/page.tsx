@@ -1,6 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import Image from 'next/image'
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import { notFound } from 'next/navigation'
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
@@ -48,7 +48,7 @@ export default async function SessionPage({
     notFound()
   }
 
-  const session = await auth()
+  const session = await getAuthSession()
 
   return (
     <AdminDefaultLayout>

@@ -1,8 +1,7 @@
 'use server'
 
-import { auth } from '@/auth'
+import { getAuthSession } from '@/auth'
 import handlePermission from '@/lib/server/permission/handle-permission'
-import { cookies } from 'next/headers'
 import { bookingFetch } from './booking-fetch'
 
 export type VenuesResponse = {
@@ -22,7 +21,7 @@ export type VenuesResponse = {
 }
 
 export async function getVenuesAction(): Promise<VenuesResponse> {
-  const session = await auth()
+  const session = await getAuthSession()
   if (!session?.user?.id) {
     return { success: false, error: 'Unauthorized' }
   }
@@ -31,32 +30,14 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
     return { success: false, error: 'Forbidden' }
   }
 
-  // Fetch session token
-  const cookieStore = await cookies()
-  let sessionToken = cookieStore.get('__Secure-authjs.session-token')?.value
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('authjs.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('__Secure-next-auth.session-token')?.value
-  }
-  if (!sessionToken) {
-    sessionToken = cookieStore.get('next-auth.session-token')?.value
-  }
-
-  if (!sessionToken) {
-    return {
-      success: false,
-      error: 'Unauthorized: Session session-token not found',
-    }
-  }
-
   try {
     const response = await bookingFetch('/api/venues', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'X-Session-Token': sessionToken,
+        // Better Auth signs the browser cookie. The booking API expects the
+        // canonical token stored in the shared session table instead.
+        'X-Session-Token': session.session.token,
       },
       // Cache the structure for an hour or upon dynamic validation
       next: { revalidate: 3600 },

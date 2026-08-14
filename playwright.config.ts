@@ -31,6 +31,10 @@ export default defineConfig({
     : {
         command: `pnpm exec next dev --turbopack --port ${port.toString()}`,
         url: baseURL,
+        env: {
+          ...process.env,
+          BETTER_AUTH_URL: baseURL,
+        },
         reuseExistingServer: false,
         timeout: 120 * 1000,
       },
