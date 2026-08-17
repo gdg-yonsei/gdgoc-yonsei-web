@@ -87,6 +87,14 @@ test.describe('mobile navigation', () => {
     await expect(menuOpenButton).toBeVisible()
     await menuOpenButton.click()
 
+    await expect(
+      page.getByRole('button', { name: 'Close navigation menu' })
+    ).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(menuOpenButton).toBeVisible()
+
+    await menuOpenButton.click()
+
     await page.getByRole('link', { name: /^Calendar$/ }).click()
     await expect(page).toHaveURL(/\/en\/calendar$/)
   })

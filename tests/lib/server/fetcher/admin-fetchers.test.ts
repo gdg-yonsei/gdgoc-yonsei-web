@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockNoStore = vi.fn()
-
 const mockGenerationsFindMany = vi.fn()
 const mockProjectsFindMany = vi.fn()
 const mockProjectsFindFirst = vi.fn()
@@ -37,10 +35,6 @@ const mockDb = {
     },
   },
 }
-
-vi.mock('next/cache', () => ({
-  unstable_noStore: mockNoStore,
-}))
 
 vi.mock('@/db', () => ({
   default: mockDb,
@@ -98,7 +92,6 @@ describe('admin fetchers', () => {
       await import('@/lib/server/fetcher/admin/get-generations')
 
     await expect(getGenerations()).resolves.toEqual(rows)
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockSelect).toHaveBeenCalledTimes(1)
     expect(orderBy).toHaveBeenCalledTimes(1)
   })
@@ -137,7 +130,6 @@ describe('admin fetchers', () => {
         generationName: '11th',
       },
     ])
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockProjectsFindMany).toHaveBeenCalledTimes(1)
   })
 
@@ -168,7 +160,6 @@ describe('admin fetchers', () => {
         generationName: '11th',
       },
     ])
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(chain.leftJoin).toHaveBeenCalledTimes(2)
     expect(chain.groupBy).toHaveBeenCalledTimes(1)
   })
@@ -210,7 +201,6 @@ describe('admin fetchers', () => {
       await import('@/lib/server/fetcher/admin/get-members')
     const result = await getMembers()
 
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(result).toEqual([
       expect.objectContaining({
         id: 'user-1',
@@ -254,7 +244,6 @@ describe('admin fetchers', () => {
         generationName: '11th',
       }),
     ])
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(chain.innerJoin).toHaveBeenCalledTimes(1)
   })
 
@@ -267,7 +256,6 @@ describe('admin fetchers', () => {
       await import('@/lib/server/fetcher/admin/get-generation')
 
     await expect(getGeneration(10)).resolves.toEqual({ id: 10, name: '10th' })
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockDb.query.generations.findFirst).toHaveBeenCalledTimes(1)
   })
 
@@ -279,7 +267,6 @@ describe('admin fetchers', () => {
     const result = await getProject('project-1')
 
     expect(result).toEqual({ id: 'project-1', name: 'First' })
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockProjectsFindFirst).toHaveBeenCalledTimes(1)
   })
 
@@ -292,7 +279,6 @@ describe('admin fetchers', () => {
     const result = await getMember('user-1')
 
     expect(result).toEqual({ id: 'user-1', name: 'User One' })
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(chain.limit).toHaveBeenCalledWith(1)
   })
 
@@ -301,7 +287,6 @@ describe('admin fetchers', () => {
     const { getPart } = await import('@/lib/server/fetcher/admin/get-part')
 
     await expect(getPart(3)).resolves.toEqual({ id: 3, usersToParts: [] })
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockPartsFindFirst).toHaveBeenCalledTimes(1)
   })
 
@@ -323,7 +308,6 @@ describe('admin fetchers', () => {
       userToSession: [],
       author: { id: 'author-1', name: 'Author' },
     })
-    expect(mockNoStore).toHaveBeenCalledTimes(1)
     expect(mockSessionsFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         with: expect.objectContaining({

@@ -2,15 +2,12 @@ import 'server-only'
 import db from '@/db'
 import { roleEnum, users } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
-import { unstable_noStore as noStore } from 'next/cache'
 
 type UserRole = (typeof roleEnum.enumValues)[number]
 
 export default async function getUserRole(
   userId: string | undefined
 ): Promise<UserRole> {
-  noStore()
-
   // If no userId is provided, assume the user is unverified.
   if (!userId) {
     return 'UNVERIFIED'

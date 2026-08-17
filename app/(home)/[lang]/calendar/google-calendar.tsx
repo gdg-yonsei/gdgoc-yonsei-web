@@ -1,11 +1,11 @@
-'use client'
-
 export default function GoogleCalendar() {
   return (
     <iframe
       src="https://calendar.google.com/calendar/embed?src=677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com&ctz=Asia%2FSeoul"
+      title="GDGoC Yonsei Google Calendar"
+      loading="lazy"
       className={
-        'mx-auto aspect-square w-full max-w-4xl rounded-xl md:aspect-3/2'
+        'mx-auto aspect-square w-full max-w-4xl rounded-xl bg-neutral-200 md:aspect-3/2'
       }
     ></iframe>
   )

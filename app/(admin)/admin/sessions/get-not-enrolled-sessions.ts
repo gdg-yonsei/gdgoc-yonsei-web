@@ -3,10 +3,8 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
-import { unstable_noStore as noStore } from 'next/cache'
 
 export default async function getUnenrolledUpcomingSessions(userId: string) {
-  noStore()
   const participantsSub = db
     .select({
       sessionId: userToSession.sessionId,

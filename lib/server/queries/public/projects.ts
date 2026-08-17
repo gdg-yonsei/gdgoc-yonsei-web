@@ -11,6 +11,7 @@ import {
   projectTag,
 } from '@/lib/server/cache'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
+import { isUuid } from '@/lib/server/queries/public/uuid'
 import { desc, eq } from 'drizzle-orm'
 
 export async function getProjects(locale: Locale) {
@@ -75,6 +76,10 @@ export async function getProjectsByGeneration(
 
 export async function getProjectById(projectId: string, locale: Locale) {
   'use cache: remote'
+
+  if (!isUuid(projectId)) {
+    return undefined
+  }
 
   cacheQuery(publicCachePolicy.projectDetail, [projectTag(projectId, locale)])
 

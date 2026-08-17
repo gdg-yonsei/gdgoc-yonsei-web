@@ -61,6 +61,20 @@ describe('SEO URL and metadata helpers', () => {
     })
   })
 
+  it('lets file-based route images supply OG and Twitter assets on detail pages', () => {
+    const metadata = createLocalizedMetadata({
+      locale: 'ko',
+      path: '/session/4th/session-id',
+      title: '대표 이미지가 있는 세션',
+      description: '동적으로 생성되는 공유 이미지입니다.',
+      generatedSocialImage: true,
+    })
+
+    expect(metadata.openGraph).not.toHaveProperty('images')
+    expect(metadata.twitter).not.toHaveProperty('images')
+    expect(metadata.twitter).toMatchObject({ card: 'summary_large_image' })
+  })
+
   it('strips markup and limits dynamic descriptions', () => {
     const description = summarizeForMetadata(
       '# Heading\n\n[A useful link](https://example.com) ' +

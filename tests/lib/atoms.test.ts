@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createStore } from 'jotai'
 import {
-  homeMenuBarState,
   isAuthenticatingState,
   isLoadingState,
   menuBarState,
@@ -17,7 +16,6 @@ describe('shared jotai atoms', () => {
 
     expect(store.get(isAuthenticatingState)).toBe(false)
     expect(store.get(menuBarState)).toBe(false)
-    expect(store.get(homeMenuBarState)).toBe(false)
     expect(store.get(uploadSingleImageState)).toBe(false)
     expect(store.get(uploadMultipleImagesState)).toBe(false)
     expect(store.get(uploadProfileImageState)).toBe(false)

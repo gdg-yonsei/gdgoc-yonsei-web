@@ -7,15 +7,18 @@ import { getProjectsByGeneration } from '@/lib/server/queries/public/projects'
 import { notFound } from 'next/navigation'
 import languageParamChecker from '@/lib/language-param-checker'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-
-// 이 라우트는 렌더링 전에 기수/상세 ID를 DB로 검증해 `notFound()`를 호출하므로,
-// Suspense 경계 밖에서 캐시되지 않은 데이터(params, 검증 쿼리)에 접근합니다.
-// cacheComponents 환경에서는 그런 접근이 프리렌더 오류이므로 blocking 라우트로 선언합니다.
-// (`notFound()`는 noindex 404 페이지를 렌더링하지만, 셸이 이미 전송된 뒤라 상태 코드는 200입니다.)
-export const instant = false
+import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
+}
+
+export async function generateStaticParams({
+  params,
+}: {
+  params: { lang: string }
+}) {
+  return getGenerationStaticParams(languageParamChecker(params.lang))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -79,7 +82,7 @@ export default async function ProjectsPage({ params }: Props) {
               : 'There are no projects for this generation'}
           </p>
         )}
-        {generationData.projects.map((data) => {
+        {generationData.projects.map((data, index) => {
           const projectName =
             locale === 'ko' ? data.nameKo || data.name : data.name
 
@@ -87,6 +90,7 @@ export default async function ProjectsPage({ params }: Props) {
             <Link
               href={`/${paramsData.lang}/project/${paramsData.generation}/${data.id}`}
               key={data.id}
+              prefetch={true}
               className={
                 'interactive-card focus-ring ring-gdg-white block rounded-lg bg-white ring-2'
               }
@@ -96,6 +100,7 @@ export default async function ProjectsPage({ params }: Props) {
                 width={200}
                 height={200}
                 alt={projectName}
+                preload={index === 0}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 288px"
                 className={'aspect-3/2 w-full rounded-t-lg object-cover'}
               />

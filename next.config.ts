@@ -35,6 +35,8 @@ const noIndexHeaders = [
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['127.0.0.1'],
   cacheComponents: true,
+  partialPrefetching: true,
+  reactCompiler: true,
   cacheHandler: hasSharedRedisCache
     ? require.resolve('./lib/server/cache/handlers/incremental-redis-cache-handler.cjs')
     : undefined,
@@ -49,6 +51,8 @@ const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
     optimizePackageImports: ['motion', 'jotai', 'react-qr-code'],
+    turbopackFileSystemCacheForBuild: true,
+    turbopackRustReactCompiler: true,
   },
   images: {
     remotePatterns: [

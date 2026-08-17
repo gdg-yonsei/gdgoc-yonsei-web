@@ -29,7 +29,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: `pnpm exec next dev --turbopack --port ${port.toString()}`,
+        command: `pnpm exec next dev --port ${port.toString()}`,
         url: baseURL,
         env: {
           ...process.env,

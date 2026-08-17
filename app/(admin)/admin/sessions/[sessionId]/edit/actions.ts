@@ -22,6 +22,7 @@ import {
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
+import { getSessionPublicationImageError } from '@/lib/server/session-publication'
 
 export async function updateSessionAction(
   sessionId: string,
@@ -74,6 +75,7 @@ export async function updateSessionAction(
         where: eq(sessions.id, sessionId),
         columns: {
           id: true,
+          displayOnWebsite: true,
         },
         with: {
           part: {
@@ -108,6 +110,16 @@ export async function updateSessionAction(
 
     if (!prevImages) {
       return { error: 'Session not found' }
+    }
+
+    const publicationImageError = getSessionPublicationImageError({
+      previousDisplayOnWebsite: existingSession.displayOnWebsite === true,
+      previousMainImage: prevImages.mainImage,
+      nextDisplayOnWebsite: displayOnWebsite,
+      nextMainImage: mainImage,
+    })
+    if (publicationImageError) {
+      return { error: publicationImageError }
     }
 
     await deleteRemovedR2Images({

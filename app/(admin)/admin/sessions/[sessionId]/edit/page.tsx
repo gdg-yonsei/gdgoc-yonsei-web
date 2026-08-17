@@ -157,14 +157,19 @@ export default async function EditSessionPage({
           title={'Activity Category'}
           defaultValue={sessionData.category ?? 'tech_talk'}
         />
-        <DataInput
-          title={t.displayOnWebsite}
-          defaultValue={'true'}
-          name={'displayOnWebsite'}
-          placeholder={t.displayOnWebsite}
-          type={'checkbox'}
-          isChecked={sessionData.displayOnWebsite!}
-        />
+        <div className={'flex flex-col gap-1'}>
+          <DataInput
+            title={t.displayOnWebsite}
+            defaultValue={'true'}
+            name={'displayOnWebsite'}
+            placeholder={t.displayOnWebsite}
+            type={'checkbox'}
+            isChecked={sessionData.displayOnWebsite!}
+          />
+          <p className={'text-ink-muted text-xs'}>
+            {t.sessionPublicationImageHint}
+          </p>
+        </div>
         <BilingualMdxField
           t={t}
           fieldLabel={t.description}

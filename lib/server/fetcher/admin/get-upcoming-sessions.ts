@@ -2,10 +2,8 @@ import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gte } from 'drizzle-orm'
-import { unstable_noStore as noStore } from 'next/cache'
 
 export default async function getUserUpcomingSessions(userId: string) {
-  noStore()
   return db
     .select({
       id: sessions.id,

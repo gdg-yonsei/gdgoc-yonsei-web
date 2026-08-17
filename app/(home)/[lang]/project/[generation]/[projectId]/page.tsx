@@ -16,12 +16,6 @@ import {
 } from '@/lib/seo/metadata'
 import JsonLd from '@/app/components/json-ld'
 
-// 이 라우트는 렌더링 전에 기수/상세 ID를 DB로 검증해 `notFound()`를 호출하므로,
-// Suspense 경계 밖에서 캐시되지 않은 데이터(params, 검증 쿼리)에 접근합니다.
-// cacheComponents 환경에서는 그런 접근이 프리렌더 오류이므로 blocking 라우트로 선언합니다.
-// (`notFound()`는 noindex 404 페이지를 렌더링하지만, 셸이 이미 전송된 뒤라 상태 코드는 200입니다.)
-export const instant = false
-
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
 }
@@ -52,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/project/${generation}/${projectId}`,
     title,
     description,
-    image: projectData.mainImage,
+    generatedSocialImage: true,
   })
 }
 

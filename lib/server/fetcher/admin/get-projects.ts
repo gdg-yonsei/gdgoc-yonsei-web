@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import db from '@/db'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
@@ -16,8 +15,6 @@ export type AdminProjectListItem = {
 }
 
 export async function getProjects(scope?: AdminGenerationScope | null) {
-  noStore()
-
   const projectList = await db.query.projects.findMany({
     where:
       scope?.kind === 'generation'

@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import { and, asc, desc, eq, ne, sql } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -32,8 +31,6 @@ const membershipPriority = sql<number>`
 `
 
 export async function getMembers(scope?: AdminGenerationScope | null) {
-  noStore()
-
   const rows = await db
     .selectDistinctOn([users.id, generations.id], {
       id: users.id,

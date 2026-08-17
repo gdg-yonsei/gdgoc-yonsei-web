@@ -22,7 +22,9 @@ export default async function StageButtonGroup({
       >
         <p className={'pr-2 text-2xl font-semibold'}>Generation</p>
         <GenerationButtonGroup
-          generationList={generationList.reverse().map((data) => data.name)}
+          generationList={[...generationList]
+            .reverse()
+            .map((data) => data.name)}
           generation={generation}
           lang={lang}
           basePath={basePath}

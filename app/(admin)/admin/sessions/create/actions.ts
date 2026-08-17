@@ -20,6 +20,7 @@ import {
   parseActionInput,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
+import { getSessionPublicationImageError } from '@/lib/server/session-publication'
 
 export async function createSessionAction(
   _prev: { error: string },
@@ -72,6 +73,14 @@ export async function createSessionAction(
     category,
     displayOnWebsite,
   } = parsed.data
+
+  const publicationImageError = getSessionPublicationImageError({
+    nextDisplayOnWebsite: displayOnWebsite,
+    nextMainImage: mainImage,
+  })
+  if (publicationImageError) {
+    return { error: publicationImageError }
+  }
 
   let sessionId = ''
   try {

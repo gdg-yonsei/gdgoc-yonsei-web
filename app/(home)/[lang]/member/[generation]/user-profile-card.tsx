@@ -14,9 +14,11 @@ type UserProfileType = NonNullable<
 export default function UserProfileCard({
   userData,
   lang,
+  preload = false,
 }: {
   userData: UserProfileType
   lang: string
+  preload?: boolean
 }) {
   return (
     <div className={'flex w-full items-center gap-2 rounded-2xl bg-white p-4'}>
@@ -26,6 +28,7 @@ export default function UserProfileCard({
           alt={userData.name + ' Profile Image'}
           width={100}
           height={100}
+          preload={preload}
           className={'aspect-square w-full max-w-20 rounded-full object-cover'}
         />
       ) : (

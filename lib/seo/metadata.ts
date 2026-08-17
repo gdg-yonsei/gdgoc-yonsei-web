@@ -74,6 +74,7 @@ type LocalizedMetadataInput = {
   description: string
   absoluteTitle?: boolean
   image?: string
+  generatedSocialImage?: boolean
 }
 
 export function createLocalizedMetadata({
@@ -83,6 +84,7 @@ export function createLocalizedMetadata({
   description,
   absoluteTitle = false,
   image,
+  generatedSocialImage = false,
 }: LocalizedMetadataInput): Metadata {
   const canonical = getLocalizedUrl(locale, path)
   const openGraphImageUrl = getAbsoluteUrl(image || '/opengraph-image.png')
@@ -109,13 +111,13 @@ export function createLocalizedMetadata({
       alternateLocale: i18n.locales
         .filter((candidate) => candidate !== locale)
         .map((candidate) => OPEN_GRAPH_LOCALES[candidate]),
-      images: [{ url: openGraphImageUrl }],
+      ...(generatedSocialImage ? {} : { images: [{ url: openGraphImageUrl }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [twitterImageUrl],
+      ...(generatedSocialImage ? {} : { images: [twitterImageUrl] }),
     },
   }
 }

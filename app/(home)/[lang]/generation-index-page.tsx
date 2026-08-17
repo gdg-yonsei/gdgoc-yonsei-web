@@ -81,6 +81,7 @@ export default function GenerationIndexPage({
               <li key={generation.id}>
                 <Link
                   href={`/${lang}/${basePath}/${generation.name}`}
+                  prefetch={true}
                   className="interactive-card focus-ring group flex h-full min-h-36 flex-col justify-between gap-6 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm active:scale-[0.98] sm:p-6"
                 >
                   <div className="flex items-start justify-between gap-4">

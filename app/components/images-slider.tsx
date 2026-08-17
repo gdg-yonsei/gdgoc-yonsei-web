@@ -111,7 +111,7 @@ export default function ImageSliderGallery({
               src={image}
               alt={`${alt} — image ${i + 1} of ${images.length}`}
               fill
-              priority={i === 0}
+              preload={i === 0}
               sizes="(max-width: 768px) 100vw, 576px"
               className="absolute top-0 left-0 h-full w-full object-contain"
             />

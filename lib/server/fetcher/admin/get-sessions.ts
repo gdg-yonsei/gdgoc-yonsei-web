@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import { and, desc, eq } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -22,8 +21,6 @@ export type AdminSessionListItem = {
 }
 
 export async function getSessions(scope?: AdminGenerationScope | null) {
-  noStore()
-
   return db
     .select({
       id: sessions.id,

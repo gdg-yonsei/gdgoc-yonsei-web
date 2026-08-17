@@ -31,4 +31,5 @@ cmds = [
 cacheDirectories = [
   "/root/.local/share/pnpm/store/v3",
   "/root/.cache/node/corepack",
+  ".next/cache",
 ]

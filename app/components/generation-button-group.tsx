@@ -21,6 +21,7 @@ export default function GenerationButtonGroup({
         <Link
           href={`/${lang}/${basePath}/${generationName}`}
           key={i}
+          prefetch={true}
           className={`rounded-full p-2 px-4 ${generationName === generation ? 'border-4 border-green-700' : 'border-2'} text-sm transition-all`}
         >
           {generationName}

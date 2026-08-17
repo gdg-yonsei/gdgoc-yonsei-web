@@ -5,10 +5,8 @@ import { desc, eq, sql } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import { unstable_noStore as noStore } from 'next/cache'
 
 export async function getMember(userId: string, generationId?: number | null) {
-  noStore()
   const result = await db
     .select({
       id: users.id,

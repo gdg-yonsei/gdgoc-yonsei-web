@@ -19,6 +19,7 @@ import {
   BilingualMdxField,
 } from '@/app/components/admin/bilingual-fields'
 import { dedupeById } from '@/lib/admin/member-options'
+import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 
 export const metadata: Metadata = {
   title: 'Create Session',
@@ -91,6 +92,11 @@ export default async function CreateSessionPage() {
         action={createSessionAction}
         className={'admin-form-grid gap-2'}
       >
+        <ResourceImageFields
+          mainImageBaseUrl={'/api/admin/sessions/main-image'}
+          contentImageBaseUrl={'/api/admin/sessions/content-image'}
+          t={t}
+        />
         <GenerationField
           title={t.generation}
           value={resolvedScope.selectedGeneration.name}
@@ -138,14 +144,19 @@ export default async function CreateSessionPage() {
           title={'Activity Category'}
           defaultValue={'tech_talk'}
         />
-        <DataInput
-          title={t.displayOnWebsite}
-          defaultValue={'true'}
-          name={'displayOnWebsite'}
-          placeholder={t.displayOnWebsite}
-          type={'checkbox'}
-          isChecked={false}
-        />
+        <div className={'flex flex-col gap-1'}>
+          <DataInput
+            title={t.displayOnWebsite}
+            defaultValue={'true'}
+            name={'displayOnWebsite'}
+            placeholder={t.displayOnWebsite}
+            type={'checkbox'}
+            isChecked={false}
+          />
+          <p className={'text-ink-muted text-xs'}>
+            {t.sessionPublicationImageHint}
+          </p>
+        </div>
         <BilingualMdxField
           t={t}
           fieldLabel={t.description}

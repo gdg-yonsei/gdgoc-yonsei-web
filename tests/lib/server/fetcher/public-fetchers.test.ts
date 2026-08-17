@@ -141,15 +141,16 @@ describe('public queries', () => {
   })
 
   it('fetches project detail with contributor relation', async () => {
-    mockProjectsFindFirst.mockResolvedValue({ id: 'project-1' })
+    const projectId = '4ef0a326-52ec-4da5-b204-9a67c7332a0f'
+    mockProjectsFindFirst.mockResolvedValue({ id: projectId })
     const { getProjectById } =
       await import('@/lib/server/queries/public/projects')
 
-    const result = await getProjectById('project-1', 'en')
+    const result = await getProjectById(projectId, 'en')
 
-    expect(result).toEqual({ id: 'project-1' })
+    expect(result).toEqual({ id: projectId })
     expect(mockCacheQuery).toHaveBeenCalledWith('projectDetail', [
-      'project:item:project-1:en',
+      `project:item:${projectId}:en`,
     ])
     expect(mockProjectsFindFirst).toHaveBeenCalledWith({
       where: expect.anything(),
@@ -176,6 +177,15 @@ describe('public queries', () => {
         },
       },
     })
+  })
+
+  it('rejects a malformed project id before querying Postgres', async () => {
+    const { getProjectById } =
+      await import('@/lib/server/queries/public/projects')
+
+    await expect(getProjectById('not-a-uuid', 'en')).resolves.toBeUndefined()
+    expect(mockProjectsFindFirst).not.toHaveBeenCalled()
+    expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
   it('fetches project list for a generation', async () => {
@@ -240,30 +250,43 @@ describe('public queries', () => {
   })
 
   it('fetches a visible session detail with locale-scoped detail tag', async () => {
-    mockSessionsFindFirst.mockResolvedValue({ id: 'session-1' })
+    const sessionId = '6bf4a326-52ec-4da5-b204-9a67c7332a0f'
+    mockSessionsFindFirst.mockResolvedValue({ id: sessionId })
     const { getSessionById } =
       await import('@/lib/server/queries/public/sessions')
 
     const result = await getSessionById(
-      'session-1',
+      sessionId,
       'ko',
       '2026-03-07T00:00:00.000Z'
     )
 
-    expect(result).toEqual({ id: 'session-1' })
+    expect(result).toEqual({ id: sessionId })
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionDetail', [
-      'session:item:session-1:ko',
+      `session:item:${sessionId}:ko`,
     ])
     expect(mockSessionsFindFirst).toHaveBeenCalledTimes(1)
     expect(mockSessionsFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         columns: expect.objectContaining({
+          category: true,
           id: true,
           images: true,
           locationKo: true,
         }),
       })
     )
+  })
+
+  it('rejects a malformed session id before querying Postgres', async () => {
+    const { getSessionById } =
+      await import('@/lib/server/queries/public/sessions')
+
+    await expect(
+      getSessionById('not-a-uuid', 'en', '2026-03-07T00:00:00.000Z')
+    ).resolves.toBeUndefined()
+    expect(mockSessionsFindFirst).not.toHaveBeenCalled()
+    expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
   it('fetches published sessions by generation with locale-specific tags', async () => {

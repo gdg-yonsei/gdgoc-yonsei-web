@@ -13,7 +13,7 @@ overrides:
   #   postcss   8.4.31 -> GHSA-fxqj-rqcc-2cmp 외 (패치 >=8.5.23)
   #   sharp     0.34.5 -> 패치 >=0.35.0
   #   esbuild   0.18.20 -> 패치 >=0.24.3, 폐기된 @esbuild-kit/* 경유
-  next: 16.3.0
+  next: 16.3.1
   postcss: 8.5.25
   sharp: 0.35.3
   esbuild: 0.28.1
@@ -33,3 +33,17 @@ minimumReleaseAgeExclude:
   - '@aws-sdk/nested-clients@3.997.41'
   - '@aws-sdk/s3-request-presigner@3.1103.0'
   - '@aws-sdk/token-providers@3.1103.0'
+  - '@next/env@16.3.1'
+  - '@next/eslint-plugin-next@16.3.1'
+  - '@next/playwright@16.3.1'
+  - '@next/swc-darwin-arm64@16.3.1'
+  - '@next/swc-darwin-x64@16.3.1'
+  - '@next/swc-linux-arm64-gnu@16.3.1'
+  - '@next/swc-linux-arm64-musl@16.3.1'
+  - '@next/swc-linux-x64-gnu@16.3.1'
+  - '@next/swc-linux-x64-musl@16.3.1'
+  - '@next/swc-win32-arm64-msvc@16.3.1'
+  - '@next/swc-win32-x64-msvc@16.3.1'
+  - '@next/third-parties@16.3.1'
+  - eslint-config-next@16.3.1
+  - next@16.3.1

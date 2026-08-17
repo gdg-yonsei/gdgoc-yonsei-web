@@ -1,26 +1,28 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { connection } from 'next/server'
 import { Suspense } from 'react'
 import PageTitle from '@/app/components/page-title'
 import StageButtonGroup from '@/app/components/stage-button-group'
-import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
+import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getPublishedSessionsByGeneration } from '@/lib/server/queries/public/sessions'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { notFound } from 'next/navigation'
 import languageParamChecker from '@/lib/language-param-checker'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
 import type { Locale } from '@/i18n-config'
-
-// 이 라우트는 렌더링 전에 기수/상세 ID를 DB로 검증해 `notFound()`를 호출하므로,
-// Suspense 경계 밖에서 캐시되지 않은 데이터(params, 검증 쿼리)에 접근합니다.
-// cacheComponents 환경에서는 그런 접근이 프리렌더 오류이므로 blocking 라우트로 선언합니다.
-// (`notFound()`는 noindex 404 페이지를 렌더링하지만, 셸이 이미 전송된 뒤라 상태 코드는 200입니다.)
-export const instant = false
+import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
+}
+
+export async function generateStaticParams({
+  params,
+}: {
+  params: { lang: string }
+}) {
+  return getGenerationStaticParams(languageParamChecker(params.lang))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -70,8 +72,7 @@ async function SessionList({
   generation: string
   locale: Locale
 }) {
-  await connection()
-  const visibilityBucket = getSessionVisibilityBucket()
+  const visibilityBucket = await getCachedSessionVisibilityBucket()
   const sessionList = await getPublishedSessionsByGeneration(
     generation,
     locale,
@@ -87,7 +88,7 @@ async function SessionList({
             : 'There are no sessions for this generation.'}
         </p>
       )}
-      {sessionList.map((session) => {
+      {sessionList.map((session, index) => {
         const sessionName =
           locale === 'ko' ? session.nameKo || session.name : session.name
 
@@ -95,6 +96,7 @@ async function SessionList({
           <Link
             href={`/${locale}/session/${generation}/${session.id}`}
             key={session.id}
+            prefetch={true}
             className="group flex min-h-44 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 active:scale-[0.98] motion-reduce:transform-none"
           >
             <Image
@@ -102,6 +104,7 @@ async function SessionList({
               width={200}
               height={200}
               alt={sessionName}
+              preload={index === 0}
               sizes="(max-width: 1024px) 50vw, 432px"
               className="aspect-5/4 w-2/5 object-cover sm:w-1/2"
             />

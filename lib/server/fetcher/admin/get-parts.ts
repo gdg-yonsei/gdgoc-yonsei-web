@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import { asc, count, desc, eq } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -19,8 +18,6 @@ export type AdminPartListItem = {
 }
 
 export async function getParts(scope?: AdminGenerationScope | null) {
-  noStore()
-
   return db
     .select({
       id: parts.id,

@@ -214,7 +214,7 @@ describe('sessions CRUD server actions', () => {
       nameKo: 'CRUD 세션',
       description: '<p>Session Description</p>',
       descriptionKo: '<p>세션 설명</p>',
-      mainImage: '',
+      mainImage: 'https://image.gdgyonsei.moveto.kr/sessions/crud-session.webp',
       contentImages: JSON.stringify([]),
       startAt: '2026-03-20T10:00',
       endAt: '2026-03-20T12:00',
@@ -237,6 +237,8 @@ describe('sessions CRUD server actions', () => {
         nameKo: 'CRUD 세션',
         description: 'pSession Description/p',
         descriptionKo: 'p세션 설명/p',
+        mainImage:
+          'https://image.gdgyonsei.moveto.kr/sessions/crud-session.webp',
         partId: 2,
         publicOpen: true,
       })
@@ -253,6 +255,40 @@ describe('sessions CRUD server actions', () => {
     })
     expect(mockResendSend).not.toHaveBeenCalled()
     expect(mockRedirect).toHaveBeenCalledWith('/admin/sessions')
+  })
+
+  it('rejects a newly published session without a representative image', async () => {
+    const { createSessionAction } =
+      await import('@/app/(admin)/admin/sessions/create/actions')
+
+    const result = await createSessionAction(
+      { error: '' },
+      createFormData({
+        name: 'Public Session',
+        nameKo: '공개 세션',
+        description: 'Session Description',
+        descriptionKo: '세션 설명',
+        mainImage: '/session-default.png?legacy=1',
+        contentImages: JSON.stringify([]),
+        startAt: '2026-03-20T10:00',
+        endAt: '2026-03-20T12:00',
+        location: 'Room 201',
+        locationKo: '201호',
+        maxCapacity: '30',
+        internalOpen: 'false',
+        publicOpen: 'true',
+        partId: '2',
+        participantId: JSON.stringify(['user-a']),
+        type: 'Part Session',
+        displayOnWebsite: 'true',
+      })
+    )
+
+    expect(result).toEqual({
+      error:
+        'A custom main image is required before publishing a session on the website.',
+    })
+    expect(mockInsert).not.toHaveBeenCalled()
   })
 
   it('updates session and refreshes participant mappings', async () => {

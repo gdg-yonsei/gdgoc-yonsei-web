@@ -12,6 +12,7 @@ import {
   sessionTag,
 } from '@/lib/server/cache'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
+import { isUuid } from '@/lib/server/queries/public/uuid'
 import { and, desc, eq, lte } from 'drizzle-orm'
 
 function toVisibilityDate(visibilityBucket: string): Date {
@@ -124,6 +125,10 @@ export async function getSessionById(
 ) {
   'use cache: remote'
 
+  if (!isUuid(sessionId)) {
+    return undefined
+  }
+
   cacheQuery(publicCachePolicy.sessionDetail, [sessionTag(sessionId, locale)])
 
   return db.query.sessions.findFirst({
@@ -136,6 +141,7 @@ export async function getSessionById(
       id: true,
       name: true,
       nameKo: true,
+      category: true,
       description: true,
       descriptionKo: true,
       mainImage: true,

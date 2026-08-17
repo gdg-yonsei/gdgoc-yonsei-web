@@ -71,7 +71,8 @@ Public read queries live under [`lib/server/queries/public`](../../lib/server/qu
 
 Admin reads must remain uncached.
 
-- Admin fetchers call `unstable_noStore()` explicitly.
+- Admin fetchers remain uncached by omitting cache directives; their authenticated
+  layouts use request-time APIs, so every admin request reads fresh data.
 - Admin route handlers that are personalized or permission-sensitive return `privateJson(...)` with private `Cache-Control`.
 - Auth handlers are forced dynamic where needed.
 

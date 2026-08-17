@@ -108,6 +108,8 @@ const adminMessages = {
       'A public session can also be attended by people who are not part of GDG.',
     sessionType: 'Session Type',
     displayOnWebsite: 'Display on Website',
+    sessionPublicationImageHint:
+      'A custom main image is required before a new or previously hidden session can be published. A published custom image cannot be reset to the default. It is also used in social link previews.',
     sessionLocation: 'Session Location',
     sessionInformation: 'Session Information',
     schedule: 'Schedule',
@@ -333,6 +335,8 @@ const adminMessages = {
     publicSessionHint: '공개 세션은 GDG 소속이 아닌 사람도 참여할 수 있습니다.',
     sessionType: '세션 종류',
     displayOnWebsite: '웹사이트 공개',
+    sessionPublicationImageHint:
+      '새 세션이나 비공개 세션을 게시하려면 대표 메인 이미지가 필요하며, 공개된 커스텀 이미지는 기본 이미지로 되돌릴 수 없습니다. 이 이미지는 링크 공유 미리보기에도 사용됩니다.',
     sessionLocation: '세션 장소',
     sessionInformation: '세션 정보',
     schedule: '일정',
