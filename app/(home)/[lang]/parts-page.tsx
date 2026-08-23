@@ -11,7 +11,7 @@ export default function PartsPage({ lang }: { lang: Locale }) {
   return (
     <section
       className={
-        'bg-gdg-white flex min-h-screen w-full items-center justify-center'
+        'content-auto-screen bg-gdg-white flex min-h-screen w-full items-center justify-center'
       }
     >
       <div className={'w-full max-w-6xl p-4 py-12'}>

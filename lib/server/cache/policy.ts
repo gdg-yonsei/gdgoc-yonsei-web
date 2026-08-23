@@ -27,12 +27,15 @@ export const cacheLifeConfig = {
   sessionList: {
     stale: 60 * 15,
     revalidate: 60 * 60,
-    expire: 60 * 60 * 24 * 7,
+    // Session visibility is keyed by an hourly bucket. Older buckets can
+    // never be reused, so expiring after two hours bounds otherwise-dead
+    // Redis entries without changing the one-hour refresh contract.
+    expire: 60 * 60 * 2,
   },
   sessionDetail: {
     stale: 60 * 15,
     revalidate: 60 * 60,
-    expire: 60 * 60 * 24 * 7,
+    expire: 60 * 60 * 2,
   },
   sitemap: {
     stale: 60 * 60,

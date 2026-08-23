@@ -4,6 +4,32 @@
 @import './pretendard.css';
 @plugin "@tailwindcss/typography";
 
+/* URL-independent shells can carry both locale strings. The already-mounted
+   localized layout selects one without adding a client boundary. */
+.locale-copy-ko {
+  display: none;
+}
+
+html[lang='ko'] .locale-copy-en {
+  display: none;
+}
+
+html[lang='ko'] .locale-copy-ko {
+  display: contents;
+}
+
+/* Keep complete server-rendered markup while deferring layout/paint for
+   below-the-fold, viewport-sized public sections. */
+.content-auto-screen {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 100vh;
+}
+
+.content-auto-section {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 32rem;
+}
+
 /* 관리자 셸에서만 <html class="dark">로 켜지는 수동 다크 모드.
    공개 사이트에는 .dark가 붙지 않으므로 영향이 없습니다. */
 @custom-variant dark (&:where(.dark, .dark *));

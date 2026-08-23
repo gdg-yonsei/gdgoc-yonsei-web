@@ -2,11 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+const { mockedRouterReplace } = vi.hoisted(() => ({
+  mockedRouterReplace: vi.fn(),
+}))
+
 vi.mock('@/lib/auth-client', () => ({
   authClient: {
     signIn: { passkey: vi.fn() },
     passkey: { addPasskey: vi.fn() },
   },
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: mockedRouterReplace }),
 }))
 
 vi.mock('@/app/components/auth/sign-out-button/actions', () => ({
@@ -27,6 +35,7 @@ describe('auth components', () => {
   beforeEach(() => {
     mockedAddPasskey.mockReset()
     mockedPasskeySignIn.mockReset()
+    mockedRouterReplace.mockReset()
     vi.mocked(globalThis.alert).mockClear()
   })
 
@@ -102,6 +111,23 @@ describe('auth components', () => {
     await waitFor(() => {
       expect(mockedPasskeySignIn).toHaveBeenCalledWith()
       expect(button).toBeEnabled()
+    })
+  })
+
+  it('uses App Router navigation after successful passkey authentication', async () => {
+    mockedPasskeySignIn.mockResolvedValue({
+      data: {},
+      error: null,
+    } as never)
+
+    const user = userEvent.setup()
+    render(<PasskeySignInButton />)
+    await user.click(
+      screen.getByRole('button', { name: /Sign in with Passkey/i })
+    )
+
+    await waitFor(() => {
+      expect(mockedRouterReplace).toHaveBeenCalledWith('/admin')
     })
   })
 

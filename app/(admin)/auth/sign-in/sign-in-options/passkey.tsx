@@ -6,12 +6,14 @@ import LoadingSpinner from '@/app/components/loading-spinner'
 import { useAtom } from 'jotai'
 import { isAuthenticatingState } from '@/lib/atoms'
 import { authClient } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
 
 /**
  * Passkey 로그인 버튼
  * @constructor
  */
 export default function PasskeySignInButton() {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isAuthenticating, setIsAuthenticating] = useAtom(isAuthenticatingState)
 
@@ -25,7 +27,7 @@ export default function PasskeySignInButton() {
           try {
             const result = await authClient.signIn.passkey()
             if (!result.error) {
-              window.location.assign('/admin')
+              router.replace('/admin')
             }
           } finally {
             setIsAuthenticating(false)

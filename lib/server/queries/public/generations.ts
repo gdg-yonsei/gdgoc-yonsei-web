@@ -1,20 +1,25 @@
 import 'server-only'
 
+import { cache } from 'react'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
+  forEachPublicLocale,
   generationLatestTag,
   generationListTag,
 } from '@/lib/server/cache'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { asc, desc } from 'drizzle-orm'
 
-export async function getGenerationSummaries(locale: Locale) {
+async function getSharedGenerationSummaries() {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.generationIndex, [generationListTag(locale)])
+  cacheQuery(
+    publicCachePolicy.generationIndex,
+    forEachPublicLocale((locale) => [generationListTag(locale)])
+  )
 
   return db
     .select({
@@ -27,12 +32,37 @@ export async function getGenerationSummaries(locale: Locale) {
     .orderBy(asc(generations.startDate))
 }
 
-export async function getLatestGeneration(locale: Locale) {
+const getGenerationSummariesForRequest = cache(() =>
+  getSharedGenerationSummaries()
+)
+
+export function getGenerationSummaries(_locale: Locale) {
+  void _locale
+  return getGenerationSummariesForRequest()
+}
+
+async function getSharedLatestGeneration() {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.generationIndex, [generationLatestTag(locale)])
+  cacheQuery(
+    publicCachePolicy.generationIndex,
+    forEachPublicLocale((locale) => [generationLatestTag(locale)])
+  )
 
   return db.query.generations.findFirst({
+    columns: {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+    },
     orderBy: desc(generations.startDate),
   })
+}
+
+const getLatestGenerationForRequest = cache(() => getSharedLatestGeneration())
+
+export function getLatestGeneration(_locale: Locale) {
+  void _locale
+  return getLatestGenerationForRequest()
 }

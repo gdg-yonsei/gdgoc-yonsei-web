@@ -6,7 +6,7 @@ export default function AboutPage({ lang }: { lang: Locale }) {
   return (
     <section
       className={
-        'flex min-h-screen w-full flex-col items-center justify-center bg-neutral-200 p-4 pt-16 md:gap-12 md:py-24'
+        'content-auto-screen flex min-h-screen w-full flex-col items-center justify-center bg-neutral-200 p-4 pt-16 md:gap-12 md:py-24'
       }
     >
       <div

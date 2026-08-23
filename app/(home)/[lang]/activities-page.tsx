@@ -5,7 +5,7 @@ export default function ActivitiesPage({ lang }: { lang: Locale }) {
   return (
     <section
       className={
-        'flex min-h-screen w-full flex-col items-center justify-center p-4 md:gap-8 md:py-24'
+        'content-auto-screen flex min-h-screen w-full flex-col items-center justify-center p-4 md:gap-8 md:py-24'
       }
     >
       <div className={'flex w-full max-w-4xl flex-col items-center gap-4'}>

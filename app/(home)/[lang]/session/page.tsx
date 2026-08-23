@@ -1,14 +1,23 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import GenerationIndexPage from '@/app/(home)/[lang]/generation-index-page'
+import GenerationIndexPage, {
+  GenerationIndexFallback,
+  GenerationIndexShell,
+} from '@/app/(home)/[lang]/generation-index-page'
 
 type Props = { params: Promise<{ lang: string }> }
 
 const descriptions = {
   en: 'Browse GDGoC Yonsei technical sessions by generation, including talks where student developers share practical knowledge, project experience, and emerging technology.',
   ko: '기수별 GDGoC Yonsei 기술 세션을 살펴보고 학생 개발자들이 공유한 실무 지식, 프로젝트 경험과 새로운 기술을 확인하세요.',
+} as const
+
+const copy = {
+  description: descriptions,
+  title: { en: 'Sessions by Generation', ko: '기수별 기술 세션' },
 } as const
 
 export function generateStaticParams() {
@@ -26,7 +35,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-export default async function SessionIndex({ params }: Props) {
+export default function SessionIndex({ params }: Props) {
+  return (
+    <GenerationIndexShell copy={copy}>
+      <Suspense fallback={<GenerationIndexFallback copy={copy} />}>
+        <SessionIndexContent params={params} />
+      </Suspense>
+    </GenerationIndexShell>
+  )
+}
+
+async function SessionIndexContent({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
   const generations = await getGenerationSummaries(lang)
 
@@ -41,7 +60,7 @@ export default async function SessionIndex({ params }: Props) {
       }
       generations={generations}
       lang={lang}
-      title={lang === 'ko' ? '기수별 기술 세션' : 'Sessions by Generation'}
+      title={copy.title[lang]}
     />
   )
 }

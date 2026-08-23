@@ -26,6 +26,9 @@ Tag builders live in [`tags.ts`](../../lib/server/cache/tags.ts).
 - List tags use stable scopes such as `project:list:ko`
 - Detail tags use stable identifiers such as `project:item:<projectId>:en`
 - Generation-scoped tags include the generation slug such as `session:generation:e2e-gen:ko`
+- Bilingual public read models use one language-independent cache key because
+  the row payload contains both Korean and English fields. They attach both
+  locale tags so the existing localized invalidation contract remains intact.
 
 Primary tags:
 
@@ -52,11 +55,14 @@ TTL values are defined once in [`policy.ts`](../../lib/server/cache/policy.ts).
 - `memberDirectory`: stale 1h, revalidate 6h, expire 7d
 - `projectList`: stale 1h, revalidate 6h, expire 7d
 - `projectDetail`: stale 6h, revalidate 1d, expire 30d
-- `sessionList`: stale 15m, revalidate 1h, expire 7d
-- `sessionDetail`: stale 15m, revalidate 1h, expire 7d
+- `sessionList`: stale 15m, revalidate 1h, expire 2h
+- `sessionDetail`: stale 15m, revalidate 1h, expire 2h
 - `sitemap`: stale 1h, revalidate 6h, expire 7d
 
-Session reads also include an hourly visibility bucket so time-gated visibility changes do not stay stale longer than one hour.
+Session reads also include an hourly visibility bucket so time-gated visibility
+changes do not stay stale longer than one hour. Because an older bucket is
+never reused, session entries expire after two hours instead of retaining seven
+days of unreachable Redis keys.
 
 ## Public Read Path Rules
 
@@ -65,7 +71,18 @@ Public read queries live under [`lib/server/queries/public`](../../lib/server/qu
 - Query modules own DB reads and cache directives.
 - Cache scopes receive runtime inputs as function arguments. They do not call `cookies()`, `headers()`, or session APIs internally.
 - Route files and components compose cached query functions instead of doing ad hoc DB work.
-- `proxy.ts` performs locale routing only. It does not fetch remote data or touch the database.
+- Locale is omitted from cache keys only when the selected result is bilingual
+  and locale-independent; locale-specific render output remains outside the
+  shared cache boundary.
+- React `cache()` deduplicates repeated metadata/page calls within one render;
+  the remote cache remains the cross-request and cross-instance authority.
+- Malformed UUIDs are rejected before entering a cached function, preventing
+  attacker-controlled cache-key cardinality.
+- `proxy.ts` performs a minimal existence query for direct HTML requests to
+  public generation/detail routes (detail lookups use their primary keys).
+  This is required by Next.js Cache Components to preserve true HTTP 404
+  status. RSC and prefetch requests skip the query, and the page still
+  validates independently before rendering.
 
 ## Admin Rules
 

@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
@@ -7,6 +8,7 @@ import { sessions } from '@/db/schema/sessions'
 import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
+  forEachPublicLocale,
   sessionGenerationTag,
   sessionListTag,
   sessionTag,
@@ -19,10 +21,13 @@ function toVisibilityDate(visibilityBucket: string): Date {
   return new Date(visibilityBucket)
 }
 
-export async function getSessions(locale: Locale, visibilityBucket: string) {
+async function getSharedSessions(visibilityBucket: string) {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.sessionList, [sessionListTag(locale)])
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [sessionListTag(locale)])
+  )
 
   return db.query.sessions.findMany({
     columns: {
@@ -56,17 +61,32 @@ export async function getSessions(locale: Locale, visibilityBucket: string) {
   })
 }
 
-export async function getPublishedSessionsByGeneration(
+const getSessionsForRequest = cache((visibilityBucket: string) =>
+  getSharedSessions(visibilityBucket)
+)
+
+export function getSessions(_locale: Locale, visibilityBucket: string) {
+  return getSessionsForRequest(visibilityBucket)
+}
+
+const getPublishedSessionsByGenerationForRequest = cache(
+  (generationName: string, visibilityBucket: string) =>
+    getSharedPublishedSessionsByGeneration(generationName, visibilityBucket)
+)
+
+async function getSharedPublishedSessionsByGeneration(
   generationName: string,
-  locale: Locale,
   visibilityBucket: string
 ) {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.sessionList, [
-    sessionListTag(locale),
-    sessionGenerationTag(generationName, locale),
-  ])
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [
+      sessionListTag(locale),
+      sessionGenerationTag(generationName, locale),
+    ])
+  )
 
   return db
     .select({
@@ -91,13 +111,29 @@ export async function getPublishedSessionsByGeneration(
     .orderBy(desc(sessions.endAt))
 }
 
-export async function getPublishedSessionsForSitemap(
-  locale: Locale,
+export function getPublishedSessionsByGeneration(
+  generationName: string,
+  _locale: Locale,
   visibilityBucket: string
 ) {
+  return getPublishedSessionsByGenerationForRequest(
+    generationName,
+    visibilityBucket
+  )
+}
+
+const getPublishedSessionsForSitemapForRequest = cache(
+  (visibilityBucket: string) =>
+    getSharedPublishedSessionsForSitemap(visibilityBucket)
+)
+
+async function getSharedPublishedSessionsForSitemap(visibilityBucket: string) {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.sitemap, [sessionListTag(locale)])
+  cacheQuery(
+    publicCachePolicy.sitemap,
+    forEachPublicLocale((locale) => [sessionListTag(locale)])
+  )
 
   return db
     .select({
@@ -118,18 +154,28 @@ export async function getPublishedSessionsForSitemap(
     .orderBy(desc(sessions.endAt))
 }
 
-export async function getSessionById(
+export function getPublishedSessionsForSitemap(
+  _locale: Locale,
+  visibilityBucket: string
+) {
+  return getPublishedSessionsForSitemapForRequest(visibilityBucket)
+}
+
+const getSessionByIdForRequest = cache(
+  (sessionId: string, visibilityBucket: string) =>
+    getSharedSessionById(sessionId, visibilityBucket)
+)
+
+async function getSharedSessionById(
   sessionId: string,
-  locale: Locale,
   visibilityBucket: string
 ) {
   'use cache: remote'
 
-  if (!isUuid(sessionId)) {
-    return undefined
-  }
-
-  cacheQuery(publicCachePolicy.sessionDetail, [sessionTag(sessionId, locale)])
+  cacheQuery(
+    publicCachePolicy.sessionDetail,
+    forEachPublicLocale((locale) => [sessionTag(sessionId, locale)])
+  )
 
   return db.query.sessions.findFirst({
     where: and(
@@ -169,4 +215,16 @@ export async function getSessionById(
       },
     },
   })
+}
+
+export function getSessionById(
+  sessionId: string,
+  _locale: Locale,
+  visibilityBucket: string
+) {
+  if (!isUuid(sessionId)) {
+    return Promise.resolve(undefined)
+  }
+
+  return getSessionByIdForRequest(sessionId, visibilityBucket)
 }

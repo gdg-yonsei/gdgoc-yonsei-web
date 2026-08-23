@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import PageTitle from '@/app/components/page-title'
 import JsonLd from '@/app/components/json-ld'
+import LocalizedText from '@/app/components/localized-text'
 import type { Locale } from '@/i18n-config'
 import { getLocalizedUrl, getSiteUrl } from '@/lib/seo/metadata'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
@@ -19,6 +21,62 @@ type GenerationIndexPageProps = {
   generations: GenerationSummary[]
   lang: Locale
   title: string
+}
+
+export type GenerationIndexCopy = {
+  description: { en: string; ko: string }
+  title: { en: string; ko: string }
+}
+
+export function GenerationIndexShell({
+  children,
+  copy,
+}: {
+  children: ReactNode
+  copy: GenerationIndexCopy
+}) {
+  return (
+    <div
+      className="min-h-screen w-full pt-20"
+      data-testid="generation-index-shell"
+    >
+      <PageTitle>
+        <LocalizedText en={copy.title.en} ko={copy.title.ko} />
+      </PageTitle>
+      {children}
+    </div>
+  )
+}
+
+export function GenerationIndexFallback({
+  copy,
+}: {
+  copy: GenerationIndexCopy
+}) {
+  return (
+    <section
+      className="mx-auto w-full max-w-4xl px-4 pb-20"
+      role="status"
+      aria-label="Loading generations"
+      data-testid="generation-index-fallback"
+    >
+      <div className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-6">
+        <p className="max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg sm:leading-8">
+          <LocalizedText en={copy.description.en} ko={copy.description.ko} />
+        </p>
+        <span className="h-8 w-28 animate-pulse rounded-full bg-neutral-100 motion-reduce:animate-none" />
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            key={index}
+            className="min-h-36 animate-pulse rounded-2xl border border-neutral-200 bg-white motion-reduce:animate-none"
+          />
+        ))}
+      </div>
+      <span className="sr-only">Loading generations</span>
+    </section>
+  )
 }
 
 export default function GenerationIndexPage({
@@ -57,9 +115,8 @@ export default function GenerationIndexPage({
   ]
 
   return (
-    <div className="min-h-screen w-full pt-20">
+    <>
       <JsonLd id={`${basePath}-index-structured-data`} data={structuredData} />
-      <PageTitle>{title}</PageTitle>
       <section className="mx-auto w-full max-w-4xl px-4 pb-20">
         <div className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-6">
           <p className="max-w-3xl text-base leading-7 text-neutral-700 sm:text-lg sm:leading-8">
@@ -117,6 +174,6 @@ export default function GenerationIndexPage({
           </ul>
         )}
       </section>
-    </div>
+    </>
   )
 }

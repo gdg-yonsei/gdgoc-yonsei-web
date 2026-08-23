@@ -29,6 +29,7 @@ export default function UserProfileCard({
           width={100}
           height={100}
           preload={preload}
+          sizes="80px"
           className={'aspect-square w-full max-w-20 rounded-full object-cover'}
         />
       ) : (

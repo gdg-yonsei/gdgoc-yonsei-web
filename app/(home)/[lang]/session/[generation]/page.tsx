@@ -96,7 +96,6 @@ async function SessionList({
           <Link
             href={`/${locale}/session/${generation}/${session.id}`}
             key={session.id}
-            prefetch={true}
             className="group flex min-h-44 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 active:scale-[0.98] motion-reduce:transform-none"
           >
             <Image
@@ -105,7 +104,7 @@ async function SessionList({
               height={200}
               alt={sessionName}
               preload={index === 0}
-              sizes="(max-width: 1024px) 50vw, 432px"
+              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 50vw, 432px"
               className="aspect-5/4 w-2/5 object-cover sm:w-1/2"
             />
             <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 p-4">

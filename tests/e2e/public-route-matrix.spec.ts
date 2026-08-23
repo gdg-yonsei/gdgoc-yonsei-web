@@ -106,6 +106,40 @@ test.describe('public routes and user interactions', () => {
     }
   })
 
+  test('invalid public parameters preserve direct-request HTTP 404 status', async ({
+    page,
+  }) => {
+    test.setTimeout(90_000)
+
+    const generation = seededData.generationName
+    const unknownUuid = '00000000-0000-4000-8000-000000000000'
+    const routes = [
+      '/en/member/not-a-generation',
+      '/en/project/not-a-generation',
+      `/en/project/${generation}/not-a-uuid`,
+      `/en/project/${generation}/${unknownUuid}`,
+      '/en/session/not-a-generation',
+      `/en/session/${generation}/not-a-uuid`,
+      `/en/session/${generation}/${unknownUuid}`,
+    ]
+
+    for (const route of routes) {
+      await test.step(route, async () => {
+        const response = await page.goto(route, {
+          waitUntil: 'domcontentloaded',
+        })
+        expect(
+          response,
+          `${route} did not return a document response`
+        ).not.toBeNull()
+        expect(response?.status(), `${route} must remain a true HTTP 404`).toBe(
+          404
+        )
+        await expect(page.getByText('404')).toBeVisible()
+      })
+    }
+  })
+
   test('user can click seeded session and project cards from generation list pages', async ({
     page,
   }) => {

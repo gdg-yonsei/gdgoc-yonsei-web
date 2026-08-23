@@ -1,0 +1,57 @@
+name: Performance and correctness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: performance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      AUTH_DRIZZLE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+      BETTER_AUTH_SECRET: test-secret-at-least-32-characters-long
+      BETTER_AUTH_URL: http://127.0.0.1:3100
+      GITHUB_CLIENT_ID: test-github-client-id
+      GITHUB_CLIENT_SECRET: test-github-client-secret
+      GOOGLE_CLIENT_ID: test-google-client-id
+      GOOGLE_CLIENT_SECRET: test-google-client-secret
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+      NEXT_PUBLIC_IMAGE_URL: https://cdn.example/
+      CLOUDFLARE_ACCOUNT_ID: test-account
+      R2_ACCESS_KEY: test-access-key
+      R2_SECRET_KEY: test-secret-key
+      R2_BUCKET_NAME: test-bucket
+      RESEND_API_KEY: test-resend-key
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:types
+      - run: pnpm lint --max-warnings=0
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm db:migrate
+      - run: pnpm test:e2e:prod

@@ -1,4 +1,5 @@
 import PageTitle from '@/app/components/page-title'
+import LocalizedText from '@/app/components/localized-text'
 import GoogleCalendar from '@/app/(home)/[lang]/calendar/google-calendar'
 import languageParamChecker from '@/lib/language-param-checker'
 import { Metadata } from 'next'
@@ -35,12 +36,12 @@ export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
 }
 
-export default async function CalendarPage({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
-
+export default function CalendarPage() {
   return (
     <div className={'flex min-h-screen w-full flex-col py-20'}>
-      <PageTitle>{lang === 'ko' ? '캘린더' : 'Calendar'}</PageTitle>
+      <PageTitle>
+        <LocalizedText en="Calendar" ko="캘린더" />
+      </PageTitle>
       {/*구글 캘린더 삽입*/}
       <GoogleCalendar />
     </div>

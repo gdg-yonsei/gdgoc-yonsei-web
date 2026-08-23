@@ -67,7 +67,7 @@ describe('public queries', () => {
     vi.clearAllMocks()
   })
 
-  it('returns generation summaries with locale-scoped cache policy', async () => {
+  it('shares generation summaries across locales with both invalidation tags', async () => {
     const mockOrderBy = vi.fn().mockResolvedValue([
       { id: 2, name: '2nd' },
       { id: 3, name: '3rd' },
@@ -85,6 +85,7 @@ describe('public queries', () => {
       { id: 3, name: '3rd' },
     ])
     expect(mockCacheQuery).toHaveBeenCalledWith('generationIndex', [
+      'generation:list:en',
       'generation:list:ko',
     ])
     expect(mockSelect).toHaveBeenCalledTimes(1)
@@ -92,7 +93,7 @@ describe('public queries', () => {
     expect(mockOrderBy).toHaveBeenCalledTimes(1)
   })
 
-  it('returns latest generation with locale-scoped tag', async () => {
+  it('shares the latest generation across locales', async () => {
     mockGenerationsFindFirst.mockResolvedValue({ id: 3, name: '3rd' })
 
     const { getLatestGeneration } =
@@ -103,6 +104,7 @@ describe('public queries', () => {
     expect(result).toEqual({ id: 3, name: '3rd' })
     expect(mockCacheQuery).toHaveBeenCalledWith('generationIndex', [
       'generation:latest:en',
+      'generation:latest:ko',
     ])
     expect(mockGenerationsFindFirst).toHaveBeenCalledTimes(1)
   })
@@ -135,6 +137,7 @@ describe('public queries', () => {
       },
     ])
     expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
+      'project:list:en',
       'project:list:ko',
     ])
     expect(chain.innerJoin).toHaveBeenCalledTimes(1)
@@ -151,32 +154,41 @@ describe('public queries', () => {
     expect(result).toEqual({ id: projectId })
     expect(mockCacheQuery).toHaveBeenCalledWith('projectDetail', [
       `project:item:${projectId}:en`,
+      `project:item:${projectId}:ko`,
     ])
-    expect(mockProjectsFindFirst).toHaveBeenCalledWith({
-      where: expect.anything(),
-      with: {
-        generation: {
-          columns: {
-            id: true,
-            name: true,
+    expect(mockProjectsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        columns: expect.objectContaining({
+          content: true,
+          contentKo: true,
+          images: true,
+          mainImage: true,
+        }),
+        where: expect.anything(),
+        with: {
+          generation: {
+            columns: {
+              id: true,
+              name: true,
+            },
           },
-        },
-        usersToProjects: {
-          columns: {
-            userId: true,
-          },
-          with: {
-            user: {
-              columns: expect.objectContaining({
-                id: true,
-                firstName: true,
-                isForeigner: true,
-              }),
+          usersToProjects: {
+            columns: {
+              userId: true,
+            },
+            with: {
+              user: {
+                columns: expect.objectContaining({
+                  id: true,
+                  firstName: true,
+                  isForeigner: true,
+                }),
+              },
             },
           },
         },
-      },
-    })
+      })
+    )
   })
 
   it('rejects a malformed project id before querying Postgres', async () => {
@@ -197,6 +209,8 @@ describe('public queries', () => {
 
     expect(result).toEqual({ name: '5th', projects: [] })
     expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
+      'project:list:en',
+      'project:generation:5th:en',
       'project:list:ko',
       'project:generation:5th:ko',
     ])
@@ -219,6 +233,7 @@ describe('public queries', () => {
     expect(result).toEqual([{ id: 'session-1' }])
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
       'session:list:en',
+      'session:list:ko',
     ])
     expect(mockSessionsFindMany).toHaveBeenCalledTimes(1)
 
@@ -249,7 +264,7 @@ describe('public queries', () => {
     })
   })
 
-  it('fetches a visible session detail with locale-scoped detail tag', async () => {
+  it('shares visible session detail data across locales', async () => {
     const sessionId = '6bf4a326-52ec-4da5-b204-9a67c7332a0f'
     mockSessionsFindFirst.mockResolvedValue({ id: sessionId })
     const { getSessionById } =
@@ -263,6 +278,7 @@ describe('public queries', () => {
 
     expect(result).toEqual({ id: sessionId })
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionDetail', [
+      `session:item:${sessionId}:en`,
       `session:item:${sessionId}:ko`,
     ])
     expect(mockSessionsFindFirst).toHaveBeenCalledTimes(1)
@@ -289,7 +305,7 @@ describe('public queries', () => {
     expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
-  it('fetches published sessions by generation with locale-specific tags', async () => {
+  it('shares published sessions by generation across locales', async () => {
     const chain = createSelectChainWithOrderByResult([{ id: 'session-1' }])
     mockSelect.mockReturnValue(chain)
 
@@ -304,6 +320,8 @@ describe('public queries', () => {
 
     expect(result).toEqual([{ id: 'session-1' }])
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
+      'session:list:en',
+      'session:generation:6th:en',
       'session:list:ko',
       'session:generation:6th:ko',
     ])
@@ -326,12 +344,15 @@ describe('public queries', () => {
     )
 
     expect(result).toEqual([{ id: 'session-1', generationName: '6th' }])
-    expect(mockCacheQuery).toHaveBeenCalledWith('sitemap', ['session:list:ko'])
+    expect(mockCacheQuery).toHaveBeenCalledWith('sitemap', [
+      'session:list:en',
+      'session:list:ko',
+    ])
     expect(chain.leftJoin).toHaveBeenCalledTimes(2)
     expect(chain.where).toHaveBeenCalledTimes(1)
   })
 
-  it('fetches members for a generation with locale-scoped tags', async () => {
+  it('fetches a minimal member directory shared across locales', async () => {
     mockGenerationsFindFirst.mockResolvedValue({ name: '7th', parts: [] })
     const { getMembersByGeneration } =
       await import('@/lib/server/queries/public/members')
@@ -342,7 +363,28 @@ describe('public queries', () => {
     expect(mockCacheQuery).toHaveBeenCalledWith('memberDirectory', [
       'member:list:en',
       'member:generation:7th:en',
+      'member:list:ko',
+      'member:generation:7th:ko',
     ])
-    expect(mockGenerationsFindFirst).toHaveBeenCalledTimes(1)
+    expect(mockGenerationsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        with: {
+          parts: expect.objectContaining({
+            with: {
+              usersToParts: expect.objectContaining({
+                with: {
+                  user: {
+                    columns: expect.not.objectContaining({
+                      studentId: true,
+                      telephone: true,
+                    }),
+                  },
+                },
+              }),
+            },
+          }),
+        },
+      })
+    )
   })
 })

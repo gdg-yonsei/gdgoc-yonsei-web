@@ -2,6 +2,7 @@ import type { NextConfig } from 'next'
 import { cacheLifeConfig } from './lib/server/cache/policy'
 
 const hasSharedRedisCache = Boolean(process.env.REDIS_URL)
+const exposeTestingApi = process.env.NEXT_EXPOSE_TESTING_API === '1'
 const securityHeaders = [
   {
     key: 'Referrer-Policy',
@@ -50,11 +51,15 @@ const nextConfig: NextConfig = {
   cacheMaxMemorySize: hasSharedRedisCache ? 0 : undefined,
   experimental: {
     authInterrupts: true,
+    exposeTestingApiInProductionBuild: exposeTestingApi,
     optimizePackageImports: ['motion', 'jotai', 'react-qr-code'],
     turbopackFileSystemCacheForBuild: true,
     turbopackRustReactCompiler: true,
   },
   images: {
+    // Admin uploads use UUID object keys, so a changed image always receives a
+    // new URL and optimized variants can safely stay warm for a month.
+    minimumCacheTTL: 60 * 60 * 24 * 31,
     remotePatterns: [
       {
         protocol: 'https',

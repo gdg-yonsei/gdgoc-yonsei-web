@@ -50,12 +50,19 @@ async function writeSeedInfo(seeded: SeededE2EData) {
   await fs.writeFile(SEEDED_DATA_FILE, JSON.stringify(seeded, null, 2))
 }
 
-export default async function globalSetup(config: FullConfig) {
+export async function prepareE2EData(baseURL: string) {
   mkdirSync(AUTH_DIR, { recursive: true })
 
   const seeded = await resetAndSeedE2EDatabase()
   await writeSeedInfo(seeded)
+  await writeAuthState(baseURL)
+}
+
+export default async function globalSetup(config: FullConfig) {
+  if (process.env.E2E_SEEDED_BEFORE_BUILD === '1') {
+    return
+  }
 
   const baseURL = config.projects[0]?.use?.baseURL ?? 'http://127.0.0.1:3000'
-  await writeAuthState(baseURL)
+  await prepareE2EData(baseURL)
 }

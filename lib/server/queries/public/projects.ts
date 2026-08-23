@@ -1,11 +1,13 @@
 import 'server-only'
 
+import { cache } from 'react'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { projects } from '@/db/schema/projects'
 import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
+  forEachPublicLocale,
   projectGenerationTag,
   projectListTag,
   projectTag,
@@ -14,10 +16,13 @@ import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { desc, eq } from 'drizzle-orm'
 
-export async function getProjects(locale: Locale) {
+async function getSharedProjects() {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.projectList, [projectListTag(locale)])
+  cacheQuery(
+    publicCachePolicy.projectList,
+    forEachPublicLocale((locale) => [projectListTag(locale)])
+  )
 
   const rows = await db
     .select({
@@ -39,16 +44,27 @@ export async function getProjects(locale: Locale) {
   }))
 }
 
-export async function getProjectsByGeneration(
-  generationName: string,
-  locale: Locale
-) {
+const getProjectsForRequest = cache(() => getSharedProjects())
+
+export function getProjects(_locale: Locale) {
+  void _locale
+  return getProjectsForRequest()
+}
+
+const getProjectsByGenerationForRequest = cache((generationName: string) =>
+  getSharedProjectsByGeneration(generationName)
+)
+
+async function getSharedProjectsByGeneration(generationName: string) {
   'use cache: remote'
 
-  cacheQuery(publicCachePolicy.projectList, [
-    projectListTag(locale),
-    projectGenerationTag(generationName, locale),
-  ])
+  cacheQuery(
+    publicCachePolicy.projectList,
+    forEachPublicLocale((locale) => [
+      projectListTag(locale),
+      projectGenerationTag(generationName, locale),
+    ])
+  )
 
   return db.query.generations.findFirst({
     where: eq(generations.name, generationName),
@@ -74,17 +90,41 @@ export async function getProjectsByGeneration(
   })
 }
 
-export async function getProjectById(projectId: string, locale: Locale) {
+export function getProjectsByGeneration(
+  generationName: string,
+  _locale: Locale
+) {
+  void _locale
+  return getProjectsByGenerationForRequest(generationName)
+}
+
+const getProjectByIdForRequest = cache((projectId: string) =>
+  getSharedProjectById(projectId)
+)
+
+async function getSharedProjectById(projectId: string) {
   'use cache: remote'
 
-  if (!isUuid(projectId)) {
-    return undefined
-  }
-
-  cacheQuery(publicCachePolicy.projectDetail, [projectTag(projectId, locale)])
+  cacheQuery(
+    publicCachePolicy.projectDetail,
+    forEachPublicLocale((locale) => [projectTag(projectId, locale)])
+  )
 
   return db.query.projects.findFirst({
     where: eq(projects.id, projectId),
+    columns: {
+      id: true,
+      name: true,
+      nameKo: true,
+      description: true,
+      descriptionKo: true,
+      content: true,
+      contentKo: true,
+      mainImage: true,
+      images: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     with: {
       generation: {
         columns: {
@@ -112,4 +152,13 @@ export async function getProjectById(projectId: string, locale: Locale) {
       },
     },
   })
+}
+
+export function getProjectById(projectId: string, _locale: Locale) {
+  void _locale
+  if (!isUuid(projectId)) {
+    return Promise.resolve(undefined)
+  }
+
+  return getProjectByIdForRequest(projectId)
 }
