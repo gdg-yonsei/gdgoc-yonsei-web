@@ -48,6 +48,37 @@ test('desktop navigation routes user to calendar page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Calendar' })).toBeVisible()
 })
 
+test('activity cards move with the previous and next buttons', async ({
+  page,
+}) => {
+  await page.goto('/ko', { waitUntil: 'domcontentloaded' })
+
+  const carousel = page.getByRole('region', { name: '주요 활동 카드' })
+  const track = carousel.locator('[data-activity-track]')
+  const previousButton = carousel.getByRole('button', {
+    name: '이전 활동 보기',
+  })
+  const nextButton = carousel.getByRole('button', { name: '다음 활동 보기' })
+
+  await expect(carousel).toBeVisible()
+  await expect(previousButton).toBeDisabled()
+  await expect(nextButton).toBeEnabled()
+
+  const initialScrollLeft = await track.evaluate(
+    (element) => element.scrollLeft
+  )
+  await nextButton.click()
+  await expect
+    .poll(() => track.evaluate((element) => element.scrollLeft))
+    .toBeGreaterThan(initialScrollLeft)
+  await expect(previousButton).toBeEnabled()
+
+  await previousButton.click()
+  await expect
+    .poll(() => track.evaluate((element) => element.scrollLeft))
+    .toBeLessThanOrEqual(1)
+})
+
 test('freshman orientation banner navigates to OT page', async ({ page }) => {
   await page.goto('/en', { waitUntil: 'domcontentloaded' })
 
