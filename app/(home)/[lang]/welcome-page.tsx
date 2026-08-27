@@ -15,7 +15,7 @@ export default function WelcomePage({ lang }: { lang: Locale }) {
         <GDGLogo svgKey={'main'} className={'w-28 sm:w-40 md:w-64'} />
         <h1 className={'flex flex-col gap-4'}>
           <span className={'text-2xl md:text-4xl'}>
-            {lang === 'ko' ? '연세대학교' : 'Welcome to'}
+            {lang === 'ko' ? '' : 'Welcome to'}
           </span>
           <span
             className={
@@ -31,7 +31,7 @@ export default function WelcomePage({ lang }: { lang: Locale }) {
               'text-logo-blue text-xl whitespace-nowrap sm:text-2xl md:text-4xl'
             }
           >
-            {lang === 'ko' ? '학생 개발자 커뮤니티' : 'Yonsei University'}
+            Yonsei University
           </span>
         </h1>
       </div>
