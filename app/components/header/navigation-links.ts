@@ -8,7 +8,6 @@ type HeaderNavigationLink = {
 
 export function getHeaderNavigationLinks(lang: Locale): HeaderNavigationLink[] {
   return [
-    { href: `/${lang}/admin`, label: 'GYMS', prefetch: false },
     {
       href: `/${lang}/session`,
       label: lang === 'ko' ? '세션' : 'Sessions',
@@ -25,5 +24,6 @@ export function getHeaderNavigationLinks(lang: Locale): HeaderNavigationLink[] {
       href: `/${lang}/member`,
       label: lang === 'ko' ? '구성원' : 'Members',
     },
+    { href: `/${lang}/admin`, label: 'GYMS', prefetch: false }
   ]
 }
