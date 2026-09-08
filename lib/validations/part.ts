@@ -10,6 +10,7 @@ export const partValidation = z
       .trim()
       .nonempty('Name is required'),
     description: z.string().nullable(),
+    displayOrder: z.number().int().min(-2147483648).max(2147483647).optional(),
     generationId: z
       .number({ message: 'Invalid Generation' })
       .gte(1, { message: 'Invalid Generation' }),

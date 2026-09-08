@@ -61,13 +61,10 @@ async function getSharedMembersByGeneration(generationName: string) {
                 },
               },
             },
-            orderBy: [
-              asc(usersToParts.userType),
-              asc(usersToParts.userId),
-            ],
+            orderBy: [asc(usersToParts.userType), asc(usersToParts.userId)],
           },
         },
-        orderBy: asc(parts.displayOrder),
+        orderBy: [asc(parts.displayOrder), asc(parts.id)],
       },
     },
   })

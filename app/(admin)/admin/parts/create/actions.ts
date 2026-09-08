@@ -50,6 +50,7 @@ export async function createPartAction(
     name,
     description,
     generationId,
+    displayOrder,
     membersList,
     doubleBoardMembersList,
   } = parsed.data
@@ -64,6 +65,7 @@ export async function createPartAction(
         name,
         description,
         generationsId: generationId,
+        displayOrder: displayOrder ?? 10,
       })
       .returning({ id: parts.id })
 

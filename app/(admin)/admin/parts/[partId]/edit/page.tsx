@@ -8,9 +8,8 @@ import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import { updatePartAction } from '@/app/(admin)/admin/parts/[partId]/edit/actions'
 import DataTextarea from '@/app/components/admin/data-textarea'
 import DataForm from '@/app/components/data-form'
-import { getMembers } from '@/lib/server/fetcher/admin/get-members'
-import DataSelectMultipleInput from '@/app/components/admin/data-select-multiple-input'
-import formatUserName from '@/lib/format-user-name'
+import { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
+import PartMembersInput from '@/app/components/admin/part-members-input'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
@@ -63,10 +62,7 @@ export default async function EditPartPage({
         name: partData.generation.name,
       }
     : null
-  const membersData = await getMembers(null)
-  const uniqueMembers = Array.from(
-    new Map(membersData.map((m) => [m.id, m])).values()
-  )
+  const membersData = await getPartMemberOptions()
 
   return (
     <AdminDefaultLayout>
@@ -106,6 +102,19 @@ export default async function EditPartPage({
           name={'name'}
           placeholder={'Name'}
         />
+        <DataInput
+          title={t.displayOrder}
+          name="displayOrder"
+          type="number"
+          required
+          defaultValue={partData.displayOrder}
+          placeholder="10"
+        />
+        <p className="text-ink-muted text-sm">
+          {locale === 'ko'
+            ? '작은 숫자의 파트부터 표시됩니다.'
+            : 'Parts with smaller numbers appear first.'}
+        </p>
         <DataTextarea
           defaultValue={partData.description}
           name={'description'}
@@ -115,36 +124,30 @@ export default async function EditPartPage({
           <div className={'admin-field-label'}>{t.generation}</div>
           <div className={'admin-field-value'}>{actualGeneration?.name}</div>
         </div>
-        <DataSelectMultipleInput
-          data={uniqueMembers.map((member) => ({
-            name: formatUserName(
-              member.name,
-              member.firstNameKo,
-              member.lastNameKo,
-              member.isForeigner,
-              !member.isForeigner
-            ),
-            value: member.id,
-            generation: member.generation,
-            part: member.part,
-          }))}
+        <PartMembersInput
+          members={membersData.filter(
+            (member) =>
+              !partData.usersToParts.some(
+                (membership) =>
+                  membership.userId === member.id &&
+                  membership.userType !== 'Primary' &&
+                  membership.userType !== 'Secondary'
+              )
+          )}
           name={'membersList'}
           title={t.members}
           defaultValue={membersIdList}
         />
-        <DataSelectMultipleInput
-          data={uniqueMembers.map((member) => ({
-            name: formatUserName(
-              member.name,
-              member.firstNameKo,
-              member.lastNameKo,
-              member.isForeigner,
-              !member.isForeigner
-            ),
-            value: member.id,
-            generation: member.generation,
-            part: member.part,
-          }))}
+        <PartMembersInput
+          members={membersData.filter(
+            (member) =>
+              !partData.usersToParts.some(
+                (membership) =>
+                  membership.userId === member.id &&
+                  membership.userType !== 'Primary' &&
+                  membership.userType !== 'Secondary'
+              )
+          )}
           name={'doubleBoardMembersList'}
           title={t.doubleBoardMembers}
           defaultValue={doubleBoardMembersIdList}

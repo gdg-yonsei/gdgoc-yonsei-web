@@ -37,9 +37,5 @@ export async function getParts(scope?: AdminGenerationScope | null) {
         : undefined
     )
     .groupBy(parts.id, generations.id)
-    .orderBy(
-      desc(parts.generationsId),
-      asc(parts.displayOrder),
-      asc(parts.createdAt)
-    )
+    .orderBy(desc(parts.generationsId), asc(parts.displayOrder), asc(parts.id))
 }

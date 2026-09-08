@@ -33,6 +33,7 @@ export default function getPartFormData(formData: FormData): {
   name: string | null
   description: string | null
   generationId: number
+  displayOrder: number | undefined
   membersList: string[]
   doubleBoardMembersList: string[]
 } {
@@ -48,6 +49,11 @@ export default function getPartFormData(formData: FormData): {
     name,
     description,
     generationId,
+    displayOrder: formData.has('displayOrder')
+      ? String(formData.get('displayOrder')).trim() === ''
+        ? NaN
+        : Number(formData.get('displayOrder'))
+      : undefined,
     membersList,
     doubleBoardMembersList,
   }

@@ -57,7 +57,7 @@ export default function DataInput({
           'admin-input',
           isCheckbox && 'mr-auto ml-0.5 size-6 w-auto p-0'
         )}
-        defaultValue={defaultValue ? defaultValue : ''}
+        defaultValue={defaultValue ?? ''}
         name={name}
         placeholder={placeholder}
         defaultChecked={isChecked}

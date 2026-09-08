@@ -67,6 +67,10 @@ export default async function PartPage({
       </div>
       <div className={'admin-form-grid gap-2'}>
         <div className={'admin-card'}>
+          <div className={'admin-field-label'}>{t.displayOrder}</div>
+          <div className={'admin-field-value'}>{partData.displayOrder}</div>
+        </div>
+        <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.generation}</div>
           <div className={'admin-field-value'}>{partData.generation?.name}</div>
         </div>

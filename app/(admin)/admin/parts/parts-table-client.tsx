@@ -51,7 +51,7 @@ export default function PartsTableClient({
     compareItems: (left, right, key) => {
       if (key === 'name') return left.name.localeCompare(right.name)
       if (key === 'members') return right.memberCount - left.memberCount
-      return left.displayOrder - right.displayOrder
+      return left.displayOrder - right.displayOrder || left.id - right.id
     },
   })
 
@@ -69,6 +69,12 @@ export default function PartsTableClient({
 
   const columns = useMemo<AdminColumn<AdminPartListItem>[]>(
     () => [
+      {
+        key: 'displayOrder',
+        header: t.displayOrder,
+        width: '7rem',
+        render: (part) => part.displayOrder,
+      },
       {
         key: 'name',
         header: t.columnName,

@@ -2,7 +2,7 @@
 
 import db from '@/db'
 import { redirect } from 'next/navigation'
-import { eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { partValidation } from '@/lib/validations/part'
@@ -41,6 +41,7 @@ export async function updatePartAction(
     name,
     description,
     generationId,
+    displayOrder,
     membersList,
     doubleBoardMembersList,
   } = parsed.data
@@ -52,11 +53,22 @@ export async function updatePartAction(
       columns: {
         generationsId: true,
       },
+      with: { usersToParts: { columns: { userId: true, userType: true } } },
     })
 
     if (!existingPart || existingPart.generationsId !== generationId) {
       return { error: 'Part generation cannot be changed from this screen.' }
     }
+
+    const preservedIds = new Set(
+      (existingPart.usersToParts ?? [])
+        .filter(
+          (membership) =>
+            membership.userType !== 'Primary' &&
+            membership.userType !== 'Secondary'
+        )
+        .map((membership) => membership.userId)
+    )
 
     const previousGenerationName =
       await getGenerationNameForPartId(partIdNumber)
@@ -69,11 +81,19 @@ export async function updatePartAction(
         name,
         description: description,
         generationsId: generationId,
+        ...(displayOrder === undefined ? {} : { displayOrder }),
         updatedAt: new Date(),
       })
       .where(eq(parts.id, partIdNumber))
-    // 파트에 연결된 모든 멤버 정보 삭제
-    await db.delete(usersToParts).where(eq(usersToParts.partId, partIdNumber))
+    // Core 및 관리 화면에서 편집하지 않는 소속은 보존합니다.
+    await db
+      .delete(usersToParts)
+      .where(
+        and(
+          eq(usersToParts.partId, partIdNumber),
+          inArray(usersToParts.userType, ['Primary', 'Secondary'])
+        )
+      )
 
     const userToPartData: {
       userId: string
@@ -82,6 +102,7 @@ export async function updatePartAction(
     }[] = []
 
     for (const member of membersList) {
+      if (preservedIds.has(member)) continue
       userToPartData.push({
         userId: member,
         partId: partIdNumber,
@@ -90,6 +111,7 @@ export async function updatePartAction(
     }
 
     for (const doubleMember of doubleBoardMembersList) {
+      if (preservedIds.has(doubleMember)) continue
       userToPartData.push({
         userId: doubleMember,
         partId: partIdNumber,

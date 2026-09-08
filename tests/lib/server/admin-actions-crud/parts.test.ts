@@ -149,6 +149,7 @@ describe('parts CRUD server actions', () => {
       name: 'Cloud',
       description: 'Cloud Part',
       generationsId: 1,
+      displayOrder: 10,
     })
     expect(userToPartValues).toHaveBeenCalledWith([
       {
@@ -217,6 +218,65 @@ describe('parts CRUD server actions', () => {
     expect(mockInvalidatePartPublicCache).toHaveBeenCalledWith(['1st', '2nd'])
     expect(mockRedirect).toHaveBeenCalledWith('/admin/parts/9')
   })
+
+  it('saves display order without replacing Core membership', async () => {
+    const values = vi.fn().mockResolvedValue(undefined)
+    mockInsert.mockReturnValue({ values })
+    mockQuery.parts.findFirst.mockResolvedValue({
+      generationsId: 2,
+      usersToParts: [{ userId: 'core', userType: 'Core' }],
+    })
+    const { updatePartAction } =
+      await import('@/app/(admin)/admin/parts/[partId]/edit/actions')
+    await updatePartAction(
+      '9',
+      { error: '' },
+      createFormData({
+        name: 'Cloud',
+        description: '',
+        generationId: '2',
+        displayOrder: '0',
+        membersList: JSON.stringify(['core', 'member']),
+        doubleBoardMembersList: '[]',
+      })
+    )
+    expect(mockUpdateSet).toHaveBeenCalledWith(
+      expect.objectContaining({ displayOrder: 0 })
+    )
+    expect(values).toHaveBeenCalledWith([
+      { userId: 'member', partId: 9, userType: 'Primary' },
+    ])
+    const { PgDialect } = await import('drizzle-orm/pg-core')
+    const deletion = new PgDialect().sqlToQuery(
+      mockDeleteWhere.mock.calls[0]![0]
+    )
+    expect(deletion.sql).toContain('"users_to_parts"."userType" in')
+    expect(deletion.params).toEqual([9, 'Primary', 'Secondary'])
+    expect(mockInvalidatePartPublicCache).toHaveBeenCalled()
+  })
+
+  it.each(['', '1.5', 'abc', '2147483648'])(
+    'rejects invalid display order %j before writes',
+    async (displayOrder) => {
+      const { updatePartAction } =
+        await import('@/app/(admin)/admin/parts/[partId]/edit/actions')
+      const result = await updatePartAction(
+        '9',
+        { error: '' },
+        createFormData({
+          name: 'Cloud',
+          description: '',
+          generationId: '2',
+          displayOrder,
+          membersList: '[]',
+          doubleBoardMembersList: '[]',
+        })
+      )
+      expect(result?.error).toBeTruthy()
+      expect(mockUpdate).not.toHaveBeenCalled()
+      expect(mockDelete).not.toHaveBeenCalled()
+    }
+  )
 
   it('deletes part from shared delete action path', async () => {
     const { default: deleteResourceAction } =

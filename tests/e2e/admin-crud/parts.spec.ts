@@ -50,6 +50,7 @@ test.describe('parts CRUD', () => {
       await page.getByRole('link', { name: 'Edit' }).click()
       await expect(page).toHaveURL(/\/admin\/parts\/\d+\/edit$/)
       await page.getByRole('textbox', { name: 'Name' }).fill(updatedPartName)
+      await page.getByRole('spinbutton', { name: 'Display Order' }).fill('0')
       await page
         .getByRole('textbox', { name: 'Description' })
         .fill('Part description updated')
@@ -59,6 +60,32 @@ test.describe('parts CRUD', () => {
       await expect(
         page.getByText(updatedPartName, { exact: true })
       ).toBeVisible()
+      await page.getByRole('link', { name: 'Edit' }).click()
+      await expect(
+        page.getByRole('spinbutton', { name: 'Display Order' })
+      ).toHaveValue('0')
+      const memberPicker = page.getByRole('group', {
+        name: 'Members',
+        exact: true,
+      })
+      await expect(memberPicker.getByRole('button')).toHaveCount(0)
+      await memberPicker
+        .getByRole('textbox', { name: 'Search name' })
+        .fill('Member')
+      await memberPicker.getByRole('button', { name: /Member/ }).click()
+      await memberPicker
+        .getByRole('textbox', { name: 'Search name' })
+        .fill('no-match')
+      await expect(
+        memberPicker.getByRole('button', { name: /Remove/ })
+      ).toHaveCount(1)
+      await page.getByRole('button', { name: 'Submit' }).click()
+      await page.getByRole('link', { name: 'Edit' }).click()
+      await expect(
+        page
+          .getByRole('group', { name: 'Members', exact: true })
+          .getByRole('button', { name: /Remove/ })
+      ).toHaveCount(1)
     })
   })
 
