@@ -15,9 +15,9 @@ test.describe('public instant navigation shells', () => {
       await page.waitForURL((url) => url.pathname === '/en/project')
       await expect(page.getByRole('banner')).toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Projects by Generation' })
+        page.getByRole('heading', { level: 1, name: 'Projects', exact: true })
       ).toBeVisible()
-      await expect(page.getByTestId('generation-index-shell')).toBeVisible()
+      await expect(page.getByTestId('project-showcase-shell')).toBeVisible()
     })
   })
 
@@ -70,7 +70,10 @@ test.describe('public instant navigation shells', () => {
       await page.waitForURL((url) => url.pathname === destination)
       await expect(page.getByRole('banner')).toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Projects' })
+        page.getByRole('heading', {
+          level: 1,
+          name: `${seededData.generationName} Projects`,
+        })
       ).toBeVisible()
     })
   })

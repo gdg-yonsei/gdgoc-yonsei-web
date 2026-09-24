@@ -209,30 +209,6 @@ describe('public queries', () => {
     expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
-  it('fetches project list for a generation', async () => {
-    mockGenerationsFindFirst.mockResolvedValue({ name: '5th', projects: [] })
-    const { getProjectsByGeneration } =
-      await import('@/lib/server/queries/public/projects')
-
-    const result = await getProjectsByGeneration('5th', 'ko')
-
-    expect(result).toEqual({ name: '5th', projects: [] })
-    expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
-      'project:list:en',
-      'project:generation:5th:en',
-      'project:list:ko',
-      'project:generation:5th:ko',
-    ])
-    expect(mockGenerationsFindFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        columns: {
-          id: true,
-          name: true,
-        },
-      })
-    )
-  })
-
   it('fetches visible sessions with generation relation and bucketed cache input', async () => {
     mockSessionsFindMany.mockResolvedValue([{ id: 'session-1' }])
     const { getSessions } = await import('@/lib/server/queries/public/sessions')

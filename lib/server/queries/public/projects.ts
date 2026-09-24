@@ -131,53 +131,6 @@ export function getProjectShowcase() {
   return getProjectShowcaseForRequest()
 }
 
-const getProjectsByGenerationForRequest = cache((generationName: string) =>
-  getSharedProjectsByGeneration(generationName)
-)
-
-async function getSharedProjectsByGeneration(generationName: string) {
-  'use cache: remote'
-
-  cacheQuery(
-    publicCachePolicy.projectList,
-    forEachPublicLocale((locale) => [
-      projectListTag(locale),
-      projectGenerationTag(generationName, locale),
-    ])
-  )
-
-  return db.query.generations.findFirst({
-    where: eq(generations.name, generationName),
-    columns: {
-      id: true,
-      name: true,
-    },
-    with: {
-      projects: {
-        columns: {
-          id: true,
-          name: true,
-          nameKo: true,
-          description: true,
-          descriptionKo: true,
-          mainImage: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        orderBy: desc(projects.updatedAt),
-      },
-    },
-  })
-}
-
-export function getProjectsByGeneration(
-  generationName: string,
-  _locale: Locale
-) {
-  void _locale
-  return getProjectsByGenerationForRequest(generationName)
-}
-
 const getProjectByIdForRequest = cache((projectId: string) =>
   getSharedProjectById(projectId)
 )

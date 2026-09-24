@@ -86,7 +86,7 @@ try {
     label: 'homepage -> project index',
     assertShell: () =>
       assertVisible(
-        page.getByRole('heading', { name: 'Projects by Generation' }),
+        page.getByRole('heading', { level: 1, name: 'Projects', exact: true }),
         'project index heading'
       ),
   })

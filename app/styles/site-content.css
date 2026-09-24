@@ -215,9 +215,6 @@ html.site {
 
   /* ── Filter bar ────────────────────────────────────────────── */
   .filter-bar {
-    position: sticky;
-    top: var(--site-header-offset);
-    z-index: 5;
     margin-block: 1.5rem;
     display: grid;
     gap: 0.75rem;
@@ -226,6 +223,15 @@ html.site {
     background-color: color-mix(in oklab, var(--s-sheet) 94%, transparent);
     padding: 0.75rem;
     backdrop-filter: blur(10px);
+  }
+
+  /* Pinned only where it leaves most of the screen to the results. */
+  @media (min-width: 1024px) and (min-height: 760px) {
+    .filter-bar {
+      position: sticky;
+      top: var(--site-header-offset);
+      z-index: 5;
+    }
   }
 
   .filter-search {
@@ -543,6 +549,23 @@ html.site {
 
   .release-cover img {
     object-fit: cover;
+  }
+
+  /* Projects with only the stock image get the bracket mark on stage. */
+  .release-cover-art {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7%;
+    background-color: var(--s-stage);
+  }
+
+  .release-cover-art > .bracket-poster {
+    display: block;
+    height: 42%;
+    aspect-ratio: 219.16 / 265.96;
   }
 
   .release-body {
