@@ -75,6 +75,7 @@ type LocalizedMetadataInput = {
   absoluteTitle?: boolean
   image?: string
   generatedSocialImage?: boolean
+  noindex?: boolean
 }
 
 export function createLocalizedMetadata({
@@ -85,6 +86,7 @@ export function createLocalizedMetadata({
   absoluteTitle = false,
   image,
   generatedSocialImage = false,
+  noindex = false,
 }: LocalizedMetadataInput): Metadata {
   const canonical = getLocalizedUrl(locale, path)
   const openGraphImageUrl = getAbsoluteUrl(image || '/opengraph-image.png')
@@ -97,10 +99,10 @@ export function createLocalizedMetadata({
       canonical,
       languages: getLanguageAlternates(path),
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    // Empty generation pages stay reachable but out of the index.
+    robots: noindex
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
     openGraph: {
       type: 'website',
       url: canonical,

@@ -87,6 +87,25 @@ describe('SEO URL and metadata helpers', () => {
     expect(description.length).toBeLessThanOrEqual(160)
     expect(description.endsWith('…')).toBe(true)
   })
+
+  it('keeps pages indexable unless asked otherwise', () => {
+    const indexable = createLocalizedMetadata({
+      locale: 'en',
+      path: '/session/25-26',
+      title: '25-26 Sessions',
+      description: 'Sessions',
+    })
+    const hidden = createLocalizedMetadata({
+      locale: 'en',
+      path: '/session/24-25',
+      title: '24-25 Sessions',
+      description: 'Sessions',
+      noindex: true,
+    })
+
+    expect(indexable.robots).toEqual({ index: true, follow: true })
+    expect(hidden.robots).toEqual({ index: false, follow: true })
+  })
 })
 
 describe('localized sitemap entries', () => {
