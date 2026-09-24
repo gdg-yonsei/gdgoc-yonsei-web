@@ -19,8 +19,7 @@ export default function ImageSliderGallery({
           alt={`${alt} — image ${index + 1} of ${images.length}`}
           fill
           preload={index === 0}
-          sizes="(max-width: 768px) 100vw, 576px"
-          className="absolute top-0 left-0 h-full w-full object-contain"
+          sizes="(min-width: 1152px) 720px, calc(100vw - 2rem)"
         />
       ))}
       thumbnails={images.map((image, index) => (
@@ -28,10 +27,10 @@ export default function ImageSliderGallery({
           key={`${image}:thumbnail:${index}`}
           src={image}
           alt=""
-          width={100}
-          height={100}
-          sizes="96px"
-          className="aspect-square size-24 rounded-lg object-cover transition-all"
+          width={80}
+          height={80}
+          sizes="80px"
+          className="size-20 object-cover"
         />
       ))}
     />

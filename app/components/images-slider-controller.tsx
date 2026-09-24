@@ -1,8 +1,9 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import ChevronLeftIcon from '@heroicons/react/24/outline/ChevronLeftIcon'
+import ChevronRightIcon from '@heroicons/react/24/outline/ChevronRightIcon'
 
 export default function ImageSliderController({
   alt,
@@ -22,17 +23,13 @@ export default function ImageSliderController({
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
-
           const index = slideRefs.current.findIndex(
             (slide) => slide === entry.target
           )
           if (index >= 0) setCurrentImageIndex(index)
         }
       },
-      {
-        root: scrollRef.current,
-        threshold: 0.5,
-      }
+      { root: scrollRef.current, threshold: 0.5 }
     )
 
     for (const slide of slideRefs.current) {
@@ -47,10 +44,7 @@ export default function ImageSliderController({
     if (!track) return
 
     setCurrentImageIndex(index)
-    track.scrollTo({
-      left: track.clientWidth * index,
-      behavior: 'smooth',
-    })
+    track.scrollTo({ left: track.clientWidth * index, behavior: 'smooth' })
   }
 
   function scrollByDirection(direction: -1 | 1) {
@@ -61,11 +55,24 @@ export default function ImageSliderController({
     if (nextIndex !== currentImageIndex) scrollToImage(nextIndex)
   }
 
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
+    event.preventDefault()
+    scrollByDirection(event.key === 'ArrowRight' ? 1 : -1)
+  }
+
   return (
-    <div className="flex w-full flex-col items-center md:flex-row md:items-start md:justify-center">
+    <div
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={alt}
+      className="site-gallery"
+    >
       <div
-        className="flex w-full max-w-xl min-w-0 snap-x snap-mandatory overflow-x-scroll bg-neutral-100 whitespace-nowrap transition-all"
         ref={scrollRef}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        className="site-gallery-track"
       >
         {slides.map((slide, index) => (
           <div
@@ -73,54 +80,56 @@ export default function ImageSliderController({
             ref={(element) => {
               slideRefs.current[index] = element
             }}
-            className="relative w-full flex-shrink-0 snap-center"
-            style={{ paddingTop: '100%' }}
+            className="site-gallery-slide"
           >
             {slide}
           </div>
         ))}
       </div>
-      <div className="w-full max-w-xl md:w-24">
-        <div className="flex w-full items-center justify-between p-2 md:w-28">
-          <button
-            type="button"
-            onClick={() => scrollByDirection(-1)}
-            disabled={currentImageIndex === 0}
-            aria-label="Previous image"
-            className="rounded-full p-1 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronLeftIcon className="size-8" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByDirection(1)}
-            disabled={currentImageIndex === slides.length - 1}
-            aria-label="Next image"
-            className="rounded-full p-1 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronRightIcon className="size-8" aria-hidden="true" />
-          </button>
-        </div>
-        <div className="flex gap-2 overflow-x-scroll p-2 whitespace-nowrap md:h-[528px] md:w-28 md:flex-col md:overflow-y-scroll">
-          {thumbnails.map((thumbnail, index) => (
+      {slides.length > 1 && (
+        <>
+          <div className="site-gallery-bar">
             <button
-              key={index}
               type="button"
-              aria-label={`Show ${alt} image ${index + 1}`}
-              aria-current={currentImageIndex === index ? 'true' : undefined}
-              onClick={() => scrollToImage(index)}
-              className={`shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                currentImageIndex === index ? 'brightness-50 grayscale' : ''
-              }`}
+              onClick={() => scrollByDirection(-1)}
+              disabled={currentImageIndex === 0}
+              aria-label="Previous image"
+              className="site-gallery-button"
             >
-              {thumbnail}
+              <ChevronLeftIcon aria-hidden="true" className="size-5" />
             </button>
-          ))}
-        </div>
-        <p className="sr-only" aria-live="polite">
-          {`${alt} image ${currentImageIndex + 1} of ${slides.length}`}
-        </p>
-      </div>
+            <p aria-hidden="true" className="site-gallery-count">
+              {currentImageIndex + 1} / {slides.length}
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollByDirection(1)}
+              disabled={currentImageIndex === slides.length - 1}
+              aria-label="Next image"
+              className="site-gallery-button"
+            >
+              <ChevronRightIcon aria-hidden="true" className="size-5" />
+            </button>
+          </div>
+          <div className="site-gallery-thumbs">
+            {thumbnails.map((thumbnail, index) => (
+              <button
+                key={index}
+                type="button"
+                aria-label={`Show ${alt} image ${index + 1}`}
+                aria-current={currentImageIndex === index ? 'true' : undefined}
+                onClick={() => scrollToImage(index)}
+                className="site-gallery-thumb"
+              >
+                {thumbnail}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      <p className="sr-only" aria-live="polite">
+        {`${alt} image ${currentImageIndex + 1} of ${slides.length}`}
+      </p>
     </div>
   )
 }

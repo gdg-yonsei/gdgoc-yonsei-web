@@ -103,3 +103,35 @@ test.describe('session generation pages', () => {
     )
   })
 })
+
+test('session pages carry a trail, KST facts and a valid Event', async ({
+  page,
+}) => {
+  const seeded = await readSeededData()
+  await page.goto(`/en/session/${seeded.generationName}/${seeded.sessionId}`, {
+    waitUntil: 'domcontentloaded',
+  })
+
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'E2E Session' })
+  ).toBeVisible()
+  await expect(page).toHaveTitle(
+    'E2E Session · Tech Talk · Jun 1, 2025 | GDGoC Yonsei'
+  )
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Breadcrumb' })
+      .getByRole('link', { name: seeded.generationName })
+  ).toHaveAttribute('href', `/en/session/${seeded.generationName}`)
+  await expect(page.getByText('10:00–12:00 KST')).toBeVisible()
+
+  const data = JSON.parse(
+    (await page.locator('#session-structured-data').textContent()) ?? '[]'
+  ) as Record<string, unknown>[]
+  expect(data[0]).toMatchObject({
+    '@type': 'Event',
+    startDate: '2025-06-01T10:00:00+09:00',
+    eventStatus: 'https://schema.org/EventScheduled',
+  })
+  expect(data[1]).toMatchObject({ '@type': 'BreadcrumbList' })
+})

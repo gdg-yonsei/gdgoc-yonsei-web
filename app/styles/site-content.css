@@ -770,16 +770,18 @@ html.site {
     --poster: #1e1e1e;
     position: relative;
     display: flex;
-    aspect-ratio: 16 / 9;
+    /* Sizes below follow the poster's own width, not the viewport. */
+    container-type: inline-size;
+    aspect-ratio: 2 / 1;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.75rem, 3vw, 2rem);
+    gap: clamp(0.75rem, 4cqi, 3rem);
     overflow: hidden;
     border-radius: 1.5rem;
     background-color: var(--poster);
     padding: 1.5rem;
     color: var(--s-on-stage);
-    font-size: clamp(2.25rem, 7vw, 5rem);
+    font-size: clamp(2.25rem, 14cqi, 10rem);
   }
 
   .session-poster[data-hue='blue'] {
@@ -815,8 +817,9 @@ html.site {
 
   .session-poster-text {
     display: grid;
-    max-width: 22ch;
-    gap: 0.5rem;
+    flex: 0 1 46cqi;
+    min-width: 0;
+    gap: clamp(0.5rem, 1.5cqi, 1rem);
     text-align: center;
     font-size: 1rem;
   }
@@ -824,7 +827,7 @@ html.site {
   .session-poster-kicker,
   .session-poster-date {
     font-family: var(--font-code);
-    font-size: 0.75rem;
+    font-size: clamp(0.75rem, 1.5cqi, 1rem);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--s-on-stage-muted);
@@ -832,10 +835,12 @@ html.site {
 
   .session-poster-title {
     font-family: var(--font-display);
-    font-size: clamp(1.125rem, 3vw, 2rem);
+    font-size: clamp(1.125rem, 5.5cqi, 4rem);
     font-weight: 700;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
+    line-height: 1.05;
+    text-wrap: balance;
+    /* break-word, not anywhere: it keeps words whole when they fit. */
+    overflow-wrap: break-word;
   }
 
   @media (max-width: 479px) {
