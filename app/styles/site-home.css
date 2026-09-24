@@ -92,3 +92,211 @@
     translate: 0 2rem;
   }
 }
+
+@layer components {
+  .manifesto-kicker {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--s-fg-muted);
+  }
+
+  .manifesto-statement {
+    max-width: 14em;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 6vw, 4.75rem);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    font-variation-settings: 'ROND' 100;
+    view-timeline: --manifesto block;
+  }
+
+  .manifesto-body {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 900px) {
+    .manifesto-body {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 3rem;
+    }
+  }
+
+  .manifesto-lede {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--s-fg-muted);
+  }
+
+  .manifesto-aside {
+    display: grid;
+    gap: 0.75rem;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.5rem;
+    background-color: var(--s-sheet);
+    padding: 1.5rem;
+  }
+
+  .manifesto-aside-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .manifesto-aside p {
+    line-height: 1.7;
+    color: var(--s-fg-muted);
+  }
+
+  .pillars {
+    margin-top: 3rem;
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .pillars {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .pillar {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.5rem;
+    background-color: var(--s-sheet);
+    padding: 1.5rem;
+  }
+
+  .pillar-glyph {
+    width: 4rem;
+    height: 2.5rem;
+    overflow: visible;
+  }
+
+  .pillar-glyph circle,
+  .pillar-glyph rect {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .pillar-title {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .pillar-body {
+    line-height: 1.65;
+    color: var(--s-fg-muted);
+  }
+
+  .glyph-fill-blue {
+    fill: var(--color-g-blue);
+    opacity: 0.88;
+  }
+
+  .glyph-fill-red {
+    fill: var(--color-g-red);
+    opacity: 0.88;
+  }
+
+  .glyph-fill-yellow {
+    fill: var(--color-g-yellow);
+    opacity: 0.88;
+  }
+
+  .glyph-stroke-blue,
+  .glyph-stroke-green {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .glyph-stroke-blue {
+    stroke: var(--color-g-blue);
+  }
+
+  .glyph-stroke-green {
+    stroke: var(--color-g-green);
+  }
+
+  .glyph-caret {
+    fill: var(--s-fg);
+  }
+
+  .glyph-bar {
+    fill: var(--color-g-green);
+    transform-origin: bottom;
+  }
+}
+
+/* The statement lights up word by word as it crosses the viewport. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .manifesto-word {
+      animation: manifesto-word linear both;
+      animation-timeline: --manifesto;
+      animation-range: cover calc(18% + var(--i) / var(--n) * 32%) cover
+        calc(26% + var(--i) / var(--n) * 32%);
+    }
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .pillar-glyph circle {
+    transition: translate var(--dur-slow) var(--ease-spring);
+  }
+
+  .pillar:hover .pillar-glyph circle:first-child {
+    translate: -5px 0;
+  }
+
+  .pillar:hover .pillar-glyph circle:last-child {
+    translate: 5px 0;
+  }
+
+  .pillar:hover .glyph-caret {
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
+  .pillar:hover .glyph-bar {
+    animation: bar-grow 700ms var(--ease-spring) both;
+  }
+
+  .pillar:hover .glyph-bar:nth-child(2) {
+    animation-delay: 80ms;
+  }
+
+  .pillar:hover .glyph-bar:nth-child(3) {
+    animation-delay: 160ms;
+  }
+}
+
+@keyframes manifesto-word {
+  from {
+    color: var(--s-fg-subtle);
+  }
+  to {
+    color: var(--s-fg);
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    scale: 1 0.2;
+  }
+}
