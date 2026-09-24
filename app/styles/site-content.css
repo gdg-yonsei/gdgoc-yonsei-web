@@ -225,15 +225,6 @@ html.site {
     backdrop-filter: blur(10px);
   }
 
-  /* Pinned only where it leaves most of the screen to the results. */
-  @media (min-width: 1024px) and (min-height: 760px) {
-    .filter-bar {
-      position: sticky;
-      top: var(--site-header-offset);
-      z-index: 5;
-    }
-  }
-
   .filter-search {
     display: flex;
     min-height: 2.75rem;
@@ -519,9 +510,24 @@ html.site {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
   }
 
+  /* The featured release takes a whole row, cover beside the text, so no
+     neighbouring card is stretched to its height. */
   @media (min-width: 1024px) {
     .release-item[data-featured] {
-      grid-column: span 2;
+      grid-column: 1 / -1;
+    }
+
+    .release-item[data-featured] .release-card {
+      flex-direction: row;
+    }
+
+    .release-item[data-featured] .release-cover {
+      flex: 0 0 58%;
+    }
+
+    .release-item[data-featured] .release-body {
+      justify-content: center;
+      padding: 2rem;
     }
   }
 
