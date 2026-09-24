@@ -146,3 +146,21 @@ test('the footer wordmark fits a 320px screen', async ({ page }) => {
     )
   ).toBe(true)
 })
+
+test('public pages leave admin-only boundaries out of their scripts', async ({
+  page,
+}) => {
+  // Only admin pages can be forbidden; a root forbidden.tsx put the admin
+  // sign-out button's client code on every public page.
+  const bodies: Promise<string>[] = []
+  page.on('response', (response) => {
+    if (response.request().resourceType() === 'script') {
+      bodies.push(response.text().catch(() => ''))
+    }
+  })
+  await page.goto('/en', { waitUntil: 'networkidle' })
+  const scripts = await Promise.all(bodies)
+
+  expect(scripts.length).toBeGreaterThan(0)
+  for (const script of scripts) expect(script).not.toContain('Sign Out')
+})

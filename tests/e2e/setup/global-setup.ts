@@ -9,10 +9,12 @@ import {
   PASSKEY_STORAGE_STATE,
   SEEDED_DATA_FILE,
   SeededE2EData,
+  UNVERIFIED_STORAGE_STATE,
 } from './constants'
 import {
   getSeededAdminSessionToken,
   getSeededPasskeySessionToken,
+  getSeededUnverifiedSessionToken,
   resetAndSeedE2EDatabase,
 } from './seed-db'
 
@@ -72,6 +74,11 @@ export async function prepareE2EData(baseURL: string) {
     baseURL,
     getSeededPasskeySessionToken(),
     PASSKEY_STORAGE_STATE
+  )
+  await writeAuthState(
+    baseURL,
+    getSeededUnverifiedSessionToken(),
+    UNVERIFIED_STORAGE_STATE
   )
 }
 

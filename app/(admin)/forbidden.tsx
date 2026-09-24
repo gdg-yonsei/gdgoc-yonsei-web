@@ -3,7 +3,9 @@ import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 
 /**
- * 403 Forbidden Page
+ * 403 Forbidden Page. Only admin routes call forbidden(), so the boundary
+ * lives in this group: at the app root its client buttons shipped with every
+ * public page.
  * @constructor
  */
 export default function Forbidden() {

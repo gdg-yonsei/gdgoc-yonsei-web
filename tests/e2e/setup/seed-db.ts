@@ -17,6 +17,9 @@ const FIXTURE_IDS = {
   memberUserId: 'e2e-member-user',
   pendingApproveUserId: 'e2e-pending-approve-user',
   pendingDeleteUserId: 'e2e-pending-delete-user',
+  // Never approved or deleted by other specs, so its 403 stays stable.
+  unverifiedUserId: 'e2e-unverified-user',
+  unverifiedSessionToken: 'e2e-unverified-session-token',
   sessionToken: 'e2e-admin-session-token',
   // Signing out revokes a session, so the passkey test gets its own.
   passkeySessionToken: 'e2e-passkey-session-token',
@@ -143,6 +146,15 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
       major: 'Computer Science',
       studentId: 20256789,
       telephone: '01022223333',
+      isForeigner: false,
+    },
+    {
+      id: FIXTURE_IDS.unverifiedUserId,
+      name: 'e2e-unverified',
+      email: 'e2e-unverified@example.com',
+      role: 'UNVERIFIED',
+      firstName: 'Unverified',
+      lastName: 'Tester',
       isForeigner: false,
     },
     {
@@ -278,6 +290,12 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
       userId: FIXTURE_IDS.adminUserId,
       expiresAt: new Date('2099-01-01T00:00:00.000Z'),
     },
+    {
+      id: 'e2e-unverified-session',
+      token: FIXTURE_IDS.unverifiedSessionToken,
+      userId: FIXTURE_IDS.unverifiedUserId,
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+    },
   ])
 
   return {
@@ -304,4 +322,8 @@ export function getSeededAdminSessionToken() {
 
 export function getSeededPasskeySessionToken() {
   return FIXTURE_IDS.passkeySessionToken
+}
+
+export function getSeededUnverifiedSessionToken() {
+  return FIXTURE_IDS.unverifiedSessionToken
 }
