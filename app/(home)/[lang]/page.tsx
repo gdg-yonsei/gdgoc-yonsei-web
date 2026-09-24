@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import '@/app/styles/site-home.css'
 import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
 import HeroMeta from '@/app/(home)/[lang]/_components/home/hero-meta'
 import FeaturedReleases from '@/app/(home)/[lang]/_components/home/featured-releases'

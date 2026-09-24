@@ -6,7 +6,6 @@
 @import './styles/site-hero.css';
 @import './styles/site-chrome.css';
 @import './styles/site-content.css';
-@import './styles/site-home.css';
 @plugin "@tailwindcss/typography";
 
 /* URL-independent shells can carry both locale strings. The already-mounted
