@@ -162,6 +162,17 @@ export function sessionSearchText(session: LogSession): string {
 
 const startTime = (session: LogSession) => session.startAt?.getTime() ?? 0
 
+/** The newest dated sessions, for the home page's log. */
+export function latestSessions(
+  sessions: readonly LogSession[],
+  limit: number
+): LogSession[] {
+  return sessions
+    .filter((session) => session.startAt)
+    .sort((a, b) => startTime(b) - startTime(a))
+    .slice(0, limit)
+}
+
 /** Chronological neighbours across the whole archive (undated sessions skip). */
 export function adjacentSessions(
   sessions: readonly LogSession[],

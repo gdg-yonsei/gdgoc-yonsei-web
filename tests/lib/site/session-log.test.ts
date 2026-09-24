@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   adjacentSessions,
   groupSessionLog,
+  latestSessions,
   relatedSessions,
   sessionFacets,
   sessionLocation,
@@ -166,5 +167,20 @@ describe('session neighbours', () => {
     expect(
       relatedSessions([...archive, current], current).map((entry) => entry.id)
     ).toEqual(['b', 'undated', 'a'])
+  })
+})
+
+describe('latestSessions', () => {
+  it('takes the newest dated sessions', () => {
+    const archive = [
+      session({ id: 'old', startAt: at('2025-03-04T19:00:00.000Z') }),
+      session({ id: 'undated', startAt: null }),
+      session({ id: 'new', startAt: at('2025-11-04T19:00:00.000Z') }),
+      session({ id: 'mid', startAt: at('2025-06-04T19:00:00.000Z') }),
+    ]
+    expect(latestSessions(archive, 2).map((entry) => entry.id)).toEqual([
+      'new',
+      'mid',
+    ])
   })
 })
