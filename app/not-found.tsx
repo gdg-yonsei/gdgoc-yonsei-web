@@ -14,6 +14,7 @@ export default function NotFound() {
     <html
       lang="en"
       className={cn('site', googleSansFlex.variable, googleSansCode.variable)}
+      data-color-scheme="auto"
     >
       <body className="bg-stage text-on-stage">
         <NotFoundView />

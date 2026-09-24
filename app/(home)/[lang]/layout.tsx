@@ -59,6 +59,7 @@ export default async function RootLayout({
     <html
       lang={lang}
       className={cn('site', googleSansFlex.variable, googleSansCode.variable)}
+      data-color-scheme="auto"
       suppressHydrationWarning
     >
       <body>

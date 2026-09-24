@@ -104,8 +104,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Enabled in Plan 3 once every public page is restyled; until then the old
-     sections hard-code light surfaces and would break in a dark scheme. */
+  /* The public site follows the system scheme; the layouts opt in with
+     data-color-scheme="auto". Stage surfaces stay dark in both schemes. */
   @media (prefers-color-scheme: dark) {
     html.site[data-color-scheme='auto'] {
       color-scheme: dark;
