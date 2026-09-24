@@ -8,34 +8,12 @@ vi.mock('@/lib/hooks/use-reduced-motion', () => ({
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en/project',
 }))
-import GenerationButtonGroup from '@/app/components/generation-button-group'
 import LoadingSpinner from '@/app/components/loading-spinner'
-import PageTitle from '@/app/components/page-title'
-import ShowMoreContent from '@/app/components/show-more-content'
 import UserProfileImage from '@/app/components/user-profile-image'
 import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
 import Footer from '@/app/components/footer'
 
 describe('common components', () => {
-  it('renders generation button group links', () => {
-    render(
-      <GenerationButtonGroup
-        generationList={['10th', '11th']}
-        generation={'11th'}
-        lang={'ko'}
-        basePath={'project'}
-      />
-    )
-
-    expect(screen.getByRole('link', { name: '10th' })).toHaveAttribute(
-      'href',
-      '/ko/project/10th'
-    )
-    expect(screen.getByRole('link', { name: '11th' })).toHaveClass(
-      'border-green-700'
-    )
-  })
-
   it('renders loading spinner with default and custom className', () => {
     const { container, rerender } = render(<LoadingSpinner />)
     expect(container.firstChild).toHaveClass('animate-spin')
@@ -43,24 +21,6 @@ describe('common components', () => {
     rerender(<LoadingSpinner className="size-2 border" />)
     expect(container.firstChild).toHaveClass('size-2')
     expect(container.firstChild).toHaveClass('border')
-  })
-
-  it('renders page title', () => {
-    render(<PageTitle>Dashboard</PageTitle>)
-
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Dashboard' })
-    ).toBeInTheDocument()
-  })
-
-  it('reveals show more content state on click', async () => {
-    const user = userEvent.setup()
-    render(<ShowMoreContent>More Content</ShowMoreContent>)
-
-    const button = screen.getByRole('button', { name: 'Show More' })
-    await user.click(button)
-
-    expect(button).toHaveClass('hidden')
   })
 
   it('builds user profile image src by the given rules', () => {

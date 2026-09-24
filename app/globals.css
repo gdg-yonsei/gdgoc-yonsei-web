@@ -23,13 +23,6 @@ html[lang='ko'] .locale-copy-ko {
   display: contents;
 }
 
-/* Keep complete server-rendered markup while deferring layout/paint for
-   below-the-fold public sections. */
-.content-auto-section {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto 32rem;
-}
-
 /* 관리자 셸에서만 <html class="dark">로 켜지는 수동 다크 모드.
    공개 사이트에는 .dark가 붙지 않으므로 영향이 없습니다. */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -135,19 +128,9 @@ html[lang='ko'] .locale-copy-ko {
   .pressable:active {
     transform: scale(0.97);
   }
-  .button-black:focus-visible,
-  .focus-ring:focus-visible {
+  .button-black:focus-visible {
     outline: 2px solid var(--color-logo-blue);
     outline-offset: 4px;
-  }
-  .interactive-card {
-    transition:
-      transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
-      border-color 200ms ease,
-      box-shadow 200ms ease;
-  }
-  .interactive-card:active {
-    transform: scale(0.98);
   }
   /* 조건부로 마운트되는 알림/미리보기가 갑자기 끼어들어 아래 내용을 밀어내지 않도록
      `@starting-style`로 짧게 진입시킵니다. */
@@ -392,18 +375,6 @@ html[lang='ko'] .locale-copy-ko {
   }
 }
 
-@media (hover: hover) and (pointer: fine) {
-  /* `:not(:active)`가 없으면 이 블록이 `@layer components` 바깥(=우선순위 우위)에 있어
-     누르는 동안에도 hover 이동이 `:active`의 축소를 덮어씁니다. */
-  .interactive-card:hover:not(:active) {
-    transform: translateY(-0.125rem);
-    border-color: rgb(212 212 212);
-    box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.08),
-      0 4px 6px -4px rgb(0 0 0 / 0.08);
-  }
-}
-
 @theme {
   /* DESIGN.md rounded scale — 입력 4px / 메뉴행 5px / 버튼 8px / 카드 12px / 컨테이너 16px */
   --radius-xs: 4px;
@@ -445,8 +416,7 @@ html[lang='ko'] .locale-copy-ko {
 
 @media (prefers-reduced-motion: reduce) {
   .button-black,
-  .pressable,
-  .interactive-card {
+  .pressable {
     transform: none;
     transition-duration: 0.01ms;
   }

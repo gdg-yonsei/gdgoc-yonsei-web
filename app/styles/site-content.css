@@ -1413,12 +1413,71 @@ html.site {
       background-color var(--dur-fast) var(--ease-out),
       color var(--dur-fast) var(--ease-out);
   }
+
+  /* ── Calendar and policies ─────────────────────────────────── */
+  .calendar-frame {
+    margin-top: 2rem;
+    overflow: hidden;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.75rem;
+    background-color: var(--s-sheet);
+  }
+
+  .calendar-embed {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border: 0;
+    /* Google's embed is always light; say so, so it isn't inverted. */
+    color-scheme: light;
+  }
+
+  @media (min-width: 768px) {
+    .calendar-embed {
+      aspect-ratio: 3 / 2;
+    }
+  }
+
+  .calendar-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-weight: 600;
+    color: var(--s-blue-ink);
+  }
+
+  .policy-doc [id] {
+    scroll-margin-top: calc(var(--site-header-offset) + 1rem);
+  }
+
+  .policy-note {
+    margin-top: 1.25rem;
+    border: 1px solid var(--s-rule);
+    border-radius: 1rem;
+    background-color: var(--s-sheet);
+    padding: 0.25rem 1.25rem;
+  }
+
+  .policy-top {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    border: 1px solid var(--s-rule);
+    border-radius: 9999px;
+    padding-inline: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--s-fg-muted);
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
 }
 
-/* Long-form prose from the admin's Markdown. Tailwind's typography plugin
-   emits .prose in @layer utilities, which outranks @layer components, so
-   these rules stay unlayered: unlayered rules win over every layer, and the
-   scheme tokens replace the plugin's palette. */
+/* Long-form prose (the admin's Markdown, the policy pages). Tailwind's
+   typography plugin emits .prose in @layer utilities, which outranks
+   @layer components, so these rules stay unlayered: unlayered rules win over
+   every layer, and the scheme tokens replace the plugin's palette. */
 .site-prose {
   --tw-prose-body: var(--s-fg-muted);
   --tw-prose-headings: var(--s-fg);
@@ -1437,6 +1496,18 @@ html.site {
   --tw-prose-th-borders: var(--s-rule);
   --tw-prose-td-borders: var(--s-rule);
   overflow-wrap: anywhere;
+}
+
+.policy-doc {
+  margin-top: 1.5rem;
+  max-width: 46rem;
+}
+
+.policy-doc h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.03em;
+  font-variation-settings: 'ROND' 100;
 }
 
 @media (hover: hover) {
@@ -1470,7 +1541,8 @@ html.site {
     border-color: var(--s-fg-subtle);
   }
 
-  .member-link:hover {
+  .member-link:hover,
+  .policy-top:hover {
     background-color: var(--s-sheet-sunken);
     color: var(--s-fg);
   }

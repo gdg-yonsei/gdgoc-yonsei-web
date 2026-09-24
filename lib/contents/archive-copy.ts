@@ -13,6 +13,7 @@ export type ArchiveCommonCopy = {
   sessions: string
   projects: string
   members: string
+  calendar: string
   generations: string
   noRecords: string
   olderGeneration: string
@@ -28,6 +29,7 @@ export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
     sessions: 'Sessions',
     projects: 'Projects',
     members: 'Members',
+    calendar: 'Calendar',
     generations: 'Generations',
     noRecords: 'no public records yet',
     olderGeneration: 'Older generation',
@@ -41,6 +43,7 @@ export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
     sessions: '세션',
     projects: '프로젝트',
     members: '구성원',
+    calendar: '캘린더',
     generations: '기수',
     noRecords: '아직 공개된 기록이 없어요',
     olderGeneration: '이전 기수',

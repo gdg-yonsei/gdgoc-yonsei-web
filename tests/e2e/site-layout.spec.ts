@@ -95,6 +95,7 @@ test('long-form prose takes its colours from the site scheme', async ({
   // (--s-fg-muted body, --s-fg headings) must win on every prose surface.
   const seeded = await readSeededData()
   for (const path of [
+    '/en/privacy-policy',
     `/en/session/${seeded.generationName}/${seeded.sessionId}`,
   ]) {
     await page.goto(path, { waitUntil: 'domcontentloaded' })
