@@ -312,7 +312,7 @@ html.site {
   .filter-chip-count {
     font-family: var(--font-code);
     font-size: 0.6875rem;
-    opacity: 0.7;
+    color: var(--s-fg-subtle);
   }
 
   .filter-status {

@@ -51,17 +51,18 @@
     --s-fg-subtle: #6b6b6b;
     --s-rule: #d4d4d2;
 
-    /* GDG hues. soft = tinted surface, ink = text that passes AA on paper. */
+    /* GDG hues. soft = tinted surface, ink = text that passes AA on paper
+       and on its own soft tint (tests/lib/site/theme-contrast.test.ts). */
     --s-blue-soft: #d3e3fd;
-    --s-blue-ink: #1967d2;
+    --s-blue-ink: #0b57d0;
     --s-sky-soft: #c3ecf6;
     --s-sky-ink: #0b6b99;
     --s-red-soft: #fad2cf;
-    --s-red-ink: #c5221f;
+    --s-red-ink: #b3261e;
     --s-pink-soft: #f8d8d8;
-    --s-pink-ink: #b8336a;
+    --s-pink-ink: #a02a5c;
     --s-yellow-soft: #ffe7a5;
-    --s-yellow-ink: #a15c00;
+    --s-yellow-ink: #8a4f00;
     --s-green-soft: #ccf6c5;
     --s-green-ink: #137333;
 
