@@ -48,4 +48,27 @@ describe('memberLinks', () => {
       { kind: 'github', href: 'https://github.com/minji' },
     ])
   })
+
+  it('accepts pasted profile URLs, not only handles', () => {
+    expect(
+      memberLinks(
+        member({
+          email: '',
+          linkedInId: 'https://kr.linkedin.com/in/minji-kim-123/',
+          instagramId: 'https://www.instagram.com/minji.codes/?igsh=abc',
+          githubId: 'github.com/minji',
+        })
+      )
+    ).toEqual([
+      { kind: 'linkedin', href: 'https://www.linkedin.com/in/minji-kim-123' },
+      { kind: 'instagram', href: 'https://www.instagram.com/minji.codes' },
+      { kind: 'github', href: 'https://github.com/minji' },
+    ])
+  })
+
+  it('skips a link whose handle is empty once normalised', () => {
+    expect(
+      memberLinks(member({ email: '', instagramId: 'https://instagram.com/' }))
+    ).toEqual([])
+  })
 })

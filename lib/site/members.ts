@@ -40,33 +40,54 @@ export type MemberLinkKind = 'email' | 'linkedin' | 'instagram' | 'github'
 
 export type MemberLink = { kind: MemberLinkKind; href: string }
 
-/** Profile links in a fixed order, normalised from however they were typed. */
+/** `@minji`, `minji` or a pasted profile URL (any subdomain, trailing slash,
+    query) → `minji`. */
+function handle(value: string, profilePath: RegExp): string {
+  return value
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(profilePath, '')
+    .replace(/^@/, '')
+    .replace(/[/?#].*$/, '')
+}
+
+const PROFILES: ReadonlyArray<{
+  kind: Exclude<MemberLinkKind, 'email'>
+  field: 'linkedInId' | 'instagramId' | 'githubId'
+  path: RegExp
+  base: string
+}> = [
+  {
+    kind: 'linkedin',
+    field: 'linkedInId',
+    path: /^([a-z0-9-]+\.)?linkedin\.com\/in\//i,
+    base: 'https://www.linkedin.com/in/',
+  },
+  {
+    kind: 'instagram',
+    field: 'instagramId',
+    path: /^([a-z0-9-]+\.)?instagram\.com\//i,
+    base: 'https://www.instagram.com/',
+  },
+  {
+    kind: 'github',
+    field: 'githubId',
+    path: /^([a-z0-9-]+\.)?github\.com\//i,
+    base: 'https://github.com/',
+  },
+]
+
+/** Profile links in a fixed order, normalised from however they were typed:
+    a handle, `@handle` or a pasted profile URL. */
 export function memberLinks(user: MemberProfile): MemberLink[] {
   const links: MemberLink[] = []
   if (user.email) {
     links.push({ kind: 'email', href: `mailto:${user.email}` })
   }
-  if (user.linkedInId) {
-    const handle = user.linkedInId
-      .replace(/^https?:\/\//, '')
-      .replace(/^(www\.)?linkedin\.com\/in\//, '')
-      .replace(/\/+$/, '')
-    links.push({
-      kind: 'linkedin',
-      href: `https://www.linkedin.com/in/${handle}`,
-    })
-  }
-  if (user.instagramId) {
-    links.push({
-      kind: 'instagram',
-      href: `https://www.instagram.com/${user.instagramId.replace(/^@/, '')}`,
-    })
-  }
-  if (user.githubId) {
-    links.push({
-      kind: 'github',
-      href: `https://github.com/${user.githubId.replace(/^@/, '')}`,
-    })
+  for (const { kind, field, path, base } of PROFILES) {
+    const value = user[field]
+    const name = value ? handle(value, path) : ''
+    if (name) links.push({ kind, href: `${base}${name}` })
   }
   return links
 }
