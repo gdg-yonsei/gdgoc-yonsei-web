@@ -1,4 +1,4 @@
-import WelcomePage from '@/app/(home)/[lang]/welcome-page'
+import Hero from '@/app/(home)/[lang]/_components/home/hero'
 import AboutPage from '@/app/(home)/[lang]/about-page'
 import ActivitiesPage from '@/app/(home)/[lang]/activities-page'
 import PartsPage from '@/app/(home)/[lang]/parts-page'
@@ -108,7 +108,7 @@ export default async function HomePage({ params }: Props) {
     <>
       <JsonLd id="homepage-structured-data" data={structuredData} />
       <div className={'flex w-full flex-col overflow-x-hidden'}>
-        <WelcomePage lang={lang} />
+        <Hero lang={lang} />
         <AboutPage lang={lang} />
         <ActivitiesPage lang={lang} />
         <PartsPage lang={lang} />

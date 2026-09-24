@@ -1,0 +1,309 @@
+/* Hero — "< GDGoC Yonsei >" */
+@layer components {
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--s-stage);
+    color: var(--s-on-stage);
+  }
+
+  .bracket-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
+  }
+
+  .hero[data-gl='on'] .bracket-canvas {
+    opacity: 1;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    margin-inline: auto;
+    display: flex;
+    width: 100%;
+    max-width: 80rem;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    /* Top-anchored, not centred: if a font swap changes the height of the
+       tagline or CTAs, nothing above them moves (no layout shift). */
+    justify-content: flex-start;
+    padding: max(7rem, 26svh) 1rem 3rem;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--s-on-stage-muted);
+  }
+
+  .hero-mark {
+    margin-top: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12em;
+    font-size: clamp(3rem, 8.6vw, 9rem);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: 1em;
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    /* The title fills the row at the 9rem cap; never let it wrap, not even
+       while a fallback face with wider metrics is showing. */
+    white-space: nowrap;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .bracket-slot {
+    display: block;
+    flex: none;
+    height: 1.12em;
+    aspect-ratio: 219.16 / 265.96;
+  }
+
+  .bracket-part {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Halftone bracket poster (hero, 404): solid capsules, a faint tint and a
+     dot grid cut with a CSS mask — no SVG patterns (see BracketPoster). */
+  .bracket-poster {
+    --dot: max(3.5px, 0.05em);
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bracket-poster > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .bracket-poster-tint {
+    opacity: 0.16;
+  }
+
+  .bracket-poster-dots {
+    -webkit-mask-image: radial-gradient(
+      circle closest-side,
+      #000 72%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(circle closest-side, #000 72%, transparent 78%);
+    -webkit-mask-size: var(--dot) var(--dot);
+    mask-size: var(--dot) var(--dot);
+  }
+
+  .bracket-part {
+    transition: opacity 700ms var(--ease-out);
+  }
+
+  .hero[data-gl='on'] .bracket-part {
+    opacity: 0;
+  }
+
+  .hero-tagline {
+    margin-top: 2rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--s-on-stage-muted);
+  }
+
+  .hero-actions {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hero-foot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem 1.75rem;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--s-on-stage-muted);
+  }
+
+  .hero-meta li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero-meta li::before {
+    content: '';
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: #4285f4;
+  }
+
+  .hero-meta li:nth-child(2)::before {
+    background-color: #34a853;
+  }
+
+  .hero-meta li:nth-child(3)::before {
+    background-color: #ea4335;
+  }
+
+  .hero-cue {
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8f8f8f; /* quiet, yet 5.2:1 on the stage */
+  }
+
+  /* Wide tracking suits Latin caps; Hangul reads better set closer. */
+  html.site:lang(ko) .hero-eyebrow,
+  html.site:lang(ko) .hero-cue {
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 639px) {
+    .hero-mark {
+      gap: 0.08em;
+      font-size: 14vw;
+    }
+
+    /* Stacked on phones so wrapping never depends on font metrics. */
+    .hero-actions {
+      width: min(100%, 20rem);
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hero-title-line {
+      display: block;
+    }
+
+    /* Taller brackets frame the two-line phone title (hero only). */
+    .hero-mark .bracket-slot {
+      height: 1.62em;
+    }
+  }
+}
+
+/* Roundness only: advance widths stay put, so hovering never reflows. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hero-title:hover {
+    font-variation-settings: 'ROND' 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* `backwards` so the rest state (and :hover) owns the element afterwards. */
+  .hero-title {
+    animation: hero-title-in 1400ms var(--ease-spring) backwards;
+    transition: font-variation-settings 700ms var(--ease-spring);
+  }
+
+  .bracket-slot[data-bracket='left'] .bracket-poster {
+    animation: bracket-in-left 1100ms var(--ease-spring) backwards;
+  }
+
+  .bracket-slot[data-bracket='right'] .bracket-poster {
+    animation: bracket-in-right 1100ms var(--ease-spring) backwards;
+  }
+
+  .hero-rise {
+    animation: hero-rise 900ms var(--ease-out) backwards;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .hero:not([data-gl='on']) [data-bracket='left'] .bracket-part {
+      animation: bracket-part-left linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .hero:not([data-gl='on']) [data-bracket='right'] .bracket-part {
+      animation: bracket-part-right linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+  }
+}
+
+/* Only roundness and transform animate: letter-spacing would re-run layout
+   on every frame of the entrance. */
+@keyframes hero-title-in {
+  from {
+    font-variation-settings: 'ROND' 0;
+    transform: translateY(0.06em);
+  }
+}
+
+@keyframes bracket-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(35%) scale(0.86);
+  }
+}
+
+@keyframes bracket-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-35%) scale(0.86);
+  }
+}
+
+/* Transform only: the tagline is the LCP element, and LCP ignores text
+   until it paints with non-zero opacity. */
+@keyframes hero-rise {
+  from {
+    transform: translateY(14px);
+  }
+}
+
+@keyframes bracket-part-left {
+  to {
+    opacity: 0.35;
+    transform: translateX(-42vw);
+  }
+}
+
+@keyframes bracket-part-right {
+  to {
+    opacity: 0.35;
+    transform: translateX(42vw);
+  }
+}
