@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import type { Locale } from '@/i18n-config'
 import Chip from '@/app/components/site/chip'
+import StaticImage from '@/app/components/site/static-image'
 import { formatLogStamp, toKstIso } from '@/lib/site/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
 import { categoryHue, categoryLabel, partHue } from '@/lib/site/labels'
@@ -65,7 +65,7 @@ export default function SessionRow({
           </div>
         </div>
         {!isPlaceholderImage(session.mainImage) && (
-          <Image
+          <StaticImage
             src={session.mainImage}
             alt=""
             width={112}
