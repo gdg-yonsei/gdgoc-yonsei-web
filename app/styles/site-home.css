@@ -434,3 +434,210 @@
     top: calc(var(--site-header-offset) + 1rem + var(--i) * 1.5rem);
   }
 }
+
+@layer components {
+  .part-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .part-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .part-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .part-module {
+    --hue: var(--s-fg-subtle);
+    --hue-soft: var(--s-sheet-sunken);
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    min-width: 0;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.5rem;
+    background-color: var(--s-sheet);
+    padding: 1.5rem;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .part-module[data-hue='blue'] {
+    --hue: var(--color-g-blue);
+    --hue-soft: var(--s-blue-soft);
+  }
+
+  .part-module[data-hue='sky'] {
+    --hue: var(--color-g-sky);
+    --hue-soft: var(--s-sky-soft);
+  }
+
+  .part-module[data-hue='green'] {
+    --hue: var(--color-g-green);
+    --hue-soft: var(--s-green-soft);
+  }
+
+  .part-module[data-hue='yellow'] {
+    --hue: var(--color-g-yellow);
+    --hue-soft: var(--s-yellow-soft);
+  }
+
+  .part-module[data-hue='pink'] {
+    --hue: var(--color-g-pink);
+    --hue-soft: var(--s-pink-soft);
+  }
+
+  .part-module[data-hue='red'] {
+    --hue: var(--color-g-red);
+    --hue-soft: var(--s-red-soft);
+  }
+
+  .part-module:focus-within {
+    border-color: var(--hue);
+  }
+
+  .part-glyph {
+    width: 100%;
+    max-width: 10rem;
+    height: auto;
+    overflow: visible;
+  }
+
+  .part-glyph * {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .part-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .part-body {
+    line-height: 1.65;
+    color: var(--s-fg-muted);
+  }
+
+  .part-link {
+    justify-self: start;
+    font-weight: 600;
+    text-decoration-line: underline;
+    text-decoration-color: var(--hue);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .pg-soft {
+    fill: var(--hue-soft);
+  }
+
+  .pg-accent {
+    fill: var(--hue);
+  }
+
+  .pg-line,
+  .pg-stroke,
+  .pg-ring {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pg-line {
+    stroke: var(--s-fg-subtle);
+    stroke-width: 2;
+  }
+
+  .pg-stroke {
+    stroke: var(--hue);
+    stroke-width: 4;
+  }
+
+  .pg-ring {
+    stroke: var(--hue);
+    stroke-width: 2.5;
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pg-swap-a,
+  .pg-swap-b,
+  .pg-layer-top,
+  .pg-layer-low {
+    transition: translate var(--dur-slow) var(--ease-spring);
+  }
+
+  .pg-mesh {
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-swap-a {
+    translate: 0 24px;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-swap-b {
+    translate: 0 -24px;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-layer-top {
+    translate: 0 -6px;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-layer-low {
+    translate: 0 6px;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-node {
+    animation: pg-pulse 900ms var(--ease-spring) calc(var(--n) * 90ms) both;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-mesh {
+    transform: skewX(-10deg);
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-draw {
+    animation: pg-draw 900ms var(--ease-out) both;
+  }
+
+  .part-module:is(:hover, :focus-within) .pg-ring {
+    animation: pg-ring 1400ms var(--ease-out) calc(var(--n) * 180ms) infinite;
+  }
+}
+
+@keyframes pg-pulse {
+  40% {
+    scale: 1.45;
+  }
+}
+
+@keyframes pg-draw {
+  from {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pg-ring {
+  from {
+    scale: 0.6;
+    opacity: 0.8;
+  }
+  to {
+    scale: 1.25;
+    opacity: 0;
+  }
+}
