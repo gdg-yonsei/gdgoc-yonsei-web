@@ -7,7 +7,6 @@ import EmptyState from '@/app/components/site/empty-state'
 import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
-import RevealSuspense from '@/app/components/site/reveal-suspense'
 import {
   archiveCommonCopy,
   memberArchiveCopy,
@@ -65,9 +64,9 @@ export default function MemberIndex({ params }: Props) {
             <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
           }
         />
-        <RevealSuspense fallback={<MemberHubSkeleton />}>
+        <Suspense fallback={<MemberHubSkeleton />}>
           <MemberHubContent params={params} />
-        </RevealSuspense>
+        </Suspense>
       </div>
     </PageTransition>
   )

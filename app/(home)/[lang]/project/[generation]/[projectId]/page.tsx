@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
-import RevealSuspense from '@/app/components/site/reveal-suspense'
 import ProjectDetailView from '@/app/components/site/project-detail/project-detail-view'
 import type { Locale } from '@/i18n-config'
 import {
@@ -98,9 +98,9 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <PageTransition>
-      <RevealSuspense fallback={<ProjectDetailLoading />}>
+      <Suspense fallback={<ProjectDetailLoading />}>
         <ProjectDetail {...resolved} />
-      </RevealSuspense>
+      </Suspense>
     </PageTransition>
   )
 }
