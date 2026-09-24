@@ -28,14 +28,6 @@ type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   placeholder?: 'blur' | 'empty'
 }
 
-type NextLinkMockProps = Omit<
-  React.AnchorHTMLAttributes<HTMLAnchorElement>,
-  'href'
-> & {
-  href: string | { pathname?: string }
-  children?: React.ReactNode
-}
-
 vi.mock('next/image', () => ({
   default: ({
     src,
@@ -56,17 +48,51 @@ vi.mock('next/image', () => ({
   },
 }))
 
+type NextLinkMockProps = Omit<
+  React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  'href'
+> & {
+  href: string | { pathname?: string }
+  children?: React.ReactNode
+  prefetch?: boolean | null | 'auto'
+  replace?: boolean
+  scroll?: boolean
+  transitionTypes?: string[]
+}
+
 vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }: NextLinkMockProps) =>
-    React.createElement(
+  default: ({
+    href,
+    children,
+    prefetch,
+    replace,
+    scroll,
+    transitionTypes,
+    ...props
+  }: NextLinkMockProps) => {
+    // Router-only props never reach the DOM.
+    void prefetch
+    void replace
+    void scroll
+    void transitionTypes
+    return React.createElement(
       'a',
       {
         href: typeof href === 'string' ? href : href?.pathname,
         ...props,
       },
       children
-    ),
+    )
+  },
 }))
+
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  // Next.js runs a React canary with <ViewTransition>; the react package
+  // Vitest resolves has none, so here it renders its children unchanged.
+  const PassThrough = ({ children }: { children?: React.ReactNode }) => children
+  return { ...actual, ViewTransition: actual.ViewTransition ?? PassThrough }
+})
 
 /** motion 전용 props는 DOM으로 흘려보내면 React가 unknown-prop 경고를 냅니다. */
 const MOTION_ONLY_PROPS = new Set([
