@@ -12,6 +12,11 @@ export async function getProject(projectId: string) {
           user: true,
         },
       },
+      projectsToTags: {
+        with: {
+          tag: true,
+        },
+      },
       generation: true,
     },
   })

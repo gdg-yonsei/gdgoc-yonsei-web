@@ -9,6 +9,7 @@ import { usersToProjects } from '@/db/schema/users-to-projects'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
+import { syncProjectTags } from '@/lib/server/services/project-tags'
 import { getGenerationNameById } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import {
@@ -68,6 +69,7 @@ export async function createProjectAction(
     generationId,
     repoUrl,
     demoUrl,
+    tags,
   } = parsed.data
 
   try {
@@ -104,6 +106,7 @@ export async function createProjectAction(
       })),
       (rows) => db.insert(usersToProjects).values(rows)
     )
+    await syncProjectTags(createProject.id, tags)
 
     invalidateProjectPublicCache({
       projectId: createProject.id,

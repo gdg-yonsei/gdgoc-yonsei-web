@@ -7,6 +7,8 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import DataInput from '@/app/components/admin/data-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
+import TagsInput from '@/app/components/admin/tags-input'
+import { getTagNames } from '@/lib/server/services/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
@@ -56,7 +58,10 @@ export default async function CreateProjectPage() {
     )
   }
 
-  const membersList = await getMembers(null)
+  const [membersList, tagNames] = await Promise.all([
+    getMembers(null),
+    getTagNames(),
+  ])
   const uniqueMembers = dedupeById(membersList)
 
   return (
@@ -109,6 +114,7 @@ export default async function CreateProjectPage() {
           placeholder={'https://...'}
           type={'url'}
         />
+        <TagsInput defaultValue={[]} suggestions={tagNames} />
         <GenerationField
           title={t.generation}
           value={resolvedScope.selectedGeneration.name}

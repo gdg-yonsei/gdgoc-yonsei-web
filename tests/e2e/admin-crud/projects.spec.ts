@@ -43,6 +43,14 @@ async function createProject(
 
   await page.getByRole('button', { name: /테스터관리/ }).click()
 
+  const stack = page.getByRole('combobox', { name: /^(Tech stack|기술 스택)$/ })
+  await stack.fill('Next.js')
+  await stack.press('Enter')
+  await stack.fill('firebase,')
+  await page
+    .locator('input[name="repoUrl"]')
+    .fill('https://github.com/gdg-yonsei/e2e-project')
+
   await setHiddenInputValue(page, 'mainImage', '/project-default.png')
   await setHiddenInputValue(
     page,
@@ -81,6 +89,8 @@ test.describe('projects CRUD', () => {
       await createProject(page, projectName)
       await page.getByRole('link', { name: projectName }).click()
       await expect(page.getByText(projectName, { exact: true })).toBeVisible()
+      await expect(page.getByText('Next.js', { exact: true })).toBeVisible()
+      await expect(page.getByText('firebase', { exact: true })).toBeVisible()
 
       await page.getByRole('link', { name: /^(Edit|수정)$/ }).click()
       await expect(page).toHaveURL(/\/admin\/projects\/.+\/edit$/)

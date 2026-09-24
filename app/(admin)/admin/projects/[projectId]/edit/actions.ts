@@ -10,6 +10,7 @@ import { usersToProjects } from '@/db/schema/users-to-projects'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
+import { syncProjectTags } from '@/lib/server/services/project-tags'
 import {
   getGenerationNameById,
   getProjectCacheContext,
@@ -58,6 +59,7 @@ export async function updateProjectAction(
     generationId,
     repoUrl,
     demoUrl,
+    tags,
   } = parsed.data
 
   try {
@@ -127,6 +129,7 @@ export async function updateProjectAction(
       })),
       insertRows: (rows) => db.insert(usersToProjects).values(rows),
     })
+    await syncProjectTags(projectId, tags)
 
     const nextGeneration = await getGenerationNameById(Number(generationId))
 

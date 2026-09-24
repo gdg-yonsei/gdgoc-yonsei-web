@@ -9,6 +9,8 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import DataInput from '@/app/components/admin/data-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
+import TagsInput from '@/app/components/admin/tags-input'
+import { getTagNames } from '@/lib/server/services/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
@@ -49,11 +51,12 @@ export default async function EditProjectPage({
     projectId
   )
 
-  const [resolvedScope, membersList] = await Promise.all([
+  const [resolvedScope, membersList, tagNames] = await Promise.all([
     session?.user?.id
       ? resolveAdminGenerationScope(session.user.id)
       : Promise.resolve(null),
     getMembers(null),
+    getTagNames(),
   ])
   const actualGeneration = projectData.generation
     ? {
@@ -128,6 +131,10 @@ export default async function EditProjectPage({
           name={'demoUrl'}
           placeholder={'https://...'}
           type={'url'}
+        />
+        <TagsInput
+          defaultValue={projectData.projectsToTags.map(({ tag }) => tag.name)}
+          suggestions={tagNames}
         />
         <GenerationField
           title={t.generation}

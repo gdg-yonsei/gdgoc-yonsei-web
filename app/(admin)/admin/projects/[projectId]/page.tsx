@@ -154,6 +154,25 @@ export default async function ProjectPage({
             ))}
           </div>
         </div>
+        <div className={'admin-form-grid-full'}>
+          <div className={'admin-field-label'}>{t.tags}</div>
+          <div className={'flex flex-wrap gap-2'}>
+            {projectData.projectsToTags.length === 0 ? (
+              <div className={'admin-field-value opacity-70'}>—</div>
+            ) : (
+              projectData.projectsToTags.map(({ tag }) => (
+                <span
+                  key={tag.id}
+                  className={
+                    'border-hairline bg-surface rounded-full border px-3 py-1 text-sm'
+                  }
+                >
+                  {tag.name}
+                </span>
+              ))
+            )}
+          </div>
+        </div>
         <div
           className={
             'admin-form-grid-full grid grid-cols-1 gap-2 sm:grid-cols-2'
