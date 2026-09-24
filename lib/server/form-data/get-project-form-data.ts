@@ -13,6 +13,22 @@ function getNullableUrl(formData: FormData, key: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
+function parseStringList(formData: FormData, key: string): string[] {
+  const raw = formData.get(key)
+  if (typeof raw !== 'string' || raw === '') {
+    return []
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw)
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === 'string')
+      : []
+  } catch (error) {
+    logger.error('form-data.project', error, { field: key })
+    return []
+  }
+}
+
 /**
  * Extracts project-related data from a FormData object.
  * This function handles both regular fields and JSON string fields for arrays.
@@ -33,6 +49,7 @@ export default function getProjectFormData(formData: FormData): {
   participants: string[]
   repoUrl: string | null
   demoUrl: string | null
+  tags: string[]
 } {
   const name = formData.get('name') as string | null
   const nameKo = formData.get('nameKo') as string | null
@@ -65,6 +82,7 @@ export default function getProjectFormData(formData: FormData): {
   const generationId = formData.get('generationId') as string | null
   const repoUrl = getNullableUrl(formData, 'repoUrl')
   const demoUrl = getNullableUrl(formData, 'demoUrl')
+  const tags = parseStringList(formData, 'tags')
 
   return {
     name,
@@ -79,5 +97,6 @@ export default function getProjectFormData(formData: FormData): {
     participants: participantsArray,
     repoUrl,
     demoUrl,
+    tags,
   }
 }

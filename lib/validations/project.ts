@@ -1,4 +1,18 @@
 import { z } from 'zod'
+import {
+  MAX_PROJECT_TAGS,
+  MAX_TAG_LENGTH,
+  dedupeTags,
+} from '@/lib/validations/project-tags'
+
+const tagName = z
+  .string()
+  .trim()
+  .min(1, 'Tag is required')
+  .max(MAX_TAG_LENGTH, `Tags are at most ${MAX_TAG_LENGTH} characters`)
+  .refine((tag) => !/[,|]/.test(tag), {
+    message: 'Tags cannot contain commas or pipes',
+  })
 
 export const projectValidation = z.object({
   name: z.string().trim().nonempty('Name is required'),
@@ -30,4 +44,11 @@ export const projectValidation = z.object({
     .url('Repository URL must be a valid URL')
     .nullable(),
   demoUrl: z.string().trim().url('Demo URL must be a valid URL').nullable(),
+  tags: z
+    .array(tagName)
+    .default([])
+    .transform(dedupeTags)
+    .refine((tags) => tags.length <= MAX_PROJECT_TAGS, {
+      message: `Up to ${MAX_PROJECT_TAGS} tags`,
+    }),
 })

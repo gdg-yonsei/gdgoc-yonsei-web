@@ -159,6 +159,7 @@ describe('form-data parsers', () => {
       participants: ['u1', 'u2'],
       repoUrl: null,
       demoUrl: null,
+      tags: [],
     })
   })
 
