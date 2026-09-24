@@ -49,7 +49,10 @@ test.describe('parts CRUD', () => {
 
       await page.getByRole('link', { name: 'Edit' }).click()
       await expect(page).toHaveURL(/\/admin\/parts\/\d+\/edit$/)
-      await page.getByRole('textbox', { name: 'Name' }).fill(updatedPartName)
+      // exact: the member pickers' "Search name" fields also contain "name".
+      await page
+        .getByRole('textbox', { name: 'Name', exact: true })
+        .fill(updatedPartName)
       await page.getByRole('spinbutton', { name: 'Display Order' }).fill('0')
       await page
         .getByRole('textbox', { name: 'Description' })
@@ -69,10 +72,13 @@ test.describe('parts CRUD', () => {
         exact: true,
       })
       await expect(memberPicker.getByRole('button')).toHaveCount(0)
+      // The username: members.spec renames the seeded member's first name.
       await memberPicker
         .getByRole('textbox', { name: 'Search name' })
-        .fill('Member')
-      await memberPicker.getByRole('button', { name: /Member/ }).click()
+        .fill('e2e-member')
+      // Nothing is selected yet, so the only buttons are search results.
+      await expect(memberPicker.getByRole('button')).toHaveCount(1)
+      await memberPicker.getByRole('button').click()
       await memberPicker
         .getByRole('textbox', { name: 'Search name' })
         .fill('no-match')

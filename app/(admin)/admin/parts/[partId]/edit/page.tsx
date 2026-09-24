@@ -86,7 +86,10 @@ export default async function EditPartPage({
       <div className={'admin-title py-4'}>
         {t.edit} {partData.name}
       </div>
+      {/* Next keeps visited pages mounted; a new key per saved version resets
+          the uncontrolled fields instead of showing the previous edit's input. */}
       <DataForm
+        key={partData.updatedAt?.toISOString() ?? 'new'}
         action={updatePartActionWithPartId}
         className={'admin-form-grid w-full gap-4'}
       >
