@@ -1,5 +1,7 @@
 'use client'
 
+import LocalizedText from '@/app/components/localized-text'
+
 export default function PublicError({
   error,
   reset,
@@ -10,17 +12,29 @@ export default function PublicError({
   console.error(error)
 
   return (
-    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 p-4">
-      <h2 className="text-2xl font-bold">Something went wrong</h2>
-      <p className="text-neutral-600">
-        An unexpected error occurred. Please try again.
+    <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 pt-28 pb-20 text-center">
+      <p
+        aria-hidden="true"
+        className="font-code text-fg-subtle text-xs tracking-[0.18em] uppercase"
+      >
+        {'<error />'}
+      </p>
+      <h2 className="font-display text-4xl font-bold tracking-tight [font-variation-settings:'ROND'_100]">
+        <LocalizedText en="Something went wrong" ko="문제가 발생했어요" />
+      </h2>
+      <p className="text-fg-muted max-w-md">
+        <LocalizedText
+          en="An unexpected error occurred. Please try again."
+          ko="예기치 않은 오류가 발생했어요. 다시 시도해 주세요."
+        />
       </p>
       <button
+        type="button"
         onClick={reset}
-        className="rounded-lg bg-neutral-950 px-6 py-2 text-white transition-colors hover:bg-neutral-800"
+        className="pressable bg-fg text-paper inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
       >
-        Try again
+        <LocalizedText en="Try again" ko="다시 시도" />
       </button>
-    </div>
+    </section>
   )
 }

@@ -9,6 +9,12 @@ import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'
 import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
+import {
+  BRACKET_VIEWBOX,
+  bracketCapsulesInViewBox,
+  capsulePath,
+  type BracketSide,
+} from '@/lib/site/bracket-geometry'
 
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
@@ -162,6 +168,22 @@ async function publicRouteExists(identity: PublicRouteIdentity) {
   return match.length > 0
 }
 
+const BRACKET_FILL = {
+  red: '#EA4335',
+  blue: '#4285F4',
+  yellow: '#F9AB00',
+  green: '#34A853',
+} as const
+
+function bracketSvg(side: BracketSide) {
+  const paths = bracketCapsulesInViewBox(side)
+    .map((capsule) => `<path d="${capsulePath(capsule)}" fill="${BRACKET_FILL[capsule.hue]}"/>`)
+    .join('')
+  return `<svg aria-hidden="true" viewBox="0 0 ${BRACKET_VIEWBOX.width} ${BRACKET_VIEWBOX.height}">${paths}</svg>`
+}
+
+const NOT_FOUND_BRACKETS = { left: bracketSvg('left'), right: bracketSvg('right') }
+
 function publicRouteNotFound(request: NextRequest) {
   const locale = request.nextUrl.pathname.split('/')[1] === 'ko' ? 'ko' : 'en'
   const backLabel = locale === 'ko' ? '홈으로 돌아가기' : 'Back to Home'
@@ -174,22 +196,20 @@ function publicRouteNotFound(request: NextRequest) {
     <title>404 Not Found | GDGoC Yonsei</title>
     <style>
       * { box-sizing: border-box; }
-      body { margin: 0; background: #fafafa; color: #171717; font-family: ui-sans-serif, system-ui, sans-serif; }
-      main { display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 1rem; }
-      div { display: flex; flex-direction: column; gap: 1rem; }
-      img { width: min(100%, 22rem); height: auto; }
-      h1 { margin: 0; font-size: clamp(3rem, 8vw, 4rem); line-height: 1; }
-      a { width: fit-content; color: inherit; font-size: 1.5rem; font-weight: 600; text-underline-offset: 0.2em; }
-      a:focus-visible { outline: 3px solid #1a73e8; outline-offset: 4px; }
+      body { margin: 0; background: #1e1e1e; color: #f0f0f0; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      main { display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; padding: 1.5rem; text-align: center; }
+      h1 { display: flex; align-items: center; gap: 0.12em; margin: 0; font-size: clamp(4rem, 16vw, 9rem); font-weight: 700; letter-spacing: -0.05em; line-height: 1; }
+      h1 svg { height: 1.1em; width: auto; }
+      p { margin: 0; color: #b4b4b4; }
+      a { color: #1e1e1e; background: #f0f0f0; padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600; text-decoration: none; }
+      a:focus-visible { outline: 3px solid #4285f4; outline-offset: 4px; }
     </style>
   </head>
   <body>
     <main>
-      <div>
-        <img src="/gdgoc-yonsei-logo.svg" width="352" height="64" alt="GDGoC Yonsei" />
-        <h1>404 Not Found</h1>
-        <a href="/${locale}">${backLabel}</a>
-      </div>
+      <h1>${NOT_FOUND_BRACKETS.left}404${NOT_FOUND_BRACKETS.right}</h1>
+      <p>${locale === 'ko' ? '페이지를 찾을 수 없어요.' : 'This page slipped out of the brackets.'}</p>
+      <a href="/${locale}">${backLabel}</a>
     </main>
   </body>
 </html>`
