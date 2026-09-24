@@ -165,26 +165,33 @@ describe('public queries', () => {
           contentKo: true,
           images: true,
           mainImage: true,
+          repoUrl: true,
+          demoUrl: true,
         }),
         where: expect.anything(),
         with: {
           generation: {
-            columns: {
-              id: true,
-              name: true,
-            },
+            columns: { id: true, name: true, startDate: true },
+          },
+          projectsToTags: {
+            columns: { tagId: true },
+            with: { tag: { columns: { name: true } } },
           },
           usersToProjects: {
-            columns: {
-              userId: true,
-            },
+            columns: { userId: true },
             with: {
               user: {
-                columns: expect.objectContaining({
+                columns: {
                   id: true,
+                  name: true,
                   firstName: true,
+                  firstNameKo: true,
+                  lastName: true,
+                  lastNameKo: true,
                   isForeigner: true,
-                }),
+                  image: true,
+                  githubId: true,
+                },
               },
             },
           },
@@ -447,4 +454,46 @@ describe('public queries', () => {
     expect(chain.where).toHaveBeenCalledTimes(1)
   })
 
+  it('builds one project showcase and tags every generation it contains', async () => {
+    const projectRow = (id: string, generation: string, startDate: string) => ({
+      id,
+      name: `Project ${id}`,
+      nameKo: null,
+      description: 'desc',
+      descriptionKo: null,
+      mainImage: '/project-default.png',
+      repoUrl: null,
+      demoUrl: null,
+      createdAt: new Date('2025-03-01T00:00:00.000Z'),
+      updatedAt: new Date('2025-04-01T00:00:00.000Z'),
+      generation: { id: 1, name: generation, startDate },
+      projectsToTags: [{ tagId: 1, tag: { name: 'Go' } }],
+      usersToProjects: [],
+    })
+    mockProjectsFindMany.mockResolvedValue([
+      projectRow('p1', '25-26', '2025-03-01'),
+      projectRow('p2', '24-25', '2024-03-01'),
+    ])
+
+    const { getProjectShowcase } =
+      await import('@/lib/server/queries/public/projects')
+    const result = await getProjectShowcase()
+
+    expect(result.map((project) => [project.id, project.tags])).toEqual([
+      ['p1', ['Go']],
+      ['p2', ['Go']],
+    ])
+    expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
+      'project:list:en',
+      'project:list:ko',
+    ])
+    expect(mockTagQuery).toHaveBeenCalledWith([
+      'generation:list:en',
+      'project:generation:25-26:en',
+      'project:generation:24-25:en',
+      'generation:list:ko',
+      'project:generation:25-26:ko',
+      'project:generation:24-25:ko',
+    ])
+  })
 })

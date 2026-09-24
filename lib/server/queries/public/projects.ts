@@ -8,10 +8,17 @@ import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
+  generationListTag,
   projectGenerationTag,
   projectListTag,
   projectTag,
+  tagQuery,
+  uniqueStrings,
 } from '@/lib/server/cache'
+import {
+  toShowcaseProject,
+  type ShowcaseProject,
+} from '@/lib/site/project-showcase'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { desc, eq } from 'drizzle-orm'
@@ -49,6 +56,79 @@ const getProjectsForRequest = cache(() => getSharedProjects())
 export function getProjects(_locale: Locale) {
   void _locale
   return getProjectsForRequest()
+}
+
+/** Relations both project read models load; matches `ProjectRow`. */
+const PROJECT_RELATIONS = {
+  generation: { columns: { id: true, name: true, startDate: true } },
+  projectsToTags: {
+    columns: { tagId: true },
+    with: { tag: { columns: { name: true } } },
+  },
+  usersToProjects: {
+    columns: { userId: true },
+    with: {
+      user: {
+        columns: {
+          id: true,
+          name: true,
+          firstName: true,
+          firstNameKo: true,
+          lastName: true,
+          lastNameKo: true,
+          isForeigner: true,
+          image: true,
+          githubId: true,
+        },
+      },
+    },
+  },
+} as const
+
+const PROJECT_CARD_COLUMNS = {
+  id: true,
+  name: true,
+  nameKo: true,
+  description: true,
+  descriptionKo: true,
+  mainImage: true,
+  repoUrl: true,
+  demoUrl: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+async function getSharedProjectShowcase(): Promise<ShowcaseProject[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.projectList,
+    forEachPublicLocale((locale) => [projectListTag(locale)])
+  )
+
+  const rows = await db.query.projects.findMany({
+    columns: PROJECT_CARD_COLUMNS,
+    with: PROJECT_RELATIONS,
+    orderBy: desc(projects.updatedAt),
+  })
+
+  // Generation pages read this entry too (see sessions.ts for the reason).
+  const generationNames = uniqueStrings(rows.map((row) => row.generation.name))
+  tagQuery(
+    forEachPublicLocale((locale) => [
+      generationListTag(locale),
+      ...generationNames.map((name) => projectGenerationTag(name, locale)),
+    ])
+  )
+
+  return rows.map(toShowcaseProject)
+}
+
+const getProjectShowcaseForRequest = cache(() => getSharedProjectShowcase())
+
+/** Every project with tags and contributors, for hubs, pages and counters. */
+export function getProjectShowcase() {
+  return getProjectShowcaseForRequest()
 }
 
 const getProjectsByGenerationForRequest = cache((generationName: string) =>
@@ -113,44 +193,12 @@ async function getSharedProjectById(projectId: string) {
   return db.query.projects.findFirst({
     where: eq(projects.id, projectId),
     columns: {
-      id: true,
-      name: true,
-      nameKo: true,
-      description: true,
-      descriptionKo: true,
+      ...PROJECT_CARD_COLUMNS,
       content: true,
       contentKo: true,
-      mainImage: true,
       images: true,
-      createdAt: true,
-      updatedAt: true,
     },
-    with: {
-      generation: {
-        columns: {
-          id: true,
-          name: true,
-        },
-      },
-      usersToProjects: {
-        columns: {
-          userId: true,
-        },
-        with: {
-          user: {
-            columns: {
-              id: true,
-              name: true,
-              firstName: true,
-              firstNameKo: true,
-              lastName: true,
-              lastNameKo: true,
-              isForeigner: true,
-            },
-          },
-        },
-      },
-    },
+    with: PROJECT_RELATIONS,
   })
 }
 
