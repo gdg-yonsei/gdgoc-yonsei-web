@@ -200,7 +200,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       titles: {
         T19: 'T19',
         'Part Session': 'Part Sessions',
-        oTP: 'oTP → Demo Day',
+        oTP: 'oTP & Demo Day',
         'Solution Challenge': 'Solution Challenge',
         'Yonsei X Korea Demo Day': 'Yonsei × Korea Demo Day',
         'The Bridge Hackathon': 'The Bridge Hackathon',
@@ -270,7 +270,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
       titles: {
         T19: 'T19',
         'Part Session': '파트 세션',
-        oTP: 'oTP → 데모데이',
+        oTP: 'oTP & 데모데이',
         'Solution Challenge': 'Solution Challenge',
         'Yonsei X Korea Demo Day': 'Yonsei × Korea Demo Day',
         'The Bridge Hackathon': 'The Bridge Hackathon',

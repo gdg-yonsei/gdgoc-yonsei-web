@@ -13,7 +13,7 @@ describe('Programs', () => {
     ).toEqual([
       'T19',
       'Part Sessions',
-      'oTP → Demo Day',
+      'oTP & Demo Day',
       'Solution Challenge',
       'Yonsei × Korea Demo Day',
       'The Bridge Hackathon',

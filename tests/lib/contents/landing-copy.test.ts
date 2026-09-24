@@ -34,6 +34,17 @@ describe('landing copy', () => {
     }
   })
 
+  it('stays inside the Latin font subset: no arrow glyphs', () => {
+    // An arrow (U+2190–21FF) makes the browser fetch Google Sans Flex's
+    // symbols subset for a single title (see common-components.test.tsx).
+    for (const text of [
+      ...strings(landingCopy.en),
+      ...strings(landingCopy.ko),
+    ]) {
+      expect(text).not.toMatch(/[\u2190-\u21ff]/)
+    }
+  })
+
   it('keeps the Solution Challenge numbers identical across languages', () => {
     expect(landingCopy.ko.funnel.steps.map((step) => step.value)).toEqual(
       landingCopy.en.funnel.steps.map((step) => step.value)
