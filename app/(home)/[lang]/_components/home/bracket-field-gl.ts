@@ -12,19 +12,35 @@ const CAPSULE_RGB = Object.fromEntries(
   Object.entries(CAPSULE_HEX).map(([hue, hex]) => [hue, hexToUnitRgb(hex)])
 ) as Record<CapsuleHue, readonly [number, number, number]>
 
-export function packCapsules(capsules: readonly Capsule[], dpr: number) {
-  const positions = new Float32Array(16)
-  const colors = new Float32Array(12)
+export type PackedCapsules = {
+  positions: Float32Array
+  colors: Float32Array
+  radius: number
+}
 
-  capsules.slice(0, 4).forEach((capsule, index) => {
-    positions.set(
-      [capsule.ax, capsule.ay, capsule.bx, capsule.by].map((v) => v * dpr),
-      index * 4
-    )
-    colors.set(CAPSULE_RGB[capsule.hue], index * 3)
-  })
-
-  return { positions, colors, radius: (capsules[0]?.r ?? 0) * dpr }
+/** Writes the capsules into `into` (allocated when omitted) in device pixels. */
+export function packCapsules(
+  capsules: readonly Capsule[],
+  dpr: number,
+  into: PackedCapsules = {
+    positions: new Float32Array(16),
+    colors: new Float32Array(12),
+    radius: 0,
+  }
+): PackedCapsules {
+  into.positions.fill(0)
+  into.colors.fill(0)
+  for (let index = 0; index < Math.min(4, capsules.length); index += 1) {
+    const capsule = capsules[index]!
+    const offset = index * 4
+    into.positions[offset] = capsule.ax * dpr
+    into.positions[offset + 1] = capsule.ay * dpr
+    into.positions[offset + 2] = capsule.bx * dpr
+    into.positions[offset + 3] = capsule.by * dpr
+    into.colors.set(CAPSULE_RGB[capsule.hue], index * 3)
+  }
+  into.radius = (capsules[0]?.r ?? 0) * dpr
+  return into
 }
 
 const VERTEX_SHADER = `#version 300 es
@@ -118,8 +134,10 @@ export type FieldFrame = {
   lens: number
 }
 
+export type FieldStatus = 'pending' | 'ready' | 'failed'
+
 export type BracketField = {
-  isReady(): boolean
+  status(): FieldStatus
   resize(width: number, height: number, dpr: number): void
   draw(frame: FieldFrame): void
   dispose(): void
@@ -140,13 +158,15 @@ type Uniforms = Record<
 
 const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i
 
-/** Some browsers hand software GL out without flagging a performance caveat. */
+/** Some browsers hand software GL out without flagging a performance caveat.
+    Browsers that hide the unmasked renderer still name software rasterisers
+    in the plain one. */
 function isSoftwareRenderer(gl: WebGL2RenderingContext) {
   const info = gl.getExtension('WEBGL_debug_renderer_info')
-  if (!info) return false
-  return SOFTWARE_RENDERER.test(
-    String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL))
+  const renderer = gl.getParameter(
+    info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER
   )
+  return SOFTWARE_RENDERER.test(String(renderer))
 }
 
 /** Dev-only escape hatch so the field can be reviewed on GPU-less machines. */
@@ -198,6 +218,11 @@ export function createBracketField(
   let uniforms: Uniforms | null = null
   let dpr = 1
   let failed = false
+  const packed: PackedCapsules = {
+    positions: new Float32Array(16),
+    colors: new Float32Array(12),
+    radius: 0,
+  }
 
   const setup = () => {
     gl.useProgram(program)
@@ -227,21 +252,21 @@ export function createBracketField(
   }
 
   return {
-    isReady() {
-      if (uniforms) return true
-      if (failed) return false
+    status() {
+      if (uniforms) return 'ready'
+      if (failed) return 'failed'
       if (
         parallel &&
         !gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR)
       ) {
-        return false
+        return 'pending'
       }
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         failed = true
-        return false
+        return 'failed'
       }
       setup()
-      return true
+      return 'ready'
     },
     resize(width, height, nextDpr) {
       dpr = nextDpr
@@ -251,7 +276,7 @@ export function createBracketField(
     },
     draw({ time, reveal, pointer, capsules, cell, lens }) {
       if (!uniforms) return
-      const packed = packCapsules(capsules, dpr)
+      packCapsules(capsules, dpr, packed)
       gl.uniform2f(uniforms.resolution, canvas.width, canvas.height)
       gl.uniform1f(uniforms.time, time)
       gl.uniform1f(uniforms.cell, cell * dpr)
@@ -276,6 +301,11 @@ export function createBracketField(
       gl.deleteProgram(program)
       gl.deleteShader(vertex)
       gl.deleteShader(fragment)
+      // Hand the full-viewport drawing buffer back. The context itself stays:
+      // a route hidden in <Activity> keeps this canvas and mounts the field
+      // again when shown, and a lost context would never come back.
+      canvas.width = 1
+      canvas.height = 1
     },
   }
 }
@@ -347,11 +377,18 @@ export function mountBracketField(
   const frame = (now: number) => {
     frameHandle = 0
     if (!running() || !anchors) return
+    // A shader that failed to link gives the stage back to the poster
+    // instead of polling every frame forever.
+    const status = field.status()
+    if (status === 'failed') {
+      teardown()
+      return
+    }
     frameHandle = requestAnimationFrame(frame)
     if (coarse && now - lastFrameAt < 32) return
     const delta = lastFrameAt ? now - lastFrameAt : 0
     lastFrameAt = now
-    if (!field.isReady()) return
+    if (status === 'pending') return
     if (!startedAt) {
       startedAt = now
       hero.dataset.gl = 'on'

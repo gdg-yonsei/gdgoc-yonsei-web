@@ -31,7 +31,7 @@ function heroFixture() {
 
 function fakeField(): BracketField {
   return {
-    isReady: () => true,
+    status: () => 'ready' as const,
     resize: vi.fn(),
     draw: vi.fn(),
     dispose: vi.fn(),
@@ -49,6 +49,46 @@ describe('packCapsules', () => {
     expect(packed.colors[4]).toBeCloseTo(0.659)
   })
 })
+
+describe('packCapsules buffers', () => {
+  it('fills the buffers it is given instead of allocating per frame', () => {
+    const into = {
+      positions: new Float32Array(16),
+      colors: new Float32Array(12),
+      radius: 0,
+    }
+    expect(packCapsules(capsules, 2, into)).toBe(into)
+    expect(into.positions[4]).toBe(12)
+    expect(into.radius).toBe(10)
+  })
+})
+
+/** Just enough of WebGL2 for createBracketField to build and dispose a field. */
+function fakeGl(renderer: string) {
+  const loseContext = vi.fn()
+  const gl = {
+    RENDERER: 0x1f01,
+    VERTEX_SHADER: 0x8b31,
+    FRAGMENT_SHADER: 0x8b30,
+    getExtension: (name: string) =>
+      name === 'WEBGL_lose_context' ? { loseContext } : null,
+    getParameter: (parameter: number) =>
+      parameter === 0x1f01 ? renderer : null,
+    createProgram: () => ({}),
+    createShader: () => ({}),
+    shaderSource: vi.fn(),
+    compileShader: vi.fn(),
+    attachShader: vi.fn(),
+    linkProgram: vi.fn(),
+    createBuffer: () => ({}),
+    createVertexArray: () => ({}),
+    deleteBuffer: vi.fn(),
+    deleteVertexArray: vi.fn(),
+    deleteProgram: vi.fn(),
+    deleteShader: vi.fn(),
+  }
+  return { gl: gl as unknown as WebGL2RenderingContext, loseContext }
+}
 
 describe('createBracketField', () => {
   it('refuses software rasterisers so the CPU never runs the shader', () => {
@@ -78,6 +118,31 @@ describe('createBracketField', () => {
     )
     expect(createBracketField(canvas)).toBeNull()
     expect(loseContext).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to gl.RENDERER when the debug extension is missing', () => {
+    const canvas = document.createElement('canvas')
+    const { gl, loseContext } = fakeGl('llvmpipe (LLVM 17.0.0, 256 bits)')
+    vi.spyOn(canvas, 'getContext').mockReturnValue(gl)
+    expect(createBracketField(canvas)).toBeNull()
+    expect(loseContext).toHaveBeenCalledTimes(1)
+  })
+
+  it('hands the drawing buffer back on dispose but keeps the context', () => {
+    // A hidden route (React <Activity>) keeps its canvas and mounts the
+    // field again on return; a lost context would never come back.
+    const canvas = document.createElement('canvas')
+    canvas.width = 2560
+    canvas.height = 1600
+    const { gl, loseContext } = fakeGl('ANGLE (Apple, Apple M2, OpenGL 4.1)')
+    vi.spyOn(canvas, 'getContext').mockReturnValue(gl)
+    const field = createBracketField(canvas)
+
+    field?.dispose()
+
+    expect(field).not.toBeNull()
+    expect([canvas.width, canvas.height]).toEqual([1, 1])
+    expect(loseContext).not.toHaveBeenCalled()
   })
 
   it('returns null when WebGL2 is unavailable', () => {
@@ -120,6 +185,24 @@ describe('mountBracketField', () => {
 
     expect(hero.dataset.gl).toBeUndefined()
     expect(field.dispose).toHaveBeenCalledTimes(1)
+  })
+
+  it('gives up and restores the poster when the shader fails to link', () => {
+    const { hero, canvas } = heroFixture()
+    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+    vi.stubGlobal('cancelAnimationFrame', vi.fn())
+    const frames: FrameRequestCallback[] = []
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback: FrameRequestCallback) => frames.push(callback))
+    )
+    const field = { ...fakeField(), status: () => 'failed' as const }
+    mountBracketField(canvas, hero, () => field)
+
+    frames.shift()!(16)
+
+    expect(field.dispose).toHaveBeenCalledTimes(1)
+    expect(frames).toHaveLength(0)
   })
 
   it('restores the poster when the GPU context is lost', () => {

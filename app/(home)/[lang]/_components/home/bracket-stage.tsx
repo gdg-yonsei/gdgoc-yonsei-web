@@ -29,9 +29,12 @@ export default function BracketStage() {
     let teardown: (() => void) | undefined
 
     const start = () => {
-      void import('./bracket-field-gl').then(({ mountBracketField }) => {
-        if (!cancelled) teardown = mountBracketField(canvas, hero)
-      })
+      import('./bracket-field-gl')
+        .then(({ mountBracketField }) => {
+          if (!cancelled) teardown = mountBracketField(canvas, hero)
+        })
+        // A stale or blocked chunk only costs the live field; the poster stays.
+        .catch(() => {})
     }
 
     const hasIdle = typeof window.requestIdleCallback === 'function'
