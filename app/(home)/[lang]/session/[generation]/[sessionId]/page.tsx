@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
 import SessionDetailView from '@/app/components/site/session-detail/session-detail-view'
 import type { Locale } from '@/i18n-config'
 import {
@@ -103,9 +103,11 @@ export default async function SessionDetailPage({ params }: Props) {
   const resolved = await params
 
   return (
-    <Suspense fallback={<SessionDetailLoading />}>
-      <SessionDetail {...resolved} />
-    </Suspense>
+    <PageTransition>
+      <RevealSuspense fallback={<SessionDetailLoading />}>
+        <SessionDetail {...resolved} />
+      </RevealSuspense>
+    </PageTransition>
   )
 }
 
@@ -143,71 +145,69 @@ async function SessionDetail({
   const { previous, next } = adjacentSessions(archive, session.id)
 
   return (
-    <PageTransition>
-      <div className="site-page">
-        <JsonLd
-          id="session-structured-data"
-          data={[
-            session.startAt
-              ? sessionEvent({
-                  url,
-                  name: title,
-                  description: summary,
-                  images,
-                  locale,
-                  startAt: session.startAt,
-                  endAt: session.endAt,
-                  location,
-                  organizer: {
-                    id: organizationId,
-                    name: 'GDGoC Yonsei',
-                    url: getLocalizedUrl('en'),
-                  },
-                })
-              : sessionLearningResource({
-                  url,
-                  name: title,
-                  description: summary,
-                  images,
-                  locale,
-                  providerId: organizationId,
-                }),
-            breadcrumbList([
-              { name: common.home, url: getLocalizedUrl(locale) },
-              {
-                name: common.sessions,
-                url: getLocalizedUrl(locale, '/session'),
-              },
-              {
-                name: generation,
-                url: getLocalizedUrl(locale, `/session/${generation}`),
-              },
-              { name: title, url },
-            ]),
-          ]}
-        />
-        <SessionDetailView
-          lang={locale}
-          copy={copy}
-          common={common}
-          session={{
-            id: session.id,
-            title,
-            category: session.category,
-            description,
-            startAt: session.startAt,
-            endAt: session.endAt,
-            location,
-            partName: session.part?.name ?? null,
-            generationName: generation,
-            mainImage: session.mainImage,
-            images: session.images,
-          }}
-          related={entry ? relatedSessions(archive, entry) : []}
-          previous={previous}
-          next={next}
-        />
-      </div>
-    </PageTransition>
+    <div className="site-page">
+      <JsonLd
+        id="session-structured-data"
+        data={[
+          session.startAt
+            ? sessionEvent({
+                url,
+                name: title,
+                description: summary,
+                images,
+                locale,
+                startAt: session.startAt,
+                endAt: session.endAt,
+                location,
+                organizer: {
+                  id: organizationId,
+                  name: 'GDGoC Yonsei',
+                  url: getLocalizedUrl('en'),
+                },
+              })
+            : sessionLearningResource({
+                url,
+                name: title,
+                description: summary,
+                images,
+                locale,
+                providerId: organizationId,
+              }),
+          breadcrumbList([
+            { name: common.home, url: getLocalizedUrl(locale) },
+            {
+              name: common.sessions,
+              url: getLocalizedUrl(locale, '/session'),
+            },
+            {
+              name: generation,
+              url: getLocalizedUrl(locale, `/session/${generation}`),
+            },
+            { name: title, url },
+          ]),
+        ]}
+      />
+      <SessionDetailView
+        lang={locale}
+        copy={copy}
+        common={common}
+        session={{
+          id: session.id,
+          title,
+          category: session.category,
+          description,
+          startAt: session.startAt,
+          endAt: session.endAt,
+          location,
+          partName: session.part?.name ?? null,
+          generationName: generation,
+          mainImage: session.mainImage,
+          images: session.images,
+        }}
+        related={entry ? relatedSessions(archive, entry) : []}
+        previous={previous}
+        next={next}
+      />
+    </div>
   )
 }

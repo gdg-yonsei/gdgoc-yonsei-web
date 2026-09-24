@@ -32,6 +32,7 @@ export default function GenerationStrip({
               <Link
                 href={`/${lang}/${basePath}/${name}`}
                 prefetch={true}
+                transitionTypes={['nav-forward']}
                 aria-current={name === current ? 'page' : undefined}
                 className="generation-pill"
               >

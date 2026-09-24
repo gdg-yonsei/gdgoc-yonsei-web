@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
 import ProjectDetailView from '@/app/components/site/project-detail/project-detail-view'
 import type { Locale } from '@/i18n-config'
 import {
@@ -97,9 +97,11 @@ export default async function ProjectDetailPage({ params }: Props) {
   const resolved = await params
 
   return (
-    <Suspense fallback={<ProjectDetailLoading />}>
-      <ProjectDetail {...resolved} />
-    </Suspense>
+    <PageTransition>
+      <RevealSuspense fallback={<ProjectDetailLoading />}>
+        <ProjectDetail {...resolved} />
+      </RevealSuspense>
+    </PageTransition>
   )
 }
 
@@ -126,54 +128,50 @@ async function ProjectDetail({
   const url = getLocalizedUrl(locale, `/project/${generation}/${projectId}`)
 
   return (
-    <PageTransition>
-      <div className="site-page">
-        <JsonLd
-          id="project-structured-data"
-          data={[
-            projectWork({
-              url,
-              name: title,
-              description: summarizeForMetadata(
-                projectSummary(project, locale),
-                fallbackDescription(locale, title, generation)
-              ),
-              images: [project.mainImage, ...project.images].map(
-                getAbsoluteUrl
-              ),
-              locale,
-              dateCreated: project.createdAt,
-              dateModified: project.updatedAt,
-              keywords: project.tags,
-              creators: project.contributors.map((contributor) =>
-                contributorName(contributor, locale)
-              ),
-              repoUrl: project.repoUrl,
-              publisherId: `${getSiteUrl()}#organization`,
-            }),
-            breadcrumbList([
-              { name: common.home, url: getLocalizedUrl(locale) },
-              {
-                name: common.projects,
-                url: getLocalizedUrl(locale, '/project'),
-              },
-              {
-                name: generation,
-                url: getLocalizedUrl(locale, `/project/${generation}`),
-              },
-              { name: title, url },
-            ]),
-          ]}
-        />
-        <ProjectDetailView
-          lang={locale}
-          copy={copy}
-          common={common}
-          project={project}
-          more={moreFromGeneration(showcase, project)}
-          next={nextProject(showcase, project.id)}
-        />
-      </div>
-    </PageTransition>
+    <div className="site-page">
+      <JsonLd
+        id="project-structured-data"
+        data={[
+          projectWork({
+            url,
+            name: title,
+            description: summarizeForMetadata(
+              projectSummary(project, locale),
+              fallbackDescription(locale, title, generation)
+            ),
+            images: [project.mainImage, ...project.images].map(getAbsoluteUrl),
+            locale,
+            dateCreated: project.createdAt,
+            dateModified: project.updatedAt,
+            keywords: project.tags,
+            creators: project.contributors.map((contributor) =>
+              contributorName(contributor, locale)
+            ),
+            repoUrl: project.repoUrl,
+            publisherId: `${getSiteUrl()}#organization`,
+          }),
+          breadcrumbList([
+            { name: common.home, url: getLocalizedUrl(locale) },
+            {
+              name: common.projects,
+              url: getLocalizedUrl(locale, '/project'),
+            },
+            {
+              name: generation,
+              url: getLocalizedUrl(locale, `/project/${generation}`),
+            },
+            { name: title, url },
+          ]),
+        ]}
+      />
+      <ProjectDetailView
+        lang={locale}
+        copy={copy}
+        common={common}
+        project={project}
+        more={moreFromGeneration(showcase, project)}
+        next={nextProject(showcase, project.id)}
+      />
+    </div>
   )
 }

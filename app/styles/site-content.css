@@ -1340,6 +1340,28 @@ html.site {
     400ms var(--ease-in-out) both vt-slide;
 }
 
+/* Same page, another generation: a crossfade, not a slide. */
+::view-transition-old(.crossfade) {
+  animation: 150ms ease-in both vt-fade reverse;
+}
+
+::view-transition-new(.crossfade) {
+  animation: 210ms ease-out 90ms both vt-fade;
+}
+
+/* Suspense reveal: the skeleton sinks away, then the content rises in. */
+::view-transition-old(.reveal-exit) {
+  animation:
+    150ms ease-out both vt-fade reverse,
+    150ms ease-out both vt-rise reverse;
+}
+
+::view-transition-new(.reveal-enter) {
+  animation:
+    210ms ease-in 150ms both vt-fade,
+    400ms var(--ease-out) both vt-rise;
+}
+
 @keyframes vt-fade {
   from {
     opacity: 0;
@@ -1352,6 +1374,15 @@ html.site {
 @keyframes vt-slide {
   from {
     translate: var(--slide-offset) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes vt-rise {
+  from {
+    translate: 0 10px;
   }
   to {
     translate: 0 0;

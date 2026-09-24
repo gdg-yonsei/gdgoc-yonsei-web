@@ -8,6 +8,7 @@ import GenerationStrip from '@/app/components/site/generation-strip'
 import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
 import SessionLog from '@/app/components/site/session-log/session-log'
 import {
   archiveCommonCopy,
@@ -75,9 +76,9 @@ export default function SessionHubPage({ params }: Props) {
             <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
           }
         />
-        <Suspense fallback={<SessionHubFallback />}>
+        <RevealSuspense fallback={<SessionHubFallback />}>
           <SessionHubContent params={params} />
-        </Suspense>
+        </RevealSuspense>
       </div>
     </PageTransition>
   )

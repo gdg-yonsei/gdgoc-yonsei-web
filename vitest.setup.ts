@@ -70,15 +70,16 @@ vi.mock('next/link', () => ({
     transitionTypes,
     ...props
   }: NextLinkMockProps) => {
-    // Router-only props never reach the DOM.
+    // Router-only props never reach the DOM; transition types surface as a
+    // data attribute so tests can assert how a navigation animates.
     void prefetch
     void replace
     void scroll
-    void transitionTypes
     return React.createElement(
       'a',
       {
         href: typeof href === 'string' ? href : href?.pathname,
+        'data-transition-types': transitionTypes?.join(' '),
         ...props,
       },
       children

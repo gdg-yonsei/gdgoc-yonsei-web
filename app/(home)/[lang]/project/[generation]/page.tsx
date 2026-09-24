@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
@@ -8,6 +7,7 @@ import FilterBar from '@/app/components/site/filter-bar'
 import GenerationPager from '@/app/components/site/generation-pager'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
 import ProjectGrid from '@/app/components/site/project-grid/project-grid'
 import type { Locale } from '@/i18n-config'
 import {
@@ -120,9 +120,9 @@ export default async function ProjectGenerationPage({ params }: Props) {
             </>
           }
         />
-        <Suspense fallback={<GenerationGridFallback />}>
+        <RevealSuspense fallback={<GenerationGridFallback />}>
           <ProjectGenerationContent generation={generation} lang={locale} />
-        </Suspense>
+        </RevealSuspense>
       </div>
     </PageTransition>
   )

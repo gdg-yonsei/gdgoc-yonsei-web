@@ -7,7 +7,9 @@ import ExternalLink from '@/app/components/site/external-link'
 import GenerationPager from '@/app/components/site/generation-pager'
 import GenerationStrip from '@/app/components/site/generation-strip'
 import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
+import PageTransition, {
+  PAGE_TRANSITIONS,
+} from '@/app/components/site/page-transition'
 import SessionPoster from '@/app/components/site/session-poster'
 
 describe('site primitives', () => {
@@ -69,6 +71,7 @@ describe('site primitives', () => {
 
     expect(current).toHaveAttribute('href', '/en/session/25-26')
     expect(current).toHaveAttribute('aria-current', 'page')
+    expect(current).toHaveAttribute('data-transition-types', 'nav-forward')
     expect(within(strip).queryByRole('link', { name: /26-27/ })).toBeNull()
     expect(within(strip).getByText('26-27')).toHaveTextContent(
       'no public records yet'
@@ -92,7 +95,16 @@ describe('site primitives', () => {
       'href',
       '/ko/project/24-25'
     )
+    expect(screen.getByRole('link', { name: /이전 기수/ })).toHaveAttribute(
+      'data-transition-types',
+      'generation-switch'
+    )
     expect(screen.queryByRole('link', { name: /다음 기수/ })).toBeNull()
+  })
+
+  it('crossfades when switching generations', () => {
+    expect(PAGE_TRANSITIONS['generation-switch']).toBe('crossfade')
+    expect(PAGE_TRANSITIONS.default).toBe('none')
   })
 
   it('keeps the generated poster out of the accessibility tree', () => {
