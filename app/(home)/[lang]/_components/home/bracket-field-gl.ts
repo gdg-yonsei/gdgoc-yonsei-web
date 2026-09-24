@@ -6,13 +6,11 @@ import {
   type CapsuleHue,
   type Rect,
 } from '@/lib/site/bracket-geometry'
+import { CAPSULE_HEX, hexToUnitRgb } from '@/lib/site/brand'
 
-const CAPSULE_RGB: Record<CapsuleHue, readonly [number, number, number]> = {
-  red: [0.918, 0.263, 0.208],
-  blue: [0.259, 0.522, 0.957],
-  yellow: [0.976, 0.671, 0],
-  green: [0.204, 0.659, 0.325],
-}
+const CAPSULE_RGB = Object.fromEntries(
+  Object.entries(CAPSULE_HEX).map(([hue, hex]) => [hue, hexToUnitRgb(hex)])
+) as Record<CapsuleHue, readonly [number, number, number]>
 
 export function packCapsules(capsules: readonly Capsule[], dpr: number) {
   const positions = new Float32Array(16)

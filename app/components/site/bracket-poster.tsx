@@ -3,16 +3,9 @@ import {
   bracketCapsulesInViewBox,
   capsulePath,
   type BracketSide,
-  type CapsuleHue,
 } from '@/lib/site/bracket-geometry'
+import { CAPSULE_HEX } from '@/lib/site/brand'
 import { cn } from '@/lib/cn'
-
-const HUE_FILL: Record<CapsuleHue, string> = {
-  red: '#EA4335',
-  blue: '#4285F4',
-  yellow: '#F9AB00',
-  green: '#34A853',
-}
 
 /**
  * One GDG bracket drawn as a halftone print: a faint solid tint under the
@@ -32,7 +25,7 @@ export default function BracketPoster({
     <path
       key={capsule.hue}
       d={capsulePath(capsule)}
-      fill={HUE_FILL[capsule.hue]}
+      fill={CAPSULE_HEX[capsule.hue]}
     />
   ))
 

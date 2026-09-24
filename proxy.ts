@@ -15,6 +15,7 @@ import {
   capsulePath,
   type BracketSide,
 } from '@/lib/site/bracket-geometry'
+import { CAPSULE_HEX } from '@/lib/site/brand'
 
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
@@ -168,21 +169,20 @@ async function publicRouteExists(identity: PublicRouteIdentity) {
   return match.length > 0
 }
 
-const BRACKET_FILL = {
-  red: '#EA4335',
-  blue: '#4285F4',
-  yellow: '#F9AB00',
-  green: '#34A853',
-} as const
-
 function bracketSvg(side: BracketSide) {
   const paths = bracketCapsulesInViewBox(side)
-    .map((capsule) => `<path d="${capsulePath(capsule)}" fill="${BRACKET_FILL[capsule.hue]}"/>`)
+    .map(
+      (capsule) =>
+        `<path d="${capsulePath(capsule)}" fill="${CAPSULE_HEX[capsule.hue]}"/>`
+    )
     .join('')
   return `<svg aria-hidden="true" viewBox="0 0 ${BRACKET_VIEWBOX.width} ${BRACKET_VIEWBOX.height}">${paths}</svg>`
 }
 
-const NOT_FOUND_BRACKETS = { left: bracketSvg('left'), right: bracketSvg('right') }
+const NOT_FOUND_BRACKETS = {
+  left: bracketSvg('left'),
+  right: bracketSvg('right'),
+}
 
 function publicRouteNotFound(request: NextRequest) {
   const locale = request.nextUrl.pathname.split('/')[1] === 'ko' ? 'ko' : 'en'
