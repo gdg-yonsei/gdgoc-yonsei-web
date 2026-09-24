@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const port = Number(process.env.PORT ?? 3100)
-const baseURL = `http://127.0.0.1:${port.toString()}`
+// localhost, not 127.0.0.1: WebAuthn rejects IP addresses as a relying-party
+// ID, so the passkey e2e can only run on a hostname.
+const baseURL = `http://localhost:${port.toString()}`
 
 export default defineConfig({
   testDir: './tests/e2e',

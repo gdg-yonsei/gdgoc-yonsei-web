@@ -28,12 +28,12 @@ jobs:
     env:
       AUTH_DRIZZLE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
       BETTER_AUTH_SECRET: test-secret-at-least-32-characters-long
-      BETTER_AUTH_URL: http://127.0.0.1:3100
+      BETTER_AUTH_URL: http://localhost:3100
       GITHUB_CLIENT_ID: test-github-client-id
       GITHUB_CLIENT_SECRET: test-github-client-secret
       GOOGLE_CLIENT_ID: test-google-client-id
       GOOGLE_CLIENT_SECRET: test-google-client-secret
-      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+      NEXT_PUBLIC_SITE_URL: http://localhost:3100
       NEXT_PUBLIC_IMAGE_URL: https://cdn.example/
       CLOUDFLARE_ACCOUNT_ID: test-account
       R2_ACCESS_KEY: test-access-key
