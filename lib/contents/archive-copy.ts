@@ -1,4 +1,5 @@
 import type { Locale } from '@/i18n-config'
+import type { FilterBarCopy } from '@/lib/site/filter-state'
 
 /*
  * Copy for the Sessions and Projects pages. Server components read it
@@ -257,4 +258,32 @@ export const projectArchiveCopy: Record<Locale, ProjectArchiveCopy> = {
     moreFrom: '{generation} 기수의 다른 프로젝트',
     nextProject: '다음 프로젝트',
   },
+}
+
+export function sessionFilterCopy(locale: Locale): FilterBarCopy {
+  const copy = sessionArchiveCopy[locale]
+  const common = archiveCommonCopy[locale]
+  return {
+    label: common.filters,
+    search: copy.search,
+    searchPlaceholder: copy.searchPlaceholder,
+    resultOne: copy.resultOne,
+    resultMany: copy.resultMany,
+    noResults: copy.noResults,
+    reset: common.reset,
+  }
+}
+
+export function projectFilterCopy(locale: Locale): FilterBarCopy {
+  const copy = projectArchiveCopy[locale]
+  const common = archiveCommonCopy[locale]
+  return {
+    label: common.filters,
+    search: copy.search,
+    searchPlaceholder: copy.searchPlaceholder,
+    resultOne: copy.resultOne,
+    resultMany: copy.resultMany,
+    noResults: copy.noResults,
+    reset: common.reset,
+  }
 }

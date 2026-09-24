@@ -114,3 +114,14 @@ export function readFilterableItem(
   }
   return { search: element.getAttribute('data-search') ?? '', facets }
 }
+
+/** Strings the FilterBar island needs; server pages pass them as props. */
+export type FilterBarCopy = {
+  label: string
+  search: string
+  searchPlaceholder: string
+  resultOne: string
+  resultMany: string
+  noResults: string
+  reset: string
+}
