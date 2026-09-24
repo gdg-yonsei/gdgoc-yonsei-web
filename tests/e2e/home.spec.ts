@@ -95,4 +95,20 @@ test.describe('home page', () => {
         .evaluate((word) => getComputedStyle(word).animationName)
     ).toBe('none')
   })
+
+  test('defers rendering of the sections below the first screen', async ({
+    page,
+  }) => {
+    await page.goto('/ko', { waitUntil: 'load' })
+
+    // Long Korean pages re-lay out on every Pretendard subset swap; sections
+    // off screen skip that work until they near the viewport.
+    expect(
+      await page
+        .locator('.home-section')
+        .evaluateAll((sections) =>
+          sections.map((section) => getComputedStyle(section).contentVisibility)
+        )
+    ).toEqual(Array(5).fill('auto'))
+  })
 })

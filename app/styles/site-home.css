@@ -18,6 +18,15 @@
     border-top: 1px solid var(--s-rule);
   }
 
+  /* Off-screen sections skip layout and paint until they near the viewport:
+     every Pretendard subset swap otherwise re-lays out the whole long page.
+     `auto` remembers each section's real height once it has rendered. */
+  .home-section,
+  .join {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 50rem;
+  }
+
   .section-tag {
     font-family: var(--font-code);
     font-size: 0.8125rem;
