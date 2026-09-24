@@ -12,20 +12,19 @@ const tones = {
 
 export type ButtonTone = keyof typeof tones
 
+const BASE =
+  'pressable inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold'
+
+/** Class names of a capsule button, for anchors that aren't next/link. */
+export function buttonClasses(tone: ButtonTone = 'solid') {
+  return `${BASE} ${tones[tone]}`
+}
+
 /** Capsule-shaped call to action; the capsule echoes the GDG mark strokes. */
 export default function ButtonLink({
   tone = 'solid',
   className,
   ...props
 }: ComponentProps<typeof Link> & { tone?: ButtonTone }) {
-  return (
-    <Link
-      {...props}
-      className={cn(
-        'pressable inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold',
-        tones[tone],
-        className
-      )}
-    />
-  )
+  return <Link {...props} className={cn(BASE, tones[tone], className)} />
 }

@@ -1,9 +1,6 @@
 import { ComponentType, SVGProps } from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import ActivityCardCloseSvg from '@/app/components/svg/activity-card-close-svg'
-import ActivityCardLeftSvg from '@/app/components/svg/activity-card-left-svg'
-import ActivityCardRightSvg from '@/app/components/svg/activity-card-right-svg'
 import BookSVG from '@/app/components/svg/book-svg'
 import FriendsTree from '@/app/components/svg/friends-tree'
 import Friends from '@/app/components/svg/friends'
@@ -20,9 +17,6 @@ import Trophy from '@/app/components/svg/trophy'
 type SvgComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 const svgComponents: Array<[string, SvgComponent]> = [
-  ['ActivityCardCloseSvg', ActivityCardCloseSvg],
-  ['ActivityCardLeftSvg', ActivityCardLeftSvg],
-  ['ActivityCardRightSvg', ActivityCardRightSvg],
   ['BookSVG', BookSVG],
   ['FriendsTree', FriendsTree],
   ['Friends', Friends],

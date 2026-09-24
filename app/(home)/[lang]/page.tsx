@@ -1,9 +1,12 @@
 import { Suspense } from 'react'
 import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
 import HeroMeta from '@/app/(home)/[lang]/_components/home/hero-meta'
-import AboutPage from '@/app/(home)/[lang]/about-page'
-import ActivitiesPage from '@/app/(home)/[lang]/activities-page'
-import PartsPage from '@/app/(home)/[lang]/parts-page'
+import FeaturedReleases from '@/app/(home)/[lang]/_components/home/featured-releases'
+import Join from '@/app/(home)/[lang]/_components/home/join'
+import LatestLog from '@/app/(home)/[lang]/_components/home/latest-log'
+import Manifesto from '@/app/(home)/[lang]/_components/home/manifesto'
+import Parts from '@/app/(home)/[lang]/_components/home/parts'
+import Programs from '@/app/(home)/[lang]/_components/home/programs'
 import languageParamChecker from '@/lib/language-param-checker'
 import type { Metadata } from 'next'
 import JsonLd from '@/app/components/json-ld'
@@ -109,19 +112,22 @@ export default async function HomePage({ params }: Props) {
   return (
     <>
       <JsonLd id="homepage-structured-data" data={structuredData} />
-      <div className={'flex w-full flex-col overflow-x-hidden'}>
-        <Hero
-          lang={lang}
-          meta={
-            <Suspense fallback={<HeroMetaList lang={lang} />}>
-              <HeroMeta lang={lang} />
-            </Suspense>
-          }
-        />
-        <AboutPage lang={lang} />
-        <ActivitiesPage lang={lang} />
-        <PartsPage lang={lang} />
+      <Hero
+        lang={lang}
+        meta={
+          <Suspense fallback={<HeroMetaList lang={lang} />}>
+            <HeroMeta lang={lang} />
+          </Suspense>
+        }
+      />
+      <div className="home-sheet">
+        <Manifesto lang={lang} />
+        <Programs lang={lang} />
+        <Parts lang={lang} />
+        <LatestLog lang={lang} />
+        <FeaturedReleases lang={lang} />
       </div>
+      <Join lang={lang} />
     </>
   )
 }

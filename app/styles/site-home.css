@@ -641,3 +641,111 @@
     opacity: 0;
   }
 }
+
+@layer components {
+  /* The paper sheet rises over the hero stage with a capsule-radius edge. */
+  .home-sheet {
+    position: relative;
+    z-index: 1;
+    margin-top: -1.5rem;
+    overflow-x: clip;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background-color: var(--s-paper);
+    box-shadow: 0 -1.5rem 3rem -1.5rem rgb(0 0 0 / 0.45);
+  }
+
+  @media (min-width: 640px) {
+    .home-sheet {
+      margin-top: -2rem;
+      border-radius: 2rem 2rem 0 0;
+    }
+  }
+
+  .join {
+    overflow: clip;
+    background-color: var(--s-stage);
+    color: var(--s-on-stage);
+  }
+
+  .join-inner {
+    margin-inline: auto;
+    display: grid;
+    max-width: 72rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(0.5rem, 3vw, 2.5rem);
+    padding: 6rem 1rem;
+  }
+
+  .join-bracket {
+    display: block;
+    width: clamp(2.25rem, 12vw, 9rem);
+    aspect-ratio: 219.16 / 265.96;
+    font-size: clamp(2.25rem, 12vw, 9rem);
+  }
+
+  .join-body {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .join .section-tag {
+    color: var(--s-on-stage-muted);
+  }
+
+  .join-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 7vw, 5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .join-lead {
+    max-width: 32rem;
+    font-size: 1.0625rem;
+    color: var(--s-on-stage-muted);
+  }
+
+  .join-actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+}
+
+/* The brackets travel in from the edges and close around the call to action. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .join-bracket[data-side='left'] {
+      animation: join-close-left linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+
+    .join-bracket[data-side='right'] {
+      animation: join-close-right linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+  }
+}
+
+@keyframes join-close-left {
+  from {
+    opacity: 0.35;
+    translate: -38vw 0;
+  }
+}
+
+@keyframes join-close-right {
+  from {
+    opacity: 0.35;
+    translate: 38vw 0;
+  }
+}
