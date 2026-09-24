@@ -143,3 +143,20 @@ afterEach(() => {
   cleanup()
   vi.clearAllMocks()
 })
+
+// jsdom lacks the modal dialog API used by the mobile menu. Mirror the
+// browser contract: `open` attribute plus a `close` event.
+const dialogPrototype = (globalThis.HTMLDialogElement ?? globalThis.HTMLElement)
+  .prototype as HTMLDialogElement
+
+if (typeof dialogPrototype.showModal !== 'function') {
+  dialogPrototype.showModal = function showModal(this: HTMLDialogElement) {
+    this.setAttribute('open', '')
+  }
+  dialogPrototype.show = dialogPrototype.showModal
+  dialogPrototype.close = function close(this: HTMLDialogElement) {
+    if (!this.hasAttribute('open')) return
+    this.removeAttribute('open')
+    this.dispatchEvent(new Event('close'))
+  }
+}

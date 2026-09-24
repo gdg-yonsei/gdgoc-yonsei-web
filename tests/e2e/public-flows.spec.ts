@@ -126,7 +126,10 @@ test.describe('mobile navigation', () => {
 
     await menuOpenButton.click()
 
-    await page.getByRole('link', { name: /^Calendar$/ }).click()
+    await page
+      .getByRole('dialog', { name: 'Menu' })
+      .getByRole('link', { name: /^Calendar/ })
+      .click()
     await expect(page).toHaveURL(/\/en\/calendar$/)
   })
 })

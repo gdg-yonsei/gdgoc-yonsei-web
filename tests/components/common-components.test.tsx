@@ -5,6 +5,9 @@ import userEvent from '@testing-library/user-event'
 vi.mock('@/lib/hooks/use-reduced-motion', () => ({
   useReducedMotion: () => false,
 }))
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/en/project',
+}))
 import NavigationButton from '@/app/components/navigation-button'
 import GenerationButtonGroup from '@/app/components/generation-button-group'
 import LoadingSpinner from '@/app/components/loading-spinner'
@@ -177,6 +180,19 @@ describe('common components', () => {
       'https://www.instagram.com/gdg.yonseiuniv/'
     )
     expect(instagramLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(
+      screen.getAllByRole('link', { name: /한국어/ }).at(-1)
+    ).toHaveAttribute('href', '/ko/project')
+    expect(
+      screen.getByRole('link', { name: '2026 Freshman Orientation' })
+    ).toHaveAttribute('href', '/en/2026-freshman-ot')
+  })
+
+  it('draws footer link arrows as icons, not glyphs outside the Latin font subset', () => {
+    // A text "↗" (U+2197) makes the browser fetch Google Sans Flex's symbols
+    // subset on every page just for the footer.
+    const { container } = render(<Footer lang="en" />)
+    expect(container.textContent).not.toMatch(/[\u2190-\u21ff]/)
   })
 
   it('supports back-to-page behavior from next router', async () => {
