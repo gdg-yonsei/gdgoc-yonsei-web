@@ -56,7 +56,11 @@ export default function ProjectCard({
     >
       <article className="release-card">
         <div className="release-cover">
-          <ViewTransition name={`project-cover-${project.id}`}>
+          <ViewTransition
+            name={`project-cover-${project.id}`}
+            share="auto"
+            default="none"
+          >
             {isPlaceholderImage(project.mainImage) ? (
               <span aria-hidden="true" className="release-cover-art">
                 <BracketPoster side="left" />

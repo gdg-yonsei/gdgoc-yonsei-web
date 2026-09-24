@@ -85,7 +85,11 @@ export default function SessionDetailView({
           <span aria-hidden="true" className="commit-dot" />
           {copy.commit} <span>{session.id.slice(0, 7)}</span>
         </p>
-        <ViewTransition name={`session-title-${session.id}`}>
+        <ViewTransition
+          name={`session-title-${session.id}`}
+          share="auto"
+          default="none"
+        >
           <h1 className="session-title">{session.title}</h1>
         </ViewTransition>
         <p className="session-when">

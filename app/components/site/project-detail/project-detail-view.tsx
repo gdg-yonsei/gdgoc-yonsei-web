@@ -93,7 +93,11 @@ export default function ProjectDetailView({
       </header>
 
       <figure className="case-cover">
-        <ViewTransition name={`project-cover-${project.id}`}>
+        <ViewTransition
+          name={`project-cover-${project.id}`}
+          share="auto"
+          default="none"
+        >
           {isPlaceholderImage(project.mainImage) ? (
             <span aria-hidden="true" className="release-cover-art">
               <BracketPoster side="left" />
