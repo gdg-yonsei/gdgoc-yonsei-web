@@ -13,7 +13,16 @@ describe('NotFoundView', () => {
     expect(screen.getAllByText(/404/)).toHaveLength(1)
     expect(screen.getByRole('link', { name: /Sessions/ })).toHaveAttribute(
       'href',
-      '/en/session'
+      '/session'
     )
+  })
+
+  it('lets the proxy choose the language for its links', () => {
+    render(<NotFoundView />)
+
+    expect(
+      screen.getAllByRole('link').map((link) => link.getAttribute('href'))
+    ).toEqual(['/', '/session', '/project'])
+    expect(screen.getByText('세션')).toHaveAttribute('lang', 'ko')
   })
 })

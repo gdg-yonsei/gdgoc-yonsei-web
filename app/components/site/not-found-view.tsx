@@ -2,12 +2,13 @@ import Link from 'next/link'
 import BracketPoster from '@/app/components/site/bracket-poster'
 
 const links = [
-  { href: '/', label: 'Home · 홈' },
-  { href: '/en/session', label: 'Sessions · 세션' },
-  { href: '/en/project', label: 'Projects · 프로젝트' },
+  { href: '/', en: 'Home', ko: '홈' },
+  { href: '/session', en: 'Sessions', ko: '세션' },
+  { href: '/project', en: 'Projects', ko: '프로젝트' },
 ]
 
-/** Root 404 content. No locale is known here, so the copy is bilingual. */
+/** Root 404 content. No locale is known here, so the copy is bilingual and
+    the links let the proxy pick the language. */
 export default function NotFoundView() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 text-center">
@@ -37,7 +38,7 @@ export default function NotFoundView() {
             href={link.href}
             className="pressable inline-flex min-h-12 items-center rounded-full border border-white/20 px-5 font-semibold"
           >
-            {link.label}
+            {link.en} · <span lang="ko">{link.ko}</span>
           </Link>
         ))}
       </nav>

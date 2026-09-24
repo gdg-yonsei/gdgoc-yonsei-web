@@ -15,7 +15,8 @@
    reflows or shifts layout. */
 @font-face {
   font-family: 'Google Sans Flex Fallback';
-  src: local('Arial'), local('ArialMT'), local('Helvetica Neue'),
+  src:
+    local('Arial'), local('ArialMT'), local('Helvetica Neue'),
     local('Helvetica');
   size-adjust: 101.88%;
   ascent-override: 94.81%;
@@ -88,7 +89,9 @@
     --dur-base: 250ms;
     --dur-slow: 400ms;
 
-    background-color: var(--s-paper);
+    /* Overscroll past either end shows the stage (the header, hero, footer
+       and 404 are all stage) while the page itself is paper. */
+    background-color: var(--s-stage);
     color: var(--s-fg);
     /* Latin in Google Sans Flex, Hangul in Pretendard (unicode-range subsets
        from app/pretendard.css, fetched only for characters on the page); the
@@ -128,6 +131,11 @@
       --s-green-soft: color-mix(in oklab, #34a853 24%, #1f1f1f);
       --s-green-ink: #5cdb6d;
     }
+  }
+
+  html.site > body {
+    min-height: 100svh;
+    background-color: var(--s-paper);
   }
 
   /* Break Korean between words (eojeol), never mid-word. */
@@ -196,9 +204,8 @@
      (dates, meta strips) never falls to a glyph-less monospace font. */
   --font-code:
     var(--font-code-mono), 'Pretendard Variable', 'Apple SD Gothic Neo',
-    'Malgun Gothic',
-    'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace, SFMono-Regular, Menlo,
-    Consolas, monospace;
+    'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 @theme {

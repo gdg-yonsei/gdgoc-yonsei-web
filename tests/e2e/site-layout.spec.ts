@@ -121,3 +121,28 @@ test('long-form prose takes its colours from the site scheme', async ({
     ).toEqual(['rgb(85, 85, 85)', 'rgb(30, 30, 30)'])
   }
 })
+
+test('overscroll shows the stage while pages stay on paper', async ({
+  page,
+}) => {
+  await page.goto('/en/session', { waitUntil: 'domcontentloaded' })
+
+  expect(
+    await page.evaluate(() => [
+      getComputedStyle(document.documentElement).backgroundColor,
+      getComputedStyle(document.body).backgroundColor,
+    ])
+  ).toEqual(['rgb(30, 30, 30)', 'rgb(240, 240, 240)'])
+})
+
+test('the footer wordmark fits a 320px screen', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 })
+  await page.goto('/en', { waitUntil: 'load' })
+  const wordmark = page.locator('.site-footer-wordmark')
+
+  expect(
+    await wordmark.evaluate(
+      (element) => element.scrollWidth <= element.clientWidth
+    )
+  ).toBe(true)
+})

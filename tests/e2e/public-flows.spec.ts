@@ -101,4 +101,19 @@ test.describe('mobile navigation', () => {
       .click()
     await expect(page).toHaveURL(/\/en\/calendar$/)
   })
+
+  test('Escape closes the menu and returns focus to its button', async ({
+    page,
+  }) => {
+    await page.goto('/en', { waitUntil: 'domcontentloaded' })
+    const trigger = page.getByRole('button', { name: 'Open navigation menu' })
+
+    await trigger.click()
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
+    await page.keyboard.press('Escape')
+
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeHidden()
+    await expect(trigger).toBeFocused()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
 })

@@ -174,7 +174,7 @@
   .site-footer-wordmark {
     margin-block: 4.5rem 2rem;
     font-family: var(--font-display);
-    font-size: clamp(3rem, 11.4vw, 10rem);
+    font-size: clamp(2rem, 11.4vw, 10rem);
     font-weight: 700;
     line-height: 0.8;
     letter-spacing: -0.055em;
