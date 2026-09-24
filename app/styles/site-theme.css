@@ -1,0 +1,222 @@
+/* ═══════════════════════════════════════════════════════════════
+   Public site design system — "Inside the Brackets"
+   Spec: docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md
+
+   Scheme values live on `html.site`, which only the public [lang] layout and
+   the root not-found page render. The admin shell keeps its own :root tokens
+   (--canvas, --surface, --ink …) and never sees these. `@theme inline`
+   exposes them as utilities (bg-paper, text-fg …) that resolve against the
+   active scheme.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Metric-matched fallbacks (from the fonts' hhea/hmtx tables, weighted by
+   English letter frequency the way next/font's capsize data is): text set in
+   the fallback occupies the same box as Google Sans, so the swap never
+   reflows or shifts layout. */
+@font-face {
+  font-family: 'Google Sans Flex Fallback';
+  src: local('Arial'), local('ArialMT'), local('Helvetica Neue'),
+    local('Helvetica');
+  size-adjust: 101.88%;
+  ascent-override: 94.81%;
+  descent-override: 28.07%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Google Sans Code Fallback';
+  src: local('Courier New'), local('CourierNewPSMT'), local('Courier');
+  size-adjust: 100%;
+  ascent-override: 96.59%;
+  descent-override: 28.6%;
+  line-gap-override: 0%;
+}
+
+@layer base {
+  html.site {
+    color-scheme: light;
+
+    /* Stage: the GDG-black surface behind the hero, header and footer. */
+    --s-stage: #1e1e1e;
+    --s-stage-raised: #2b2b2b;
+    --s-on-stage: #f0f0f0;
+    --s-on-stage-muted: #b4b4b4;
+
+    /* Paper: the readable document surfaces the brackets open onto. */
+    --s-paper: #f0f0f0;
+    --s-sheet: #ffffff;
+    --s-sheet-sunken: #e7e7e5;
+    --s-fg: #1e1e1e;
+    --s-fg-muted: #555555;
+    --s-fg-subtle: #6b6b6b;
+    --s-rule: #d4d4d2;
+
+    /* GDG hues. soft = tinted surface, ink = text that passes AA on paper. */
+    --s-blue-soft: #d3e3fd;
+    --s-blue-ink: #1967d2;
+    --s-sky-soft: #c3ecf6;
+    --s-sky-ink: #0b6b99;
+    --s-red-soft: #fad2cf;
+    --s-red-ink: #c5221f;
+    --s-pink-soft: #f8d8d8;
+    --s-pink-ink: #b8336a;
+    --s-yellow-soft: #ffe7a5;
+    --s-yellow-ink: #a15c00;
+    --s-green-soft: #ccf6c5;
+    --s-green-ink: #137333;
+
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: linear(
+      0,
+      0.006,
+      0.025 2.8%,
+      0.101 6.1%,
+      0.539 18.9%,
+      0.721 25.3%,
+      0.849 31.5%,
+      0.937 38.1%,
+      0.968 41.8%,
+      0.991 45.7%,
+      1.006 50.1%,
+      1.015 55%,
+      1.017 63.9%,
+      1.001
+    );
+    --dur-fast: 150ms;
+    --dur-base: 250ms;
+    --dur-slow: 400ms;
+
+    background-color: var(--s-paper);
+    color: var(--s-fg);
+    /* Hangul uses the platform's Korean face (0 bytes): shipping Pretendard
+       cost ~245 KB of subsets per Korean page, which the budget rules out. */
+    font-family:
+      var(--font-flex), 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
+      'Noto Sans CJK KR', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Enabled in Plan 3 once every public page is restyled; until then the old
+     sections hard-code light surfaces and would break in a dark scheme. */
+  @media (prefers-color-scheme: dark) {
+    html.site[data-color-scheme='auto'] {
+      color-scheme: dark;
+      --s-stage: #0f0f0f;
+      --s-stage-raised: #1d1d1d;
+      --s-paper: #161616;
+      --s-sheet: #1f1f1f;
+      --s-sheet-sunken: #121212;
+      --s-fg: #f0f0f0;
+      --s-fg-muted: #b8b8b8;
+      --s-fg-subtle: #8f8f8f;
+      --s-rule: #333333;
+      --s-blue-soft: color-mix(in oklab, #4285f4 24%, #1f1f1f);
+      --s-blue-ink: #8ab4f8;
+      --s-sky-soft: color-mix(in oklab, #57caff 20%, #1f1f1f);
+      --s-sky-ink: #57caff;
+      --s-red-soft: color-mix(in oklab, #ea4335 24%, #1f1f1f);
+      --s-red-ink: #f28b82;
+      --s-pink-soft: color-mix(in oklab, #ff7daf 20%, #1f1f1f);
+      --s-pink-ink: #ff7daf;
+      --s-yellow-soft: color-mix(in oklab, #f9ab00 22%, #1f1f1f);
+      --s-yellow-ink: #ffd427;
+      --s-green-soft: color-mix(in oklab, #34a853 24%, #1f1f1f);
+      --s-green-ink: #5cdb6d;
+    }
+  }
+
+  /* Break Korean between words (eojeol), never mid-word. */
+  html.site:lang(ko) {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  html.site :where(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  html.site :where(p, li, dd, figcaption) {
+    text-wrap: pretty;
+  }
+
+  html.site ::selection {
+    background-color: #ffd427;
+    color: #1e1e1e;
+  }
+
+  html.site :focus-visible {
+    outline: 2px solid #4285f4;
+    outline-offset: 3px;
+  }
+}
+
+@theme inline {
+  --color-stage: var(--s-stage);
+  --color-stage-raised: var(--s-stage-raised);
+  --color-on-stage: var(--s-on-stage);
+  --color-on-stage-muted: var(--s-on-stage-muted);
+  --color-paper: var(--s-paper);
+  --color-sheet: var(--s-sheet);
+  --color-sheet-sunken: var(--s-sheet-sunken);
+  --color-fg: var(--s-fg);
+  --color-fg-muted: var(--s-fg-muted);
+  --color-fg-subtle: var(--s-fg-subtle);
+  --color-rule: var(--s-rule);
+
+  --color-g-blue-soft: var(--s-blue-soft);
+  --color-g-blue-ink: var(--s-blue-ink);
+  --color-g-sky-soft: var(--s-sky-soft);
+  --color-g-sky-ink: var(--s-sky-ink);
+  --color-g-red-soft: var(--s-red-soft);
+  --color-g-red-ink: var(--s-red-ink);
+  --color-g-pink-soft: var(--s-pink-soft);
+  --color-g-pink-ink: var(--s-pink-ink);
+  --color-g-yellow-soft: var(--s-yellow-soft);
+  --color-g-yellow-ink: var(--s-yellow-ink);
+  --color-g-green-soft: var(--s-green-soft);
+  --color-g-green-ink: var(--s-green-ink);
+
+  --font-display:
+    var(--font-flex), 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
+    'Noto Sans CJK KR', ui-sans-serif, system-ui, sans-serif;
+  /* Korean faces sit right after the mono face so Hangul inside mono labels
+     (dates, meta strips) never falls to a glyph-less monospace font. */
+  --font-code:
+    var(--font-code-mono), 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+}
+
+@theme {
+  /* GDG brand fills — identical in every scheme. */
+  --color-g-blue: #4285f4;
+  --color-g-sky: #57caff;
+  --color-g-red: #ea4335;
+  --color-g-pink: #ff7daf;
+  --color-g-yellow: #f9ab00;
+  --color-g-green: #34a853;
+}
+
+@utility skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  border-radius: 9999px;
+  background-color: var(--s-on-stage);
+  color: var(--s-stage);
+  padding: 0.625rem 1.125rem;
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform var(--dur-base) var(--ease-out);
+
+  &:focus {
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

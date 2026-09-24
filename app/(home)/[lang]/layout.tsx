@@ -1,11 +1,13 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import '../../globals.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import localFont from 'next/font/local'
 import languageParamChecker from '@/lib/language-param-checker'
+import { googleSansCode, googleSansFlex } from '@/app/fonts'
+import { chromeCopy } from '@/lib/contents/site-copy'
+import { cn } from '@/lib/cn'
 
 type LangLayoutProps = {
   children: ReactNode
@@ -42,30 +44,31 @@ export async function generateMetadata({
   }
 }
 
-// Google Product Sans 폰트
-const googleSans = localFont({
-  src: '../../fonts/google-sans.woff2',
-  display: 'swap',
-  variable: '--font-sans',
-  weight: '100 900',
-})
+export const viewport: Viewport = {
+  // The header capsule and hero stage are GDG black in every scheme.
+  themeColor: '#1e1e1e',
+}
 
 export default async function RootLayout({
   children,
   params,
 }: LangLayoutProps) {
-  // 언어 설정
   const lang = languageParamChecker((await params).lang)
 
   return (
     <html
       lang={lang}
-      className={`text-gdg-black bg-neutral-50 ${googleSans.className}`}
+      className={cn('site', googleSansFlex.variable, googleSansCode.variable)}
       suppressHydrationWarning
     >
       <body>
+        <a href="#main" className="skip-link">
+          {chromeCopy[lang].skipToContent}
+        </a>
         <Header lang={lang} />
-        <main>{children}</main>
+        <main id="main" tabIndex={-1} className="outline-none">
+          {children}
+        </main>
         <Footer lang={lang} />
         <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
       </body>

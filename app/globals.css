@@ -2,6 +2,7 @@
 /* 한글 본문용 Pretendard. unicode-range로 쪼개진 92개 서브셋이라
    브라우저가 실제 사용된 글자 범위의 청크만 내려받습니다. */
 @import './pretendard.css';
+@import './styles/site-theme.css';
 @plugin "@tailwindcss/typography";
 
 /* URL-independent shells can carry both locale strings. The already-mounted
