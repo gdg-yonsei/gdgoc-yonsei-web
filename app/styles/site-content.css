@@ -373,6 +373,10 @@ html.site {
 
   .log-month {
     margin-top: 1.25rem;
+    /* The hub renders the whole archive; let the browser skip layout and
+       paint for months below the fold until they scroll near. */
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 24rem;
   }
 
   .log-month-title {
