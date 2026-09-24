@@ -5,6 +5,12 @@ import { extname, resolve, sep } from 'node:path'
 import { cacheLife } from 'next/cache'
 import sharp from 'sharp'
 import { layoutSocialTitle } from '@/lib/seo/social-image-title'
+import {
+  BRACKET_VIEWBOX,
+  bracketCapsulesInViewBox,
+  capsulePath,
+} from '@/lib/site/bracket-geometry'
+import { CAPSULE_HEX } from '@/lib/site/brand'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { logger } from '@/lib/server/logger'
 import type { SocialImageContent } from '@/lib/seo/social-image-data'
@@ -192,90 +198,91 @@ async function loadRepresentativeImage(
   }
 }
 
-function GdgMark() {
+const STAGE = '#1e1e1e'
+const STAGE_RAISED = '#2b2b2b'
+const ON_STAGE = '#f0f0f0'
+const ON_STAGE_MUTED = '#b4b4b4'
+
+const SIDES = ['left', 'right'] as const
+
+/** Both GDG brackets side by side, `gap` bracket-widths apart. */
+function bracketsViewBox(gap: number) {
+  const width = BRACKET_VIEWBOX.width * (2 + gap)
+  return { width, height: BRACKET_VIEWBOX.height }
+}
+
+/** The solid `< >` mark for the chip. */
+function BracketsMark({ height }: { height: number }) {
+  const box = bracketsViewBox(0.18)
   return (
     <svg
-      width="71"
-      height="34"
-      viewBox="0 0 71 34"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      width={(box.width / box.height) * height}
+      height={height}
+      viewBox={`0 0 ${box.width} ${box.height}`}
     >
-      <path
-        d="M16.9003 17.0543L28.285 10.4389C30.9004 8.90038 31.8234 5.51577 30.285 2.74654C28.7465 0.131162 25.3619 -0.791924 22.5927 0.746532L2.90039 12.1312L16.9003 17.0543Z"
-        fill="#EA4335"
-      />
-      <path
-        d="M25.3619 33.8232C27.3619 33.8232 29.2081 32.7463 30.1311 31.0539C31.6696 28.4386 30.7465 24.9001 28.1311 23.3616L8.43883 11.977C5.82345 10.4386 2.28499 11.3616 0.746534 13.977C-0.791932 16.5924 0.131173 20.1309 2.74655 21.6693L22.4388 33.0539C23.5157 33.6693 24.4388 33.8232 25.3619 33.8232Z"
-        fill="#4285F4"
-      />
-      <path
-        d="M44.9 33.8226C45.8231 33.8226 46.7462 33.5149 47.6692 33.0533L67.3616 21.6687L53.6693 16.5918L42.1308 23.2072C39.5154 24.7457 38.5923 28.1303 40.1308 30.8995C41.2077 32.8995 43.0539 33.8226 44.9 33.8226Z"
-        fill="#FBBC04"
-      />
-      <path
-        d="M64.5924 22.5927C66.5924 22.5927 68.4385 21.5158 69.3616 19.8235C70.9001 17.2081 69.977 13.6696 67.3616 12.1312L47.6693 0.74654C45.0539 -0.791928 41.5154 0.13116 39.977 2.74654C38.4385 5.36192 39.3616 8.90038 41.977 10.4389L61.6693 21.8235C62.5924 22.285 63.6693 22.5927 64.5924 22.5927Z"
-        fill="#0F9D58"
-      />
+      {SIDES.map((side, index) => (
+        <g
+          key={side}
+          transform={`translate(${index * BRACKET_VIEWBOX.width * 1.18} 0)`}
+        >
+          {bracketCapsulesInViewBox(side).map((capsule) => (
+            <path
+              key={capsule.hue}
+              d={capsulePath(capsule)}
+              fill={CAPSULE_HEX[capsule.hue]}
+            />
+          ))}
+        </g>
+      ))}
     </svg>
   )
 }
 
-function BrandedFallback() {
+/** Cards without a photo: the halftone brackets, as the hero draws them. */
+function HalftoneBrackets() {
+  const box = bracketsViewBox(0.22)
+  const width = 760
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        overflow: 'hidden',
-        background:
-          'linear-gradient(135deg, #0b1f3a 0%, #163c66 48%, #0f5132 100%)',
-      }}
+    <svg
+      width={width}
+      height={(box.height / box.width) * width}
+      viewBox={`0 0 ${box.width} ${box.height}`}
+      style={{ position: 'absolute', right: -40, top: 96 }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          width: 520,
-          height: 520,
-          borderRadius: 260,
-          top: -260,
-          right: -80,
-          display: 'flex',
-          background: '#4285F4',
-          opacity: 0.42,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          width: 380,
-          height: 380,
-          borderRadius: 190,
-          right: 180,
-          bottom: -260,
-          display: 'flex',
-          background: '#34A853',
-          opacity: 0.38,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          width: 220,
-          height: 220,
-          borderRadius: 110,
-          top: 170,
-          right: 120,
-          display: 'flex',
-          background: '#F9AB00',
-          opacity: 0.28,
-        }}
-      />
-    </div>
+      <defs>
+        {Object.entries(CAPSULE_HEX).map(([hue, hex]) => (
+          <pattern
+            key={hue}
+            id={`dots-${hue}`}
+            width="9"
+            height="9"
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx="4.5" cy="4.5" r="3.4" fill={hex} />
+          </pattern>
+        ))}
+      </defs>
+      {SIDES.map((side, index) => (
+        <g
+          key={side}
+          transform={`translate(${index * BRACKET_VIEWBOX.width * 1.22} 0)`}
+        >
+          {bracketCapsulesInViewBox(side).map((capsule) => (
+            <g key={capsule.hue}>
+              <path
+                d={capsulePath(capsule)}
+                fill={CAPSULE_HEX[capsule.hue]}
+                fillOpacity={0.16}
+              />
+              <path
+                d={capsulePath(capsule)}
+                fill={`url(#dots-${capsule.hue})`}
+              />
+            </g>
+          ))}
+        </g>
+      ))}
+    </svg>
   )
 }
 
@@ -311,8 +318,8 @@ async function renderSocialImageJpeg(
         height: '100%',
         display: 'flex',
         overflow: 'hidden',
-        color: '#fff',
-        background: '#10243e',
+        color: ON_STAGE,
+        background: STAGE,
         fontFamily: 'Pretendard',
         fontWeight: 700,
       }}
@@ -335,7 +342,7 @@ async function renderSocialImageJpeg(
           }}
         />
       ) : (
-        <BrandedFallback />
+        <HalftoneBrackets />
       )}
 
       <div
@@ -346,8 +353,9 @@ async function renderSocialImageJpeg(
           width: '100%',
           height: '100%',
           display: 'flex',
-          background:
-            'linear-gradient(180deg, rgba(5, 12, 24, 0.22) 0%, rgba(5, 12, 24, 0.18) 34%, rgba(5, 12, 24, 0.94) 100%)',
+          background: representativeImage
+            ? 'linear-gradient(180deg, rgba(30, 30, 30, 0.12) 0%, rgba(30, 30, 30, 0.3) 38%, rgba(30, 30, 30, 0.88) 58%, rgba(30, 30, 30, 0.96) 100%)'
+            : 'linear-gradient(90deg, rgba(30, 30, 30, 0.96) 0%, rgba(30, 30, 30, 0.82) 45%, rgba(30, 30, 30, 0.1) 100%)',
         }}
       />
 
@@ -355,19 +363,19 @@ async function renderSocialImageJpeg(
         style={{
           position: 'absolute',
           top: 48,
-          right: 54,
+          left: 58,
           display: 'flex',
           alignItems: 'center',
           gap: 14,
-          padding: '13px 18px',
-          borderRadius: 18,
-          background: 'rgba(255, 255, 255, 0.94)',
-          color: '#172033',
+          padding: '12px 20px',
+          borderRadius: 999,
+          background: STAGE_RAISED,
+          color: ON_STAGE,
           fontSize: 25,
           fontWeight: 700,
         }}
       >
-        <GdgMark />
+        <BracketsMark height={24} />
         <span>GDGoC Yonsei</span>
       </div>
 
@@ -386,7 +394,7 @@ async function renderSocialImageJpeg(
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            color: '#dbeafe',
+            color: ON_STAGE_MUTED,
             fontSize: 26,
             fontWeight: 700,
             letterSpacing: 0.2,
@@ -404,7 +412,7 @@ async function renderSocialImageJpeg(
             display: 'flex',
             flexDirection: 'column',
             maxWidth: 1050,
-            color: '#fff',
+            color: ON_STAGE,
             fontSize: title.fontSize,
             fontWeight: 700,
             lineHeight: 1.08,
