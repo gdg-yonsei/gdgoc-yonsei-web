@@ -11,7 +11,9 @@ process.env.GITHUB_CLIENT_ID ??= 'test-github-client-id'
 process.env.GITHUB_CLIENT_SECRET ??= 'test-github-client-secret'
 process.env.GOOGLE_CLIENT_ID ??= 'test-google-client-id'
 process.env.GOOGLE_CLIENT_SECRET ??= 'test-google-client-secret'
-process.env.NEXT_PUBLIC_SITE_URL ??= 'https://gdgoc.yonsei.ac.kr'
+// Pinned, not defaulted: CI exports the e2e server's origin
+// (http://127.0.0.1:3100), and canonical-URL tests must not depend on it.
+process.env.NEXT_PUBLIC_SITE_URL = 'https://gdgoc.yonsei.ac.kr'
 process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
 process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'
 process.env.R2_ACCESS_KEY ??= 'test-access-key'
