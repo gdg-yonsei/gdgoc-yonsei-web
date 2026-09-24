@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import Hero from '@/app/(home)/[lang]/_components/home/hero'
+import { render, screen, within } from '@testing-library/react'
+import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
 
 describe('Hero', () => {
   it('names the page after the chapter and links to sessions and projects', () => {
@@ -40,5 +40,37 @@ describe('Hero', () => {
       'aria-hidden',
       'true'
     )
+  })
+})
+
+describe('HeroMetaList', () => {
+  it('prints live counts once they arrive', () => {
+    render(
+      <HeroMetaList
+        lang="en"
+        counts={{ sessions: 23, projects: 1, generations: 2 }}
+      />
+    )
+    const strip = screen.getByRole('list', { name: 'At a glance' })
+
+    expect(
+      within(strip)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent)
+    ).toEqual([
+      '23 sessions',
+      '1 project',
+      '2 generations',
+      'T19 · Tue 19:00 KST',
+    ])
+  })
+
+  it('holds fixed-width placeholders while counts load', () => {
+    render(<HeroMetaList lang="ko" />)
+    const strip = screen.getByRole('list', { name: '한눈에 보기' })
+
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(1)
+    expect(within(strip).getByText('T19 · 매주 화 19:00')).toBeInTheDocument()
+    expect(strip.querySelectorAll('.hero-meta-skeleton')).toHaveLength(3)
   })
 })

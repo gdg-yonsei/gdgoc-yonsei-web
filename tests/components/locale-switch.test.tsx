@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import LocaleSwitch from '@/app/components/site/locale-switch'
+import { carryQueryString } from '@/lib/site/carry-query'
 
 describe('LocaleSwitch', () => {
   it('names each option with its visible abbreviation (WCAG 2.5.3)', () => {
@@ -20,4 +21,21 @@ describe('LocaleSwitch', () => {
     ).toHaveAttribute('aria-current', 'true')
   })
 
+  it('carries the current query string when a link is about to be used', () => {
+    window.history.replaceState(null, '', '/en/session?category=hackathon')
+    render(
+      <LocaleSwitch
+        lang="en"
+        pathname="/en/session"
+        label="Language"
+        onIntent={carryQueryString}
+      />
+    )
+    const korean = screen.getByRole('link', { name: /^KO\b/ })
+
+    expect(korean).toHaveAttribute('href', '/ko/session')
+    fireEvent.pointerOver(korean)
+    expect(korean).toHaveAttribute('href', '/ko/session?category=hackathon')
+    window.history.replaceState(null, '', '/')
+  })
 })

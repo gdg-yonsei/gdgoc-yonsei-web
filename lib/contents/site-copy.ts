@@ -90,7 +90,13 @@ type HeroCopy = {
   primaryCta: string
   secondaryCta: string
   metaLabel: string
-  meta: [string, string, string]
+  schedule: string
+  sessionsOne: string
+  sessionsMany: string
+  projectsOne: string
+  projectsMany: string
+  generationsOne: string
+  generationsMany: string
   scrollCue: string
 }
 
@@ -102,7 +108,13 @@ export const heroCopy: Record<Locale, HeroCopy> = {
     primaryCta: 'Explore sessions',
     secondaryCta: 'See projects',
     metaLabel: 'At a glance',
-    meta: ['T19 · Tue 19:00 KST', '6 parts', 'Sinchon, Seoul'],
+    schedule: 'T19 · Tue 19:00 KST',
+    sessionsOne: '{count} session',
+    sessionsMany: '{count} sessions',
+    projectsOne: '{count} project',
+    projectsMany: '{count} projects',
+    generationsOne: '{count} generation',
+    generationsMany: '{count} generations',
     scrollCue: 'Scroll to open',
   },
   ko: {
@@ -112,7 +124,13 @@ export const heroCopy: Record<Locale, HeroCopy> = {
     primaryCta: '세션 둘러보기',
     secondaryCta: '프로젝트 보기',
     metaLabel: '한눈에 보기',
-    meta: ['T19 · 매주 화 19:00', '6개 파트', '서울 신촌'],
+    schedule: 'T19 · 매주 화 19:00',
+    sessionsOne: '세션 {count}개',
+    sessionsMany: '세션 {count}개',
+    projectsOne: '프로젝트 {count}개',
+    projectsMany: '프로젝트 {count}개',
+    generationsOne: '{count}개 기수',
+    generationsMany: '{count}개 기수',
     scrollCue: '스크롤해서 열기',
   },
 }

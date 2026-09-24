@@ -183,6 +183,20 @@
     background-color: #ea4335;
   }
 
+  .hero-meta li:nth-child(4)::before {
+    background-color: #f9ab00;
+  }
+
+  /* Fixed width, so the strip doesn't shift when the counts stream in. */
+  .hero-meta-skeleton {
+    display: inline-block;
+    width: 5.5em;
+    height: 0.75em;
+    border-radius: 9999px;
+    background-color: rgb(255 255 255 / 0.12);
+    vertical-align: middle;
+  }
+
   .hero-cue {
     font-family: var(--font-code);
     font-size: 0.6875rem;

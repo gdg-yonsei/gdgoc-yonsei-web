@@ -1,20 +1,70 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/i18n-config'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink from '@/app/components/site/button-link'
 import { heroCopy } from '@/lib/contents/site-copy'
+import { countLabel } from '@/lib/site/format'
 import BracketStage from './bracket-stage'
 
 const rise = (delayMs: number) =>
   ({ '--rise-delay': `${delayMs}ms` }) as CSSProperties
+
+export type HeroCounts = {
+  sessions: number
+  projects: number
+  generations: number
+}
+
+/** The mono meta strip. Without counts it holds fixed-width placeholders. */
+export function HeroMetaList({
+  lang,
+  counts,
+}: {
+  lang: Locale
+  counts?: HeroCounts
+}) {
+  const copy = heroCopy[lang]
+  const items = counts
+    ? [
+        countLabel(counts.sessions, copy.sessionsOne, copy.sessionsMany),
+        countLabel(counts.projects, copy.projectsOne, copy.projectsMany),
+        countLabel(
+          counts.generations,
+          copy.generationsOne,
+          copy.generationsMany
+        ),
+      ]
+    : [null, null, null]
+
+  return (
+    <ul className="hero-meta" aria-label={copy.metaLabel}>
+      {items.map((item, index) =>
+        item ? (
+          <li key={index}>{item}</li>
+        ) : (
+          <li key={index} aria-hidden="true">
+            <span className="hero-meta-skeleton" />
+          </li>
+        )
+      )}
+      <li>{copy.schedule}</li>
+    </ul>
+  )
+}
 
 /**
  * "< GDGoC Yonsei >": the chapter name sits between the two GDG brackets.
  * The SVG posters paint immediately; BracketStage later swaps them for the
  * live halftone field once the browser is idle.
  */
-export default function Hero({ lang }: { lang: Locale }) {
+export default function Hero({
+  lang,
+  meta,
+}: {
+  lang: Locale
+  meta?: ReactNode
+}) {
   const copy = heroCopy[lang]
 
   return (
@@ -53,11 +103,7 @@ export default function Hero({ lang }: { lang: Locale }) {
         </div>
       </div>
       <div className="hero-foot">
-        <ul className="hero-meta" aria-label={copy.metaLabel}>
-          {copy.meta.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        {meta ?? <HeroMetaList lang={lang} />}
         <p aria-hidden="true" className="hero-cue">
           {copy.scrollCue}
         </p>

@@ -15,6 +15,7 @@ const ROOTS = [
 const FORBIDDEN = [
   /from ['"]@\/lib\/cn['"]/,
   /from ['"]@\/lib\/contents\/site-copy['"]/,
+  /from ['"]@\/lib\/contents\/archive-copy['"]/,
 ]
 
 function files(dir: string): string[] {

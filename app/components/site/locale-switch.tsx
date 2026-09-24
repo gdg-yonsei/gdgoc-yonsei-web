@@ -1,3 +1,4 @@
+import type { SyntheticEvent } from 'react'
 import type { Locale } from '@/i18n-config'
 import { localizedPath } from '@/lib/site/localized-path'
 
@@ -15,17 +16,23 @@ export default function LocaleSwitch({
   pathname,
   label,
   className,
+  onIntent,
 }: {
   lang: Locale
   pathname: string | null
   label: string
   className?: string
+  /** Runs when a link is hovered, focused or clicked, before it navigates. */
+  onIntent?: (event: SyntheticEvent<HTMLElement>) => void
 }) {
   return (
     <div
       role="group"
       aria-label={label}
       className={className ? `locale-switch ${className}` : 'locale-switch'}
+      onPointerOver={onIntent}
+      onFocus={onIntent}
+      onClick={onIntent}
     >
       {LOCALES.map(({ code, short, name }) =>
         code === lang ? (

@@ -6,6 +6,7 @@ import { useRef, useState, type CSSProperties } from 'react'
 import { Bars2Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import type { Locale } from '@/i18n-config'
 import LocaleSwitch from '@/app/components/site/locale-switch'
+import { carryQueryString } from '@/lib/site/carry-query'
 import type {
   HeaderNavigationCopy,
   HeaderNavigationLink,
@@ -141,7 +142,12 @@ function MobileMenu({
           className="mobile-menu-item mt-10 px-3"
           style={{ '--i': links.length } as CSSProperties}
         >
-          <LocaleSwitch lang={lang} pathname={pathname} label={copy.language} />
+          <LocaleSwitch
+            lang={lang}
+            pathname={pathname}
+            label={copy.language}
+            onIntent={carryQueryString}
+          />
         </div>
       </dialog>
     </>
@@ -157,6 +163,7 @@ export function NavigationFallback({ lang, links, copy }: NavigationProps) {
         pathname={null}
         label={copy.language}
         className="not-md:hidden"
+        onIntent={carryQueryString}
       />
       <button
         type="button"
@@ -184,6 +191,7 @@ function NavigationForPath({
         pathname={pathname}
         label={copy.language}
         className="not-md:hidden"
+        onIntent={carryQueryString}
       />
       <MobileMenu lang={lang} links={links} copy={copy} pathname={pathname} />
     </div>
