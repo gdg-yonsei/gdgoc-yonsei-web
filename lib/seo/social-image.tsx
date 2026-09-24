@@ -3,7 +3,6 @@ import 'server-only'
 import { readFile } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import { cacheLife } from 'next/cache'
-import satori from 'satori'
 import sharp from 'sharp'
 import { layoutSocialTitle } from '@/lib/seo/social-image-title'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
@@ -29,18 +28,18 @@ const SOCIAL_IMAGE_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 const FALLBACK_SOCIAL_IMAGE_CACHE_CONTROL =
   'public, max-age=300, stale-while-revalidate=3600'
 
-const pretendardBoldFont = readFile(
-  resolve(
-    process.cwd(),
-    'node_modules/pretendard/dist/web/static/woff-subset/Pretendard-Bold.subset.woff'
+async function loadPretendardBold(): Promise<ArrayBuffer> {
+  const font = await readFile(
+    resolve(
+      process.cwd(),
+      'node_modules/pretendard/dist/web/static/woff-subset/Pretendard-Bold.subset.woff'
+    )
   )
-).then(
-  (font) =>
-    font.buffer.slice(
-      font.byteOffset,
-      font.byteOffset + font.byteLength
-    ) as ArrayBuffer
-)
+  return font.buffer.slice(
+    font.byteOffset,
+    font.byteOffset + font.byteLength
+  ) as ArrayBuffer
+}
 
 const LOCAL_IMAGE_CONTENT_TYPES: Record<string, string> = {
   '.avif': 'image/avif',
@@ -280,15 +279,29 @@ function BrandedFallback() {
   )
 }
 
-export async function createSocialImageResponse(
+/*
+ * Everything that touches the file system or the network runs inside this
+ * cache scope: under Cache Components an image route that awaits uncached IO
+ * fails with "used IO that was not cached" (HTTP 500). The JPEG is keyed by
+ * the content, whose `version` changes whenever the source row does.
+ */
+async function renderSocialImageJpeg(
   content: SocialImageContent
-): Promise<Response> {
+): Promise<Uint8Array> {
+  'use cache: remote'
+
+  cacheLife(publicCachePolicy.projectDetail)
+
   const [representativeImage, font] = await Promise.all([
     loadRepresentativeImage(content.representativeImage),
-    pretendardBoldFont,
+    loadPretendardBold(),
   ])
   const title = layoutSocialTitle(content.title, content.locale)
 
+  // Satori fetches its layout engine when first imported. Importing it here
+  // keeps that fetch inside this cache scope; imported from a prerendering
+  // route it is uncached IO that never settles, and the image request 500s.
+  const { default: satori } = await import('satori')
   const svg = await satori(
     <div
       lang={content.locale}
@@ -432,6 +445,14 @@ export async function createSocialImageResponse(
   const jpeg = await sharp(Buffer.from(svg))
     .jpeg({ quality: 82, progressive: true, mozjpeg: true })
     .toBuffer()
+
+  return new Uint8Array(jpeg)
+}
+
+export async function createSocialImageResponse(
+  content: SocialImageContent
+): Promise<Response> {
+  const jpeg = await renderSocialImageJpeg(content)
 
   return new Response(new Uint8Array(jpeg), {
     headers: {
