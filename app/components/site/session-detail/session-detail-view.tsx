@@ -159,7 +159,7 @@ export default function SessionDetailView({
 
       <div className="detail-columns">
         <div className="site-prose prose max-w-none">
-          <SafeMDX source={session.description} />
+          <SafeMDX source={session.description} headingOffset={1} />
         </div>
         <aside className="detail-aside">
           {related.length > 0 && (

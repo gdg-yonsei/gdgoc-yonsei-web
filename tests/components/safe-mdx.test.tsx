@@ -27,4 +27,15 @@ describe('SafeMDX', () => {
 
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('demotes headings under a page that already has its own h1', () => {
+    const { container } = render(
+      <SafeMDX source={'# Overview\n\n###### Deep'} headingOffset={1} />
+    )
+
+    expect(container.querySelector('h1')).toBeNull()
+    expect(container.querySelector('h2')).toHaveTextContent('Overview')
+    // Levels stop at h6.
+    expect(container.querySelector('h6')).toHaveTextContent('Deep')
+  })
 })

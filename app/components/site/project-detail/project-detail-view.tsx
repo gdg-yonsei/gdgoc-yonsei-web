@@ -113,7 +113,7 @@ export default function ProjectDetailView({
 
       <div className="detail-columns">
         <div className="site-prose prose max-w-none">
-          <SafeMDX source={project.content} />
+          <SafeMDX source={project.content} headingOffset={1} />
         </div>
         <aside aria-label={copy.details} className="detail-aside">
           {project.contributors.length > 0 && (
