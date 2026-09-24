@@ -18,6 +18,8 @@ const FIXTURE_IDS = {
   pendingApproveUserId: 'e2e-pending-approve-user',
   pendingDeleteUserId: 'e2e-pending-delete-user',
   sessionToken: 'e2e-admin-session-token',
+  // Signing out revokes a session, so the passkey test gets its own.
+  passkeySessionToken: 'e2e-passkey-session-token',
 }
 
 /**
@@ -263,12 +265,20 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
     sessionId,
   })
 
-  await db.insert(authSessions).values({
-    id: 'e2e-admin-session',
-    token: FIXTURE_IDS.sessionToken,
-    userId: FIXTURE_IDS.adminUserId,
-    expiresAt: new Date('2099-01-01T00:00:00.000Z'),
-  })
+  await db.insert(authSessions).values([
+    {
+      id: 'e2e-admin-session',
+      token: FIXTURE_IDS.sessionToken,
+      userId: FIXTURE_IDS.adminUserId,
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+    },
+    {
+      id: 'e2e-passkey-session',
+      token: FIXTURE_IDS.passkeySessionToken,
+      userId: FIXTURE_IDS.adminUserId,
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+    },
+  ])
 
   return {
     generationId: generation.id,
@@ -290,4 +300,8 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
 
 export function getSeededAdminSessionToken() {
   return FIXTURE_IDS.sessionToken
+}
+
+export function getSeededPasskeySessionToken() {
+  return FIXTURE_IDS.passkeySessionToken
 }

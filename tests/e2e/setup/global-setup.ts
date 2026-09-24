@@ -6,13 +6,21 @@ import type { FullConfig } from '@playwright/test'
 import {
   ADMIN_STORAGE_STATE,
   AUTH_DIR,
+  PASSKEY_STORAGE_STATE,
   SEEDED_DATA_FILE,
   SeededE2EData,
 } from './constants'
-import { getSeededAdminSessionToken, resetAndSeedE2EDatabase } from './seed-db'
+import {
+  getSeededAdminSessionToken,
+  getSeededPasskeySessionToken,
+  resetAndSeedE2EDatabase,
+} from './seed-db'
 
-async function writeAuthState(baseURL: string) {
-  const token = getSeededAdminSessionToken()
+async function writeAuthState(
+  baseURL: string,
+  token: string,
+  storageStatePath: string
+) {
   const secret = process.env.BETTER_AUTH_SECRET
   if (!secret) {
     throw new Error(
@@ -41,7 +49,7 @@ async function writeAuthState(baseURL: string) {
   ]
 
   await fs.writeFile(
-    ADMIN_STORAGE_STATE,
+    storageStatePath,
     JSON.stringify({ cookies, origins: [] }, null, 2)
   )
 }
@@ -55,7 +63,16 @@ export async function prepareE2EData(baseURL: string) {
 
   const seeded = await resetAndSeedE2EDatabase()
   await writeSeedInfo(seeded)
-  await writeAuthState(baseURL)
+  await writeAuthState(
+    baseURL,
+    getSeededAdminSessionToken(),
+    ADMIN_STORAGE_STATE
+  )
+  await writeAuthState(
+    baseURL,
+    getSeededPasskeySessionToken(),
+    PASSKEY_STORAGE_STATE
+  )
 }
 
 export default async function globalSetup(config: FullConfig) {

@@ -5,6 +5,10 @@ export const ADMIN_STORAGE_STATE = path.join(
   AUTH_DIR,
   'admin-storage-state.json'
 )
+export const PASSKEY_STORAGE_STATE = path.join(
+  AUTH_DIR,
+  'passkey-storage-state.json'
+)
 export const SEEDED_DATA_FILE = path.join(AUTH_DIR, 'seed-data.json')
 
 export type SeededE2EData = {

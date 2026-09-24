@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ADMIN_STORAGE_STATE } from './setup/constants'
+import { PASSKEY_STORAGE_STATE } from './setup/constants'
 
 test.describe('Better Auth social sign-in', () => {
   for (const provider of [
@@ -42,7 +42,8 @@ test.describe('Better Auth social sign-in', () => {
 })
 
 test.describe('Better Auth passkey lifecycle', () => {
-  test.use({ storageState: ADMIN_STORAGE_STATE })
+  // Its own session: signing out must not revoke the one other specs share.
+  test.use({ storageState: PASSKEY_STORAGE_STATE })
 
   test('registers a passkey, signs out, and signs back in', async ({
     page,
