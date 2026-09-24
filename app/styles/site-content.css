@@ -1182,27 +1182,6 @@ html.site {
     text-underline-offset: 0.2em;
   }
 
-  /* ── Prose from the admin's Markdown ───────────────────────── */
-  .site-prose {
-    --tw-prose-body: var(--s-fg-muted);
-    --tw-prose-headings: var(--s-fg);
-    --tw-prose-lead: var(--s-fg-muted);
-    --tw-prose-links: var(--s-blue-ink);
-    --tw-prose-bold: var(--s-fg);
-    --tw-prose-counters: var(--s-fg-subtle);
-    --tw-prose-bullets: var(--s-fg-subtle);
-    --tw-prose-hr: var(--s-rule);
-    --tw-prose-quotes: var(--s-fg);
-    --tw-prose-quote-borders: var(--s-rule);
-    --tw-prose-captions: var(--s-fg-subtle);
-    --tw-prose-code: var(--s-fg);
-    --tw-prose-pre-code: var(--s-on-stage);
-    --tw-prose-pre-bg: var(--s-stage);
-    --tw-prose-th-borders: var(--s-rule);
-    --tw-prose-td-borders: var(--s-rule);
-    overflow-wrap: anywhere;
-  }
-
   /* ── Empty state and skeletons ─────────────────────────────── */
   .empty-state {
     display: grid;
@@ -1434,6 +1413,30 @@ html.site {
       background-color var(--dur-fast) var(--ease-out),
       color var(--dur-fast) var(--ease-out);
   }
+}
+
+/* Long-form prose from the admin's Markdown. Tailwind's typography plugin
+   emits .prose in @layer utilities, which outranks @layer components, so
+   these rules stay unlayered: unlayered rules win over every layer, and the
+   scheme tokens replace the plugin's palette. */
+.site-prose {
+  --tw-prose-body: var(--s-fg-muted);
+  --tw-prose-headings: var(--s-fg);
+  --tw-prose-lead: var(--s-fg-muted);
+  --tw-prose-links: var(--s-blue-ink);
+  --tw-prose-bold: var(--s-fg);
+  --tw-prose-counters: var(--s-fg-subtle);
+  --tw-prose-bullets: var(--s-fg-subtle);
+  --tw-prose-hr: var(--s-rule);
+  --tw-prose-quotes: var(--s-fg);
+  --tw-prose-quote-borders: var(--s-rule);
+  --tw-prose-captions: var(--s-fg-subtle);
+  --tw-prose-code: var(--s-fg);
+  --tw-prose-pre-code: var(--s-on-stage);
+  --tw-prose-pre-bg: var(--s-stage);
+  --tw-prose-th-borders: var(--s-rule);
+  --tw-prose-td-borders: var(--s-rule);
+  overflow-wrap: anywhere;
 }
 
 @media (hover: hover) {

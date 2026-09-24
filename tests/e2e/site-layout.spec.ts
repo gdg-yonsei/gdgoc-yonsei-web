@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { readSeededData } from './helpers/read-seeded-data'
 
 /*
  * Layout regressions a unit test cannot see: both depend on real font
@@ -85,4 +86,37 @@ test('root 404 page fits a 320px screen without sideways scrolling', async ({
         document.documentElement.clientWidth
     )
   ).toBe(0)
+})
+
+test('long-form prose takes its colours from the site scheme', async ({
+  page,
+}) => {
+  // Tailwind's typography plugin sets its own palette; the scheme tokens
+  // (--s-fg-muted body, --s-fg headings) must win on every prose surface.
+  const seeded = await readSeededData()
+  for (const path of [
+    `/en/session/${seeded.generationName}/${seeded.sessionId}`,
+  ]) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' })
+    const prose = page.locator('.site-prose').first()
+    await expect(prose).toBeVisible()
+    expect(
+      await prose.evaluate((element) => {
+        // Resolve the variables to colours (the build minifies hex values).
+        const probe = document.createElement('span')
+        element.append(probe)
+        const resolve = (name: string) => {
+          probe.style.color = `var(${name})`
+          return getComputedStyle(probe).color
+        }
+        const colours = [
+          resolve('--tw-prose-body'),
+          resolve('--tw-prose-headings'),
+        ]
+        probe.remove()
+        return colours
+      }),
+      path
+    ).toEqual(['rgb(85, 85, 85)', 'rgb(30, 30, 30)'])
+  }
 })
