@@ -223,6 +223,11 @@ async function measureRoute(browser, pathname, profileName, profile) {
     scriptRequestCount: settledRequests.filter(
       (request) => request.resourceType === 'script'
     ).length,
+    // Korean text subsets (app/pretendard.css), approved as a deliberate
+    // cost on 2026-09-24; the budget exempts them from the regression rule.
+    pretendardRequestCount: settledRequests.filter((request) =>
+      new URL(request.url).pathname.startsWith('/fonts/pretendard/')
+    ).length,
     ...browserMetrics,
   }
 

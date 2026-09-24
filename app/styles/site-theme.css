@@ -89,11 +89,13 @@
 
     background-color: var(--s-paper);
     color: var(--s-fg);
-    /* Hangul uses the platform's Korean face (0 bytes): shipping Pretendard
-       cost ~245 KB of subsets per Korean page, which the budget rules out. */
+    /* Latin in Google Sans Flex, Hangul in Pretendard (unicode-range subsets
+       from app/pretendard.css, fetched only for characters on the page); the
+       platform Korean faces cover the swap period. */
     font-family:
-      var(--font-flex), 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
-      'Noto Sans CJK KR', ui-sans-serif, system-ui, sans-serif;
+      var(--font-flex), 'Pretendard Variable', 'Apple SD Gothic Neo',
+      'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-sans-serif,
+      system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -141,6 +143,13 @@
     text-wrap: pretty;
   }
 
+  /* Visually hidden text (e.g. the "한국어" in the language switch) never
+     needs a web font; without this every English page fetched a Pretendard
+     subset for it. */
+  html.site .sr-only {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+
   html.site ::selection {
     background-color: #ffd427;
     color: #1e1e1e;
@@ -179,12 +188,14 @@
   --color-g-green-ink: var(--s-green-ink);
 
   --font-display:
-    var(--font-flex), 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
-    'Noto Sans CJK KR', ui-sans-serif, system-ui, sans-serif;
+    var(--font-flex), 'Pretendard Variable', 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-sans-serif,
+    system-ui, sans-serif;
   /* Korean faces sit right after the mono face so Hangul inside mono labels
      (dates, meta strips) never falls to a glyph-less monospace font. */
   --font-code:
-    var(--font-code-mono), 'Apple SD Gothic Neo', 'Malgun Gothic',
+    var(--font-code-mono), 'Pretendard Variable', 'Apple SD Gothic Neo',
+    'Malgun Gothic',
     'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace, SFMono-Regular, Menlo,
     Consolas, monospace;
 }

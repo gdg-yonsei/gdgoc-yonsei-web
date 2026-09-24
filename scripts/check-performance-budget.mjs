@@ -59,12 +59,16 @@ for (const result of report.results) {
     )
   }
 
-  const requestRegressionBudget = before.requestCount + 4
-  if (result.requestCount > requestRegressionBudget) {
+  // Pretendard's unicode-range subsets for Korean text are an approved cost
+  // (2026-09-24); they still count toward the absolute 75-request cap above.
+  const withoutPretendard = (sample) =>
+    sample.requestCount - (sample.pretendardRequestCount ?? 0)
+  const requestRegressionBudget = withoutPretendard(before) + 4
+  if (withoutPretendard(result) > requestRegressionBudget) {
     fail(
       result,
       'request-count regression',
-      result.requestCount,
+      withoutPretendard(result),
       requestRegressionBudget
     )
   }
