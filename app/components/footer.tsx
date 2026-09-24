@@ -7,14 +7,9 @@ import FooterLocaleSwitch from '@/app/components/site/footer-locale-switch'
 import LocaleSwitch from '@/app/components/site/locale-switch'
 import SeoulClock from '@/app/components/site/seoul-clock'
 import { chromeCopy } from '@/lib/contents/site-copy'
+import { CHANNELS } from '@/lib/site/channels'
 
 const COPYRIGHT_YEAR = 2026
-const EMAIL = 'gdsc.yonsei.univ@gmail.com'
-const INSTAGRAM_URL = 'https://www.instagram.com/gdg.yonseiuniv/'
-const LINKEDIN_URL = 'https://www.linkedin.com/company/gdsc-yonsei/'
-const CHAPTER_URL =
-  'https://gdg.community.dev/gdg-on-campus-yonsei-university-sinchon-campus-seoul-south-korea/'
-const SOURCE_URL = 'https://github.com/gdg-yonsei/gdgoc-yonsei-web'
 
 function FooterColumn({
   title,
@@ -98,7 +93,7 @@ export default function Footer({ lang }: { lang: Locale }) {
           <FooterColumn title={copy.footerConnect}>
             <li>
               <a
-                href={INSTAGRAM_URL}
+                href={CHANNELS.instagram}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="GDGoC Yonsei Instagram"
@@ -109,7 +104,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <a
-                href={LINKEDIN_URL}
+                href={CHANNELS.linkedin}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="GDGoC Yonsei LinkedIn"
@@ -120,7 +115,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <a
-                href={`mailto:${EMAIL}`}
+                href={`mailto:${CHANNELS.email}`}
                 rel="noreferrer noopener"
                 aria-label="Email GDGoC Yonsei"
                 className="site-footer-link"
@@ -130,7 +125,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <a
-                href={CHAPTER_URL}
+                href={CHANNELS.chapter}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="site-footer-link"
@@ -169,7 +164,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <a
-                href={SOURCE_URL}
+                href={CHANNELS.source}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="site-footer-link"

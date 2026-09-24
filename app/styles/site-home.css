@@ -1,0 +1,94 @@
+/* Landing page: section heads, the scroll-driven reveal and (in the tasks
+   that add them) each section's own styles. */
+@layer components {
+  .home-section {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 72rem;
+    padding: 5.5rem 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .home-section {
+      padding: 7rem 1.5rem;
+    }
+  }
+
+  .home-section + .home-section {
+    border-top: 1px solid var(--s-rule);
+  }
+
+  .section-tag {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--s-fg-subtle);
+  }
+
+  .home-section-head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .home-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+
+  .home-section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5.2vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .home-section-intro {
+    max-width: 40rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--s-fg-muted);
+  }
+
+  .home-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    justify-self: start;
+    font-weight: 600;
+    color: var(--s-blue-ink);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color var(--dur-fast) var(--ease-out);
+  }
+}
+
+@media (hover: hover) {
+  .home-more:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* Blocks fade up as they enter. Without scroll timelines, or with reduced
+   motion, everything is simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 2rem;
+  }
+}
