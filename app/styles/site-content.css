@@ -1241,6 +1241,199 @@ html.site {
     border-radius: 0.75rem;
     background-color: var(--s-sheet-sunken);
   }
+
+  /* ── Members ───────────────────────────────────────────────── */
+  .member-generations {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .member-generations {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .member-generation {
+    display: flex;
+    min-height: 7rem;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.5rem;
+    background-color: var(--s-sheet);
+    padding: 1.25rem 1.5rem;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .member-generation-name {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .member-generation-dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--s-fg-subtle);
+  }
+
+  .member-generation-now {
+    border-radius: 9999px;
+    background-color: var(--s-green-soft);
+    padding: 0.125rem 0.625rem;
+    font-weight: 600;
+    color: var(--s-green-ink);
+  }
+
+  .member-directory {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 3rem;
+  }
+
+  .member-part {
+    --hue: var(--s-rule);
+  }
+
+  .member-part[data-hue='blue'] {
+    --hue: var(--color-g-blue);
+  }
+
+  .member-part[data-hue='sky'] {
+    --hue: var(--color-g-sky);
+  }
+
+  .member-part[data-hue='green'] {
+    --hue: var(--color-g-green);
+  }
+
+  .member-part[data-hue='yellow'] {
+    --hue: var(--color-g-yellow);
+  }
+
+  .member-part[data-hue='pink'] {
+    --hue: var(--color-g-pink);
+  }
+
+  .member-part[data-hue='red'] {
+    --hue: var(--color-g-red);
+  }
+
+  .member-part-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    border-top: 3px solid var(--hue);
+    padding-top: 1rem;
+  }
+
+  .member-part-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .member-part-count {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--s-fg-subtle);
+  }
+
+  .member-part-empty {
+    margin-top: 1rem;
+    color: var(--s-fg-muted);
+  }
+
+  .member-grid {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .member-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .member-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .member-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.875rem;
+    border: 1px solid var(--s-rule);
+    border-radius: 1.25rem;
+    background-color: var(--s-sheet);
+    padding: 0.875rem 1rem;
+  }
+
+  .member-avatar {
+    display: grid;
+    width: 3.5rem;
+    height: 3.5rem;
+    flex: none;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 9999px;
+    background-color: var(--s-sheet-sunken);
+    font-weight: 700;
+    color: var(--s-fg-muted);
+  }
+
+  .member-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .member-main {
+    display: grid;
+    min-width: 0;
+    gap: 0.375rem;
+  }
+
+  .member-name {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .member-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .member-link {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 9999px;
+    color: var(--s-fg-muted);
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
 }
 
 @media (hover: hover) {
@@ -1268,6 +1461,15 @@ html.site {
   .release-link:hover,
   .case-action:hover {
     border-color: var(--s-fg);
+  }
+
+  a.member-generation:hover {
+    border-color: var(--s-fg-subtle);
+  }
+
+  .member-link:hover {
+    background-color: var(--s-sheet-sunken);
+    color: var(--s-fg);
   }
 }
 

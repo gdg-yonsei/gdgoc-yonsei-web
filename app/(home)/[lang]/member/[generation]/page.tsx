@@ -1,14 +1,27 @@
 import type { Metadata } from 'next'
-import UserProfileCard from '@/app/(home)/[lang]/member/[generation]/user-profile-card'
-import PageTitle from '@/app/components/page-title'
-import StageButtonGroup from '@/app/components/stage-button-group'
+import { notFound } from 'next/navigation'
+import JsonLd from '@/app/components/json-ld'
+import Breadcrumbs from '@/app/components/site/breadcrumbs'
+import EmptyState from '@/app/components/site/empty-state'
+import GenerationPager from '@/app/components/site/generation-pager'
+import MemberCard from '@/app/components/site/member-card'
+import PageHeader from '@/app/components/site/page-header'
+import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
+import type { Locale } from '@/i18n-config'
+import {
+  archiveCommonCopy,
+  memberArchiveCopy,
+} from '@/lib/contents/archive-copy'
+import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getMembersByGeneration } from '@/lib/server/queries/public/members'
-import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
-import languageParamChecker from '@/lib/language-param-checker'
-import { createLocalizedMetadata } from '@/lib/seo/metadata'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
+import { createLocalizedMetadata, getLocalizedUrl } from '@/lib/seo/metadata'
+import { countLabel, fillTemplate } from '@/lib/site/format'
+import { generationNeighbors } from '@/lib/site/generations'
+import { breadcrumbList } from '@/lib/site/json-ld'
+import { partHue } from '@/lib/site/labels'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -25,131 +38,163 @@ export async function generateStaticParams({
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
-  const generationData = await getMembersByGeneration(generation, locale)
 
-  if (!generationData) {
+  if (!(await getMembersByGeneration(generation, locale))) {
     notFound()
   }
 
-  if (locale === 'ko') {
-    return createLocalizedMetadata({
-      locale,
-      path: `/member/${generation}`,
-      title: `${generation} 구성원`,
-      description: `GDGoC Yonsei ${generation} 기수의 파트별 구성원과 학생 개발자 프로필을 확인하고 연세대학교 개발자 커뮤니티의 활동 분야를 만나보세요.`,
-    })
-  }
-
+  const copy = memberArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
     path: `/member/${generation}`,
-    title: `${generation} Members`,
-    description: `Meet the GDGoC Yonsei ${generation} members across each technical and community team, and discover the people building Yonsei's student developer community.`,
+    title: fillTemplate(copy.generationTitle, { generation }),
+    description: fillTemplate(copy.generationDescription, { generation }),
   })
 }
 
-function MemberDirectoryLoading() {
+export default async function MembersPage({ params }: Props) {
+  const { lang, generation } = await params
+  const locale = languageParamChecker(lang)
+  const generations = await getGenerationSummaries(locale)
+  const current = generations.find(({ name }) => name === generation)
+
+  if (!current) {
+    notFound()
+  }
+
+  const copy = memberArchiveCopy[locale]
+  const common = archiveCommonCopy[locale]
+  const { older, newer } = generationNeighbors(generations, generation)
+
+  return (
+    <PageTransition>
+      <div className="site-page">
+        <JsonLd
+          id="member-generation-structured-data"
+          data={breadcrumbList([
+            { name: common.home, url: getLocalizedUrl(locale) },
+            { name: common.members, url: getLocalizedUrl(locale, '/member') },
+            {
+              name: generation,
+              url: getLocalizedUrl(locale, `/member/${generation}`),
+            },
+          ])}
+        />
+        <Breadcrumbs
+          label={common.breadcrumb}
+          items={[
+            { label: common.home, href: `/${locale}` },
+            { label: common.members, href: `/${locale}/member` },
+            { label: generation },
+          ]}
+        />
+        <PageHeader
+          tag={copy.tag}
+          title={fillTemplate(copy.generationTitle, { generation })}
+          description={fillTemplate(copy.generationDescription, { generation })}
+          meta={
+            <>
+              <span>
+                {current.startDate}
+                {current.endDate ? ` – ${current.endDate}` : ''}
+              </span>
+              <GenerationPager
+                basePath="member"
+                lang={locale}
+                older={older}
+                newer={newer}
+                label={common.generations}
+                olderLabel={common.olderGeneration}
+                newerLabel={common.newerGeneration}
+              />
+            </>
+          }
+        />
+        <RevealSuspense fallback={<MemberDirectorySkeleton />}>
+          <MemberDirectory generation={generation} lang={locale} />
+        </RevealSuspense>
+      </div>
+    </PageTransition>
+  )
+}
+
+function MemberDirectorySkeleton() {
   return (
     <div
       role="status"
       aria-label="Loading members"
-      className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-2 px-4 md:grid-cols-2 lg:grid-cols-3"
+      className="archive-skeleton"
     >
+      <span className="skeleton-bar h-10 w-56 max-w-full" />
       {Array.from({ length: 6 }, (_, index) => (
-        <div
-          key={index}
-          className="flex h-28 animate-pulse items-center gap-3 rounded-2xl bg-white p-4 motion-reduce:animate-none"
-        >
-          <div className="size-20 rounded-full bg-neutral-200" />
-          <div className="h-6 flex-1 rounded-lg bg-neutral-200" />
-        </div>
+        <span key={index} className="skeleton-bar h-20 w-full" />
       ))}
-      <span className="sr-only">Loading members</span>
     </div>
   )
 }
 
 async function MemberDirectory({
   generation,
-  locale,
+  lang,
 }: {
   generation: string
-  locale: 'en' | 'ko'
+  lang: Locale
 }) {
-  const generationData = await getMembersByGeneration(generation, locale)
+  const data = await getMembersByGeneration(generation, lang)
+  const copy = memberArchiveCopy[lang]
+  const parts = data?.parts ?? []
 
-  if (!generationData) {
-    return null
-  }
-
-  const firstProfileImagePosition = generationData.parts
-    .flatMap((part, partIndex) =>
-      part.usersToParts.map((userToPart, userIndex) => ({
-        hasImage: Boolean(userToPart.user.image),
-        partIndex,
-        userIndex,
-      }))
+  if (parts.every((part) => part.usersToParts.length === 0)) {
+    return (
+      <div className="mt-8">
+        <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+      </div>
     )
-    .find(({ hasImage }) => hasImage)
-
-  return (
-    <div className="flex w-full flex-col gap-8">
-      {generationData.parts.map((part, i) => (
-        <div
-          key={i}
-          className={
-            'content-auto-section flex flex-col gap-4 border-b-2 border-neutral-200 pb-24 last:border-b-0'
-          }
-        >
-          <div className={'mx-auto w-full max-w-4xl px-4 text-4xl font-bold'}>
-            {part.name}
-          </div>
-          <div
-            className={
-              'mx-auto grid w-full max-w-4xl grid-cols-1 gap-2 px-4 md:grid-cols-2 lg:grid-cols-3'
-            }
-          >
-            {part.usersToParts?.map((user, j) => (
-              <UserProfileCard
-                lang={locale}
-                preload={
-                  i === firstProfileImagePosition?.partIndex &&
-                  j === firstProfileImagePosition.userIndex
-                }
-                userData={user.user}
-                key={j}
-              />
-            ))}
-            {part.usersToParts.length === 0 && (
-              <div className={'text-neutral-600'}>There is no member.</div>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-export default async function MembersPage({ params }: Props) {
-  const paramsData = await params
-  const locale = paramsData.lang === 'ko' ? 'ko' : 'en'
-  const generationList = await getGenerationSummaries(locale)
-
-  if (!generationList.some(({ name }) => name === paramsData.generation)) {
-    notFound()
   }
 
+  // The first photo on the page is the likely LCP image.
+  const firstPhoto = parts
+    .flatMap((part) => part.usersToParts)
+    .find(({ user }) => user.image)?.user.id
+
   return (
-    <div className="min-h-screen w-full pt-20">
-      <PageTitle>{locale === 'ko' ? '구성원' : 'Members'}</PageTitle>
-      <StageButtonGroup
-        basePath="member"
-        generation={paramsData.generation}
-        lang={locale}
-      />
-      <Suspense fallback={<MemberDirectoryLoading />}>
-        <MemberDirectory generation={paramsData.generation} locale={locale} />
-      </Suspense>
+    <div className="member-directory">
+      {parts.map((part) => (
+        <section
+          key={part.id}
+          aria-labelledby={`part-${part.id}`}
+          className="member-part"
+          data-hue={partHue(part.name)}
+        >
+          <div className="member-part-head">
+            <h2 id={`part-${part.id}`} className="member-part-title">
+              {part.name}
+            </h2>
+            <span className="member-part-count">
+              {countLabel(
+                part.usersToParts.length,
+                copy.countOne,
+                copy.countMany
+              )}
+            </span>
+          </div>
+          {part.usersToParts.length === 0 ? (
+            <p className="member-part-empty">{copy.partEmpty}</p>
+          ) : (
+            <ul className="member-grid">
+              {part.usersToParts.map(({ user }) => (
+                <MemberCard
+                  key={user.id}
+                  user={user}
+                  lang={lang}
+                  copy={copy}
+                  preload={user.id === firstPhoto}
+                />
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
     </div>
   )
 }

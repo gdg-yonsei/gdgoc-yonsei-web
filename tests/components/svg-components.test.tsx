@@ -8,9 +8,7 @@ import GDGLogo from '@/app/components/svg/gdg-logo'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Github from '@/app/components/svg/github'
 import Google from '@/app/components/svg/google'
-import InstagramWhiteBg from '@/app/components/svg/instagram-white-bg'
 import Instagram from '@/app/components/svg/instagram'
-import LinkedIn from '@/app/components/svg/linked-in'
 import Mail from '@/app/components/svg/mail'
 import Trophy from '@/app/components/svg/trophy'
 
@@ -22,9 +20,7 @@ const svgComponents: Array<[string, SvgComponent]> = [
   ['Friends', Friends],
   ['Github', Github],
   ['Google', Google],
-  ['InstagramWhiteBg', InstagramWhiteBg],
   ['Instagram', Instagram],
-  ['LinkedIn', LinkedIn],
   ['Mail', Mail],
   ['Trophy', Trophy],
 ]

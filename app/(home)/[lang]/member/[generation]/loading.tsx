@@ -1,21 +1,12 @@
 export default function MemberGenerationLoading() {
   return (
-    <div
-      role="status"
-      aria-label="Loading members"
-      className="min-h-screen w-full pt-20"
-    >
-      <div className="mx-auto mt-8 h-12 w-48 animate-pulse rounded-xl bg-neutral-200 motion-reduce:animate-none" />
-      <div className="mx-auto my-8 h-10 w-full max-w-2xl animate-pulse rounded-xl bg-neutral-200 motion-reduce:animate-none" />
-      <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-2 px-4 md:grid-cols-2 lg:grid-cols-3">
+    <div role="status" aria-label="Loading members" className="site-page">
+      <span className="skeleton-bar h-4 w-48" />
+      <span className="skeleton-bar mt-6 h-14 w-2/3" />
+      <span className="skeleton-bar mt-4 h-5 w-full max-w-xl" />
+      <div className="archive-skeleton">
         {Array.from({ length: 6 }, (_, index) => (
-          <div
-            key={index}
-            className="flex h-28 animate-pulse items-center gap-3 rounded-2xl bg-white p-4 motion-reduce:animate-none"
-          >
-            <div className="size-20 rounded-full bg-neutral-200" />
-            <div className="h-6 flex-1 rounded-lg bg-neutral-200" />
-          </div>
+          <span key={index} className="skeleton-bar h-20 w-full" />
         ))}
       </div>
       <span className="sr-only">Loading members</span>

@@ -152,7 +152,7 @@ try {
     label: 'member index -> generation',
     assertShell: () =>
       assertVisible(
-        page.getByRole('heading', { name: 'Members' }),
+        page.getByRole('heading', { level: 1, name: /Members$/ }),
         'member generation heading'
       ),
   })

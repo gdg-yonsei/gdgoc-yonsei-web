@@ -12,6 +12,7 @@ export type ArchiveCommonCopy = {
   home: string
   sessions: string
   projects: string
+  members: string
   generations: string
   noRecords: string
   olderGeneration: string
@@ -26,6 +27,7 @@ export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
     home: 'Home',
     sessions: 'Sessions',
     projects: 'Projects',
+    members: 'Members',
     generations: 'Generations',
     noRecords: 'no public records yet',
     olderGeneration: 'Older generation',
@@ -38,6 +40,7 @@ export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
     home: '홈',
     sessions: '세션',
     projects: '프로젝트',
+    members: '구성원',
     generations: '기수',
     noRecords: '아직 공개된 기록이 없어요',
     olderGeneration: '이전 기수',
@@ -286,4 +289,63 @@ export function projectFilterCopy(locale: Locale): FilterBarCopy {
     noResults: copy.noResults,
     reset: common.reset,
   }
+}
+
+export type MemberArchiveCopy = {
+  tag: string
+  hubTitle: string
+  hubDescription: string
+  generationTitle: string
+  generationDescription: string
+  countOne: string
+  countMany: string
+  partEmpty: string
+  emptyTitle: string
+  emptyBody: string
+  present: string
+  email: string
+  linkedin: string
+  instagram: string
+  github: string
+}
+
+export const memberArchiveCopy: Record<Locale, MemberArchiveCopy> = {
+  en: {
+    tag: '<team />',
+    hubTitle: 'Members',
+    hubDescription:
+      'Meet GDGoC Yonsei organizers and members by generation and explore the student community building technology together at Yonsei University.',
+    generationTitle: '{generation} Members',
+    generationDescription:
+      "Meet the GDGoC Yonsei {generation} members across each technical and community team, and discover the people building Yonsei's student developer community.",
+    countOne: '{count} member',
+    countMany: '{count} members',
+    partEmpty: 'No members in this part yet.',
+    emptyTitle: 'No members published yet',
+    emptyBody: 'Members appear here once the generation is published.',
+    present: 'Present',
+    email: 'Email',
+    linkedin: 'LinkedIn',
+    instagram: 'Instagram',
+    github: 'GitHub',
+  },
+  ko: {
+    tag: '<team />',
+    hubTitle: '구성원',
+    hubDescription:
+      '기수별 GDGoC Yonsei 운영진과 구성원을 만나고 연세대학교에서 함께 기술을 만드는 학생 개발자 커뮤니티를 확인하세요.',
+    generationTitle: '{generation} 구성원',
+    generationDescription:
+      'GDGoC Yonsei {generation} 기수의 파트별 구성원과 학생 개발자 프로필을 확인하고 연세대학교 개발자 커뮤니티의 활동 분야를 만나보세요.',
+    countOne: '{count}명',
+    countMany: '{count}명',
+    partEmpty: '아직 이 파트에 등록된 구성원이 없어요.',
+    emptyTitle: '아직 공개된 구성원이 없어요',
+    emptyBody: '기수가 공개되면 구성원이 여기에 표시돼요.',
+    present: '현재',
+    email: '이메일',
+    linkedin: 'LinkedIn',
+    instagram: 'Instagram',
+    github: 'GitHub',
+  },
 }

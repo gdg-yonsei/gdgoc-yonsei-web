@@ -11,7 +11,7 @@ export default async function HubBreadcrumbs({
   section,
 }: {
   params: Promise<{ lang: string }>
-  section: 'sessions' | 'projects'
+  section: 'sessions' | 'projects' | 'members'
 }) {
   const lang = languageParamChecker((await params).lang)
   const copy = archiveCommonCopy[lang]

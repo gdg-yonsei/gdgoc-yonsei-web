@@ -1,24 +1,31 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Suspense } from 'react'
+import JsonLd from '@/app/components/json-ld'
+import LocalizedText from '@/app/components/localized-text'
+import EmptyState from '@/app/components/site/empty-state'
+import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
+import PageHeader from '@/app/components/site/page-header'
+import PageTransition from '@/app/components/site/page-transition'
+import RevealSuspense from '@/app/components/site/reveal-suspense'
+import {
+  archiveCommonCopy,
+  memberArchiveCopy,
+} from '@/lib/contents/archive-copy'
 import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
-import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import GenerationIndexPage, {
-  GenerationIndexFallback,
-  GenerationIndexShell,
-} from '@/app/(home)/[lang]/generation-index-page'
+import {
+  createLocalizedMetadata,
+  getLocalizedUrl,
+  getSiteUrl,
+} from '@/lib/seo/metadata'
+import { fillTemplate } from '@/lib/site/format'
+import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 
 type Props = { params: Promise<{ lang: string }> }
 
-const descriptions = {
-  en: 'Meet GDGoC Yonsei organizers and members by generation and explore the student community building technology together at Yonsei University.',
-  ko: '기수별 GDGoC Yonsei 운영진과 구성원을 만나고 연세대학교에서 함께 기술을 만드는 학생 개발자 커뮤니티를 확인하세요.',
-} as const
-
-const copy = {
-  description: descriptions,
-  title: { en: 'Members by Generation', ko: '기수별 구성원' },
-} as const
+const en = memberArchiveCopy.en
+const ko = memberArchiveCopy.ko
 
 export function generateStaticParams() {
   return [{ lang: 'en' }, { lang: 'ko' }]
@@ -26,46 +33,124 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = languageParamChecker((await params).lang)
+  const copy = memberArchiveCopy[locale]
 
   return createLocalizedMetadata({
     locale,
     path: '/member',
-    title: locale === 'ko' ? '기수별 구성원' : 'Members by Generation',
-    description: descriptions[locale],
+    title: copy.hubTitle,
+    description: copy.hubDescription,
   })
 }
 
-/**
- * 만약 사용자가 Member 페이지에 generation path 없이 들어올 경우 가장 최근 generation으로 redirect 하는 페이지
- * @param params
- * @constructor
+/*
+ * The shell never reads params, so every link here shares one instant App
+ * Shell; LocalizedText picks the language with CSS.
  */
 export default function MemberIndex({ params }: Props) {
   return (
-    <GenerationIndexShell copy={copy}>
-      <Suspense fallback={<GenerationIndexFallback copy={copy} />}>
-        <MemberIndexContent params={params} />
-      </Suspense>
-    </GenerationIndexShell>
+    <PageTransition>
+      <div className="site-page" data-testid="member-directory-shell">
+        <Suspense
+          fallback={
+            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
+          }
+        >
+          <HubBreadcrumbs params={params} section="members" />
+        </Suspense>
+        <PageHeader
+          tag={en.tag}
+          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
+          description={
+            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
+          }
+        />
+        <RevealSuspense fallback={<MemberHubSkeleton />}>
+          <MemberHubContent params={params} />
+        </RevealSuspense>
+      </div>
+    </PageTransition>
   )
 }
 
-async function MemberIndexContent({ params }: Props) {
+function MemberHubSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading generations"
+      className="archive-skeleton"
+    >
+      {Array.from({ length: 4 }, (_, index) => (
+        <span key={index} className="skeleton-bar h-28 w-full rounded-3xl" />
+      ))}
+    </div>
+  )
+}
+
+async function MemberHubContent({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
-  const generations = await getGenerationSummaries(lang)
+  const copy = memberArchiveCopy[lang]
+  const common = archiveCommonCopy[lang]
+  const generations = [...(await getGenerationSummaries(lang))].sort((a, b) =>
+    b.startDate.localeCompare(a.startDate)
+  )
+  const url = getLocalizedUrl(lang, '/member')
+
+  if (generations.length === 0) {
+    return <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+  }
 
   return (
-    <GenerationIndexPage
-      basePath="member"
-      description={descriptions[lang]}
-      emptyLabel={
-        lang === 'ko'
-          ? '아직 공개된 구성원 기수가 없습니다.'
-          : 'No member generations are available yet.'
-      }
-      generations={generations}
-      lang={lang}
-      title={copy.title[lang]}
-    />
+    <>
+      <JsonLd
+        id="member-hub-structured-data"
+        data={[
+          ...collectionPage({
+            url,
+            name: copy.hubTitle,
+            description: copy.hubDescription,
+            locale: lang,
+            websiteId: `${getSiteUrl()}#website`,
+            items: generations.map((generation) => ({
+              name: fillTemplate(copy.generationTitle, {
+                generation: generation.name,
+              }),
+              url: getLocalizedUrl(lang, `/member/${generation.name}`),
+            })),
+          }),
+          breadcrumbList([
+            { name: common.home, url: getLocalizedUrl(lang) },
+            { name: common.members, url },
+          ]),
+        ]}
+      />
+      <ul className="member-generations">
+        {generations.map((generation) => (
+          <li key={generation.id}>
+            <Link
+              href={`/${lang}/member/${generation.name}`}
+              prefetch={true}
+              transitionTypes={['nav-forward']}
+              className="member-generation"
+            >
+              <span className="member-generation-name">{generation.name}</span>
+              <span className="member-generation-dates">
+                <time dateTime={generation.startDate}>
+                  {generation.startDate}
+                </time>
+                <span aria-hidden="true">–</span>
+                {generation.endDate ? (
+                  <time dateTime={generation.endDate}>
+                    {generation.endDate}
+                  </time>
+                ) : (
+                  <span className="member-generation-now">{copy.present}</span>
+                )}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
