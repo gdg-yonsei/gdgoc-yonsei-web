@@ -431,9 +431,11 @@
   }
 }
 
-/* Wide screens with motion: each card sticks a little lower than the one
-   before, so the stack builds as it scrolls. */
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+/* Wide, tall-enough screens with motion: each card sticks a little lower
+   than the one before, so the stack builds as it scrolls. Long cards scroll
+   through (relative, so they still paint above the cards stuck before them)
+   and landscape phones keep the plain list: a stuck card must fit on screen. */
+@media (min-width: 768px) and (min-height: 40rem) and (prefers-reduced-motion: no-preference) {
   .program-stack {
     gap: 2.5rem;
   }
@@ -441,6 +443,11 @@
   .program-card {
     position: sticky;
     top: calc(var(--site-header-offset) + 1rem + var(--i) * 1.5rem);
+  }
+
+  .program-card[data-long] {
+    position: relative;
+    top: auto;
   }
 }
 

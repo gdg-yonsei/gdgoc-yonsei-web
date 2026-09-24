@@ -111,4 +111,52 @@ test.describe('home page', () => {
         )
     ).toEqual(Array(5).fill('auto'))
   })
+
+  for (const viewport of [
+    { width: 1366, height: 768 },
+    { width: 844, height: 390 },
+  ]) {
+    test(`every program card can be read in full at ${viewport.width}×${viewport.height}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport)
+      await page.goto('/en', { waitUntil: 'load' })
+      const [top, end] = await page.evaluate(() => {
+        const box = document
+          .querySelector('.program-stack')!
+          .getBoundingClientRect()
+        return [box.top + scrollY, box.bottom + scrollY]
+      })
+
+      // Walk the stack: a sticky card must never keep part of itself below
+      // the fold or under the next card for the whole way through.
+      const leastHidden = new Map<string, number>()
+      for (let y = top - viewport.height; y < end; y += 40) {
+        await page.evaluate((scroll) => scrollTo(0, scroll), y)
+        const hidden = await page.evaluate(() => {
+          const cards = [...document.querySelectorAll('.program-card')]
+          return cards.map((card, index) => {
+            const box = card.getBoundingClientRect()
+            const coveredAt = cards
+              .slice(index + 1)
+              .map((next) => next.getBoundingClientRect().top)
+              .filter((nextTop) => nextTop > box.top)
+              .reduce((min, nextTop) => Math.min(min, nextTop), Infinity)
+            const shownTo = Math.min(box.bottom, innerHeight, coveredAt)
+            return [
+              card.querySelector('h3')!.textContent!,
+              Math.max(0, box.bottom - Math.max(shownTo, box.top)),
+            ] as const
+          })
+        })
+        for (const [name, px] of hidden) {
+          leastHidden.set(name, Math.min(leastHidden.get(name) ?? Infinity, px))
+        }
+      }
+
+      expect(Object.fromEntries(leastHidden)).toEqual(
+        Object.fromEntries([...leastHidden.keys()].map((name) => [name, 0]))
+      )
+    })
+  }
 })

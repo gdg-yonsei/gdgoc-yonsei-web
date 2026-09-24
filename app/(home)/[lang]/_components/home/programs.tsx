@@ -6,12 +6,14 @@ import { landingCopy, type ProgramKey } from '@/lib/contents/site-copy'
 import type { Hue } from '@/lib/site/labels'
 import ScFunnel from './sc-funnel'
 
-/** Spec order, each program with its GDG hue. */
-const PROGRAMS: ReadonlyArray<{ key: ProgramKey; hue: Hue }> = [
+/** Spec order, each program with its GDG hue. `long` cards (the funnel) are
+    taller than many screens leave below a sticky offset, so they scroll
+    through the stack instead of sticking. */
+const PROGRAMS: ReadonlyArray<{ key: ProgramKey; hue: Hue; long?: boolean }> = [
   { key: 'T19', hue: 'red' },
   { key: 'Part Session', hue: 'green' },
   { key: 'oTP', hue: 'blue' },
-  { key: 'Solution Challenge', hue: 'yellow' },
+  { key: 'Solution Challenge', hue: 'yellow', long: true },
   { key: 'Yonsei X Korea Demo Day', hue: 'red' },
   { key: 'The Bridge Hackathon', hue: 'green' },
 ]
@@ -37,11 +39,12 @@ export default function Programs({ lang }: { lang: Locale }) {
         <p className="home-section-intro">{copy.intro}</p>
       </div>
       <ol className="program-stack">
-        {PROGRAMS.map(({ key, hue }, index) => (
+        {PROGRAMS.map(({ key, hue, long }, index) => (
           <li
             key={key}
             className="program-card"
             data-hue={hue}
+            data-long={long ? '' : undefined}
             style={{ '--i': index } as CSSProperties}
           >
             <article className="program-inner">
