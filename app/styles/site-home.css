@@ -300,3 +300,137 @@
     scale: 1 0.2;
   }
 }
+
+@layer components {
+  .program-stack {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .program-card[data-hue='red'] {
+    --hue: var(--color-g-red);
+  }
+
+  .program-card[data-hue='green'] {
+    --hue: var(--color-g-green);
+  }
+
+  .program-card[data-hue='blue'] {
+    --hue: var(--color-g-blue);
+  }
+
+  .program-card[data-hue='yellow'] {
+    --hue: var(--color-g-yellow);
+  }
+
+  /* "Sticker" elevation: an ink outline, a hard offset shadow and a hue band. */
+  .program-inner {
+    display: grid;
+    gap: 0.75rem;
+    border: 1.5px solid var(--s-fg);
+    border-top: 0.625rem solid var(--hue);
+    border-radius: 1.75rem;
+    background-color: var(--s-sheet);
+    padding: 1.75rem;
+    box-shadow: 6px 6px 0 var(--s-fg);
+  }
+
+  .program-kicker {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+
+  html.site:lang(ko) .program-kicker {
+    letter-spacing: 0.02em;
+  }
+
+  .program-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    overflow-wrap: break-word;
+    font-variation-settings: 'ROND' 100;
+  }
+
+  .program-body {
+    max-width: 46rem;
+    line-height: 1.7;
+    color: var(--s-fg-muted);
+  }
+
+  .sc-funnel {
+    margin-top: 0.75rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .sc-funnel-caption {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--s-fg-subtle);
+  }
+
+  .sc-funnel-steps {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Each step is a `< >` band; bands narrow with every round. */
+  .sc-funnel-step {
+    --notch: 1.1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem 0.75rem;
+    inline-size: max(min(100%, 15rem), calc(100% - var(--step) * 16%));
+    min-block-size: 3.25rem;
+    padding: 0.625rem calc(var(--notch) + 0.75rem);
+    clip-path: polygon(
+      var(--notch) 0,
+      calc(100% - var(--notch)) 0,
+      100% 50%,
+      calc(100% - var(--notch)) 100%,
+      var(--notch) 100%,
+      0 50%
+    );
+    background-color: var(--s-yellow-soft);
+    color: var(--s-yellow-ink);
+    text-align: center;
+  }
+
+  .sc-funnel-step:last-child {
+    background-color: var(--color-g-yellow);
+    color: #1e1e1e;
+  }
+
+  .sc-funnel-value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sc-funnel-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+}
+
+/* Wide screens with motion: each card sticks a little lower than the one
+   before, so the stack builds as it scrolls. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .program-stack {
+    gap: 2.5rem;
+  }
+
+  .program-card {
+    position: sticky;
+    top: calc(var(--site-header-offset) + 1rem + var(--i) * 1.5rem);
+  }
+}
