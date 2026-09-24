@@ -1,12 +1,19 @@
-import { notFound } from 'next/navigation'
-import PageTitle from '@/app/components/page-title'
-import ImageSliderGallery from '@/app/components/images-slider'
-import formatUserName from '@/lib/format-user-name'
-import SafeMDX from '@/app/components/safe-mdx'
-import NavigationButton from '@/app/components/navigation-button'
 import type { Metadata } from 'next'
-import { getProjectById } from '@/lib/server/queries/public/projects'
+import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
+import JsonLd from '@/app/components/json-ld'
+import PageTransition from '@/app/components/site/page-transition'
+import ProjectDetailView from '@/app/components/site/project-detail/project-detail-view'
+import type { Locale } from '@/i18n-config'
+import {
+  archiveCommonCopy,
+  projectArchiveCopy,
+} from '@/lib/contents/archive-copy'
 import languageParamChecker from '@/lib/language-param-checker'
+import {
+  getProjectById,
+  getProjectShowcase,
+} from '@/lib/server/queries/public/projects'
 import {
   createLocalizedMetadata,
   getAbsoluteUrl,
@@ -14,156 +21,159 @@ import {
   getSiteUrl,
   summarizeForMetadata,
 } from '@/lib/seo/metadata'
-import JsonLd from '@/app/components/json-ld'
+import { breadcrumbList, projectWork } from '@/lib/site/json-ld'
+import {
+  contributorName,
+  moreFromGeneration,
+  nextProject,
+  projectSummary,
+  projectTitle,
+  sortShowcase,
+  toShowcaseProject,
+} from '@/lib/site/project-showcase'
+import ProjectDetailLoading from './loading'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
 }
 
+async function loadProject(
+  projectId: string,
+  generation: string,
+  locale: Locale
+) {
+  const [row, showcase] = await Promise.all([
+    getProjectById(projectId, locale),
+    getProjectShowcase(),
+  ])
+
+  if (!row || row.generation.name !== generation) {
+    return null
+  }
+
+  return {
+    project: {
+      ...toShowcaseProject(row),
+      content: locale === 'ko' ? row.contentKo || row.content : row.content,
+      images: row.images,
+    },
+    showcase: sortShowcase(showcase),
+  }
+}
+
+function fallbackDescription(
+  locale: Locale,
+  title: string,
+  generation: string
+) {
+  return locale === 'ko'
+    ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
+    : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
   const locale = languageParamChecker(lang)
+  const loaded = await loadProject(projectId, generation, locale)
 
-  const projectData = await getProjectById(projectId, locale)
-
-  if (!projectData || projectData.generation.name !== generation) {
+  if (!loaded) {
     notFound()
   }
 
-  const title =
-    locale === 'ko' ? projectData.nameKo || projectData.name : projectData.name
-  const fallbackDescription =
-    locale === 'ko'
-      ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
-      : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
-  const description = summarizeForMetadata(
-    locale === 'ko' ? projectData.descriptionKo : projectData.description,
-    fallbackDescription
-  )
-
+  const title = projectTitle(loaded.project, locale)
   return createLocalizedMetadata({
     locale,
     path: `/project/${generation}/${projectId}`,
     title,
-    description,
+    description: summarizeForMetadata(
+      projectSummary(loaded.project, locale),
+      fallbackDescription(locale, title, generation)
+    ),
     generatedSocialImage: true,
   })
 }
 
-export default async function ProjectPage({ params }: Props) {
-  const { projectId, lang, generation } = await params
-  const projectData = await getProjectById(
-    projectId,
-    lang === 'ko' ? 'ko' : 'en'
-  )
-
-  if (!projectData || projectData.generation.name !== generation) {
-    return notFound()
-  }
-
-  const locale = lang === 'ko' ? 'ko' : 'en'
-  const title =
-    locale === 'ko' ? projectData.nameKo || projectData.name : projectData.name
-  const description = summarizeForMetadata(
-    locale === 'ko' ? projectData.descriptionKo : projectData.description,
-    locale === 'ko'
-      ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
-      : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
-  )
-  const canonical = getLocalizedUrl(
-    locale,
-    `/project/${generation}/${projectId}`
-  )
-  const projectImages = [projectData.mainImage, ...projectData.images]
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
-    '@id': `${canonical}#creative-work`,
-    url: canonical,
-    name: title,
-    description,
-    image: projectImages.map(getAbsoluteUrl),
-    inLanguage: locale,
-    dateCreated: projectData.createdAt.toISOString(),
-    dateModified: projectData.updatedAt.toISOString(),
-    creator: projectData.usersToProjects.map(({ user }) => ({
-      '@type': 'Person',
-      name:
-        locale === 'ko'
-          ? formatUserName(
-              user.name,
-              user.firstNameKo,
-              user.lastNameKo,
-              user.isForeigner,
-              true
-            )
-          : formatUserName(
-              user.name,
-              user.firstName,
-              user.lastName,
-              user.isForeigner
-            ),
-    })),
-    publisher: { '@id': `${getSiteUrl()}#organization` },
-  }
+export default async function ProjectDetailPage({ params }: Props) {
+  const resolved = await params
 
   return (
-    <div className={'min-h-screen w-full pt-20'}>
-      <JsonLd id="project-structured-data" data={structuredData} />
-      <NavigationButton href={`/${lang}/project/${generation}`}>
-        <p>{locale === 'ko' ? '프로젝트' : 'Projects'}</p>
-      </NavigationButton>
-      <PageTitle>{title}</PageTitle>
-      <ImageSliderGallery images={projectImages} alt={title} />
-      <div className={'flex flex-col gap-8 py-8'}>
-        <div className={'flex flex-col'}>
-          <div className={'border-gdg-white flex w-full border-b-2'}>
-            <h2
-              className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
-            >
-              {lang === 'ko' ? '프로젝트 참여자' : 'Project Contributors'}
-            </h2>
-          </div>
-          <div className={'mx-auto w-full max-w-4xl px-4'}>
-            {projectData.usersToProjects.map((user, i) => (
-              <div key={i} className={'flex items-center gap-1'}>
-                <div>
-                  {lang === 'ko'
-                    ? formatUserName(
-                        user.user.name,
-                        user.user.firstNameKo,
-                        user.user.lastNameKo,
-                        user.user.isForeigner,
-                        true
-                      )
-                    : formatUserName(
-                        user.user.name,
-                        user.user.firstName,
-                        user.user.lastName,
-                        user.user.isForeigner
-                      )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className={'flex flex-col'}>
-          <div className={'border-gdg-white flex w-full border-b-2'}>
-            <h2
-              className={'mx-auto w-full max-w-4xl px-4 text-xl font-semibold'}
-            >
-              {lang === 'ko' ? '프로젝트 설명' : 'Project Content'}
-            </h2>
-          </div>
-          <div className={'prose mx-auto w-full max-w-4xl p-4'}>
-            <SafeMDX
-              source={
-                lang === 'ko' ? projectData.contentKo : projectData.content
-              }
-            />
-          </div>
-        </div>
+    <Suspense fallback={<ProjectDetailLoading />}>
+      <ProjectDetail {...resolved} />
+    </Suspense>
+  )
+}
+
+async function ProjectDetail({
+  lang,
+  generation,
+  projectId,
+}: {
+  lang: string
+  generation: string
+  projectId: string
+}) {
+  const locale = languageParamChecker(lang)
+  const loaded = await loadProject(projectId, generation, locale)
+
+  if (!loaded) {
+    notFound()
+  }
+
+  const { project, showcase } = loaded
+  const copy = projectArchiveCopy[locale]
+  const common = archiveCommonCopy[locale]
+  const title = projectTitle(project, locale)
+  const url = getLocalizedUrl(locale, `/project/${generation}/${projectId}`)
+
+  return (
+    <PageTransition>
+      <div className="site-page">
+        <JsonLd
+          id="project-structured-data"
+          data={[
+            projectWork({
+              url,
+              name: title,
+              description: summarizeForMetadata(
+                projectSummary(project, locale),
+                fallbackDescription(locale, title, generation)
+              ),
+              images: [project.mainImage, ...project.images].map(
+                getAbsoluteUrl
+              ),
+              locale,
+              dateCreated: project.createdAt,
+              dateModified: project.updatedAt,
+              keywords: project.tags,
+              creators: project.contributors.map((contributor) =>
+                contributorName(contributor, locale)
+              ),
+              repoUrl: project.repoUrl,
+              publisherId: `${getSiteUrl()}#organization`,
+            }),
+            breadcrumbList([
+              { name: common.home, url: getLocalizedUrl(locale) },
+              {
+                name: common.projects,
+                url: getLocalizedUrl(locale, '/project'),
+              },
+              {
+                name: generation,
+                url: getLocalizedUrl(locale, `/project/${generation}`),
+              },
+              { name: title, url },
+            ]),
+          ]}
+        />
+        <ProjectDetailView
+          lang={locale}
+          copy={copy}
+          common={common}
+          project={project}
+          more={moreFromGeneration(showcase, project)}
+          next={nextProject(showcase, project.id)}
+        />
       </div>
-    </div>
+    </PageTransition>
   )
 }

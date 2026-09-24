@@ -134,6 +134,17 @@ test.describe('projects CRUD', () => {
       await expect(
         card.getByRole('link', { name: `Source: ${projectName}` })
       ).toHaveAttribute('href', 'https://github.com/gdg-yonsei/e2e-project')
+      await card
+        .getByRole('heading', { name: projectName, exact: true })
+        .click()
+      await expect(
+        page.getByRole('heading', { level: 1, name: projectName })
+      ).toBeVisible()
+      await expect(
+        page
+          .getByRole('complementary', { name: 'Project details' })
+          .getByText('Next.js', { exact: true })
+      ).toBeVisible()
 
       await page.goto(`/ko/project/${seededData.secondGenerationName}`, {
         waitUntil: 'domcontentloaded',

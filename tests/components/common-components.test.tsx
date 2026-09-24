@@ -8,7 +8,6 @@ vi.mock('@/lib/hooks/use-reduced-motion', () => ({
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en/project',
 }))
-import NavigationButton from '@/app/components/navigation-button'
 import GenerationButtonGroup from '@/app/components/generation-button-group'
 import LoadingSpinner from '@/app/components/loading-spinner'
 import PageTitle from '@/app/components/page-title'
@@ -18,13 +17,6 @@ import UserProfileImagePreview from '@/app/components/user-profile-image-preview
 import Footer from '@/app/components/footer'
 
 describe('common components', () => {
-  it('renders navigation button link', () => {
-    render(<NavigationButton href="/ko/project">Back</NavigationButton>)
-
-    const link = screen.getByRole('link', { name: /Back/i })
-    expect(link).toHaveAttribute('href', '/ko/project')
-  })
-
   it('renders generation button group links', () => {
     render(
       <GenerationButtonGroup

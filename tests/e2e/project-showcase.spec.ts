@@ -72,3 +72,35 @@ test.describe('project showcase', () => {
     ).toBe(0)
   })
 })
+
+test('project pages carry a trail, the team and a CreativeWork', async ({
+  page,
+}) => {
+  const seeded = await readSeededData()
+  await page.goto(`/en/project/${seeded.generationName}/${seeded.projectId}`, {
+    waitUntil: 'domcontentloaded',
+  })
+
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'E2E Project' })
+  ).toBeVisible()
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Breadcrumb' })
+      .getByRole('link', { name: 'Projects' })
+  ).toHaveAttribute('href', '/en/project')
+  await expect(
+    page
+      .getByRole('complementary', { name: 'Project details' })
+      .getByRole('link', { name: `Meet the ${seeded.generationName} members` })
+  ).toHaveAttribute('href', `/en/member/${seeded.generationName}`)
+
+  const data = JSON.parse(
+    (await page.locator('#project-structured-data').textContent()) ?? '[]'
+  ) as Record<string, unknown>[]
+  expect(data[0]).toMatchObject({
+    '@type': 'CreativeWork',
+    name: 'E2E Project',
+  })
+  expect(data[1]).toMatchObject({ '@type': 'BreadcrumbList' })
+})
