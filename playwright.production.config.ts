@@ -22,8 +22,19 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   projects: [
+    // Instant-navigation shells run before anything edits data. With the
+    // testing API exposed, Next never rebuilds a route's prerendered shell
+    // after an admin edit invalidates it (production rebuilds it on the next
+    // request), so these checks would see a degraded shell.
+    {
+      name: 'instant-navigation',
+      testMatch: 'instant-navigation.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
     {
       name: 'production-chromium',
+      testIgnore: 'instant-navigation.spec.ts',
+      dependencies: ['instant-navigation'],
       use: { ...devices['Desktop Chrome'] },
     },
   ],

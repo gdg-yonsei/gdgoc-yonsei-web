@@ -117,7 +117,8 @@ test.describe('public instant navigation shells', () => {
       await expect(
         page.getByRole('heading', { name: 'Sessions' })
       ).toBeVisible()
-      await expect(page.getByText('Generation')).toBeVisible()
+      // exact: the hidden, still-mounted index page says "by Generation".
+      await expect(page.getByText('Generation', { exact: true })).toBeVisible()
     })
   })
 
@@ -145,5 +146,4 @@ test.describe('public instant navigation shells', () => {
       page.getByRole('heading', { name: /E2E Session/i }).first()
     ).toBeVisible()
   })
-
 })
