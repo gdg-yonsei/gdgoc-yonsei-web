@@ -83,6 +83,14 @@ Public read queries live under [`lib/server/queries/public`](../../lib/server/qu
   This is required by Next.js Cache Components to preserve true HTTP 404
   status. RSC and prefetch requests skip the query, and the page still
   validates independently before rendering.
+- Two bilingual read models back the Sessions and Projects pages:
+  `getSessionArchive(bucket)` (every public session) and
+  `getProjectShowcase()` (every project with tags and contributors). Hubs,
+  generation pages, the sitemap and the home counters derive from them.
+- Because generation pages read those shared entries, each read model calls
+  `tagQuery()` after its query with `generation:list:*` and one
+  `session|project:generation:<name>:*` tag per generation in the rows, so
+  the immediate `updateTag` calls in `invalidation.ts` still refresh them.
 
 ## Admin Rules
 
