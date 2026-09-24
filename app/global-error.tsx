@@ -1,8 +1,13 @@
 'use client' // Error boundaries must be Client Components
 
 import './globals.css'
-import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
+import { useEffect } from 'react'
 
+/**
+ * Last-resort boundary for errors in the root layout. Every page loads it, so
+ * it stays small: text on the stage, no logo artwork. Bilingual because no
+ * locale is known here.
+ */
 export default function GlobalError({
   error,
   reset,
@@ -10,34 +15,36 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  console.error(error)
+  useEffect(() => {
+    console.error(error)
+  }, [error])
 
   return (
-    <html>
+    <html lang="en" className="site" data-color-scheme="auto">
       <head>
-        <title>Something went wrong!</title>
+        <title>Something went wrong · GDGoC Yonsei</title>
       </head>
-      <body
-        className={
-          'flex h-screen w-screen flex-col items-center justify-center bg-neutral-50 p-4'
-        }
-      >
-        <div
-          className={
-            'flex w-full max-w-4xl flex-col gap-2 rounded-xl border-2 border-neutral-300 bg-white p-4'
-          }
+      <body className="bg-stage text-on-stage flex min-h-svh flex-col items-center justify-center gap-6 px-6 text-center font-sans">
+        <p aria-hidden="true" className="text-on-stage-muted font-mono text-sm">
+          {'<error />'}
+        </p>
+        <h1 className="text-4xl font-bold tracking-tight">
+          Something went wrong
+        </h1>
+        <p className="text-on-stage-muted max-w-md">
+          The page couldn&apos;t load. Try again in a moment.
+          <br />
+          <span lang="ko">
+            페이지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+          </span>
+        </p>
+        <button
+          type="button"
+          onClick={reset}
+          className="pressable bg-on-stage text-stage inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
         >
-          <GDGoCYonseiLogo />
-          <h2 className={'text-4xl font-bold'}>Something went wrong!</h2>
-          <button
-            onClick={reset}
-            className={
-              'w-full rounded-lg bg-neutral-950 p-2 text-center text-white'
-            }
-          >
-            Try again
-          </button>
-        </div>
+          Try again · <span lang="ko">다시 시도</span>
+        </button>
       </body>
     </html>
   )
