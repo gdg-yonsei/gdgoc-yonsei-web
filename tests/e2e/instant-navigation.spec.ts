@@ -13,7 +13,7 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await page.locator('a[href="/en/project"]').first().click()
       await page.waitForURL((url) => url.pathname === '/en/project')
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
         page.getByRole('heading', { name: 'Projects by Generation' })
       ).toBeVisible()
@@ -29,11 +29,11 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await page.locator('a[href="/en/session"]').first().click()
       await page.waitForURL((url) => url.pathname === '/en/session')
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Sessions by Generation' })
+        page.getByRole('heading', { level: 1, name: 'Session Log' })
       ).toBeVisible()
-      await expect(page.getByTestId('generation-index-shell')).toBeVisible()
+      await expect(page.getByTestId('session-log-shell')).toBeVisible()
     })
   })
 
@@ -50,7 +50,7 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await generationLink.click()
       await page.waitForURL((url) => url.pathname === destination)
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'Members' })).toBeVisible()
     })
   })
@@ -68,7 +68,7 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await generationLink.click()
       await page.waitForURL((url) => url.pathname === destination)
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
         page.getByRole('heading', { name: 'Projects' })
       ).toBeVisible()
@@ -89,7 +89,7 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await projectLink.click()
       await page.waitForURL((url) => url.pathname === destination)
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
         page.getByRole('status', { name: 'Loading project details' })
       ).toBeVisible()
@@ -113,12 +113,14 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await generationLink.click()
       await page.waitForURL((url) => url.pathname === destination)
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
         page.getByRole('heading', { name: 'Sessions' })
       ).toBeVisible()
-      // exact: the hidden, still-mounted index page says "by Generation".
-      await expect(page.getByText('Generation', { exact: true })).toBeVisible()
+      // The hidden, still-mounted hub also says "Generation" (filter legend).
+      await expect(
+        page.getByText('Generation', { exact: true }).filter({ visible: true })
+      ).toBeVisible()
     })
   })
 
@@ -136,7 +138,7 @@ test.describe('public instant navigation shells', () => {
     await instant(page, async () => {
       await sessionLink.click()
       await page.waitForURL((url) => url.pathname === destination)
-      await expect(page.locator('header')).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
       await expect(
         page.getByRole('status', { name: 'Loading session details' })
       ).toBeVisible()

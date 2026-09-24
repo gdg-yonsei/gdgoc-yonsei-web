@@ -55,7 +55,7 @@ async function verifyNavigation(
   await instant(page, async () => {
     await destinationLink.click()
     await page.waitForURL((url) => url.pathname === destination)
-    await assertVisible(page.locator('header'), `${label} persistent header`)
+    await assertVisible(page.getByRole('banner'), `${label} persistent header`)
     await assertShell()
   })
 
@@ -119,7 +119,7 @@ try {
     label: 'homepage -> session index',
     assertShell: () =>
       assertVisible(
-        page.getByRole('heading', { name: 'Sessions by Generation' }),
+        page.getByRole('heading', { level: 1, name: 'Session Log' }),
         'session index heading'
       ),
   })
