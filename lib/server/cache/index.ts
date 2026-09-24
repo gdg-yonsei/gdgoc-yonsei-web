@@ -26,3 +26,14 @@ export function cacheQuery(
   cacheLife(cacheLifeConfig[profile])
   cacheTag(...uniqueStrings(tags))
 }
+
+/**
+ * Tags a cache entry after its query ran, e.g. with one tag per generation
+ * found in the rows. cacheTag() takes at most 128 tags per call.
+ */
+export function tagQuery(tags: readonly string[]) {
+  const unique = uniqueStrings(tags)
+  for (let index = 0; index < unique.length; index += 128) {
+    cacheTag(...unique.slice(index, index + 128))
+  }
+}

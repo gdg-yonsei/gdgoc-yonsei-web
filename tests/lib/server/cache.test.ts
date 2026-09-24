@@ -83,4 +83,17 @@ describe('cache utilities', () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith('/ko/calendar')
     expect(mockRevalidatePath).toHaveBeenCalledWith('/sitemap.xml')
   })
+
+  it('tags query results after the fact, 128 tags per cacheTag call', async () => {
+    const { tagQuery } = await import('@/lib/server/cache')
+
+    tagQuery([
+      ...Array.from({ length: 130 }, (_, index) => `tag:${index}`),
+      'tag:0',
+    ])
+
+    expect(mockCacheTag).toHaveBeenCalledTimes(2)
+    expect(mockCacheTag.mock.calls[0]).toHaveLength(128)
+    expect(mockCacheTag.mock.calls[1]).toEqual(['tag:128', 'tag:129'])
+  })
 })

@@ -9,10 +9,14 @@ import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
+  generationListTag,
   sessionGenerationTag,
   sessionListTag,
   sessionTag,
+  tagQuery,
+  uniqueStrings,
 } from '@/lib/server/cache'
+import type { LogSession } from '@/lib/site/session-log'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { and, desc, eq, lte } from 'drizzle-orm'
@@ -67,6 +71,67 @@ const getSessionsForRequest = cache((visibilityBucket: string) =>
 
 export function getSessions(_locale: Locale, visibilityBucket: string) {
   return getSessionsForRequest(visibilityBucket)
+}
+
+async function getSharedSessionArchive(
+  visibilityBucket: string
+): Promise<LogSession[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [sessionListTag(locale)])
+  )
+
+  const rows = await db
+    .select({
+      id: sessions.id,
+      name: sessions.name,
+      nameKo: sessions.nameKo,
+      category: sessions.category,
+      type: sessions.type,
+      mainImage: sessions.mainImage,
+      startAt: sessions.startAt,
+      endAt: sessions.endAt,
+      location: sessions.location,
+      locationKo: sessions.locationKo,
+      createdAt: sessions.createdAt,
+      updatedAt: sessions.updatedAt,
+      partName: parts.name,
+      generationName: generations.name,
+      generationStartDate: generations.startDate,
+    })
+    .from(sessions)
+    .innerJoin(parts, eq(sessions.partId, parts.id))
+    .innerJoin(generations, eq(parts.generationsId, generations.id))
+    .where(
+      and(
+        eq(sessions.displayOnWebsite, true),
+        lte(sessions.endAt, toVisibilityDate(visibilityBucket))
+      )
+    )
+    .orderBy(desc(sessions.startAt))
+
+  // Generation pages read this entry too, so it answers to the tags the admin
+  // invalidates immediately for them (lib/server/cache/invalidation.ts).
+  const generationNames = uniqueStrings(rows.map((row) => row.generationName))
+  tagQuery(
+    forEachPublicLocale((locale) => [
+      generationListTag(locale),
+      ...generationNames.map((name) => sessionGenerationTag(name, locale)),
+    ])
+  )
+
+  return rows
+}
+
+const getSessionArchiveForRequest = cache((visibilityBucket: string) =>
+  getSharedSessionArchive(visibilityBucket)
+)
+
+/** Every public session, bilingual, for hubs, generation pages and counters. */
+export function getSessionArchive(visibilityBucket: string) {
+  return getSessionArchiveForRequest(visibilityBucket)
 }
 
 const getPublishedSessionsByGenerationForRequest = cache(
@@ -196,6 +261,7 @@ async function getSharedSessionById(
       endAt: true,
       location: true,
       locationKo: true,
+      type: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -203,6 +269,7 @@ async function getSharedSessionById(
       part: {
         columns: {
           id: true,
+          name: true,
         },
         with: {
           generation: {

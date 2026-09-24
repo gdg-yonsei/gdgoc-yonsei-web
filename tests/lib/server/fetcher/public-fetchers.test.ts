@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockCacheQuery = vi.fn()
+const mockTagQuery = vi.fn()
 const mockSessionsFindMany = vi.fn()
 const mockSessionsFindFirst = vi.fn()
 const mockProjectsFindMany = vi.fn()
@@ -38,6 +39,7 @@ vi.mock('@/lib/server/cache', async () => {
   return {
     ...actual,
     cacheQuery: mockCacheQuery,
+    tagQuery: mockTagQuery,
   }
 })
 
@@ -292,6 +294,17 @@ describe('public queries', () => {
         }),
       })
     )
+    expect(mockSessionsFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        columns: expect.objectContaining({ type: true }),
+        with: {
+          part: {
+            columns: { id: true, name: true },
+            with: { generation: { columns: { id: true, name: true } } },
+          },
+        },
+      })
+    )
   })
 
   it('rejects a malformed session id before querying Postgres', async () => {
@@ -387,4 +400,51 @@ describe('public queries', () => {
       })
     )
   })
+
+  it('builds one bilingual session archive and tags every generation it contains', async () => {
+    const row = (id: string, generationName: string) => ({
+      id,
+      name: `Session ${id}`,
+      nameKo: `세션 ${id}`,
+      category: 'tech_talk',
+      type: 'General Session',
+      mainImage: '/session-default.png',
+      startAt: new Date('2025-11-04T19:00:00.000Z'),
+      endAt: new Date('2025-11-04T21:00:00.000Z'),
+      location: null,
+      locationKo: null,
+      createdAt: new Date('2025-10-01T00:00:00.000Z'),
+      updatedAt: new Date('2025-10-01T00:00:00.000Z'),
+      partName: 'Cloud',
+      generationName,
+      generationStartDate: '2025-03-01',
+    })
+    const chain = createSelectChainWithOrderByResult([
+      row('s1', '25-26'),
+      row('s2', '24-25'),
+      row('s3', '25-26'),
+    ])
+    mockSelect.mockReturnValue(chain)
+
+    const { getSessionArchive } =
+      await import('@/lib/server/queries/public/sessions')
+    const result = await getSessionArchive('2026-03-07T00:00:00.000Z')
+
+    expect(result.map((session) => session.id)).toEqual(['s1', 's2', 's3'])
+    expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
+      'session:list:en',
+      'session:list:ko',
+    ])
+    expect(mockTagQuery).toHaveBeenCalledWith([
+      'generation:list:en',
+      'session:generation:25-26:en',
+      'session:generation:24-25:en',
+      'generation:list:ko',
+      'session:generation:25-26:ko',
+      'session:generation:24-25:ko',
+    ])
+    expect(chain.innerJoin).toHaveBeenCalledTimes(2)
+    expect(chain.where).toHaveBeenCalledTimes(1)
+  })
+
 })
