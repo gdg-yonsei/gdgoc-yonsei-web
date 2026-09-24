@@ -1,17 +1,38 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Suspense } from 'react'
-import PageTitle from '@/app/components/page-title'
-import StageButtonGroup from '@/app/components/stage-button-group'
-import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
-import { getPublishedSessionsByGeneration } from '@/lib/server/queries/public/sessions'
-import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { notFound } from 'next/navigation'
-import languageParamChecker from '@/lib/language-param-checker'
-import { createLocalizedMetadata } from '@/lib/seo/metadata'
+import { Suspense } from 'react'
+import JsonLd from '@/app/components/json-ld'
+import Breadcrumbs from '@/app/components/site/breadcrumbs'
+import EmptyState from '@/app/components/site/empty-state'
+import FilterBar from '@/app/components/site/filter-bar'
+import GenerationPager from '@/app/components/site/generation-pager'
+import PageHeader from '@/app/components/site/page-header'
+import PageTransition from '@/app/components/site/page-transition'
+import SessionLog from '@/app/components/site/session-log/session-log'
 import type { Locale } from '@/i18n-config'
+import {
+  archiveCommonCopy,
+  sessionArchiveCopy,
+  sessionFilterCopy,
+} from '@/lib/contents/archive-copy'
+import languageParamChecker from '@/lib/language-param-checker'
+import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
+import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
+import { getSessionArchive } from '@/lib/server/queries/public/sessions'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
+import {
+  createLocalizedMetadata,
+  getLocalizedUrl,
+  getSiteUrl,
+} from '@/lib/seo/metadata'
+import { fillTemplate } from '@/lib/site/format'
+import { generationNeighbors } from '@/lib/site/generations'
+import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
+import {
+  groupSessionLog,
+  sessionFacets,
+  sessionTitle,
+} from '@/lib/site/session-log'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -25,138 +46,175 @@ export async function generateStaticParams({
   return getGenerationStaticParams(languageParamChecker(params.lang))
 }
 
+async function generationSessions(generation: string) {
+  const visibilityBucket = await getCachedSessionVisibilityBucket()
+  const archive = await getSessionArchive(visibilityBucket)
+  return archive.filter((session) => session.generationName === generation)
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
-  const generationList = await getGenerationSummaries(locale)
+  const [generations, sessions] = await Promise.all([
+    getGenerationSummaries(locale),
+    generationSessions(generation),
+  ])
 
-  if (!generationList.some(({ name }) => name === generation)) {
+  if (!generations.some(({ name }) => name === generation)) {
     notFound()
   }
 
-  if (locale === 'ko') {
-    return createLocalizedMetadata({
-      locale,
-      path: `/session/${generation}`,
-      title: `${generation} 세션`,
-      description: `GDGoC Yonsei에서 최첨단 기술을 소개하고 자신의 경험을 나누는 세션을 만나보세요.`,
-    })
-  }
-
+  const copy = sessionArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
     path: `/session/${generation}`,
-    title: `${generation} Sessions`,
-    description:
-      'Browse GDGoC Yonsei technical sessions where student developers share practical knowledge, project experience, and emerging technology with the community.',
+    title: fillTemplate(copy.generationTitle, { generation }),
+    description: fillTemplate(copy.generationDescription, { generation }),
+    // Reachable, linked from nowhere, and not worth an index slot.
+    noindex: sessions.length === 0,
   })
 }
 
-function SessionListLoading({ lang }: { lang: Locale }) {
-  return (
-    <div
-      role="status"
-      aria-label={lang === 'ko' ? '세션 불러오는 중' : 'Loading sessions'}
-      className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 p-4 lg:grid-cols-2"
-    >
-      <div className="h-44 animate-pulse rounded-2xl bg-neutral-200 motion-reduce:animate-none" />
-      <div className="h-44 animate-pulse rounded-2xl bg-neutral-200 motion-reduce:animate-none" />
-    </div>
-  )
-}
+export default async function SessionGenerationPage({ params }: Props) {
+  const { lang, generation } = await params
+  const locale = languageParamChecker(lang)
+  const generations = await getGenerationSummaries(locale)
+  const current = generations.find(({ name }) => name === generation)
 
-async function SessionList({
-  generation,
-  locale,
-}: {
-  generation: string
-  locale: Locale
-}) {
-  const visibilityBucket = await getCachedSessionVisibilityBucket()
-  const sessionList = await getPublishedSessionsByGeneration(
-    generation,
-    locale,
-    visibilityBucket
-  )
-
-  return (
-    <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 p-4 lg:grid-cols-2">
-      {sessionList.length === 0 && (
-        <p className="rounded-2xl border border-neutral-200 bg-white p-6 text-neutral-700 lg:col-span-2">
-          {locale === 'ko'
-            ? '해당 기수에서 세션을 찾을 수 없습니다.'
-            : 'There are no sessions for this generation.'}
-        </p>
-      )}
-      {sessionList.map((session, index) => {
-        const sessionName =
-          locale === 'ko' ? session.nameKo || session.name : session.name
-
-        return (
-          <Link
-            href={`/${locale}/session/${generation}/${session.id}`}
-            key={session.id}
-            className="group flex min-h-44 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-[transform,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 active:scale-[0.98] motion-reduce:transform-none"
-          >
-            <Image
-              src={session.mainImage}
-              width={200}
-              height={200}
-              alt={sessionName}
-              preload={index === 0}
-              sizes="(max-width: 640px) 40vw, (max-width: 1024px) 50vw, 432px"
-              className="aspect-5/4 w-2/5 object-cover sm:w-1/2"
-            />
-            <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 p-4">
-              <h2 className="text-xl leading-tight font-semibold break-words sm:text-2xl">
-                {sessionName}
-              </h2>
-              {session.startAt ? (
-                <time
-                  dateTime={session.startAt.toISOString()}
-                  className="text-sm text-neutral-600"
-                >
-                  {new Intl.DateTimeFormat(
-                    locale === 'ko' ? 'ko-KR' : 'en-US',
-                    {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                      hour12: false,
-                    }
-                  ).format(new Date(session.startAt))}
-                </time>
-              ) : (
-                <p className="text-sm text-neutral-600">TBD</p>
-              )}
-            </div>
-          </Link>
-        )
-      })}
-    </div>
-  )
-}
-
-export default async function SessionPage({ params }: Props) {
-  const paramsData = await params
-  const locale = paramsData.lang === 'ko' ? 'ko' : 'en'
-  const generationList = await getGenerationSummaries(locale)
-
-  if (!generationList.some(({ name }) => name === paramsData.generation)) {
+  if (!current) {
     notFound()
   }
 
+  const copy = sessionArchiveCopy[locale]
+  const common = archiveCommonCopy[locale]
+  const { older, newer } = generationNeighbors(generations, generation)
+
   return (
-    <div className={'min-h-screen w-full pt-20'}>
-      <PageTitle>{paramsData.lang === 'ko' ? '세션' : 'Sessions'}</PageTitle>
-      <StageButtonGroup
-        basePath={'session'}
-        generation={paramsData.generation}
-        lang={locale}
-      />
-      <Suspense fallback={<SessionListLoading lang={locale} />}>
-        <SessionList generation={paramsData.generation} locale={locale} />
-      </Suspense>
+    <PageTransition>
+      <div className="site-page">
+        <Breadcrumbs
+          label={common.breadcrumb}
+          items={[
+            { label: common.home, href: `/${locale}` },
+            { label: common.sessions, href: `/${locale}/session` },
+            { label: generation },
+          ]}
+        />
+        <PageHeader
+          tag={copy.tag}
+          title={fillTemplate(copy.generationTitle, { generation })}
+          description={fillTemplate(copy.generationDescription, { generation })}
+          meta={
+            <>
+              <span>
+                {current.startDate}
+                {current.endDate ? ` – ${current.endDate}` : ''}
+              </span>
+              <GenerationPager
+                basePath="session"
+                lang={locale}
+                older={older}
+                newer={newer}
+                label={common.generations}
+                olderLabel={common.olderGeneration}
+                newerLabel={common.newerGeneration}
+              />
+            </>
+          }
+        />
+        <Suspense fallback={<GenerationLogFallback />}>
+          <SessionGenerationContent generation={generation} lang={locale} />
+        </Suspense>
+      </div>
+    </PageTransition>
+  )
+}
+
+function GenerationLogFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading sessions"
+      className="archive-skeleton"
+    >
+      <span className="skeleton-bar h-28 w-full rounded-3xl" />
+      {Array.from({ length: 4 }, (_, index) => (
+        <span key={index} className="skeleton-bar h-20 w-full" />
+      ))}
     </div>
+  )
+}
+
+async function SessionGenerationContent({
+  generation,
+  lang,
+}: {
+  generation: string
+  lang: Locale
+}) {
+  const copy = sessionArchiveCopy[lang]
+  const common = archiveCommonCopy[lang]
+  const sessions = await generationSessions(generation)
+
+  if (sessions.length === 0) {
+    return (
+      <div className="mt-8">
+        <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+      </div>
+    )
+  }
+
+  const facets = sessionFacets(sessions, lang)
+  const url = getLocalizedUrl(lang, `/session/${generation}`)
+
+  return (
+    <>
+      <JsonLd
+        id="session-generation-structured-data"
+        data={[
+          ...collectionPage({
+            url,
+            name: fillTemplate(copy.generationTitle, { generation }),
+            description: fillTemplate(copy.generationDescription, {
+              generation,
+            }),
+            locale: lang,
+            websiteId: `${getSiteUrl()}#website`,
+            items: sessions.map((session) => ({
+              name: sessionTitle(session, lang),
+              url: getLocalizedUrl(
+                lang,
+                `/session/${generation}/${session.id}`
+              ),
+            })),
+          }),
+          breadcrumbList([
+            { name: common.home, url: getLocalizedUrl(lang) },
+            { name: common.sessions, url: getLocalizedUrl(lang, '/session') },
+            { name: generation, url },
+          ]),
+        ]}
+      />
+      <FilterBar
+        scope="session-log"
+        total={sessions.length}
+        copy={sessionFilterCopy(lang)}
+        facets={[
+          {
+            key: 'category',
+            legend: copy.facetCategory,
+            options: facets.categories,
+          },
+          { key: 'part', legend: copy.facetPart, options: facets.parts },
+        ]}
+      />
+      <SessionLog
+        id="session-log"
+        lang={lang}
+        copy={copy}
+        showGenerations={false}
+        generations={groupSessionLog(sessions)}
+      />
+    </>
   )
 }

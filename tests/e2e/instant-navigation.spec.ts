@@ -115,11 +115,10 @@ test.describe('public instant navigation shells', () => {
       await page.waitForURL((url) => url.pathname === destination)
       await expect(page.getByRole('banner')).toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Sessions' })
-      ).toBeVisible()
-      // The hidden, still-mounted hub also says "Generation" (filter legend).
-      await expect(
-        page.getByText('Generation', { exact: true }).filter({ visible: true })
+        page.getByRole('heading', {
+          level: 1,
+          name: `${seededData.generationName} Sessions`,
+        })
       ).toBeVisible()
     })
   })

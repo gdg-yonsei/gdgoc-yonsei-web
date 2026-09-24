@@ -58,3 +58,48 @@ test.describe('session log hub', () => {
     ).toBe(0)
   })
 })
+
+test.describe('session generation pages', () => {
+  test('show one generation with a trail back to the log', async ({ page }) => {
+    const seeded = await readSeededData()
+    await page.goto(`/en/session/${seeded.generationName}`, {
+      waitUntil: 'domcontentloaded',
+    })
+
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: `${seeded.generationName} Sessions`,
+      })
+    ).toBeVisible()
+    await expect(
+      page
+        .getByRole('navigation', { name: 'Breadcrumb' })
+        .getByRole('link', { name: 'Sessions' })
+    ).toHaveAttribute('href', '/en/session')
+    await expect(
+      page.getByRole('heading', { name: 'E2E Session', exact: true })
+    ).toBeVisible()
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      'content',
+      'index, follow'
+    )
+  })
+
+  test('keep empty generations reachable but out of the index', async ({
+    page,
+  }) => {
+    const seeded = await readSeededData()
+    const response = await page.goto(
+      `/en/session/${seeded.secondGenerationName}`,
+      { waitUntil: 'domcontentloaded' }
+    )
+
+    expect(response?.status()).toBe(200)
+    await expect(page.getByText('No public sessions yet')).toBeVisible()
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      'content',
+      'noindex, follow'
+    )
+  })
+})

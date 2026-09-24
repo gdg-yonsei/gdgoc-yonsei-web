@@ -134,59 +134,6 @@ export function getSessionArchive(visibilityBucket: string) {
   return getSessionArchiveForRequest(visibilityBucket)
 }
 
-const getPublishedSessionsByGenerationForRequest = cache(
-  (generationName: string, visibilityBucket: string) =>
-    getSharedPublishedSessionsByGeneration(generationName, visibilityBucket)
-)
-
-async function getSharedPublishedSessionsByGeneration(
-  generationName: string,
-  visibilityBucket: string
-) {
-  'use cache: remote'
-
-  cacheQuery(
-    publicCachePolicy.sessionList,
-    forEachPublicLocale((locale) => [
-      sessionListTag(locale),
-      sessionGenerationTag(generationName, locale),
-    ])
-  )
-
-  return db
-    .select({
-      id: sessions.id,
-      name: sessions.name,
-      nameKo: sessions.nameKo,
-      mainImage: sessions.mainImage,
-      startAt: sessions.startAt,
-      createdAt: sessions.createdAt,
-      updatedAt: sessions.updatedAt,
-    })
-    .from(sessions)
-    .leftJoin(parts, eq(sessions.partId, parts.id))
-    .leftJoin(generations, eq(generations.id, parts.generationsId))
-    .where(
-      and(
-        eq(generations.name, generationName),
-        eq(sessions.displayOnWebsite, true),
-        lte(sessions.endAt, toVisibilityDate(visibilityBucket))
-      )
-    )
-    .orderBy(desc(sessions.endAt))
-}
-
-export function getPublishedSessionsByGeneration(
-  generationName: string,
-  _locale: Locale,
-  visibilityBucket: string
-) {
-  return getPublishedSessionsByGenerationForRequest(
-    generationName,
-    visibilityBucket
-  )
-}
-
 const getPublishedSessionsForSitemapForRequest = cache(
   (visibilityBucket: string) =>
     getSharedPublishedSessionsForSitemap(visibilityBucket)

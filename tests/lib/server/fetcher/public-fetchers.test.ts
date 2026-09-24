@@ -325,30 +325,6 @@ describe('public queries', () => {
     expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
-  it('shares published sessions by generation across locales', async () => {
-    const chain = createSelectChainWithOrderByResult([{ id: 'session-1' }])
-    mockSelect.mockReturnValue(chain)
-
-    const { getPublishedSessionsByGeneration } =
-      await import('@/lib/server/queries/public/sessions')
-
-    const result = await getPublishedSessionsByGeneration(
-      '6th',
-      'ko',
-      '2026-03-07T00:00:00.000Z'
-    )
-
-    expect(result).toEqual([{ id: 'session-1' }])
-    expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
-      'session:list:en',
-      'session:generation:6th:en',
-      'session:list:ko',
-      'session:generation:6th:ko',
-    ])
-    expect(chain.leftJoin).toHaveBeenCalledTimes(2)
-    expect(chain.where).toHaveBeenCalledTimes(1)
-  })
-
   it('fetches published sessions for sitemap in one query', async () => {
     const chain = createSelectChainWithOrderByResult([
       { id: 'session-1', generationName: '6th' },
