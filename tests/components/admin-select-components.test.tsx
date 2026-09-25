@@ -69,8 +69,7 @@ const membersFixture = [
     lastName: 'Kim',
     firstNameKo: '앨리스',
     lastNameKo: '김',
-    generation: '11th',
-    part: 'Frontend',
+    memberships: [{ generationId: 11, generation: '11th', part: 'Frontend' }],
     isForeigner: false,
   },
   {
@@ -80,8 +79,20 @@ const membersFixture = [
     lastName: 'Park',
     firstNameKo: '밥',
     lastNameKo: '박',
-    generation: '11th',
-    part: 'Backend',
+    memberships: [
+      { generationId: 11, generation: '11th', part: 'Backend' },
+      { generationId: 10, generation: '10th', part: 'AI' },
+    ],
+    isForeigner: false,
+  },
+  {
+    id: 'member-3',
+    name: 'carol',
+    firstName: 'Carol',
+    lastName: 'Lee',
+    firstNameKo: '캐럴',
+    lastNameKo: '이',
+    memberships: [{ generationId: 10, generation: '10th', part: 'AI' }],
     isForeigner: false,
   },
 ]
@@ -202,5 +213,55 @@ describe('admin selection components', () => {
         }) as HTMLButtonElement
       ).disabled
     ).toBe(true)
+  })
+
+  it('filters participants by generation and narrows parts to that generation', async () => {
+    const { container } = render(
+      <SessionPartParticipantsInput
+        parts={scopedPartFixture as never}
+        members={membersFixture as never}
+        defaultValue={{ partId: 101, selectedMembers: [] }}
+      />
+    )
+
+    const participantInput = container.querySelector(
+      'input[name="participantId"]'
+    ) as HTMLInputElement
+    const generationSelect = screen.getByRole('combobox', {
+      name: 'Generation',
+    }) as HTMLSelectElement
+    const partSelect = screen.getByRole('combobox', {
+      name: 'Part',
+    }) as HTMLSelectElement
+
+    // 최신 기수가 먼저 나옵니다.
+    expect(
+      Array.from(generationSelect.options).map((option) => option.value)
+    ).toEqual(['', '11th', '10th'])
+
+    fireEvent.change(generationSelect, { target: { value: '10th' } })
+    expect(screen.queryByTitle('김앨리스')).toBeNull()
+    expect(screen.getByTitle('박밥').textContent).toContain('10th · AI')
+    expect(screen.getByTitle('이캐럴')).toBeTruthy()
+    expect(
+      Array.from(partSelect.options).map((option) => option.value)
+    ).toEqual(['', 'AI'])
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Select all shown (2)' })
+    )
+    await waitFor(() => {
+      expect(JSON.parse(participantInput.value)).toEqual([
+        'member-2',
+        'member-3',
+      ])
+    })
+
+    // 새 기수에 없는 파트 필터는 초기화됩니다.
+    fireEvent.change(partSelect, { target: { value: 'AI' } })
+    fireEvent.change(generationSelect, { target: { value: '11th' } })
+    expect(partSelect.value).toBe('')
+    expect(screen.queryByTitle('이캐럴')).toBeNull()
+    expect(screen.getByTitle('박밥').textContent).toContain('11th · Backend')
   })
 })

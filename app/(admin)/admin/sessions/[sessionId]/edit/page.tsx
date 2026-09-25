@@ -22,7 +22,7 @@ import {
   BilingualInputField,
   BilingualMdxField,
 } from '@/app/components/admin/bilingual-fields'
-import { dedupeById } from '@/lib/admin/member-options'
+import { groupMemberships } from '@/lib/admin/member-options'
 import { connection } from 'next/server'
 
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default async function EditSessionPage({
       : Promise.resolve(null),
     getMembers(null),
   ])
-  const uniqueMembers = dedupeById(membersData)
+  const uniqueMembers = groupMemberships(membersData)
   const scopedParts =
     generationData?.parts.map((part) => ({
       id: part.id,

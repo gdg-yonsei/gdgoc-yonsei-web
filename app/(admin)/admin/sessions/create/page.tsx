@@ -18,7 +18,7 @@ import {
   BilingualInputField,
   BilingualMdxField,
 } from '@/app/components/admin/bilingual-fields'
-import { dedupeById } from '@/lib/admin/member-options'
+import { groupMemberships } from '@/lib/admin/member-options'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 
 export const metadata: Metadata = {
@@ -61,7 +61,7 @@ export default async function CreateSessionPage() {
     getGeneration(resolvedScope.selectedGeneration.id),
     getMembers(null),
   ])
-  const uniqueMembers = dedupeById(membersData)
+  const uniqueMembers = groupMemberships(membersData)
 
   const scopedParts =
     generationData?.parts.map((part) => ({
