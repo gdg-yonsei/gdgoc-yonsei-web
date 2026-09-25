@@ -232,7 +232,7 @@ export function invalidateSessionPublicCache(args: {
   updateCacheTags(immediateTags)
   revalidateCacheTags(backgroundTags)
   revalidateLocalizedPublicPaths([
-    ...localizedPublicPaths(['/session']),
+    ...localizedPublicPaths(['/calendar', '/session']),
     ...localizedPublicPaths(
       generationNames.flatMap((generationName) => [
         toLocalizedPublicRoute(`/session/${generationName}`),

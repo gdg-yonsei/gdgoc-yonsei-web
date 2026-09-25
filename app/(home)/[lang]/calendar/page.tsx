@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import LocalizedText from '@/app/components/localized-text'
-import ExternalLink from '@/app/components/site/external-link'
 import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
-import GoogleCalendar, {
-  CALENDAR_EMBED_URL,
-} from '@/app/(home)/[lang]/calendar/google-calendar'
+import SessionCalendar from '@/app/(home)/[lang]/calendar/session-calendar'
 import languageParamChecker from '@/lib/language-param-checker'
+import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
+import { getCalendarSessions } from '@/lib/server/queries/public/sessions'
+import { toCalendarEvents } from '@/lib/site/calendar'
+import { toSeoulDateIso } from '@/lib/site/datetime'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
 
 type Props = { params: Promise<{ lang: string }> }
@@ -17,18 +18,16 @@ const copy = {
   en: {
     title: 'Calendar',
     description:
-      'Sessions, workshops, project events and community activities, straight from the chapter calendar in Seoul time.',
-    open: 'Open in Google Calendar',
+      'Upcoming and past sessions, workshops, hackathons and community events, in Seoul time.',
     metaDescription:
-      'Check upcoming GDGoC Yonsei technical sessions, workshops, project events, and community activities on the official chapter calendar.',
+      'Check upcoming GDGoC Yonsei technical sessions, workshops, project events, and community activities on the chapter calendar.',
   },
   ko: {
     title: '캘린더',
     description:
-      '기술 세션, 워크숍, 프로젝트 행사와 커뮤니티 활동 일정을 챕터 캘린더에서 서울 시간으로 확인하세요.',
-    open: 'Google 캘린더에서 열기',
+      '예정된 세션과 지난 세션, 워크숍, 해커톤과 커뮤니티 행사 일정을 서울 시간으로 확인하세요.',
     metaDescription:
-      'GDGoC Yonsei의 기술 세션, 워크숍, 프로젝트 행사와 커뮤니티 활동 일정을 공식 캘린더에서 확인하세요.',
+      'GDGoC Yonsei의 기술 세션, 워크숍, 프로젝트 행사와 커뮤니티 활동 일정을 챕터 캘린더에서 확인하세요.',
   },
 } as const
 
@@ -64,16 +63,38 @@ export default function CalendarPage({ params }: Props) {
           description={
             <LocalizedText en={copy.en.description} ko={copy.ko.description} />
           }
-          meta={
-            <ExternalLink href={CALENDAR_EMBED_URL} className="calendar-open">
-              <LocalizedText en={copy.en.open} ko={copy.ko.open} />
-            </ExternalLink>
-          }
         />
-        <div className="calendar-frame">
-          <GoogleCalendar />
-        </div>
+        <Suspense fallback={<CalendarFallback />}>
+          <CalendarContent params={params} />
+        </Suspense>
       </div>
     </PageTransition>
+  )
+}
+
+function CalendarFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading calendar"
+      className="calendar calendar-skeleton"
+    >
+      <span className="skeleton-bar h-10 w-56 max-w-full" />
+      <span className="skeleton-bar h-96 w-full rounded-3xl" />
+    </div>
+  )
+}
+
+async function CalendarContent({ params }: Props) {
+  const lang = languageParamChecker((await params).lang)
+  const visibilityBucket = await getCachedSessionVisibilityBucket()
+  const sessions = await getCalendarSessions()
+
+  return (
+    <SessionCalendar
+      lang={lang}
+      events={toCalendarEvents(sessions, lang, visibilityBucket)}
+      serverToday={toSeoulDateIso(new Date(visibilityBucket))}
+    />
   )
 }

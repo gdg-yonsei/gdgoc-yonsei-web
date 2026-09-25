@@ -16,10 +16,11 @@ import {
   tagQuery,
   uniqueStrings,
 } from '@/lib/server/cache'
+import type { CalendarSession } from '@/lib/site/calendar'
 import type { LogSession } from '@/lib/site/session-log'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { and, desc, eq, lte } from 'drizzle-orm'
+import { and, asc, desc, eq, isNotNull, lte } from 'drizzle-orm'
 
 function toVisibilityDate(visibilityBucket: string): Date {
   return new Date(visibilityBucket)
@@ -133,6 +134,54 @@ const getSessionArchiveForRequest = cache((visibilityBucket: string) =>
 export function getSessionArchive(visibilityBucket: string) {
   return getSessionArchiveForRequest(visibilityBucket)
 }
+
+async function getSharedCalendarSessions(): Promise<CalendarSession[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [sessionListTag(locale)])
+  )
+
+  // Unlike the archive, the calendar lists sessions before they happen, so
+  // there is no end-time cut-off here. Only the fields a calendar entry shows
+  // are read; descriptions and images stay unpublished until the session ends.
+  const rows = await db
+    .select({
+      id: sessions.id,
+      name: sessions.name,
+      nameKo: sessions.nameKo,
+      category: sessions.category,
+      startAt: sessions.startAt,
+      endAt: sessions.endAt,
+      location: sessions.location,
+      locationKo: sessions.locationKo,
+      partName: parts.name,
+      generationName: generations.name,
+    })
+    .from(sessions)
+    .innerJoin(parts, eq(sessions.partId, parts.id))
+    .innerJoin(generations, eq(parts.generationsId, generations.id))
+    .where(
+      and(eq(sessions.displayOnWebsite, true), isNotNull(sessions.startAt))
+    )
+    .orderBy(asc(sessions.startAt))
+
+  const generationNames = uniqueStrings(rows.map((row) => row.generationName))
+  tagQuery(
+    forEachPublicLocale((locale) => [
+      generationListTag(locale),
+      ...generationNames.map((name) => sessionGenerationTag(name, locale)),
+    ])
+  )
+
+  return rows.flatMap((row) =>
+    row.startAt ? [{ ...row, startAt: row.startAt }] : []
+  )
+}
+
+/** Every dated public session, scheduled ones included, for the calendar. */
+export const getCalendarSessions = cache(() => getSharedCalendarSessions())
 
 const getPublishedSessionsForSitemapForRequest = cache(
   (visibilityBucket: string) =>
