@@ -59,8 +59,10 @@
     font-size: clamp(3rem, 8.6vw, 9rem);
   }
 
+  /* Set in Google Sans rather than the Flex display face; the display stack
+     covers the swap period. */
   .hero-title {
-    font-family: var(--font-display);
+    font-family: var(--font-google-sans), var(--font-display);
     font-size: 1em;
     font-weight: 700;
     line-height: 0.92;
@@ -68,7 +70,6 @@
     /* The title fills the row at the 9rem cap; never let it wrap, not even
        while a fallback face with wider metrics is showing. */
     white-space: nowrap;
-    font-variation-settings: 'ROND' 100;
   }
 
   /* Each word moves on its own as the stage scrolls away (hero scene). */
@@ -247,18 +248,10 @@
   }
 }
 
-/* Roundness only: advance widths stay put, so hovering never reflows. */
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .hero-title:hover {
-    font-variation-settings: 'ROND' 0;
-  }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* `backwards` so the rest state (and :hover) owns the element afterwards. */
   .hero-title {
     animation: hero-title-in 1400ms var(--ease-spring) backwards;
-    transition: font-variation-settings 700ms var(--ease-spring);
   }
 
   .bracket-slot[data-bracket='left'] .bracket-poster {
@@ -289,11 +282,10 @@
   }
 }
 
-/* Only roundness and transform animate: letter-spacing would re-run layout
-   on every frame of the entrance. */
+/* Only transform animates: letter-spacing would re-run layout on every frame
+   of the entrance. */
 @keyframes hero-title-in {
   from {
-    font-variation-settings: 'ROND' 0;
     transform: translateY(0.06em);
   }
 }
