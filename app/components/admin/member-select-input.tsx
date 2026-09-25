@@ -45,7 +45,7 @@ export default function MembersSelectInput({
               key={member.id}
               aria-pressed={selected}
               className={cn(
-                'admin-btn h-auto flex-col items-start gap-0.5 py-2 text-left',
+                'admin-btn h-auto min-w-0 flex-col items-start gap-0.5 py-2 text-left break-words whitespace-normal',
                 selected
                   ? 'bg-primary text-on-primary'
                   : 'border-hairline bg-surface text-ink hover:bg-canvas border'
