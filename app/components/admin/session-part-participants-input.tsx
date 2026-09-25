@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import formatUserName from '@/lib/format-user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
+import type { MemberMembership } from '@/lib/admin/member-options'
 
 type PartOption = {
   id: number
@@ -29,10 +30,10 @@ type MemberOption = {
   firstNameKo: string | null
   lastNameKo: string | null
   isForeigner: boolean
-  part: string | null
+  memberships: MemberMembership[]
 }
 
-type NamedMember = Omit<MemberOption, 'part'>
+type NamedMember = Omit<MemberOption, 'memberships'>
 
 function displayName(member: NamedMember) {
   return member.firstNameKo
@@ -49,6 +50,19 @@ function displayName(member: NamedMember) {
         member.lastName,
         member.isForeigner
       )
+}
+
+// 빈 필터는 모든 값과 일치합니다.
+function findMembership(
+  member: MemberOption,
+  generation: string,
+  part: string
+) {
+  return member.memberships.find(
+    (membership) =>
+      (!generation || membership.generation === generation) &&
+      (!part || membership.part === part)
+  )
 }
 
 // 한글 이름은 "김 승연"처럼 띄어 입력해도 찾을 수 있도록 공백을 제거하고 비교합니다.
@@ -78,6 +92,7 @@ export default function SessionPartParticipantsInput({
   )
 
   const [query, setQuery] = useState('')
+  const [generationFilter, setGenerationFilter] = useState('')
   const [partFilter, setPartFilter] = useState('')
 
   const currentPart = useMemo(
@@ -85,23 +100,44 @@ export default function SessionPartParticipantsInput({
     [partId, parts]
   )
 
+  const memberGenerations = useMemo(() => {
+    const generations = new Map<string, number>()
+    for (const member of members) {
+      for (const { generation, generationId } of member.memberships) {
+        if (generation) {
+          generations.set(generation, generationId ?? 0)
+        }
+      }
+    }
+    // 최신 기수가 먼저 보이도록 정렬합니다.
+    return Array.from(generations.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([generation]) => generation)
+  }, [members])
+
+  // 기수를 고르면 그 기수에 있는 파트만 보여줍니다.
   const memberParts = useMemo(
     () =>
       Array.from(
         new Set(
           members
-            .map((member) => member.part)
+            .flatMap((member) => member.memberships)
+            .filter(
+              (membership) =>
+                !generationFilter || membership.generation === generationFilter
+            )
+            .map((membership) => membership.part)
             .filter((part): part is string => Boolean(part))
         )
       ).sort((a, b) => a.localeCompare(b)),
-    [members]
+    [generationFilter, members]
   )
 
   const filteredMembers = useMemo(() => {
     const needle = normalizeSearch(query)
 
     return members.filter((member) => {
-      if (partFilter && member.part !== partFilter) {
+      if (!findMembership(member, generationFilter, partFilter)) {
         return false
       }
       if (!needle) {
@@ -120,7 +156,7 @@ export default function SessionPartParticipantsInput({
           .join(' ')
       ).includes(needle)
     })
-  }, [members, partFilter, query])
+  }, [generationFilter, members, partFilter, query])
 
   const allFilteredSelected =
     filteredMembers.length > 0 &&
@@ -258,6 +294,33 @@ export default function SessionPartParticipantsInput({
             />
           </div>
           <select
+            aria-label={t('generation')}
+            value={generationFilter}
+            onChange={(event) => {
+              const generation = event.target.value
+              setGenerationFilter(generation)
+              // 새 기수에 없는 파트가 선택되어 있으면 결과가 비므로 초기화합니다.
+              if (
+                partFilter &&
+                !members.some((member) =>
+                  findMembership(member, generation, partFilter)
+                )
+              ) {
+                setPartFilter('')
+              }
+            }}
+            className={
+              'admin-input type-body-sm w-full cursor-pointer md:w-auto'
+            }
+          >
+            <option value={''}>{t('allGenerations')}</option>
+            {memberGenerations.map((generation) => (
+              <option key={generation} value={generation}>
+                {generation}
+              </option>
+            ))}
+          </select>
+          <select
             aria-label={t('part')}
             value={partFilter}
             onChange={(event) => setPartFilter(event.target.value)}
@@ -299,6 +362,15 @@ export default function SessionPartParticipantsInput({
               {filteredMembers.map((member) => {
                 const selected = selectedMembers.includes(member.id)
                 const memberName = displayName(member)
+                const membership =
+                  findMembership(member, generationFilter, partFilter) ??
+                  member.memberships[0]
+                const membershipLabel = [
+                  membership?.generation,
+                  membership?.part,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
 
                 return (
                   <button
@@ -320,7 +392,9 @@ export default function SessionPartParticipantsInput({
                       )
                     }}
                   >
-                    <span className={'text-xs opacity-70'}>{member.part}</span>
+                    <span className={'text-xs opacity-70'}>
+                      {membershipLabel}
+                    </span>
                     <span className={'line-clamp-2 w-full break-words'}>
                       {memberName}
                     </span>
