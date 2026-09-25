@@ -64,7 +64,7 @@ GDGoC Yonsei Official Website: https://gdgoc.yonsei.ac.kr
    - Local guard: refuses to run unless the DB host is localhost-like; pass
      `--force` to override for a non-local host.
    - Playwright e2e (`pnpm test:e2e`) resets the database, so re-run
-     `pnpm db:seed` afterward.
+     `pnpm db:seed` afterward. Both refuse any database that is not local.
 
 6. Start Development Server
 

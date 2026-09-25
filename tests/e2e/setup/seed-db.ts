@@ -10,6 +10,7 @@ import { userToSession } from '../../../db/schema/user-to-session'
 import { users } from '../../../db/schema/users'
 import { usersToParts } from '../../../db/schema/users-to-parts'
 import { usersToProjects } from '../../../db/schema/users-to-projects'
+import { assertDisposableDatabase } from '../../../scripts/lib/disposable-database'
 import { SeededE2EData } from './constants'
 
 const FIXTURE_IDS = {
@@ -29,6 +30,9 @@ const FIXTURE_IDS = {
  * Wipes data from all mutable tables and inserts one deterministic dataset for E2E.
  */
 export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
+  // The TRUNCATE below wipes every table, auth included.
+  assertDisposableDatabase(process.env.AUTH_DRIZZLE_URL, 'e2e database reset')
+
   const fixtureRunId = `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`
   const projectId = randomUUID()
   const secondProjectId = randomUUID()

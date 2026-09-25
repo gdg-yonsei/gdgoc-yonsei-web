@@ -11,11 +11,11 @@ import { users } from '../db/schema/users'
 import { usersToParts } from '../db/schema/users-to-parts'
 import { usersToProjects } from '../db/schema/users-to-projects'
 import { userToSession } from '../db/schema/user-to-session'
+import { assertDisposableDatabase } from './lib/disposable-database'
 import { buildSessionPlans } from './seed/helpers'
 
 const SEED_PREFIX = 'dev-seed-'
 const SEED_GENERATION_NAME = '25-26'
-const ALLOWED_DB_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'db', 'postgres']
 
 const SEED_PARTS = [
   { name: 'Organizer', displayOrder: 1 },
@@ -71,21 +71,11 @@ const SEED_PROJECTS = [
 ]
 
 function assertLocalDatabase() {
-  const rawUrl = process.env.AUTH_DRIZZLE_URL
-  if (!rawUrl) {
-    console.error('AUTH_DRIZZLE_URL is not set.')
-    process.exit(1)
+  // `--force` is the deliberate escape hatch for a database chosen by hand.
+  if (process.argv.includes('--force')) {
+    return
   }
-  const hostname = new URL(rawUrl).hostname
-  if (
-    !ALLOWED_DB_HOSTS.includes(hostname) &&
-    !process.argv.includes('--force')
-  ) {
-    console.error(
-      `Refusing to seed non-local database host "${hostname}". Pass --force to override.`
-    )
-    process.exit(1)
-  }
+  assertDisposableDatabase(process.env.AUTH_DRIZZLE_URL, 'db:seed')
 }
 
 /** 이전 시드 데이터만 마커 기반으로 제거 (TRUNCATE 금지) */

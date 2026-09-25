@@ -1,14 +1,24 @@
 # Playwright E2E Tests
 
 > [!CAUTION]
-> The global setup truncates every mutable application table. Only run these
-> commands against a disposable E2E database. Never point `AUTH_DRIZZLE_URL`
-> or `REDIS_URL` at a shared, staging, or production service.
+> The global setup truncates every table, auth included. The Playwright
+> configs and the reset refuse any `AUTH_DRIZZLE_URL` that is not a local
+> database (`scripts/lib/disposable-database.ts`). To allow one specific
+> remote database, set `E2E_DISPOSABLE_DATABASE_URL` to its exact URL. Never
+> point `AUTH_DRIZZLE_URL` or `REDIS_URL` at a shared, staging, or production
+> service.
 
 ## Prerequisites
 
-- `.env` must be configured.
-- Database must be reachable because the home header and many routes query DB.
+- Export the environment yourself; the Playwright process does not read
+  `.env`. Use the variables from `.github/workflows/performance.yml`, with
+  `AUTH_DRIZZLE_URL` pointing at a disposable local Postgres (for example
+  `postgres://postgres:postgres@localhost:5439/gdgoc`).
+- Export every variable in that list. The Next.js server that Playwright
+  starts falls back to `.env` for anything missing, which would hand real
+  Resend or R2 credentials to the test run.
+- The database must be reachable because the home header and many routes
+  query it.
 - Install browser binaries once:
 
 ```bash
