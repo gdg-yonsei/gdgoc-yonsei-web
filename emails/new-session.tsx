@@ -13,7 +13,7 @@ import {
   Row,
   Column,
   Hr,
-} from '@react-email/components'
+} from 'react-email'
 
 interface NewSessionProps {
   session: {

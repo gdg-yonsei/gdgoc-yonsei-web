@@ -11,7 +11,7 @@ import {
   Section,
   Row,
   Column,
-} from '@react-email/components'
+} from 'react-email'
 
 interface NewParticipantProps {
   session: {
