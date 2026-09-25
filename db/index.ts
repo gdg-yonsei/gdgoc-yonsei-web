@@ -1,4 +1,7 @@
-import 'dotenv/config'
+// No `dotenv/config` here. Next.js loads `.env` for the app, and the tools
+// that run outside Next (drizzle-kit, `db:seed`) load it themselves. The e2e
+// setup must not inherit `.env`: that is how a test reset once reached the
+// production database.
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
