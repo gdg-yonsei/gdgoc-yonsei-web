@@ -6,37 +6,24 @@ import { readSeededData } from './helpers/read-seeded-data'
  * metrics and viewport-relative type sizes.
  */
 
-test('hero title stays on one line while hovered on wide screens', async ({
-  page,
-}) => {
+test('hero title stays on one line on wide screens', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 })
   await page.goto('/en', { waitUntil: 'load' })
   await page.evaluate(() => document.fonts.ready)
 
   const title = page.getByRole('heading', { level: 1, name: /GDGoC Yonsei/ })
-  const tagline = page.locator('.hero-tagline')
   // Let the entrance animation finish before taking the resting measurements.
   await title.evaluate((element) =>
     Promise.all(element.getAnimations().map((animation) => animation.finished))
   )
 
-  const measure = async () => ({
-    titleHeight: (await title.boundingBox())?.height,
-    taglineTop: (await tagline.boundingBox())?.y,
-  })
-  const resting = await measure()
-
-  await title.hover()
-  // The hover morph has finished once roundness reaches its hover value.
-  await expect
-    .poll(() =>
-      title.evaluate(
-        (element) => getComputedStyle(element).fontVariationSettings
-      )
+  const tops = await title
+    .locator('.hero-word')
+    .evaluateAll((words) =>
+      words.map((word) => Math.round(word.getBoundingClientRect().top))
     )
-    .toBe('"ROND" 0')
-
-  expect(await measure()).toEqual(resting)
+  expect(tops).toHaveLength(2)
+  expect(tops[1]).toBe(tops[0])
 })
 
 test('decorative hover morphs stay still under reduced motion', async ({
@@ -59,10 +46,6 @@ test('decorative hover morphs stay still under reduced motion', async ({
     })
   }
 
-  expect(await settledHoverStyle('.hero-title')).toEqual({
-    hovered: true,
-    roundness: '"ROND" 100',
-  })
   expect(await settledHoverStyle('.site-footer-wordmark')).toEqual({
     hovered: true,
     roundness: '"ROND" 0',

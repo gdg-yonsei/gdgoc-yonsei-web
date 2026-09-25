@@ -8,6 +8,9 @@ export default defineConfig({
       'server-only': fileURLToPath(
         new URL('./tests/mocks/server-only.ts', import.meta.url)
       ),
+      'next/font/google': fileURLToPath(
+        new URL('./tests/mocks/next-font-google.ts', import.meta.url)
+      ),
     },
   },
   test: {

@@ -1,8 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/i18n-config'
+import { googleSans } from '@/app/fonts'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink from '@/app/components/site/button-link'
+import { cn } from '@/lib/cn'
 import { heroCopy } from '@/lib/contents/site-copy'
 import { countLabel } from '@/lib/site/format'
 import BracketStage from './bracket-stage'
@@ -85,7 +87,7 @@ export default function Hero({
               <BracketPoster side="left" />
             </span>
           </span>
-          <h1 id="hero-title" className="hero-title">
+          <h1 id="hero-title" className={cn('hero-title', googleSans.variable)}>
             <span className="hero-word">GDGoC</span>{' '}
             <span className="hero-word hero-title-line">Yonsei</span>
           </h1>

@@ -1,4 +1,8 @@
-import { Google_Sans_Code, Google_Sans_Flex } from 'next/font/google'
+import {
+  Google_Sans,
+  Google_Sans_Code,
+  Google_Sans_Flex,
+} from 'next/font/google'
 
 /**
  * Latin text and display face. The ROND (roundness) axis lets display type
@@ -14,6 +18,19 @@ export const googleSansFlex = Google_Sans_Flex({
   // face lives in app/styles/site-theme.css so swapping never reflows text.
   adjustFontFallback: false,
   fallback: ['Google Sans Flex Fallback'],
+})
+
+/**
+ * The home hero's "GDGoC Yonsei" title. Only the bold Latin face is needed.
+ * There are no fallback metrics for this family either, so the title falls
+ * back to the display stack (Google Sans Flex, already loaded) while it swaps.
+ */
+export const googleSans = Google_Sans({
+  subsets: ['latin'],
+  weight: '700',
+  display: 'swap',
+  variable: '--font-google-sans',
+  adjustFontFallback: false,
 })
 
 /** Dates, tags and counters. Not preloaded: it only sets small meta text. */
