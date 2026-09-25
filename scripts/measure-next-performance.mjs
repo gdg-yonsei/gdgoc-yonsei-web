@@ -206,6 +206,8 @@ async function measureRoute(browser, pathname, profileName, profile) {
       rscTransferredBytes: sum(resources.filter(isRsc), 'transferSize'),
       rscEncodedBodyBytes: sum(resources.filter(isRsc), 'encodedBodySize'),
       resourceCount: resources.length + 1,
+      // The landing's motion chunk arrived and armed (home-motion.tsx).
+      homeMotion: document.documentElement.dataset.homeMotion === 'ready',
     }
   })
 

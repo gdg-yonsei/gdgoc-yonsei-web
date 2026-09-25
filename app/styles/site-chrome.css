@@ -11,6 +11,7 @@
   }
 
   .site-header-bar {
+    position: relative;
     pointer-events: auto;
     margin-inline: auto;
     display: flex;
@@ -37,6 +38,7 @@
   }
 
   .site-nav-link {
+    position: relative;
     display: inline-flex;
     min-height: 2.5rem;
     align-items: center;
@@ -62,6 +64,38 @@
     height: 0.375rem;
     border-radius: 9999px;
     background-color: #4285f4;
+  }
+
+  /* Hovering or focusing a link wraps it in code brackets, drawn inside its
+     padding so no neighbour moves; the current page keeps its pill. */
+  .site-nav-link:not([aria-current='page'])::before,
+  .site-nav-link:not([aria-current='page'])::after {
+    position: absolute;
+    top: 50%;
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--s-on-stage-muted);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .site-nav-link:not([aria-current='page'])::before {
+    content: '<';
+    left: 0.25rem;
+    translate: -4px -50%;
+  }
+
+  .site-nav-link:not([aria-current='page'])::after {
+    content: '>';
+    right: 0.25rem;
+    translate: 4px -50%;
+  }
+
+  .site-nav-link:not([aria-current='page']):focus-visible::before,
+  .site-nav-link:not([aria-current='page']):focus-visible::after {
+    opacity: 1;
+    translate: 0 -50%;
   }
 
   .site-nav-utility {
@@ -195,6 +229,12 @@ html:has(.mobile-menu[open]) {
 }
 
 @media (hover: hover) {
+  .site-nav-link:not([aria-current='page']):hover::before,
+  .site-nav-link:not([aria-current='page']):hover::after {
+    opacity: 1;
+    translate: 0 -50%;
+  }
+
   .site-nav-link:hover,
   .site-icon-button:hover,
   a.locale-switch-item:hover {
@@ -207,19 +247,115 @@ html:has(.mobile-menu[open]) {
   }
 }
 
+/* The footer wordmark rounds and a band of GDG colours sweeps through it
+   once per hover (the text is painted by its background). */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .site-footer-wordmark {
+    background-image: linear-gradient(
+      100deg,
+      var(--s-on-stage) 40%,
+      #4285f4 44%,
+      #ea4335 50%,
+      #f9ab00 56%,
+      #34a853 62%,
+      var(--s-on-stage) 66%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition:
+      font-variation-settings 900ms var(--ease-spring),
+      background-position 1800ms var(--ease-in-out);
+  }
+
   .site-footer-wordmark:hover {
+    background-position: 0 0;
     font-variation-settings: 'ROND' 100;
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .site-footer-wordmark {
-    transition: font-variation-settings 900ms var(--ease-spring);
+  .site-nav-link::before,
+  .site-nav-link::after {
+    transition:
+      opacity var(--dur-base) var(--ease-out),
+      translate var(--dur-slow) var(--ease-spring-snap);
+  }
+
+  /* After each navigation the current page's pill pops into place. */
+  .site-nav-link[aria-current='page'] {
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-base) var(--ease-out),
+      scale var(--dur-slow) var(--ease-spring-snap);
+  }
+
+  @starting-style {
+    .site-nav-link[aria-current='page'] {
+      background-color: transparent;
+      scale: 0.9;
+    }
+  }
+
+  /* Reading progress: a four-colour GDG line along the capsule's lower edge. */
+  @supports (animation-timeline: scroll()) {
+    .site-header-bar::after {
+      content: '';
+      position: absolute;
+      inset-inline: 1.5rem;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 9999px;
+      background: linear-gradient(
+        90deg,
+        #4285f4 0 25%,
+        #ea4335 25% 50%,
+        #f9ab00 50% 75%,
+        #34a853 75%
+      );
+      transform-origin: left;
+      animation: site-read linear both;
+      animation-timeline: scroll(root);
+      pointer-events: none;
+    }
+  }
+
+  /* The menu drops open and folds back up as it closes. */
+  .mobile-menu {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transition:
+      opacity 280ms var(--ease-out),
+      clip-path 380ms var(--ease-out),
+      overlay 380ms allow-discrete,
+      display 380ms allow-discrete;
   }
 
   .mobile-menu[open] {
-    animation: menu-in 420ms var(--ease-out);
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+
+  @starting-style {
+    .mobile-menu[open] {
+      opacity: 0;
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  .mobile-menu::backdrop {
+    transition:
+      background-color 380ms var(--ease-out),
+      overlay 380ms allow-discrete,
+      display 380ms allow-discrete;
+  }
+
+  @starting-style {
+    .mobile-menu[open]::backdrop {
+      background-color: transparent;
+    }
   }
 
   .mobile-menu[open] .mobile-menu-item {
@@ -228,14 +364,9 @@ html:has(.mobile-menu[open]) {
   }
 }
 
-@keyframes menu-in {
+@keyframes site-read {
   from {
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
+    transform: scaleX(0);
   }
 }
 

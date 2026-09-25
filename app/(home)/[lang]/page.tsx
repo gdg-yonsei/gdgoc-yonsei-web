@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import '@/app/styles/site-home.css'
 import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
+import HomeMotion from '@/app/(home)/[lang]/_components/home/home-motion'
 import HeroMeta from '@/app/(home)/[lang]/_components/home/hero-meta'
 import FeaturedReleases from '@/app/(home)/[lang]/_components/home/featured-releases'
 import Join from '@/app/(home)/[lang]/_components/home/join'
@@ -129,6 +130,7 @@ export default async function HomePage({ params }: Props) {
         <FeaturedReleases lang={lang} />
       </div>
       <Join lang={lang} />
+      <HomeMotion />
     </>
   )
 }

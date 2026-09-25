@@ -1,3 +1,48 @@
+/* Landing scene variables read only by the element they are set on:
+   registered as non-inherited, so animating one restyles that element and
+   not its whole subtree. */
+@property --open {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --spot-x {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --spot-y {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: -40%;
+}
+
+@property --tilt-x {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --tilt-y {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --magnet-x {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --magnet-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Landing page: section heads, the scroll-driven reveal and (in the tasks
    that add them) each section's own styles. */
 @layer components {
@@ -241,6 +286,11 @@
     fill: var(--s-fg);
   }
 
+  /* Outlines the manifesto scene morphs the tech chevrons between. */
+  .glyph-morph {
+    display: none;
+  }
+
   .glyph-bar {
     fill: var(--color-g-green);
     transform-origin: bottom;
@@ -289,6 +339,65 @@
   }
 }
 
+/* The manifesto scene takes over from the CSS highlight: words light as a
+   `< >` band (the funnel's bracket shape) travels behind them. */
+[data-motion='js'] .manifesto-statement {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-motion='js'] .manifesto-word {
+  animation: none;
+  color: var(--s-fg-subtle);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+[data-motion='js'] .manifesto-word[data-lit] {
+  color: var(--s-fg);
+}
+
+[data-motion='js'] .reveal {
+  animation: none;
+}
+
+.manifesto-cursor {
+  --notch: 0.2em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  clip-path: polygon(
+    var(--notch) 0,
+    calc(100% - var(--notch)) 0,
+    100% 50%,
+    calc(100% - var(--notch)) 100%,
+    var(--notch) 100%,
+    0 50%
+  );
+  background-color: var(--s-blue-soft);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    background-color var(--dur-slow) var(--ease-out);
+}
+
+.manifesto-cursor[data-hue='red'] {
+  background-color: var(--s-red-soft);
+}
+
+.manifesto-cursor[data-hue='yellow'] {
+  background-color: var(--s-yellow-soft);
+}
+
+.manifesto-cursor[data-hue='green'] {
+  background-color: var(--s-green-soft);
+}
+
+.manifesto-statement[data-cursor='on'] > .manifesto-cursor {
+  opacity: 1;
+}
+
 @keyframes manifesto-word {
   from {
     color: var(--s-fg-subtle);
@@ -314,6 +423,8 @@
   .program-stack {
     display: grid;
     gap: 1.25rem;
+    /* Cards lay the Solution Challenge funnel beside its text when wide. */
+    container: program-stack / inline-size;
   }
 
   .program-card[data-hue='red'] {
@@ -332,9 +443,13 @@
     --hue: var(--color-g-yellow);
   }
 
-  /* "Sticker" elevation: an ink outline, a hard offset shadow and a hue band. */
+  /* "Sticker" elevation: an ink outline, a hard offset shadow and a hue band.
+     Isolated so the index numeral can sit behind the text. */
   .program-inner {
+    position: relative;
+    isolation: isolate;
     display: grid;
+    align-content: start;
     gap: 0.75rem;
     border: 1.5px solid var(--s-fg);
     border-top: 0.625rem solid var(--hue);
@@ -342,6 +457,43 @@
     background-color: var(--s-sheet);
     padding: 1.75rem;
     box-shadow: 6px 6px 0 var(--s-fg);
+    transform-origin: 50% 0;
+  }
+
+  /* The programs scene dims a sheet under this as the next card covers it. */
+  .program-shade {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--s-stage);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .program-copy {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  /* An outlined numeral behind the text; stacked cards share one height,
+     so it fills the room the shorter ones have spare. */
+  .program-index {
+    display: none;
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1rem;
+    z-index: -1;
+    font-family: var(--font-display);
+    font-size: clamp(4.5rem, 9vw, 7.5rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--hue);
+    opacity: 0.55;
+    font-variation-settings: 'ROND' 100;
+    user-select: none;
   }
 
   .program-kicker {
@@ -372,6 +524,7 @@
   }
 
   .sc-funnel {
+    position: relative;
     margin-top: 0.75rem;
     display: grid;
     gap: 0.75rem;
@@ -400,22 +553,26 @@
     inline-size: max(min(100%, 15rem), calc(100% - var(--step) * 16%));
     min-block-size: 3.25rem;
     padding: 0.625rem calc(var(--notch) + 0.75rem);
+    /* --open (0–1, programs scene) opens the band from its centre without
+       scaling the text inside. */
+    --closed: calc((1 - var(--open, 1)) * 50%);
     clip-path: polygon(
-      var(--notch) 0,
-      calc(100% - var(--notch)) 0,
-      100% 50%,
-      calc(100% - var(--notch)) 100%,
-      var(--notch) 100%,
-      0 50%
+      calc(var(--notch) + var(--closed)) 0,
+      calc(100% - var(--notch) - var(--closed)) 0,
+      calc(100% - var(--closed)) 50%,
+      calc(100% - var(--notch) - var(--closed)) 100%,
+      calc(var(--notch) + var(--closed)) 100%,
+      var(--closed) 50%
     );
     background-color: var(--s-yellow-soft);
-    color: var(--s-yellow-ink);
+    --ink: var(--s-yellow-ink);
+    color: var(--ink);
     text-align: center;
   }
 
   .sc-funnel-step:last-child {
     background-color: var(--color-g-yellow);
-    color: #1e1e1e;
+    --ink: #1e1e1e;
   }
 
   .sc-funnel-value {
@@ -429,25 +586,87 @@
     font-size: 0.875rem;
     font-weight: 600;
   }
+
+  /* While the programs scene counts a figure up, the real number stays in
+     the document (transparent) under an aria-hidden overlay. */
+  .sc-funnel-value[data-counting] {
+    position: relative;
+    color: transparent;
+  }
+
+  .sc-funnel-count {
+    position: absolute;
+    inset: 0;
+    color: var(--ink);
+    text-align: center;
+  }
+
+  .sc-funnel-burst {
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: -0.25rem 0 0 -0.25rem;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  /* Wide cards set the funnel beside the Solution Challenge text, which
+     keeps that card short enough to stick below its slot like the rest. */
+  @container program-stack (min-width: 42rem) {
+    .program-inner:has(> .sc-funnel) {
+      grid-template-columns: minmax(0, 1.5fr) minmax(14rem, 1fr);
+      align-items: center;
+      column-gap: 2.5rem;
+    }
+
+    .program-inner > .sc-funnel {
+      container: sc-funnel / inline-size;
+      margin-top: 0;
+    }
+
+    .program-inner > .sc-funnel .sc-funnel-step {
+      inline-size: calc(100% - var(--step) * 12%);
+    }
+
+    /* A narrow funnel column sets every value over its label, so no band
+       wraps taller than the one above it. */
+    @container sc-funnel (max-width: 20rem) {
+      .sc-funnel-step {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding-inline: calc(var(--notch) + 0.25rem);
+      }
+    }
+  }
 }
 
 /* Wide, tall-enough screens with motion: each card sticks a little lower
-   than the one before, so the stack builds as it scrolls. Long cards scroll
-   through (relative, so they still paint above the cards stuck before them)
-   and landscape phones keep the plain list: a stuck card must fit on screen. */
+   than the one before, so the stack builds as it scrolls. Every card shares
+   the tallest one's height, so the stack also releases in order, and a card
+   that would not fit below its slot (odd window sizes, a large default font)
+   sticks just high enough to keep its bottom on screen: `--card-h` comes
+   from ProgramStackFit. Landscape phones keep the plain list. */
 @media (min-width: 768px) and (min-height: 40rem) and (prefers-reduced-motion: no-preference) {
   .program-stack {
+    grid-auto-rows: 1fr;
     gap: 2.5rem;
   }
 
   .program-card {
     position: sticky;
-    top: calc(var(--site-header-offset) + 1rem + var(--i) * 1.5rem);
+    top: min(
+      calc(var(--site-header-offset) + 1rem + var(--i) * 1.5rem),
+      calc(100svh - var(--card-h, 0px) - 1rem)
+    );
   }
 
-  .program-card[data-long] {
-    position: relative;
-    top: auto;
+  .program-inner {
+    height: 100%;
+  }
+
+  .program-index {
+    display: block;
   }
 }
 
@@ -583,6 +802,23 @@
     stroke-width: 2.5;
     opacity: 0.5;
   }
+}
+
+/* Parts scene: a spotlight in the part's hue follows the pointer, and a dot
+   rides the UI/UX curve while it is hovered or focused. */
+@media (hover: hover) and (pointer: fine) {
+  [data-motion='js'] .part-module:hover {
+    background-image: radial-gradient(
+      16rem circle at var(--spot-x, 50%) var(--spot-y, -40%),
+      color-mix(in oklab, var(--hue) 16%, transparent),
+      transparent 70%
+    );
+  }
+}
+
+.pg-rider {
+  fill: var(--hue);
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -752,6 +988,34 @@
   }
 }
 
+/* Join scene: script closes the brackets (taking over from the timelines
+   above) over a GDG halftone field that ripples behind the call to action. */
+[data-motion='js'] .join-bracket {
+  animation: none;
+}
+
+.join[data-motion='js'] {
+  position: relative;
+}
+
+.join[data-motion='js'] .join-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.join-word {
+  display: inline-block;
+}
+
+/* The halftone field is one canvas the join scene draws and waves. */
+.join-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 @keyframes join-close-left {
   from {
     opacity: 0.35;
@@ -763,5 +1027,73 @@
   from {
     opacity: 0.35;
     translate: 38vw 0;
+  }
+}
+
+/* Log scene: a lane of its own draws down in place of the static one, with
+   a HEAD marker at its tip. */
+.log-rows[data-lane]::before {
+  visibility: hidden;
+}
+
+.log-lane {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.4375rem;
+  width: 2px;
+  border-radius: 1px;
+  background-color: var(--s-rule);
+  transform-origin: top;
+  pointer-events: none;
+}
+
+.log-head {
+  position: absolute;
+  top: 0.75rem;
+  left: calc(0.4375rem - 3px);
+  width: 8px;
+  height: 14px;
+  border-radius: 9999px;
+  background-color: #4285f4;
+  box-shadow: 0 0 0 3px var(--s-paper);
+  pointer-events: none;
+}
+
+/* Releases scene: the featured cover prints in as growing halftone dots
+   (--dot-r), and cards tilt toward a fine pointer with the cover drifting
+   the other way. */
+[data-print] > * {
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    #000 var(--dot-r, 0px),
+    transparent calc(var(--dot-r, 0px) + 0.5px)
+  );
+  mask-image: radial-gradient(
+    circle at center,
+    #000 var(--dot-r, 0px),
+    transparent calc(var(--dot-r, 0px) + 0.5px)
+  );
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+}
+
+[data-motion='js'] .release-item {
+  transform: perspective(1100px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg));
+}
+
+[data-motion='js'] .release-cover {
+  overflow: hidden;
+}
+
+[data-motion='js'] .release-cover > * {
+  translate: var(--cover-x, 0px) var(--cover-y, 0px);
+  transition: scale var(--dur-slow) var(--ease-out);
+}
+
+@media (hover: hover) {
+  [data-motion='js'] .release-item:hover .release-cover > * {
+    scale: 1.06;
   }
 }

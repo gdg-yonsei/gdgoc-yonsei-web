@@ -1901,6 +1901,8 @@ html.site {
   animation: none;
 }
 
+/* Incoming pages glide in on the shared soft spring (lib/motion/springs.ts);
+   outgoing ones leave on a plain ease so nothing bounces on the way out. */
 ::view-transition-old(.nav-forward) {
   --slide-offset: -48px;
   animation:
@@ -1912,7 +1914,7 @@ html.site {
   --slide-offset: 48px;
   animation:
     210ms ease-out 150ms both vt-fade,
-    400ms var(--ease-in-out) both vt-slide;
+    450ms var(--ease-spring-soft) both vt-slide;
 }
 
 ::view-transition-old(.nav-back) {
@@ -1926,7 +1928,7 @@ html.site {
   --slide-offset: -48px;
   animation:
     210ms ease-out 150ms both vt-fade,
-    400ms var(--ease-in-out) both vt-slide;
+    450ms var(--ease-spring-soft) both vt-slide;
 }
 
 /* Same page, another generation: a crossfade, not a slide. */
@@ -1948,7 +1950,7 @@ html.site {
 ::view-transition-new(.reveal-enter) {
   animation:
     210ms ease-in 150ms both vt-fade,
-    400ms var(--ease-out) both vt-rise;
+    500ms var(--ease-spring) both vt-rise;
 }
 
 @keyframes vt-fade {

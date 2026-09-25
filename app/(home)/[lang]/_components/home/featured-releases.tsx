@@ -53,7 +53,11 @@ export default function FeaturedReleases({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].releases
 
   return (
-    <section aria-labelledby="releases-title" className="home-section">
+    <section
+      aria-labelledby="releases-title"
+      data-scene="releases"
+      className="home-section"
+    >
       <div className="home-section-head home-head-row">
         <div className="grid gap-3">
           <SectionTag>{copy.tag}</SectionTag>

@@ -60,7 +60,11 @@ export default function LatestLog({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].log
 
   return (
-    <section aria-labelledby="latest-log-title" className="home-section">
+    <section
+      aria-labelledby="latest-log-title"
+      data-scene="log"
+      className="home-section"
+    >
       <div className="home-section-head home-head-row">
         <div className="grid gap-3">
           <SectionTag>{copy.tag}</SectionTag>

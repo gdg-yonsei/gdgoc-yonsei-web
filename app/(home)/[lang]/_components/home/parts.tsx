@@ -25,7 +25,11 @@ export default function Parts({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].parts
 
   return (
-    <section aria-labelledby="parts-title" className="home-section">
+    <section
+      aria-labelledby="parts-title"
+      data-scene="parts"
+      className="home-section"
+    >
       <div className="home-section-head">
         <SectionTag>{copy.tag}</SectionTag>
         <h2 id="parts-title" className="home-section-title">

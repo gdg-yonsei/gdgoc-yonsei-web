@@ -1,4 +1,24 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+/** Screens where the programs stack is active, including the room a real
+    1366×768 laptop leaves below the browser chrome (1366×657). */
+const STACK_VIEWPORTS = [
+  { width: 1366, height: 768 },
+  { width: 1366, height: 657 },
+  { width: 1440, height: 789 },
+  { width: 1024, height: 700 },
+  { width: 768, height: 1024 },
+]
+
+/** Two frames, so scroll-linked styles have caught up. */
+async function settle(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+      )
+  )
+}
 
 test.describe('home page', () => {
   test('tells the story from the hero to the join bookend', async ({
@@ -112,8 +132,55 @@ test.describe('home page', () => {
     ).toEqual(Array(5).fill('auto'))
   })
 
+  for (const [lang, viewport] of [
+    ...STACK_VIEWPORTS.map((size) => ['en', size] as const),
+    ['ko', { width: 1366, height: 657 }] as const,
+  ]) {
+    test(`every program card joins the stack at ${viewport.width}×${viewport.height} (${lang})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport)
+      await page.goto(`/${lang}`, { waitUntil: 'load' })
+      const cards = page.locator('.program-card')
+
+      expect(
+        await cards.evaluateAll((all) =>
+          all.map((card) => getComputedStyle(card).position)
+        )
+      ).toEqual(Array(6).fill('sticky'))
+
+      // Scroll to where the last card reaches its slot. Repeat, so sections
+      // that render late (content-visibility) cannot leave the target stale.
+      await cards.last().scrollIntoViewIfNeeded()
+      for (let pass = 0; pass < 3; pass += 1) {
+        await page.evaluate(() => {
+          const last = document.querySelector('.program-card:last-child')!
+          const slot = parseFloat(getComputedStyle(last).top)
+          window.scrollBy({
+            top: last.getBoundingClientRect().top - slot,
+            behavior: 'instant',
+          })
+        })
+        await settle(page)
+      }
+
+      // Every card, Solution Challenge included, is still held in its own
+      // slot (within a pixel; larger offsets are reported as they are).
+      expect(
+        await cards.evaluateAll((all) =>
+          all.map((card) => {
+            const offset =
+              card.getBoundingClientRect().top -
+              parseFloat(getComputedStyle(card).top)
+            return Math.abs(offset) <= 1 ? 0 : Math.round(offset)
+          })
+        )
+      ).toEqual(Array(6).fill(0))
+    })
+  }
+
   for (const viewport of [
-    { width: 1366, height: 768 },
+    ...STACK_VIEWPORTS,
     { width: 844, height: 390 },
   ]) {
     test(`every program card can be read in full at ${viewport.width}×${viewport.height}`, async ({
@@ -121,17 +188,20 @@ test.describe('home page', () => {
     }) => {
       await page.setViewportSize(viewport)
       await page.goto('/en', { waitUntil: 'load' })
-      const [top, end] = await page.evaluate(() => {
-        const box = document
-          .querySelector('.program-stack')!
-          .getBoundingClientRect()
-        return [box.top + scrollY, box.bottom + scrollY]
-      })
+      const stackEdges = () =>
+        page.evaluate(() => {
+          const box = document
+            .querySelector('.program-stack')!
+            .getBoundingClientRect()
+          return [box.top + scrollY, box.bottom + scrollY] as const
+        })
+      const [top] = await stackEdges()
 
       // Walk the stack: a sticky card must never keep part of itself below
-      // the fold or under the next card for the whole way through.
+      // the fold or under the next card for the whole way through. The end
+      // is re-read each step: sections above may render late and move it.
       const leastHidden = new Map<string, number>()
-      for (let y = top - viewport.height; y < end; y += 40) {
+      for (let y = top - viewport.height; y < (await stackEdges())[1]; y += 40) {
         await page.evaluate((scroll) => scrollTo(0, scroll), y)
         const hidden = await page.evaluate(() => {
           const cards = [...document.querySelectorAll('.program-card')]

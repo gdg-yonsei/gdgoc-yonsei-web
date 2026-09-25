@@ -43,6 +43,39 @@ export function packCapsules(
   return into
 }
 
+/** A tap on the stage, `age` seconds ago, at a point in CSS pixels. */
+export type Ripple = { x: number; y: number; age: number }
+
+/** Seconds a shockwave takes to cross the stage and fade. */
+export const RIPPLE_LIFE = 1.6
+
+/** Writes the three newest ripples into `into` in device pixels; unused
+    slots stay zero, which the shader reads as "no ripple". */
+export function packRipples(
+  ripples: readonly Ripple[],
+  dpr: number,
+  into = new Float32Array(12)
+): Float32Array {
+  into.fill(0)
+  ripples.slice(-3).forEach((ripple, index) => {
+    into.set([ripple.x * dpr, ripple.y * dpr, ripple.age, 1], index * 4)
+  })
+  return into
+}
+
+/** CSS-pixel shift that leans the brackets toward the pointer, zero at the
+    centre of the stage. */
+export function parallaxTarget(
+  pointer: { x: number; y: number },
+  width: number,
+  height: number
+): { x: number; y: number } {
+  return {
+    x: (pointer.x / Math.max(1, width) - 0.5) * 16 + 0,
+    y: (pointer.y / Math.max(1, height) - 0.5) * 10 + 0,
+  }
+}
+
 const VERTEX_SHADER = `#version 300 es
 in vec2 a_position;
 void main() { gl_Position = vec4(a_position, 0.0, 1.0); }`
@@ -61,6 +94,8 @@ uniform vec4 u_caps[4];
 uniform float u_radius;
 uniform vec3 u_colors[4];
 uniform float u_reveal;
+uniform vec4 u_ripples[3];
+uniform float u_rippleSpeed;
 out vec4 outColor;
 
 float sdCapsule(vec2 p, vec2 a, vec2 b, float r) {
@@ -105,19 +140,29 @@ void main() {
     1.0
   );
 
+  // Shockwaves: a ring per tap that widens and fades over RIPPLE_LIFE.
+  float ripple = 0.0;
+  for (int i = 0; i < 3; i++) {
+    vec4 r = u_ripples[i];
+    if (r.w <= 0.0) continue;
+    float band = (distance(center, r.xy) - r.z * u_rippleSpeed) / (u_cell * 3.0);
+    ripple += exp(-band * band) * (1.0 - r.z / ${RIPPLE_LIFE.toFixed(1)});
+  }
+  ripple = clamp(ripple, 0.0, 1.0);
+
   vec3 color;
   float radius;
   float alpha;
   if (hue >= 0) {
     float depth = clamp(-nearest / u_radius, 0.0, 1.0);
-    radius = (0.2 + 0.26 * sqrt(depth) + 0.07 * n + 0.1 * lens) * u_cell;
-    color = mix(u_colors[hue], vec3(1.0), 0.12 * n + 0.18 * lens);
+    radius = (0.2 + 0.26 * sqrt(depth) + 0.07 * n + 0.1 * lens + 0.12 * ripple) * u_cell;
+    color = mix(u_colors[hue], vec3(1.0), 0.12 * n + 0.18 * lens + 0.25 * ripple);
     alpha = 1.0;
   } else {
     float halo = smoothstep(u_radius * 1.4, 0.0, nearest);
-    radius = (0.07 + 0.12 * n * n + 0.2 * lens + 0.08 * halo) * u_cell;
+    radius = (0.07 + 0.12 * n * n + 0.2 * lens + 0.08 * halo + 0.22 * ripple) * u_cell;
     color = vec3(0.941);
-    alpha = 0.09 + 0.3 * lens + 0.12 * halo;
+    alpha = 0.09 + 0.3 * lens + 0.12 * halo + 0.35 * ripple;
   }
 
   float mask = 1.0 - smoothstep(radius - 0.75, radius + 0.75, distance(frag, center));
@@ -132,6 +177,7 @@ export type FieldFrame = {
   capsules: readonly Capsule[]
   cell: number
   lens: number
+  ripples: readonly Ripple[]
 }
 
 export type FieldStatus = 'pending' | 'ready' | 'failed'
@@ -152,7 +198,9 @@ type Uniforms = Record<
   | 'caps'
   | 'radius'
   | 'colors'
-  | 'reveal',
+  | 'reveal'
+  | 'ripples'
+  | 'rippleSpeed',
   WebGLUniformLocation | null
 >
 
@@ -223,6 +271,7 @@ export function createBracketField(
     colors: new Float32Array(12),
     radius: 0,
   }
+  const packedRipples = new Float32Array(12)
 
   const setup = () => {
     gl.useProgram(program)
@@ -248,6 +297,8 @@ export function createBracketField(
       radius: location('u_radius'),
       colors: location('u_colors'),
       reveal: location('u_reveal'),
+      ripples: location('u_ripples'),
+      rippleSpeed: location('u_rippleSpeed'),
     }
   }
 
@@ -274,7 +325,7 @@ export function createBracketField(
       canvas.height = Math.max(1, Math.round(height * dpr))
       gl.viewport(0, 0, canvas.width, canvas.height)
     },
-    draw({ time, reveal, pointer, capsules, cell, lens }) {
+    draw({ time, reveal, pointer, capsules, cell, lens, ripples }) {
       if (!uniforms) return
       packCapsules(capsules, dpr, packed)
       gl.uniform2f(uniforms.resolution, canvas.width, canvas.height)
@@ -291,6 +342,9 @@ export function createBracketField(
       gl.uniform1f(uniforms.radius, packed.radius)
       gl.uniform3fv(uniforms.colors, packed.colors)
       gl.uniform1f(uniforms.reveal, reveal)
+      gl.uniform4fv(uniforms.ripples, packRipples(ripples, dpr, packedRipples))
+      // Fast enough to cross a wide stage well within RIPPLE_LIFE.
+      gl.uniform1f(uniforms.rippleSpeed, 900 * dpr)
       gl.clearColor(0, 0, 0, 0)
       gl.clear(gl.COLOR_BUFFER_BIT)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
@@ -313,9 +367,9 @@ export function createBracketField(
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
 
 /**
- * Wires the field to the hero: sizing, bracket anchors, pointer lens, scroll
- * parting, visibility and GPU-context loss. Returns a teardown that restores
- * the SVG poster.
+ * Wires the field to the hero: sizing, bracket anchors, pointer lens and
+ * parallax, tap shockwaves, scroll parting, visibility and GPU-context loss.
+ * Returns a teardown that restores the SVG poster.
  */
 export function mountBracketField(
   canvas: HTMLCanvasElement,
@@ -332,11 +386,17 @@ export function mountBracketField(
   const field: BracketField = created
 
   const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false
+  // The dev-only software review keeps the field however slowly it renders.
+  const reviewing = allowSoftwareRendering()
   const dprCap = coarse ? 1.5 : 2
   // Finest dot pitch the eye still reads as halftone at hero scale.
   const cellFor = (radius: number) => Math.min(11, Math.max(5, radius / 4))
   const lens = coarse ? 150 : 190
   const pointer = { x: 0, y: 0, strength: 0, target: 0 }
+  const parallax = { x: 0, y: 0 }
+  // Taps waiting for their first frame have no `born` time yet, so ages
+  // follow the render clock.
+  let taps: { x: number; y: number; born?: number }[] = []
   let anchors: { left: Rect; right: Rect } | null = null
   let width = 0
   let progress = scrollProgress(window.scrollY, hero.offsetHeight)
@@ -395,7 +455,7 @@ export function mountBracketField(
     }
 
     // Watchdog: hardware that cannot hold ~15 fps gets the static poster back.
-    slowFrames = delta > 66 ? slowFrames + 1 : 0
+    slowFrames = delta > 66 && !reviewing ? slowFrames + 1 : 0
     if (slowFrames >= 6) {
       teardown()
       return
@@ -410,11 +470,24 @@ export function mountBracketField(
       pointer.strength += (pointer.target - pointer.strength) * 0.1
     }
 
+    // The brackets lean a little toward the pointer, easing back as it goes.
+    const lean = parallaxTarget(pointer, width, hero.offsetHeight)
+    parallax.x += (lean.x * pointer.strength - parallax.x) * 0.08
+    parallax.y += (lean.y * pointer.strength - parallax.y) * 0.08
     const capsules = capsulesFromBracketRects(
       anchors.left,
       anchors.right,
       partingOffset(progress, width)
-    )
+    ).map((capsule) => ({
+      ...capsule,
+      ax: capsule.ax + parallax.x,
+      bx: capsule.bx + parallax.x,
+      ay: capsule.ay + parallax.y,
+      by: capsule.by + parallax.y,
+    }))
+
+    for (const tap of taps) tap.born ??= now
+    taps = taps.filter((tap) => now - tap.born! < RIPPLE_LIFE * 1000)
     field.draw({
       time: now / 1000,
       reveal: easeOutCubic(Math.min(1, (now - startedAt) / 1400)),
@@ -422,6 +495,11 @@ export function mountBracketField(
       capsules,
       cell: cellFor(capsules[0]?.r ?? 44),
       lens,
+      ripples: taps.map(({ x, y, born }) => ({
+        x,
+        y,
+        age: (now - born!) / 1000,
+      })),
     })
   }
 
@@ -443,6 +521,17 @@ export function mountBracketField(
   }
   const onPointerLeave = () => {
     pointer.target = 0
+  }
+  // Links and buttons keep their clicks to themselves; the rest of the stage
+  // answers a tap with a shockwave through the halftone.
+  const onPointerDown = (event: PointerEvent) => {
+    if ((event.target as Element | null)?.closest?.('a, button')) return
+    const origin = canvas.getBoundingClientRect()
+    taps = [
+      ...taps.slice(-2),
+      { x: event.clientX - origin.left, y: event.clientY - origin.top },
+    ]
+    kick()
   }
   const onContextLost = (event: Event) => {
     event.preventDefault()
@@ -467,6 +556,7 @@ export function mountBracketField(
     window.removeEventListener('scroll', onScroll)
     hero.removeEventListener('pointermove', onPointerMove)
     hero.removeEventListener('pointerleave', onPointerLeave)
+    hero.removeEventListener('pointerdown', onPointerDown)
     document.removeEventListener('visibilitychange', kick)
     canvas.removeEventListener('webglcontextlost', onContextLost)
     delete hero.dataset.gl
@@ -480,6 +570,7 @@ export function mountBracketField(
   window.addEventListener('scroll', onScroll, { passive: true })
   hero.addEventListener('pointermove', onPointerMove)
   hero.addEventListener('pointerleave', onPointerLeave)
+  hero.addEventListener('pointerdown', onPointerDown)
   document.addEventListener('visibilitychange', kick)
   canvas.addEventListener('webglcontextlost', onContextLost)
   void document.fonts?.ready.then(() => {

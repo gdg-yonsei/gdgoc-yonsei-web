@@ -24,6 +24,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - LCP ≤2.5 s at 200 KB/s with 4× CPU slowdown, CLS ≤0.05
   - ≤75 requests, ≤25 prefetches
   - **So:** CSS-first motion, React `<ViewTransition>`, SVG, and a single hand-written WebGL2 shader (~5 KB, loaded when idle). No three.js, GSAP or Lenis, and `motion` stays out of public routes.
+  - **Amended 2026-09-25:** anime.js 4.5 is allowed on the landing page (`/en`, `/ko`) only. It loads as an async chunk after idle, never under reduced motion or Save-Data. The home routes get their own JS cap (200 KB). See `2026-09-25-landing-motion-design.md`.
 - **Sparse content.** Only 25-26 has public records:
   - about 23 sessions (T19, Cloud / Front / UX part sessions, Demo Day, Onboarding), many using the default image
   - 3 oTP projects

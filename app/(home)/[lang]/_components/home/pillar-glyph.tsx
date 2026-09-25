@@ -1,6 +1,19 @@
 export type PillarKind = 'community' | 'tech' | 'growth'
 
-/** Small decorative glyph per pillar, animated on hover (site-home.css). */
+const CHEVRON_LEFT = 'M18 8 6 20l12 12'
+const CHEVRON_RIGHT = 'm46 8 12 12-12 12'
+
+/** Hidden outlines the manifesto scene morphs the tech chevrons between:
+    `{ }` braces on hover, the chevrons themselves on the way back. */
+const MORPH_TARGETS = {
+  'brace-left': 'M18 8c-4 0-5 2-5 5v3c0 2-1 4-5 4 4 0 5 2 5 4v3c0 3 1 5 5 5',
+  'brace-right': 'M46 8c4 0 5 2 5 5v3c0 2 1 4 5 4-4 0-5 2-5 4v3c0 3-1 5-5 5',
+  'chevron-left': CHEVRON_LEFT,
+  'chevron-right': CHEVRON_RIGHT,
+}
+
+/** Small decorative glyph per pillar, animated on hover (site-home.css and
+    the manifesto scene). */
 export default function PillarGlyph({ kind }: { kind: PillarKind }) {
   return (
     <svg
@@ -18,8 +31,8 @@ export default function PillarGlyph({ kind }: { kind: PillarKind }) {
       )}
       {kind === 'tech' && (
         <>
-          <path d="M18 8 6 20l12 12" className="glyph-stroke-blue" />
-          <path d="m46 8 12 12-12 12" className="glyph-stroke-green" />
+          <path d={CHEVRON_LEFT} className="glyph-stroke-blue" />
+          <path d={CHEVRON_RIGHT} className="glyph-stroke-green" />
           <rect
             x="29"
             y="10"
@@ -28,6 +41,9 @@ export default function PillarGlyph({ kind }: { kind: PillarKind }) {
             rx="2"
             className="glyph-caret"
           />
+          {Object.entries(MORPH_TARGETS).map(([name, d]) => (
+            <path key={name} d={d} data-morph={name} className="glyph-morph" />
+          ))}
         </>
       )}
       {kind === 'growth' && (
