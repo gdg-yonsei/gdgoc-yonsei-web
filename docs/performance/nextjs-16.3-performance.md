@@ -285,7 +285,8 @@ memory improvement is claimed.
 
 The checked budgets are:
 
-- Encoded public-route JS <= 170 KB.
+- Encoded public-route JS <= 170 KB; the landing (`/en`, `/ko`) <= 200 KB (see
+  Landing motion).
 - Encoded RSC <= 70 KB.
 - Requests <= 75; prefetch requests <= 25.
 - LCP <= 2.5 s; CLS <= 0.05.
@@ -294,6 +295,74 @@ The checked budgets are:
   more than 35% versus the matched baseline.
 
 Result: 22/22 route/profile samples pass.
+
+## Landing motion (2026-09-25)
+
+The landing page runs anime.js 4.5 scenes (spec:
+`docs/superpowers/specs/2026-09-25-landing-motion-design.md`).
+
+**How it loads.** The scenes load as one async chunk, and only on `/en` and
+`/ko`. The chunk is imported after the browser goes idle, and never under
+reduced motion or Save-Data. Every other route changed by at most +260 B
+(+0.16%) of shared chunk registry.
+
+**Budget.**
+
+- `/en` and `/ko` are capped at 200 KB of encoded JS, with a 37,000 B allowance
+  over the 5% rule (`HOME_JS_CAP`, `HOME_MOTION_ALLOWANCE`).
+- Both measure 195,911 B against a 158,237 B baseline (+37,674 B).
+
+**Lab results** (`pnpm perf:measure` against the matched baseline):
+
+| Route         | TBT            | INP         | LCP / CLS              |
+| ------------- | -------------- | ----------- | ---------------------- |
+| Desktop `/en` | 1288 → 1532 ms | –           | unchanged within noise |
+| Mobile `/en`  | 1231 → 1323 ms | 96 → 112 ms | unchanged within noise |
+
+`/ko` came in within noise of its baseline.
+
+**Scroll smoothness.** Measured as total Long Animation Frame blocking over a
+wheel scroll from top to bottom at 4× CPU
+(`.superpowers/shared/scroll-trace.mjs`, three runs each):
+
+| Build                | Desktop                       | Mobile   |
+| -------------------- | ----------------------------- | -------- |
+| `main` (no motion)   | 9–14 ms, 3–4 long frames      | 6–8 ms   |
+| First complete build | 730–770 ms, 20–24 long frames | ~115 ms  |
+| Final                | 91–97 ms, 7–11 long frames    | 17–24 ms |
+
+What remains is scenes arming and their entrances rendering, which is the cost
+of animating on scroll.
+
+**Rules for adding a scene.** Each rule comes from a measured cause. The
+measuring tools are `.superpowers/shared/{engine-profile,forced-layout,frame-trace}.mjs`.
+
+1. **Never link a timeline straight to `onScroll`.**
+   - After any body resize (a section rendering as it nears, streamed rows
+     arriving), anime.js re-measures every scroll observer 250 ms later.
+   - To measure one, it seeks the linked animation back to its start and
+     forth again. That forced a ~4 ms style recalculation per observer, per
+     resize.
+   - Scrub through `motion/scrub.ts`, and trigger one-offs with
+     `motion/arrival.ts`, which unregisters once it fires. The e2e test
+     "re-measures its scroll lines on a resize without re-rendering a scene"
+     guards this.
+2. **Never observe a sticky element.** anime.js unsticks it to measure it, a
+   full layout each time. Observe a non-sticky ancestor and add the element's
+   in-flow offset (`top+=N`).
+3. **Create timelines with `sceneTimeline()`** (`composition: false`).
+   - Composition re-renders the timeline around every `.add()`, so each
+     tween's value read forces a style recalculation.
+   - Build all of a scene's timelines before any of them renders its start.
+4. **Don't animate an inherited custom property on an element with contents.**
+   It restyles the whole subtree every frame. Animate an element of the
+   scene's own (`.program-shade`, `.log-lane`), or register the property with
+   `inherits: false` when only that element reads it.
+5. **Don't animate hundreds of elements.** The Join field's 220 CSS-animated
+   dots restyled about 420 elements a frame. The field is now one canvas
+   (`motion/dot-field.ts`).
+6. **Create pointer-only effects on first `pointerenter`.** Measuring for them
+   at arm time made each section's arming a long frame.
 
 ## Remaining tradeoffs
 

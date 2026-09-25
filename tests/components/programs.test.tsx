@@ -21,6 +21,31 @@ describe('Programs', () => {
     expect(screen.getByText(/Tech at 19:00/)).toBeInTheDocument()
   })
 
+  it('keeps every program in the sticky stack', () => {
+    const { container } = render(<Programs lang="en" />)
+
+    expect(container.querySelectorAll('.program-card')).toHaveLength(6)
+    // `data-long` once let the Solution Challenge card scroll out of it.
+    expect(container.querySelectorAll('[data-long]')).toHaveLength(0)
+  })
+
+  it('numbers the cards with a decorative index', () => {
+    const { container } = render(<Programs lang="en" />)
+    const indexes = [...container.querySelectorAll('.program-index')]
+
+    expect(indexes.map((index) => index.textContent)).toEqual([
+      '01',
+      '02',
+      '03',
+      '04',
+      '05',
+      '06',
+    ])
+    for (const index of indexes) {
+      expect(index).toHaveAttribute('aria-hidden', 'true')
+    }
+  })
+
   it('draws the Solution Challenge funnel as an ordered list', () => {
     render(<Programs lang="ko" />)
     const funnel = screen.getByRole('figure', {

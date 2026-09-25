@@ -18,6 +18,16 @@ describe('Hero', () => {
     )
   })
 
+  it('sets each word of the title apart, so the pair can part with the brackets', () => {
+    render(<Hero lang="en" />)
+    const title = screen.getByRole('heading', { level: 1 })
+
+    expect(
+      [...title.querySelectorAll('.hero-word')].map((word) => word.textContent)
+    ).toEqual(['GDGoC', 'Yonsei'])
+    expect(title).toHaveAccessibleName('GDGoC Yonsei')
+  })
+
   it('uses Korean copy and routes on /ko', () => {
     render(<Hero lang="ko" />)
 

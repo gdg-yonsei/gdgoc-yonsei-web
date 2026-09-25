@@ -1,10 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-
-type NavigatorWithConnection = Navigator & {
-  connection?: { saveData?: boolean }
-}
+import { readMotionEnvironment, shouldLoadMotion } from '@/lib/motion/gate'
 
 /**
  * Loads the WebGL halftone field once the browser is idle. The server SVG
@@ -18,12 +15,7 @@ export default function BracketStage() {
     const canvas = canvasRef.current
     const hero = canvas?.closest<HTMLElement>('[data-hero]')
     if (!canvas || !hero) return
-
-    const reducedMotion =
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-    const saveData =
-      (navigator as NavigatorWithConnection).connection?.saveData === true
-    if (reducedMotion || saveData) return
+    if (!shouldLoadMotion(readMotionEnvironment())) return
 
     let cancelled = false
     let teardown: (() => void) | undefined

@@ -68,7 +68,12 @@ export default function Hero({
   const copy = heroCopy[lang]
 
   return (
-    <section data-hero aria-labelledby="hero-title" className="hero">
+    <section
+      data-hero
+      data-scene="hero"
+      aria-labelledby="hero-title"
+      className="hero"
+    >
       <BracketStage />
       <div className="hero-inner">
         <p className="hero-rise hero-eyebrow" style={rise(60)}>
@@ -81,7 +86,8 @@ export default function Hero({
             </span>
           </span>
           <h1 id="hero-title" className="hero-title">
-            GDGoC <span className="hero-title-line">Yonsei</span>
+            <span className="hero-word">GDGoC</span>{' '}
+            <span className="hero-word hero-title-line">Yonsei</span>
           </h1>
           <span data-bracket="right" className="bracket-slot">
             <span className="bracket-part">

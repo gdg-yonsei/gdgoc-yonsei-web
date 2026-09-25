@@ -3,6 +3,9 @@ import {
   createBracketField,
   mountBracketField,
   packCapsules,
+  packRipples,
+  parallaxTarget,
+  RIPPLE_LIFE,
   type BracketField,
 } from '@/app/(home)/[lang]/_components/home/bracket-field-gl'
 import type { Capsule } from '@/lib/site/bracket-geometry'
@@ -60,6 +63,38 @@ describe('packCapsules buffers', () => {
     expect(packCapsules(capsules, 2, into)).toBe(into)
     expect(into.positions[4]).toBe(12)
     expect(into.radius).toBe(10)
+  })
+})
+
+describe('packRipples', () => {
+  it('packs the three newest ripples in device pixels, empty slots zeroed', () => {
+    const packed = packRipples(
+      [
+        { x: 1, y: 1, age: 0.9 },
+        { x: 10, y: 20, age: 0.5 },
+        { x: 30, y: 40, age: 0.25 },
+        { x: 50, y: 60, age: 0 },
+      ],
+      2
+    )
+    expect(Array.from(packed)).toEqual([
+      20, 40, 0.5, 1, 60, 80, 0.25, 1, 100, 120, 0, 1,
+    ])
+    expect(Array.from(packRipples([], 2)).every((value) => value === 0)).toBe(
+      true
+    )
+  })
+})
+
+describe('parallaxTarget', () => {
+  it('leans the brackets toward the pointer from the centre of the stage', () => {
+    expect(parallaxTarget({ x: 500, y: 300 }, 1000, 600)).toEqual({
+      x: 0,
+      y: 0,
+    })
+    const corner = parallaxTarget({ x: 1000, y: 600 }, 1000, 600)
+    expect(corner.x).toBeGreaterThan(0)
+    expect(corner.y).toBeGreaterThan(0)
   })
 })
 
@@ -187,6 +222,28 @@ describe('mountBracketField', () => {
     expect(field.dispose).toHaveBeenCalledTimes(1)
   })
 
+  it('keeps a slow field for review under the dev-only ?gl-software flag', () => {
+    window.history.replaceState({}, '', '/en?gl-software')
+    const { hero, canvas } = heroFixture()
+    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+    vi.stubGlobal('cancelAnimationFrame', vi.fn())
+    const frames: FrameRequestCallback[] = []
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback: FrameRequestCallback) => frames.push(callback))
+    )
+    const field = fakeField()
+    mountBracketField(canvas, hero, () => field)
+
+    for (let frame = 1; frame <= 20 && frames.length > 0; frame += 1) {
+      frames.shift()!(frame * 100)
+    }
+
+    expect(hero.dataset.gl).toBe('on')
+    expect(field.dispose).not.toHaveBeenCalled()
+    window.history.replaceState({}, '', '/')
+  })
+
   it('gives up and restores the poster when the shader fails to link', () => {
     const { hero, canvas } = heroFixture()
     vi.stubGlobal('ResizeObserver', ResizeObserverStub)
@@ -221,5 +278,52 @@ describe('mountBracketField', () => {
 
     expect(hero.dataset.gl).toBeUndefined()
     expect(field.dispose).toHaveBeenCalledTimes(1)
+  })
+
+  describe('shockwaves', () => {
+    function mountWithFrames() {
+      const { hero, canvas } = heroFixture()
+      vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+      vi.stubGlobal('cancelAnimationFrame', vi.fn())
+      const frames: FrameRequestCallback[] = []
+      vi.stubGlobal(
+        'requestAnimationFrame',
+        vi.fn((callback: FrameRequestCallback) => frames.push(callback))
+      )
+      const field = fakeField()
+      mountBracketField(canvas, hero, () => field)
+      frames.shift()!(16)
+      const lastRipples = () =>
+        vi.mocked(field.draw).mock.calls.at(-1)?.[0].ripples ?? []
+      return { hero, frames, lastRipples }
+    }
+
+    it('ripple out from where the stage is tapped, then fade', () => {
+      const { hero, frames, lastRipples } = mountWithFrames()
+
+      hero.dispatchEvent(
+        new MouseEvent('pointerdown', { clientX: 40, clientY: 30, bubbles: true })
+      )
+      frames.shift()!(32)
+      frames.shift()!(48)
+      expect(lastRipples()).toEqual([
+        { x: 40, y: 30, age: expect.closeTo(0.016, 3) },
+      ])
+
+      frames.shift()!(48 + RIPPLE_LIFE * 1000)
+      expect(lastRipples()).toEqual([])
+    })
+
+    it('leave taps on links and buttons alone', () => {
+      const { hero, frames, lastRipples } = mountWithFrames()
+      const link = document.createElement('a')
+      hero.append(link)
+
+      link.dispatchEvent(
+        new MouseEvent('pointerdown', { clientX: 5, clientY: 5, bubbles: true })
+      )
+      frames.shift()!(32)
+      expect(lastRipples()).toEqual([])
+    })
   })
 })

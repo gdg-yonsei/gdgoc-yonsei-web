@@ -14,6 +14,16 @@ const baseline = baselinePath
   : null
 const failures = []
 
+// Approved 2026-09-25: the anime.js engine and the landing scenes
+// (docs/superpowers/specs/2026-09-25-landing-motion-design.md) load on the
+// home routes only, after first paint. Measured at 37,674 encoded bytes
+// (home 195,911 B), so the home cap is that total plus under 5 KB, and the
+// first comparison against a baseline without them may grow by the chunk on
+// top of the usual 5%.
+const HOME_ROUTES = new Set(['/en', '/ko'])
+const HOME_JS_CAP = 200_000
+const HOME_MOTION_ALLOWANCE = 37_000
+
 function fail(result, metric, actual, budget) {
   failures.push(
     `${result.profile} ${result.pathname}: ${metric} ${actual} exceeds ${budget}`
@@ -22,8 +32,9 @@ function fail(result, metric, actual, budget) {
 
 for (const result of report.results) {
   if (result.status !== 200) fail(result, 'status', result.status, 200)
-  if (result.jsEncodedBodyBytes > 170_000) {
-    fail(result, 'encoded JS bytes', result.jsEncodedBodyBytes, 170_000)
+  const jsCap = HOME_ROUTES.has(result.pathname) ? HOME_JS_CAP : 170_000
+  if (result.jsEncodedBodyBytes > jsCap) {
+    fail(result, 'encoded JS bytes', result.jsEncodedBodyBytes, jsCap)
   }
   if (result.rscEncodedBodyBytes > 70_000) {
     fail(result, 'encoded RSC bytes', result.rscEncodedBodyBytes, 70_000)
@@ -49,7 +60,12 @@ for (const result of report.results) {
 
   if (!before) continue
 
-  const jsRegressionBudget = Math.ceil(before.jsEncodedBodyBytes * 1.05)
+  const motionAllowance =
+    HOME_ROUTES.has(result.pathname) && result.homeMotion && !before.homeMotion
+      ? HOME_MOTION_ALLOWANCE
+      : 0
+  const jsRegressionBudget =
+    Math.ceil(before.jsEncodedBodyBytes * 1.05) + motionAllowance
   if (result.jsEncodedBodyBytes > jsRegressionBudget) {
     fail(
       result,

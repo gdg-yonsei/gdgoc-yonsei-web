@@ -23,6 +23,23 @@ describe('Manifesto', () => {
     ).toHaveAttribute('rel', 'noreferrer noopener')
   })
 
+  it('gives the tech glyph hidden outlines to morph between on hover', () => {
+    const { container } = render(<Manifesto lang="en" />)
+    const tech = container.querySelectorAll('.pillar-glyph')[1]!
+    const shape = (name: string) =>
+      tech.querySelector(`[data-morph="${name}"]`)?.getAttribute('d')
+
+    // Braces to morph into, and the chevrons' own outlines to morph back to.
+    expect(shape('brace-left')).toMatch(/^M/)
+    expect(shape('brace-right')).toMatch(/^M/)
+    expect(shape('chevron-left')).toBe(
+      tech.querySelector('.glyph-stroke-blue')?.getAttribute('d')
+    )
+    expect(shape('chevron-right')).toBe(
+      tech.querySelector('.glyph-stroke-green')?.getAttribute('d')
+    )
+  })
+
   it('lists the three pillars with decorative glyphs', () => {
     render(<Manifesto lang="ko" />)
     const items = screen.getAllByRole('listitem')

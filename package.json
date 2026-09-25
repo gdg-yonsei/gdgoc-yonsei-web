@@ -36,6 +36,7 @@
     "@heroicons/react": "^2.2.0",
     "@next/third-parties": "16.3.2",
     "@tailwindcss/postcss": "^4.3.3",
+    "animejs": "4.5.0",
     "better-auth": "1.6.27",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.3",

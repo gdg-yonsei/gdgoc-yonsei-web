@@ -24,7 +24,11 @@ export default function Manifesto({ lang }: { lang: Locale }) {
   const words = copy.statement.split(' ')
 
   return (
-    <section aria-labelledby="manifesto-title" className="home-section">
+    <section
+      aria-labelledby="manifesto-title"
+      data-scene="manifesto"
+      className="home-section"
+    >
       <div className="home-section-head">
         <SectionTag>{copy.tag}</SectionTag>
         <h2 id="manifesto-title" className="manifesto-kicker">

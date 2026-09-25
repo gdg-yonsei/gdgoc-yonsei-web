@@ -82,6 +82,8 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
       />
       <circle cx="12" cy="60" r="5" className="pg-accent" />
       <circle cx="108" cy="12" r="5" className="pg-accent" />
+      {/* Rides the curve on hover (parts scene). */}
+      <circle cx="0" cy="0" r="4" className="pg-rider" />
     </>
   ),
   rings: (

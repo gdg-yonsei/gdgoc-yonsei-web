@@ -19,6 +19,14 @@ describe('Parts', () => {
     }
   })
 
+  it('gives the curve glyph a dot to ride its path', () => {
+    const { container } = render(<Parts lang="en" />)
+    const curve = container.querySelector('.pg-draw')?.closest('svg')
+
+    expect(curve?.querySelectorAll('.pg-rider')).toHaveLength(1)
+    expect(container.querySelectorAll('.pg-rider')).toHaveLength(1)
+  })
+
   it('colours each module with its part hue', () => {
     render(<Parts lang="ko" />)
 
