@@ -88,6 +88,7 @@ Your app will be available at http://localhost:3000.
 🧱 Architecture Docs
 
 - Caching and invalidation guide: [`docs/architecture/caching.md`](./docs/architecture/caching.md)
+- CI/CD pipeline and deploy setup: [`docs/architecture/ci-cd.md`](./docs/architecture/ci-cd.md)
 
 ⸻
 

@@ -8,9 +8,7 @@ type NavigatorWithConnection = Navigator & {
 }
 
 /** What the visitor asked for: less motion, or less data. */
-export function readMotionEnvironment(
-  win: Window = window
-): MotionEnvironment {
+export function readMotionEnvironment(win: Window = window): MotionEnvironment {
   return {
     reducedMotion:
       win.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,

@@ -1,0 +1,3 @@
+# Generated files: reformatting them only adds churn to every diff.
+drizzle/meta/
+pnpm-lock.yaml

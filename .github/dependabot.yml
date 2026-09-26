@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    # pnpm-workspace.yaml holds minimumReleaseAge; let fresh releases settle.
+    cooldown:
+      default-days: 3
+    groups:
+      # Next and its first-party packages must move in lockstep with the
+      # `next` override in pnpm-workspace.yaml.
+      nextjs:
+        patterns:
+          - next
+          - '@next/*'
+          - eslint-config-next
+      react:
+        patterns:
+          - react
+          - react-dom
+          - '@types/react'
+          - '@types/react-dom'
+      minor-and-patch:
+        update-types: [minor, patch]
+        exclude-patterns:
+          - next
+          - '@next/*'
+          - eslint-config-next
+          - react
+          - react-dom
+          - '@types/react'
+          - '@types/react-dom'
+    labels: [dependencies]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: Asia/Seoul
+    groups:
+      actions:
+        patterns: ['*']
+    labels: [dependencies, ci]

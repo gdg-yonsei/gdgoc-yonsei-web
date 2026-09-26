@@ -1,0 +1,352 @@
+name: CI
+
+# Runs on every PR, and as the gate in front of every production deploy
+# (cd.yml calls this workflow before it triggers Dokploy).
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Placeholder credentials only. Real secrets never reach CI, and every job that
+# writes to a database uses the throwaway Postgres service on 127.0.0.1, which
+# the disposable-database guard accepts.
+env:
+  AUTH_DRIZZLE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+  BETTER_AUTH_SECRET: test-secret-at-least-32-characters-long
+  BETTER_AUTH_URL: http://localhost:3100
+  GITHUB_CLIENT_ID: test-github-client-id
+  GITHUB_CLIENT_SECRET: test-github-client-secret
+  GOOGLE_CLIENT_ID: test-google-client-id
+  GOOGLE_CLIENT_SECRET: test-google-client-secret
+  NEXT_PUBLIC_SITE_URL: http://localhost:3100
+  NEXT_PUBLIC_IMAGE_URL: https://cdn.example/
+  CLOUDFLARE_ACCOUNT_ID: test-account
+  R2_ACCESS_KEY: test-access-key
+  R2_SECRET_KEY: test-secret-key
+  R2_BUCKET_NAME: test-bucket
+  RESEND_API_KEY: test-resend-key
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  static:
+    name: Typecheck, lint, format, schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: pnpm overrides match package.json
+        run: node scripts/ci/check-overrides.mjs
+
+      - name: Typecheck
+        run: pnpm test:types
+
+      - name: Lint
+        run: pnpm lint --max-warnings=0
+
+      # The repository predates Prettier enforcement, so only files a PR
+      # touches must be formatted.
+      - name: Prettier (changed files)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD \
+            | xargs -r -d '\n' pnpm exec prettier --check --ignore-unknown
+
+      # `pnpm build` runs drizzle-kit generate on Dokploy. A schema change
+      # without a committed migration would be generated and applied to
+      # production during the deploy, unreviewed.
+      - name: Schema matches committed migrations
+        run: |
+          pnpm db:generate
+          if [ -n "$(git status --porcelain -- drizzle)" ]; then
+            git status --short -- drizzle
+            echo "::error title=Missing migration::db/schema changed without a migration. Run 'pnpm db:generate' and commit the result."
+            exit 1
+          fi
+
+      # Labels are read live, not from the event payload, so adding
+      # `migration:destructive-ok` and re-running the job is enough.
+      - name: Migration safety
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: |
+          ALLOW_DESTRUCTIVE_MIGRATION=false
+          if [ -n "$PR_NUMBER" ] && gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' | grep -qx 'migration:destructive-ok'; then
+            ALLOW_DESTRUCTIVE_MIGRATION=true
+          fi
+          export ALLOW_DESTRUCTIVE_MIGRATION
+          node scripts/ci/check-migrations.mjs $BASE_REF
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Vitest with coverage
+        run: >-
+          pnpm test:coverage
+          --coverage.reporter=text-summary
+          --coverage.reporter=json-summary
+          --coverage.reporter=html
+
+      - name: Coverage summary
+        if: always() && hashFiles('coverage/coverage-summary.json') != ''
+        run: |
+          node -e '
+            const { total } = require("./coverage/coverage-summary.json")
+            const rows = ["lines", "statements", "functions", "branches"]
+              .map((key) => `| ${key} | ${total[key].pct}% | ${total[key].covered}/${total[key].total} |`)
+            console.log(["### Unit test coverage", "", "| Metric | % | Covered |", "| --- | --- | --- |", ...rows].join("\n"))
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  migrations:
+    name: Migration upgrade path
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Same major as production (Dokploy postgres:18).
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      # Production is always at the base branch's migrations with real rows in
+      # it. Rebuild that state, then apply this change's migrations on top, as
+      # the Dokploy build will.
+      - name: Resolve base revision
+        id: base
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          base="${PR_BASE:-$PUSH_BEFORE}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base="$(git rev-parse HEAD^1)"
+          fi
+          echo "sha=$base" >> "$GITHUB_OUTPUT"
+          echo "Upgrading from $base"
+
+      - name: Migrate to the base revision
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/base" "$BASE_SHA"
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/base/node_modules"
+          cd "$RUNNER_TEMP/base"
+          # Binaries directly: `pnpm exec` would refuse to run because the
+          # shared node_modules does not match the base revision's lockfile.
+          ./node_modules/.bin/drizzle-kit migrate
+
+      - name: Seed with the base revision's code
+        working-directory: ${{ runner.temp }}/base
+        run: |
+          if [ -f scripts/seed-dev.ts ]; then
+            ./node_modules/.bin/tsx scripts/seed-dev.ts
+          else
+            echo "::notice::Base revision has no seed script; upgrading an empty database."
+          fi
+
+      - name: Apply this revision's migrations
+        run: pnpm db:migrate
+
+      - name: Migrations are idempotent
+        run: pnpm db:migrate
+
+      # The new code must be able to write every table it seeds into the
+      # upgraded database.
+      - name: Seed with this revision's code
+        run: pnpm db:seed
+
+  e2e:
+    name: E2E (production build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install Playwright browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      # turbopackFileSystemCacheForBuild keeps incremental build state here.
+      - name: Cache Next.js build
+        uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      - name: Migrate
+        run: pnpm db:migrate
+
+      - name: Playwright (production build)
+        run: pnpm test:e2e:prod
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # Reuses the build the e2e run just produced. Report-only: shared
+      # runners are too noisy for a hard LCP/TBT gate, but regressions show
+      # up in the job summary and the uploaded report.
+      - name: Performance budget (report only)
+        id: perf
+        continue-on-error: true
+        env:
+          PERF_BASE_URL: http://127.0.0.1:3100
+          PERF_OUTPUT: perf-report.json
+        run: |
+          pnpm exec next start --port 3100 > next-start.log 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -fsS -o /dev/null http://127.0.0.1:3100/ko && break
+            sleep 2
+          done
+          pnpm perf:measure
+          node scripts/check-performance-budget.mjs perf-report.json
+
+      - name: Performance summary
+        if: always() && steps.perf.outcome != 'skipped'
+        env:
+          PERF_OUTCOME: ${{ steps.perf.outcome }}
+        run: |
+          if [ "$PERF_OUTCOME" = "success" ]; then
+            echo "### Performance budget: ✅ within budget" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Performance budget: ⚠️ over budget or not measured (see the perf-report artifact)" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=Performance budget::Performance budget exceeded or not measured; see the perf-report artifact."
+          fi
+
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.perf.outcome != 'skipped'
+        with:
+          name: perf-report
+          path: |
+            perf-report.json
+            next-start.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+  security:
+    name: Dependency security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      # Blocks PRs that add a dependency with a known high/critical advisory.
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v5.0.0
+        with:
+          fail-on-severity: high
+
+      # Advisories published against dependencies already on main should not
+      # block unrelated deploys; they are reported here and handled through
+      # Dependabot.
+      - uses: ./.github/actions/setup
+      - name: Audit production dependencies (report only)
+        continue-on-error: true
+        run: pnpm audit --prod --audit-level=high
+
+  workflows:
+    name: Workflow lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: actionlint
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          ./actionlint -color
+
+  # Single status to mark as required in branch protection, so the job list
+  # above can change without editing the protection rule.
+  ci-ok:
+    name: CI passed
+    if: always()
+    needs: [static, unit, migrations, e2e, security, workflows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: All required jobs succeeded
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          if echo "$RESULTS" | grep -qE '"(failure|cancelled)"'; then
+            exit 1
+          fi

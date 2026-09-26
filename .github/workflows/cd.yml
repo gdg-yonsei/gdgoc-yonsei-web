@@ -1,0 +1,109 @@
+name: CD
+
+# main → full CI → Dokploy deploy → smoke test against production.
+#
+# Requires, in the `production` environment:
+#   secrets  DOKPLOY_API_KEY          Dokploy → Settings → Profile → API keys
+#   vars     DOKPLOY_URL              e.g. https://dokploy.example.com
+#            DOKPLOY_APPLICATION_ID   FYUWCshUbgtzPlWbQ3cIs
+# and "Auto Deploy" turned off for the app in Dokploy, so a push no longer
+# deploys before CI has passed. Until DOKPLOY_API_KEY is set the deploy step
+# is skipped with a notice and the smoke test checks whatever is live.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      smoke-only:
+        description: Skip CI and the deploy; only smoke-test production
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  # Granted to the reusable CI workflow, which reads PR labels.
+  pull-requests: read
+
+# One production rollout at a time. A newer push waiting here replaces an
+# older one that has not started, so the queue always converges on the tip.
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    if: ${{ !inputs.smoke-only }}
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to production
+    needs: ci
+    if: ${{ !inputs.smoke-only }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: production
+      url: https://gdgoc.yonsei.ac.kr
+    steps:
+      - uses: actions/checkout@v7
+
+      # Dokploy builds the tip of main, not a given commit. If main has moved
+      # on since this run started, the newer run deploys (after its own CI).
+      - name: Check this commit is still the tip of main
+        id: tip
+        run: |
+          tip="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ "$tip" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Deploy skipped::main is at $tip, newer than $GITHUB_SHA; its own CD run deploys it."
+          fi
+
+      - name: Check Dokploy credentials
+        id: creds
+        if: steps.tip.outputs.current == 'true'
+        env:
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_URL: ${{ vars.DOKPLOY_URL }}
+          DOKPLOY_APPLICATION_ID: ${{ vars.DOKPLOY_APPLICATION_ID }}
+        run: |
+          if [ -n "$DOKPLOY_API_KEY" ] && [ -n "$DOKPLOY_URL" ] && [ -n "$DOKPLOY_APPLICATION_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Deploy not configured::Set DOKPLOY_API_KEY (secret), DOKPLOY_URL and DOKPLOY_APPLICATION_ID (variables) in the production environment to deploy from Actions."
+          fi
+
+      - uses: actions/setup-node@v7
+        if: steps.creds.outputs.ready == 'true'
+        with:
+          node-version: '22'
+
+      - name: Deploy with Dokploy
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_URL: ${{ vars.DOKPLOY_URL }}
+          DOKPLOY_APPLICATION_ID: ${{ vars.DOKPLOY_APPLICATION_ID }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export DEPLOY_TITLE="${COMMIT_MESSAGE%%$'\n'*}"
+          export DEPLOY_DESCRIPTION="Commit: $GITHUB_SHA · $RUN_URL"
+          node scripts/ci/dokploy-deploy.mjs
+
+  smoke:
+    name: Smoke test production
+    needs: deploy
+    # Runs after a deploy, and on its own for smoke-only dispatches.
+    if: ${{ always() && (inputs.smoke-only || needs.deploy.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Smoke test
+        run: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
