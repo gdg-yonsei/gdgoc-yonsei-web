@@ -16,6 +16,7 @@ const adminMessages = {
     project: 'Project',
     profile: 'Profile',
     create: 'Create',
+    createSession: 'Create Session',
     edit: 'Edit',
     submit: 'Submit',
     delete: 'Delete',
@@ -115,7 +116,9 @@ const adminMessages = {
     sessionType: 'Session Type',
     displayOnWebsite: 'Display on Website',
     sessionPublicationImageHint:
-      'A custom main image is required before a new or previously hidden session can be published. A published custom image cannot be reset to the default. It is also used in social link previews.',
+      'The main image is also used in social link previews. Once uploaded, a custom image cannot be reset to the default.',
+    sessionCreateImageHint:
+      'If no main image is uploaded, the default image is used on the website and in social link previews.',
     sessionLocation: 'Session Location',
     sessionInformation: 'Session Information',
     schedule: 'Schedule',
@@ -258,6 +261,7 @@ const adminMessages = {
     project: '프로젝트',
     profile: '프로필',
     create: '생성',
+    createSession: '세션 등록',
     edit: '수정',
     submit: '저장',
     delete: '삭제',
@@ -355,7 +359,9 @@ const adminMessages = {
     sessionType: '세션 종류',
     displayOnWebsite: '웹사이트 공개',
     sessionPublicationImageHint:
-      '새 세션이나 비공개 세션을 게시하려면 대표 메인 이미지가 필요하며, 공개된 커스텀 이미지는 기본 이미지로 되돌릴 수 없습니다. 이 이미지는 링크 공유 미리보기에도 사용됩니다.',
+      '메인 이미지는 링크 공유 미리보기에도 사용되며, 한 번 올린 이미지는 기본 이미지로 되돌릴 수 없습니다.',
+    sessionCreateImageHint:
+      '메인 이미지를 올리지 않으면 웹사이트와 링크 공유 미리보기에 기본 이미지가 사용됩니다.',
     sessionLocation: '세션 장소',
     sessionInformation: '세션 정보',
     schedule: '일정',

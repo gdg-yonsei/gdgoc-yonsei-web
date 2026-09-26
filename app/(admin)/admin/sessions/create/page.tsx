@@ -45,9 +45,7 @@ export default async function CreateSessionPage() {
           <ChevronLeftIcon className={'size-8'} />
           <p className={'text-lg'}>{t.sessions}</p>
         </AdminNavigationButton>
-        <div className={'admin-title'}>
-          {t.create} {t.session}
-        </div>
+        <div className={'admin-title'}>{t.createSession}</div>
         <div className={'admin-panel'}>
           <div className={'font-semibold'}>
             {t.selectSpecificGenerationToCreate}
@@ -85,9 +83,7 @@ export default async function CreateSessionPage() {
         <ChevronLeftIcon className={'size-8'} />
         <p className={'text-lg'}>{t.sessions}</p>
       </AdminNavigationButton>
-      <div className={'admin-title'}>
-        {t.create} {t.session}
-      </div>
+      <div className={'admin-title'}>{t.createSession}</div>
       <DataForm
         action={createSessionAction}
         className={'admin-form-grid gap-2'}
@@ -153,9 +149,7 @@ export default async function CreateSessionPage() {
             type={'checkbox'}
             isChecked={false}
           />
-          <p className={'text-ink-muted text-xs'}>
-            {t.sessionPublicationImageHint}
-          </p>
+          <p className={'text-ink-muted text-xs'}>{t.sessionCreateImageHint}</p>
         </div>
         <BilingualMdxField
           t={t}

@@ -20,7 +20,6 @@ import {
   parseActionInput,
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
-import { getSessionPublicationImageError } from '@/lib/server/session-publication'
 import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export async function createSessionAction(
@@ -74,14 +73,6 @@ export async function createSessionAction(
     category,
     displayOnWebsite,
   } = parsed.data
-
-  const publicationImageError = getSessionPublicationImageError({
-    nextDisplayOnWebsite: displayOnWebsite,
-    nextMainImage: mainImage,
-  })
-  if (publicationImageError) {
-    return { error: publicationImageError }
-  }
 
   let sessionId = ''
   try {

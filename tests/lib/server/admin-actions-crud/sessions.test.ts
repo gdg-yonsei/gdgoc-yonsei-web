@@ -257,7 +257,19 @@ describe('sessions CRUD server actions', () => {
     expect(mockRedirect).toHaveBeenCalledWith('/admin/sessions')
   })
 
-  it('rejects a newly published session without a representative image', async () => {
+  it('creates a published session without a main image using the column default', async () => {
+    const sessionValues = vi.fn().mockReturnValue({
+      returning: vi
+        .fn()
+        .mockResolvedValue([{ id: '00000000-0000-4000-8000-000000000444' }]),
+    })
+
+    mockInsert
+      .mockReturnValueOnce({ values: sessionValues })
+      .mockReturnValueOnce({
+        values: vi.fn().mockResolvedValue(undefined),
+      })
+
     const { createSessionAction } =
       await import('@/app/(admin)/admin/sessions/create/actions')
 
@@ -268,7 +280,7 @@ describe('sessions CRUD server actions', () => {
         nameKo: '공개 세션',
         description: 'Session Description',
         descriptionKo: '세션 설명',
-        mainImage: '/session-default.png?legacy=1',
+        mainImage: '',
         contentImages: JSON.stringify([]),
         startAt: '2026-03-20T10:00',
         endAt: '2026-03-20T12:00',
@@ -284,11 +296,12 @@ describe('sessions CRUD server actions', () => {
       })
     )
 
-    expect(result).toEqual({
-      error:
-        'A custom main image is required before publishing a session on the website.',
-    })
-    expect(mockInsert).not.toHaveBeenCalled()
+    expect(result).toBeUndefined()
+    expect(sessionValues).toHaveBeenCalledWith(
+      expect.objectContaining({ displayOnWebsite: true })
+    )
+    expect(sessionValues.mock.calls[0]?.[0]).not.toHaveProperty('mainImage')
+    expect(mockRedirect).toHaveBeenCalledWith('/admin/sessions')
   })
 
   it('updates session and refreshes participant mappings', async () => {
@@ -373,6 +386,55 @@ describe('sessions CRUD server actions', () => {
     expect(mockRedirect).toHaveBeenCalledWith(
       '/admin/sessions/00000000-0000-4000-8000-000000000444'
     )
+  })
+
+  it('publishes a hidden session that still uses the default main image', async () => {
+    mockSelectLimit.mockResolvedValue([
+      { images: [], mainImage: '/session-default.png' },
+    ])
+    mockInsert.mockReturnValue({
+      values: vi.fn().mockResolvedValue(undefined),
+    })
+    mockQuery.sessions.findFirst.mockResolvedValue({
+      id: '00000000-0000-4000-8000-000000000555',
+      displayOnWebsite: false,
+      part: {
+        generationsId: 1,
+      },
+    })
+
+    const { updateSessionAction } =
+      await import('@/app/(admin)/admin/sessions/[sessionId]/edit/actions')
+
+    const result = await updateSessionAction(
+      '00000000-0000-4000-8000-000000000555',
+      { error: '' },
+      createFormData({
+        name: 'Hidden Session',
+        nameKo: '비공개 세션',
+        description: 'Session Description',
+        descriptionKo: '세션 설명',
+        mainImage: '',
+        contentImages: JSON.stringify([]),
+        startAt: '2026-03-20T10:00',
+        endAt: '2026-03-20T12:00',
+        location: 'Room 201',
+        locationKo: '201호',
+        maxCapacity: '30',
+        internalOpen: 'false',
+        publicOpen: 'true',
+        partId: '2',
+        participantId: JSON.stringify(['user-a']),
+        type: 'Part Session',
+        displayOnWebsite: 'true',
+      })
+    )
+
+    expect(result).toBeUndefined()
+    expect(mockUpdateSet).toHaveBeenCalledWith(
+      expect.objectContaining({ displayOnWebsite: true })
+    )
+    expect(mockUpdateSet.mock.calls[0]?.[0]).not.toHaveProperty('mainImage')
   })
 
   it('deletes session from shared delete action path', async () => {
