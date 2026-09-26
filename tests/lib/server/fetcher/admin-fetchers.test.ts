@@ -293,6 +293,18 @@ describe('admin fetchers', () => {
     expect(chain.limit).toHaveBeenCalledWith(1)
   })
 
+  it('queries members whose Better Auth id is not a uuid', async () => {
+    const rows = [{ id: 'aB3dE5fG7hJ9kL1mN3pQ5rS7tV9wX1yZ', name: 'New User' }]
+    const chain = createSelectChainWithLimitResult(rows)
+    mockSelect.mockReturnValue(chain)
+
+    const { getMember } = await import('@/lib/server/fetcher/admin/get-member')
+
+    await expect(
+      getMember('aB3dE5fG7hJ9kL1mN3pQ5rS7tV9wX1yZ')
+    ).resolves.toEqual(rows[0])
+  })
+
   it('fetches part detail and keeps related users', async () => {
     mockPartsFindFirst.mockResolvedValue({ id: 3, usersToParts: [] })
     const { getPart } = await import('@/lib/server/fetcher/admin/get-part')

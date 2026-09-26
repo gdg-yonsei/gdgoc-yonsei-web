@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
   cacheLife: cacheLifeConfig,
   cacheMaxMemorySize: hasSharedRedisCache ? 0 : undefined,
   poweredByHeader: false,
+  // satori >= 0.30 shapes text with harfbuzzjs, whose Emscripten loader reads
+  // hb.wasm from its own directory at runtime. Bundled by Turbopack that path
+  // becomes /ROOT/node_modules/... and every social image request 500s, so
+  // satori must be required from node_modules instead.
+  serverExternalPackages: ['satori'],
   experimental: {
     authInterrupts: true,
     // Reuses route subsets learned from real navigations so repeat visits to

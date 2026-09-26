@@ -6,14 +6,11 @@ import { desc, eq, sql } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { parts } from '@/db/schema/parts'
 import { generations } from '@/db/schema/generations'
-import { isUuid } from '@/lib/server/queries/public/uuid'
 
+// users.id 는 text 컬럼이고 Better Auth 가 UUID 가 아닌 임의 문자열 id 를
+// 발급하므로 UUID 형식 검증을 하지 않는다 (text 비교라 Postgres 500 도 없다).
 export const getMember = cache(
   async (userId: string, generationId?: number | null) => {
-    if (!isUuid(userId)) {
-      return undefined
-    }
-
     const result = await db
       .select({
         id: users.id,
