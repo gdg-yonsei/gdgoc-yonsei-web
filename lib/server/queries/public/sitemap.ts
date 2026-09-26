@@ -10,6 +10,7 @@ import {
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 import { getAbsoluteUrl } from '@/lib/seo/metadata'
 import { localizeSitemapEntries } from '@/lib/seo/sitemap'
 import { buildSitemapPaths } from '@/lib/site/sitemap-paths'
@@ -24,7 +25,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
 
   const [generations, sessions, projects] = await Promise.all([
     getGenerationSummaries(i18n.defaultLocale),
-    getSessionArchive(getSessionVisibilityBucket()),
+    getSessionArchive(getSessionVisibilityBucket(sessionWallClockNow())),
     getProjectShowcase(),
   ])
 

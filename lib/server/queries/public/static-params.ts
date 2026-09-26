@@ -5,6 +5,7 @@ import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
 import { getPublishedSessionsForSitemap } from '@/lib/server/queries/public/sessions'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 const EMPTY_STATIC_PARAM = '__empty__'
 
@@ -28,7 +29,8 @@ export async function getProjectStaticParams(locale: Locale) {
 }
 
 export async function getSessionStaticParams(locale: Locale) {
-  const visibilityBucket = getSessionVisibilityBucket()
+  // Same wall-clock bucket as the session pages and the proxy route check.
+  const visibilityBucket = getSessionVisibilityBucket(sessionWallClockNow())
   const sessions = await getPublishedSessionsForSitemap(
     locale,
     visibilityBucket

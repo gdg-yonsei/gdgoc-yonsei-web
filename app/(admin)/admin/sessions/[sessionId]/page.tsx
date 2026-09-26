@@ -67,9 +67,10 @@ export default async function SessionPage({
   const isRegistered = sessionData.userToSession.some(
     (participant) => participant.userId === session?.user?.id
   )
-  // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+  // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다. 종료 시각이 없는
+  // 세션은 등록·취소 액션과 같이 열린 것으로 본다.
   const registrationOpen =
-    sessionData.endAt !== null && sessionData.endAt > sessionWallClockNow()
+    sessionData.endAt === null || sessionData.endAt > sessionWallClockNow()
 
   return (
     <AdminDefaultLayout>
@@ -167,9 +168,7 @@ export default async function SessionPage({
             {sessionData.userToSession.map((user) => (
               <div
                 key={user.userId}
-                className={
-                  'flex items-center justify-between gap-2'
-                }
+                className={'flex items-center justify-between gap-2'}
               >
                 <span>
                   {user.user.firstNameKo
