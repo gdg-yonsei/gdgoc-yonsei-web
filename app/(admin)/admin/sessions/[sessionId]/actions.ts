@@ -55,7 +55,9 @@ export async function removeParticipantAction(
   sessionId: string,
   userId: string
 ) {
-  if (!isUuid(sessionId) || !isUuid(userId)) {
+  // users.id 는 Better Auth 가 발급하는 임의 문자열이라 UUID 가 아닐 수 있다.
+  // 삭제는 (sessionId, userId) 복합키에 한정되므로 형식 검증은 sessionId 만 한다.
+  if (!isUuid(sessionId) || !userId) {
     return forbidden()
   }
 

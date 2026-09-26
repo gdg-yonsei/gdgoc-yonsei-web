@@ -92,6 +92,8 @@ export default async function SessionPage({
         />
       </div>
       {sessionData.displayOnWebsite &&
+        sessionData.endAt !== null &&
+        sessionData.endAt <= sessionWallClockNow() &&
         sessionData.part?.generation?.name && (
           <div className={'flex items-center justify-start gap-2'}>
             <Link
