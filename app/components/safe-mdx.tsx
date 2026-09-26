@@ -43,7 +43,6 @@ export default function SafeMDX({
   return (
     <ReactMarkdown
       skipHtml
-      // @ts-expect-error - rehypeSanitize is not typed correctly
       rehypePlugins={[rehypeSanitize]}
       components={
         headingOffset > 0 ? shiftedHeadings(headingOffset) : undefined
