@@ -28,7 +28,8 @@ interface NewSessionProps {
   registerUrl: string
 }
 
-// 세션 날짜 포맷을 위한 options
+// 세션 날짜 포맷을 위한 options — 세션 시간은 Seoul 벽시계를 UTC 라벨로
+// 저장한 값이므로 서버 타임존과 무관하게 UTC 로 표시한다.
 const formatOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -36,6 +37,7 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   day: 'numeric',
   hour: '2-digit',
   minute: '2-digit',
+  timeZone: 'UTC',
 }
 
 /**

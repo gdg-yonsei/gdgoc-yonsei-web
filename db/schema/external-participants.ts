@@ -11,7 +11,9 @@ export const externalParticipants = pgTable('external_participants', {
   studentId: text('studentId'),
   email: text('email'),
   createdAt: timestamp('createdAt').defaultNow(),
-  sessionId: uuid('sessionId').notNull(),
+  sessionId: uuid('sessionId')
+    .notNull()
+    .references(() => sessions.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
 })
 
 export const externalParticipantsRelation = relations(

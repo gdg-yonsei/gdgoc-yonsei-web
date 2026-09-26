@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import { and, asc, desc, eq, ne, sql } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -30,7 +31,7 @@ const membershipPriority = sql<number>`
   END
 `
 
-export async function getMembers(scope?: AdminGenerationScope | null) {
+export const getMembers = cache(async (scope?: AdminGenerationScope | null) => {
   const rows = await db
     .selectDistinctOn([users.id, generations.id], {
       id: users.id,
@@ -81,4 +82,4 @@ export async function getMembers(scope?: AdminGenerationScope | null) {
 
     return (left.name ?? '').localeCompare(right.name ?? '')
   }) as AdminMemberListItem[]
-}
+})

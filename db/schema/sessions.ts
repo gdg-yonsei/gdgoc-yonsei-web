@@ -4,7 +4,6 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  serial,
   text,
   timestamp,
   uuid,
@@ -39,7 +38,10 @@ export const sessions = pgTable('sessions', {
   authorId: text('authorId')
     .notNull()
     .references(() => users.id, { onDelete: 'no action', onUpdate: 'cascade' }),
-  partId: serial('sessionId'),
+  partId: integer('partId').references(() => parts.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
   internalOpen: boolean('internalOpen').default(false),
   publicOpen: boolean('publicOpen').default(false),
   maxCapacity: integer('maxCapacity').default(0),

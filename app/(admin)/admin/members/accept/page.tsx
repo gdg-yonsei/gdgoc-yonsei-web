@@ -8,7 +8,11 @@ import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
 import Image from 'next/image'
 import { Metadata } from 'next'
 import DeleteForm from '@/app/(admin)/admin/members/accept/delete-form'
-import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import {
+  formatAdminDate,
+  getAdminLocale,
+  getAdminMessages,
+} from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: 'Approve Members',
@@ -19,6 +23,7 @@ export default async function AcceptMemberPage() {
   const t = getAdminMessages(locale)
   const unacceptedMembers = await db.query.users.findMany({
     where: eq(users.role, 'UNVERIFIED'),
+    orderBy: (member, { asc }) => [asc(member.createdAt)],
   })
 
   return (
@@ -47,8 +52,37 @@ export default async function AcceptMemberPage() {
                 height={100}
                 className={'size-10 shrink-0 rounded-lg object-cover'}
               />
-              <div className={'type-body-sm text-ink truncate font-semibold'}>
-                {member.name}
+              <div className={'flex min-w-0 flex-col gap-0.5'}>
+                <div
+                  className={'type-body-sm text-ink truncate font-semibold'}
+                >
+                  {member.name}
+                </div>
+                <div className={'type-caption text-ink-subtle truncate'}>
+                  {member.email}
+                </div>
+                {(member.githubId ||
+                  member.instagramId ||
+                  member.linkedInId) && (
+                  <div className={'type-caption text-ink-subtle truncate'}>
+                    {[
+                      member.githubId ? `GitHub: ${member.githubId}` : null,
+                      member.instagramId ? `IG: ${member.instagramId}` : null,
+                      member.linkedInId ? `LinkedIn` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </div>
+                )}
+                <div className={'type-caption text-ink-subtle'}>
+                  {t.createdAt}:{' '}
+                  {formatAdminDate(member.createdAt, locale, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    timeZone: 'Asia/Seoul',
+                  })}
+                </div>
               </div>
             </div>
             {/* 좁은 화면에서 버튼이 압축되어 라벨이 줄바꿈되지 않도록 감쌉니다. */}

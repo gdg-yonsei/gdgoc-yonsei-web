@@ -12,7 +12,7 @@ import SessionPartParticipantsInput from '@/app/components/admin/session-part-pa
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { getAuthSession } from '@/auth'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
@@ -37,14 +37,18 @@ export default async function EditSessionPage({
   await connection()
   const [{ sessionId }, locale] = await Promise.all([params, getAdminLocale()])
   const t = getAdminMessages(locale)
-  const [sessionData, session] = await Promise.all([
-    getSession(sessionId),
-    getAuthSession(),
-  ])
+  const sessionData = await getSession(sessionId)
 
   if (!sessionData) {
     notFound()
   }
+
+  // 세션 생성 권한이 있는 사용자만 수정 화면을 열 수 있다.
+  const session = await requirePermission(
+    'put',
+    'sessions',
+    sessionData.authorId
+  )
 
   const updateSessionActionWithSessionId = updateSessionAction.bind(
     null,

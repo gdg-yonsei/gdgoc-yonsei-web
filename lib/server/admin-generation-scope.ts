@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import { headers } from 'next/headers'
 import { desc, eq } from 'drizzle-orm'
 import db from '@/db'
@@ -116,7 +117,9 @@ export function serializeAdminGenerationScope(
     : String(scope.generationId)
 }
 
-export async function resolveAdminGenerationScope(
+// 요청 단위 메모이즈: 같은 요청 안의 모든 호출이 같은 scope 객체를 받아
+// 아래 fetcher 들의 cache() 가 객체 동일성으로 쿼리를 디듀프할 수 있다.
+export const resolveAdminGenerationScope = cache(async function (
   userId: string
 ): Promise<ResolvedAdminGenerationScope> {
   const role = await getUserRole(userId)
@@ -177,7 +180,7 @@ export async function resolveAdminGenerationScope(
       : null,
     selectedGeneration: fallback,
   }
-}
+})
 
 export async function normalizeAdminGenerationScopeValueForUser(
   userId: string,

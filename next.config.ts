@@ -49,14 +49,45 @@ const nextConfig: NextConfig = {
   },
   cacheLife: cacheLifeConfig,
   cacheMaxMemorySize: hasSharedRedisCache ? 0 : undefined,
+  poweredByHeader: false,
   experimental: {
     authInterrupts: true,
+    // Reuses route subsets learned from real navigations so repeat visits to
+    // the same or similar pages render instantly (requires Cache Components).
+    cachedNavigations: true,
+    // Hover intent upgrades a partial prefetch to the full page payload.
+    dynamicOnHover: true,
     exposeTestingApiInProductionBuild: exposeTestingApi,
-    optimizePackageImports: ['motion', 'jotai', 'react-qr-code'],
+    // Tailwind is atomic, so styles stay compact per page; inlining removes a
+    // render-blocking stylesheet request for first-time visitors.
+    inlineCss: true,
+    optimizePackageImports: [
+      '@heroicons/react',
+      'animejs',
+      'jotai',
+      'motion',
+      'react-qr-code',
+    ],
+    // Dynamic segments stay fresh after mutations (server actions invalidate
+    // the router cache); the static entry mainly extends how long prefetched
+    // public pages remain reusable on navigation.
+    staleTimes: {
+      dynamic: 30,
+      static: 600,
+    },
+    // Component chunks let navigation reuse shared code while still merging
+    // the initial page load into few requests.
+    turbopackChunking: {
+      generateComponentChunks: true,
+    },
     turbopackFileSystemCacheForBuild: true,
     turbopackRustReactCompiler: true,
+    // A dropped connection keeps navigations/fetches/mutations pending and
+    // retries once connectivity returns instead of throwing immediately.
+    useOffline: true,
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     // Admin uploads use UUID object keys, so a changed image always receives a
     // new URL and optimized variants can safely stay warm for a month.
     minimumCacheTTL: 60 * 60 * 24 * 31,

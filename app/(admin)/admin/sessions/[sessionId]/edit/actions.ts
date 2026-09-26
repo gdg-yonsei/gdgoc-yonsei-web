@@ -28,10 +28,20 @@ export async function updateSessionAction(
   _prevState: { error: string },
   formData: FormData
 ) {
+  // dataOwnerId 는 세션 작성자 id 여야 한다 (sessionId 가 아니라).
+  const sessionOwner = await db.query.sessions.findFirst({
+    where: eq(sessions.id, sessionId),
+    columns: { authorId: true },
+  })
+
+  if (!sessionOwner) {
+    return { error: 'Session not found' }
+  }
+
   const authorization = await authorizeAdminAction({
     action: 'put',
     resource: 'sessions',
-    dataOwnerId: sessionId,
+    dataOwnerId: sessionOwner.authorId,
   })
 
   if (!authorization.ok) {

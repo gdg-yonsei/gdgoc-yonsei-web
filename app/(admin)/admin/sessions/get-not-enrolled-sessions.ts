@@ -3,6 +3,7 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export default async function getUnenrolledUpcomingSessions(userId: string) {
   const participantsSub = db
@@ -16,7 +17,8 @@ export default async function getUnenrolledUpcomingSessions(userId: string) {
     .groupBy(userToSession.sessionId)
     .as('participants')
 
-  const now = new Date()
+  // startAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+  const now = sessionWallClockNow()
 
   return db
     .select({

@@ -2,6 +2,7 @@ import {
   BookOpenIcon,
   CodeBracketIcon,
   DocumentTextIcon,
+  UserPlusIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
 import AdminStatTile from '@/app/components/admin/stat-tile'
@@ -14,10 +15,12 @@ export default async function DashboardStats({
   scope,
   locale,
   t,
+  showPendingApprovals = false,
 }: {
   scope: AdminGenerationScope | null
   locale: Locale
   t: AdminMessages
+  showPendingApprovals?: boolean
 }) {
   const stats = await getAdminStats(scope)
 
@@ -52,8 +55,19 @@ export default async function DashboardStats({
     },
   ]
 
+  // 승인 권한이 있는 관리자에게만 대기 중인 가입 요청 수를 보여준다.
+  if (showPendingApprovals) {
+    tiles.push({
+      key: 'pendingApprovals',
+      label: t.pendingApprovals,
+      value: stats.pendingApprovals,
+      href: localizeAdminHref('/admin/members/accept', locale),
+      icon: UserPlusIcon,
+    })
+  }
+
   return (
-    <div className={'grid grid-cols-2 gap-3 lg:grid-cols-4'}>
+    <div className={'grid grid-cols-2 gap-3 lg:grid-cols-5'}>
       {tiles.map((tile) => (
         <AdminStatTile
           key={tile.key}
@@ -70,10 +84,10 @@ export default async function DashboardStats({
 export function DashboardStatsSkeleton() {
   return (
     <div
-      className={'grid grid-cols-2 gap-3 lg:grid-cols-4'}
+      className={'grid grid-cols-2 gap-3 lg:grid-cols-5'}
       aria-hidden={'true'}
     >
-      {Array.from({ length: 4 }).map((_, index) => (
+      {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
           className={

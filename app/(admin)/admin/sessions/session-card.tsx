@@ -48,6 +48,8 @@ export default function SessionCard({
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
+                // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+                timeZone: 'UTC',
               })
             : t.tbd}
         </div>

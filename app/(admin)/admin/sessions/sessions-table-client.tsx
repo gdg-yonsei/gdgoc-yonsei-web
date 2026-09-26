@@ -161,6 +161,8 @@ export default function SessionsTableClient({
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit',
+                // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+                timeZone: 'UTC',
               })
             : t.tbd,
       },
@@ -208,6 +210,7 @@ export default function SessionsTableClient({
               day: '2-digit',
               hour: '2-digit',
               minute: '2-digit',
+              timeZone: 'UTC',
             })
           : t.tbd,
         session.endAt
@@ -217,6 +220,7 @@ export default function SessionsTableClient({
               day: '2-digit',
               hour: '2-digit',
               minute: '2-digit',
+              timeZone: 'UTC',
             })
           : t.tbd,
         session.generationName,

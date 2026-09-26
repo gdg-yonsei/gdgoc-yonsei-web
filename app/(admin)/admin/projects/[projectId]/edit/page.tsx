@@ -13,7 +13,7 @@ import TagsInput from '@/app/components/admin/tags-input'
 import { getTagNames } from '@/lib/server/services/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
-import { getAuthSession } from '@/auth'
+import { requirePermission } from '@/lib/server/permission/require-permission'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
@@ -37,14 +37,18 @@ export default async function EditProjectPage({
   await connection()
   const [{ projectId }, locale] = await Promise.all([params, getAdminLocale()])
   const t = getAdminMessages(locale)
-  const [projectData, session] = await Promise.all([
-    getProject(projectId),
-    getAuthSession(),
-  ])
+  const projectData = await getProject(projectId)
 
   if (!projectData) {
     notFound()
   }
+
+  // 작성자(또는 CORE+)만 수정 화면을 열 수 있다.
+  const session = await requirePermission(
+    'put',
+    'projects',
+    projectData.authorId
+  )
 
   const updateProjectActionWithProjectId = updateProjectAction.bind(
     null,

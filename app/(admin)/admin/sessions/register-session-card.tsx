@@ -22,7 +22,7 @@ export default function RegisterSessionCard({
   startAt: Date | null
   endAt: Date | null
   maxCapacity: number | null
-  participants: number
+  participants: number | null
   locale: Locale
 }) {
   const t = getAdminMessages(locale)
@@ -49,6 +49,8 @@ export default function RegisterSessionCard({
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: false,
+                  // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+                  timeZone: 'UTC',
                 })
               : t.tbd}
           </p>
@@ -62,13 +64,14 @@ export default function RegisterSessionCard({
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: false,
+                  timeZone: 'UTC',
                 })
               : t.tbd}
           </p>
         </div>
 
         <span className={'admin-badge-neutral shrink-0'}>
-          {participants} / {maxCapacity ?? '∞'}
+          {participants ?? 0} / {maxCapacity ?? '∞'}
         </span>
       </div>
     </Link>

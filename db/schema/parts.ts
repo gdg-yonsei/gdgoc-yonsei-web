@@ -8,7 +8,10 @@ export const parts = pgTable('parts', {
   id: serial('id').primaryKey().notNull(),
   name: text('name').notNull(),
   description: text('description'),
-  generationsId: integer('generationId'),
+  generationsId: integer('generationId').references(() => generations.id, {
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+  }),
   createdAt: timestamp('createdAt').defaultNow(),
   updatedAt: timestamp('updatedAt').defaultNow(),
   displayOrder: integer('displayOrder').notNull().default(10),

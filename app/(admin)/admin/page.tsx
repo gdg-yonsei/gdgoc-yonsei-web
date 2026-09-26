@@ -102,7 +102,12 @@ export default async function AdminPage() {
       />
 
       <Suspense fallback={<DashboardStatsSkeleton />}>
-        <DashboardStats scope={scope} locale={locale} t={t} />
+        <DashboardStats
+          scope={scope}
+          locale={locale}
+          t={t}
+          showPendingApprovals={canApproveMember}
+        />
       </Suspense>
 
       <Suspense fallback={<AdminCardSkeleton />}>

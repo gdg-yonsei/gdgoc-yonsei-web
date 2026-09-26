@@ -13,6 +13,7 @@ import {
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 import { connection } from 'next/server'
 
 export default async function RegisterSessionPage({
@@ -39,9 +40,11 @@ export default async function RegisterSessionPage({
     sessionId
   )
 
+  // 등록 동작과 같은 조건: internalOpen 또는 publicOpen 이 열려 있고,
+  // endAt 은 Seoul 벽시계(UTC 라벨)로 저장된 값이므로 벽시계 기준으로 비교한다.
   if (
-    !sessionData.internalOpen ||
-    (sessionData.endAt && sessionData?.endAt < new Date())
+    !(sessionData.internalOpen || sessionData.publicOpen) ||
+    (sessionData.endAt && sessionData.endAt < sessionWallClockNow())
   ) {
     return (
       <AdminDefaultLayout>
@@ -131,6 +134,8 @@ export default async function RegisterSessionPage({
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false,
+                    // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+                    timeZone: 'UTC',
                   })
                 : t.tbd}
             </p>
@@ -144,6 +149,7 @@ export default async function RegisterSessionPage({
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false,
+                    timeZone: 'UTC',
                   })
                 : t.tbd}
             </p>
@@ -187,16 +193,22 @@ export default async function RegisterSessionPage({
           }
         >
           <div className={'text-2xl'}>
-            {t.remainingSeats}: {leftSeats}
+            {t.remainingSeats}: {Math.max(leftSeats, 0)}
           </div>
-          <DataForm
-            action={registerSessionActionWithSessionId}
-            className={'w-full'}
-          >
-            <SubmitButton className={'admin-btn-primary w-full'}>
-              {t.register}
-            </SubmitButton>
-          </DataForm>
+          {leftSeats > 0 ? (
+            <DataForm
+              action={registerSessionActionWithSessionId}
+              className={'w-full'}
+            >
+              <SubmitButton className={'admin-btn-primary w-full'}>
+                {t.register}
+              </SubmitButton>
+            </DataForm>
+          ) : (
+            <div className={'text-danger text-lg font-semibold'}>
+              {t.sessionFull}
+            </div>
+          )}
         </div>
       </div>
     </AdminDefaultLayout>

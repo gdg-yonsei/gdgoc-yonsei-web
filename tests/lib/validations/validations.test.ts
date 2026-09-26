@@ -230,12 +230,13 @@ describe('validation schemas', () => {
       }).success
     ).toBe(false)
 
+    // 참가자 목록은 비울 수 있다 — 편집에서 전원 제거를 허용한다.
     expect(
       sessionValidation.safeParse({
         ...validSession,
         participantId: [],
       }).success
-    ).toBe(false)
+    ).toBe(true)
 
     expect(
       sessionValidation.safeParse({

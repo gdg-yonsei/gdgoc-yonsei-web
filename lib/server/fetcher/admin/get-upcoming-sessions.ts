@@ -2,6 +2,7 @@ import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gte } from 'drizzle-orm'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export default async function getUserUpcomingSessions(userId: string) {
   return db
@@ -30,7 +31,11 @@ export default async function getUserUpcomingSessions(userId: string) {
     .from(userToSession)
     .innerJoin(sessions, eq(userToSession.sessionId, sessions.id))
     .where(
-      and(eq(userToSession.userId, userId), gte(sessions.startAt, new Date()))
+      and(
+        eq(userToSession.userId, userId),
+        // startAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+        gte(sessions.startAt, sessionWallClockNow())
+      )
     )
     .orderBy(asc(sessions.startAt))
 }
