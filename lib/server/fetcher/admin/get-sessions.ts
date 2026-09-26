@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import { and, desc, eq } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -14,33 +15,35 @@ export type AdminSessionListItem = {
   mainImage: string
   startAt: Date | null
   endAt: Date | null
-  partId: number
-  partName: string
+  partId: number | null
+  partName: string | null
   generationId: number | null
   generationName: string | null
 }
 
-export async function getSessions(scope?: AdminGenerationScope | null) {
-  return db
-    .select({
-      id: sessions.id,
-      name: sessions.name,
-      nameKo: sessions.nameKo,
-      mainImage: sessions.mainImage,
-      startAt: sessions.startAt,
-      endAt: sessions.endAt,
-      partId: sessions.partId,
-      partName: parts.name,
-      generationId: generations.id,
-      generationName: generations.name,
-    })
-    .from(sessions)
-    .innerJoin(parts, eq(sessions.partId, parts.id))
-    .leftJoin(generations, eq(parts.generationsId, generations.id))
-    .where(
-      scope?.kind === 'generation'
-        ? and(eq(parts.generationsId, scope.generationId))
-        : undefined
-    )
-    .orderBy(desc(sessions.startAt), desc(sessions.createdAt))
-}
+export const getSessions = cache(
+  async (scope?: AdminGenerationScope | null) => {
+    return db
+      .select({
+        id: sessions.id,
+        name: sessions.name,
+        nameKo: sessions.nameKo,
+        mainImage: sessions.mainImage,
+        startAt: sessions.startAt,
+        endAt: sessions.endAt,
+        partId: sessions.partId,
+        partName: parts.name,
+        generationId: generations.id,
+        generationName: generations.name,
+      })
+      .from(sessions)
+      .leftJoin(parts, eq(sessions.partId, parts.id))
+      .leftJoin(generations, eq(parts.generationsId, generations.id))
+      .where(
+        scope?.kind === 'generation'
+          ? and(eq(parts.generationsId, scope.generationId))
+          : undefined
+      )
+      .orderBy(desc(sessions.startAt), desc(sessions.createdAt))
+  }
+)

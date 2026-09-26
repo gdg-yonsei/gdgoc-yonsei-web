@@ -11,6 +11,18 @@ import type { Locale } from '@/i18n-config'
  *   Asia/Seoul.
  */
 
+const SEOUL_OFFSET_MS = 9 * 60 * 60 * 1000
+
+/**
+ * Session start/end are KST wall-clock values stored under a UTC label
+ * (`19:00Z` in the DB means 19:00 in Seoul). To compare them against "now",
+ * use Seoul's wall clock expressed in UTC — `Date.now() + 9h` — not the real
+ * instant. Returns a `Date` whose UTC fields equal current Seoul wall time.
+ */
+export function sessionWallClockNow(from: Date = new Date()): Date {
+  return new Date(from.getTime() + SEOUL_OFFSET_MS)
+}
+
 const WEEKDAYS: Record<Locale, readonly string[]> = {
   en: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
   ko: ['일', '월', '화', '수', '목', '금', '토'],

@@ -37,7 +37,6 @@ export const sessionValidation = z
       }),
     participantId: z
       .array(z.string().trim().min(1, 'Participant is required'))
-      .nonempty('Participant is required')
       .refine((list) => new Set(list).size === list.length, {
         message: 'Participant list must be unique.',
       }),

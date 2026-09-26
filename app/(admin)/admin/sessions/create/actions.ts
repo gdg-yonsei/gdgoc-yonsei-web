@@ -21,6 +21,7 @@ import {
   stripHtmlCharacters,
 } from '@/lib/server/actions/admin'
 import { getSessionPublicationImageError } from '@/lib/server/session-publication'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export async function createSessionAction(
   _prev: { error: string },
@@ -155,7 +156,8 @@ export async function createSessionAction(
     return { error: 'DB Update Error' }
   }
 
-  if (internalOpen && endAt > new Date()) {
+  // endAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+  if (internalOpen && endAt > sessionWallClockNow()) {
     const partGeneration = await db.query.parts.findFirst({
       where: eq(parts.id, Number(partId)),
       with: {

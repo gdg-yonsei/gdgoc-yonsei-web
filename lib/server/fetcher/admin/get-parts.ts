@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import { asc, count, desc, eq } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -17,7 +18,7 @@ export type AdminPartListItem = {
   generationName: string | null
 }
 
-export async function getParts(scope?: AdminGenerationScope | null) {
+export const getParts = cache(async (scope?: AdminGenerationScope | null) => {
   return db
     .select({
       id: parts.id,
@@ -38,4 +39,4 @@ export async function getParts(scope?: AdminGenerationScope | null) {
     )
     .groupBy(parts.id, generations.id)
     .orderBy(desc(parts.generationsId), asc(parts.displayOrder), asc(parts.id))
-}
+})

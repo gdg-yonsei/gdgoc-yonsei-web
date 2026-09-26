@@ -244,7 +244,9 @@ describe('admin fetchers', () => {
         generationName: '11th',
       }),
     ])
-    expect(chain.innerJoin).toHaveBeenCalledTimes(1)
+    // partId 가 nullable 이라 parts 는 left join — 파트가 삭제된 세션도 목록에 남는다.
+    expect(chain.leftJoin).toHaveBeenCalledTimes(2)
+    expect(chain.innerJoin).not.toHaveBeenCalled()
   })
 
   it('fetches generation detail by id without cache', async () => {
@@ -260,14 +262,23 @@ describe('admin fetchers', () => {
   })
 
   it('fetches project detail and returns first matched result', async () => {
-    mockProjectsFindFirst.mockResolvedValue({ id: 'project-1', name: 'First' })
+    const projectId = '00000000-0000-4000-8000-000000000001'
+    mockProjectsFindFirst.mockResolvedValue({ id: projectId, name: 'First' })
 
     const { getProject } =
       await import('@/lib/server/fetcher/admin/get-project')
-    const result = await getProject('project-1')
+    const result = await getProject(projectId)
 
-    expect(result).toEqual({ id: 'project-1', name: 'First' })
+    expect(result).toEqual({ id: projectId, name: 'First' })
     expect(mockProjectsFindFirst).toHaveBeenCalledTimes(1)
+  })
+
+  it('returns undefined for a non-uuid project id without hitting the db', async () => {
+    const { getProject } =
+      await import('@/lib/server/fetcher/admin/get-project')
+
+    await expect(getProject('project-1')).resolves.toBeUndefined()
+    expect(mockProjectsFindFirst).not.toHaveBeenCalled()
   })
 
   it('fetches member detail and returns first row', async () => {
@@ -276,7 +287,7 @@ describe('admin fetchers', () => {
     mockSelect.mockReturnValue(chain)
 
     const { getMember } = await import('@/lib/server/fetcher/admin/get-member')
-    const result = await getMember('user-1')
+    const result = await getMember('00000000-0000-4000-8000-000000000002')
 
     expect(result).toEqual({ id: 'user-1', name: 'User One' })
     expect(chain.limit).toHaveBeenCalledWith(1)
@@ -300,7 +311,7 @@ describe('admin fetchers', () => {
 
     const { getSession } =
       await import('@/lib/server/fetcher/admin/get-session')
-    const result = await getSession('session-1')
+    const result = await getSession('00000000-0000-4000-8000-000000000003')
 
     expect(result).toEqual({
       id: 'session-1',
@@ -318,12 +329,22 @@ describe('admin fetchers', () => {
     expect(mockUsersFindFirst).not.toHaveBeenCalled()
   })
 
-  it('returns null when session detail does not exist', async () => {
-    mockSessionsFindFirst.mockResolvedValue(null)
+  it('returns undefined when session detail does not exist', async () => {
+    mockSessionsFindFirst.mockResolvedValue(undefined)
     const { getSession } =
       await import('@/lib/server/fetcher/admin/get-session')
 
-    await expect(getSession('missing')).resolves.toBeNull()
+    await expect(
+      getSession('00000000-0000-4000-8000-000000000004')
+    ).resolves.toBeUndefined()
     expect(mockUsersFindFirst).not.toHaveBeenCalled()
+  })
+
+  it('returns undefined for a non-uuid session id without hitting the db', async () => {
+    const { getSession } =
+      await import('@/lib/server/fetcher/admin/get-session')
+
+    await expect(getSession('missing')).resolves.toBeUndefined()
+    expect(mockSessionsFindFirst).not.toHaveBeenCalled()
   })
 })

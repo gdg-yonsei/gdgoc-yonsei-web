@@ -76,7 +76,7 @@ export default function SessionPartParticipantsInput({
   parts,
 }: {
   defaultValue?: {
-    partId: number
+    partId: number | null
     selectedMembers: string[]
   }
   members: MemberOption[]

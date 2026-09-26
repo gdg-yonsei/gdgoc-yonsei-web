@@ -26,10 +26,13 @@ export type AdminGenerationListItem = {
 
 function formatDate(value: string | null | undefined, locale: Locale) {
   if (!value) return null
+  // 'YYYY-MM-DD' 기수 날짜는 UTC 자정으로 파싱된다 — UTC 로 표시해야
+  // 로컬 타임존에서 하루가 밀리지 않는다.
   return formatAdminDate(value, locale, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
+    timeZone: 'UTC',
   })
 }
 

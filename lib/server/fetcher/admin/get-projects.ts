@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { cache } from 'react'
 import db from '@/db'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
@@ -14,26 +15,28 @@ export type AdminProjectListItem = {
   generationName: string | null
 }
 
-export async function getProjects(scope?: AdminGenerationScope | null) {
-  const projectList = await db.query.projects.findMany({
-    where:
-      scope?.kind === 'generation'
-        ? (project, { eq }) => eq(project.generationId, scope.generationId)
-        : undefined,
-    with: {
-      generation: true,
-    },
-    orderBy: (project, { desc }) => [desc(project.updatedAt)],
-  })
+export const getProjects = cache(
+  async (scope?: AdminGenerationScope | null) => {
+    const projectList = await db.query.projects.findMany({
+      where:
+        scope?.kind === 'generation'
+          ? (project, { eq }) => eq(project.generationId, scope.generationId)
+          : undefined,
+      with: {
+        generation: true,
+      },
+      orderBy: (project, { desc }) => [desc(project.updatedAt)],
+    })
 
-  return projectList.map<AdminProjectListItem>((project) => ({
-    id: project.id,
-    name: project.name,
-    nameKo: project.nameKo,
-    mainImage: project.mainImage,
-    createdAt: project.createdAt,
-    updatedAt: project.updatedAt,
-    generationId: project.generationId,
-    generationName: project.generation?.name ?? null,
-  }))
-}
+    return projectList.map<AdminProjectListItem>((project) => ({
+      id: project.id,
+      name: project.name,
+      nameKo: project.nameKo,
+      mainImage: project.mainImage,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      generationId: project.generationId,
+      generationName: project.generation?.name ?? null,
+    }))
+  }
+)

@@ -28,6 +28,8 @@ export default async function GenerationActivityPeriod({
           year: 'numeric',
           month: 'long',
           day: 'numeric',
+          // 'YYYY-MM-DD' 날짜는 UTC 자정으로 파싱된다.
+          timeZone: 'UTC',
         })}
       </div>
       <div>-</div>
@@ -37,6 +39,7 @@ export default async function GenerationActivityPeriod({
               year: 'numeric',
               month: 'long',
               day: 'numeric',
+              timeZone: 'UTC',
             })
           : ''}
       </div>

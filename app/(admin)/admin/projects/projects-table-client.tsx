@@ -152,6 +152,7 @@ export default function ProjectsTableClient({
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
+            timeZone: 'Asia/Seoul',
           }),
       },
       {
@@ -164,6 +165,7 @@ export default function ProjectsTableClient({
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
+            timeZone: 'Asia/Seoul',
           }),
       },
     ],
@@ -188,11 +190,13 @@ export default function ProjectsTableClient({
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
+          timeZone: 'Asia/Seoul',
         }),
         formatAdminDate(project.updatedAt, locale, {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
+          timeZone: 'Asia/Seoul',
         }),
       ]),
     })

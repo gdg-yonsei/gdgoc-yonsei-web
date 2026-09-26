@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
@@ -18,10 +18,15 @@ const FORBIDDEN = [
   'lib/contents/archive-copy.ts',
 ]
 
+/** Path comparisons below use forward slashes; normalize Windows separators. */
+function toPosix(path: string): string {
+  return path.split(sep).join('/')
+}
+
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
-    return statSync(path).isDirectory() ? files(path) : [path]
+    return statSync(path).isDirectory() ? files(path) : [toPosix(path)]
   })
 }
 
@@ -38,7 +43,7 @@ function resolveImport(from: string, specifier: string): string | null {
     join(base, 'index.tsx'),
     join(base, 'index.ts'),
   ]) {
-    if (existsSync(candidate)) return candidate
+    if (existsSync(candidate)) return toPosix(candidate)
   }
   return null
 }

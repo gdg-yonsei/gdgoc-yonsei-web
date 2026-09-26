@@ -1,9 +1,13 @@
 import 'server-only'
+import { eq } from 'drizzle-orm'
+import db from '@/db'
+import { users } from '@/db/schema/users'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import { getProjects } from '@/lib/server/fetcher/admin/get-projects'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export type AdminStats = {
   members: number
@@ -11,6 +15,7 @@ export type AdminStats = {
   projects: number
   parts: number
   upcomingSessions: number
+  pendingApprovals: number
 }
 
 /**
@@ -23,14 +28,17 @@ export type AdminStats = {
 export async function getAdminStats(
   scope: AdminGenerationScope | null
 ): Promise<AdminStats> {
-  const [members, sessions, projects, parts] = await Promise.all([
-    getMembers(scope),
-    getSessions(scope),
-    getProjects(scope),
-    getParts(scope),
-  ])
+  const [members, sessions, projects, parts, pendingApprovals] =
+    await Promise.all([
+      getMembers(scope),
+      getSessions(scope),
+      getProjects(scope),
+      getParts(scope),
+      db.$count(users, eq(users.role, 'UNVERIFIED')),
+    ])
 
-  const now = Date.now()
+  // startAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+  const now = sessionWallClockNow().getTime()
   const upcomingSessions = sessions.filter(
     (session) => session.startAt && new Date(session.startAt).getTime() >= now
   ).length
@@ -41,5 +49,6 @@ export async function getAdminStats(
     projects: projects.length,
     parts: parts.length,
     upcomingSessions,
+    pendingApprovals,
   }
 }

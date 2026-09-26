@@ -23,7 +23,9 @@ interface PresignedUpload {
 }
 
 function toPublicImageUrl(objectKey: string) {
-  return `${process.env.NEXT_PUBLIC_IMAGE_URL}${objectKey}`
+  // NEXT_PUBLIC_IMAGE_URL 에 후행 슬래시가 있든 없든 한 개의 슬래시로 이어 붙인다.
+  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL ?? ''
+  return `${baseUrl.replace(/\/+$/, '')}/${objectKey}`
 }
 
 /**

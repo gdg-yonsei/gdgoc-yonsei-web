@@ -1,5 +1,6 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getAuthSession } from '@/auth'
 import { notFound } from 'next/navigation'
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
@@ -17,6 +18,12 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
+import handlePermission from '@/lib/server/permission/handle-permission'
+import {
+  RemoveParticipantButton,
+  UnregisterButton,
+} from '@/app/(admin)/admin/sessions/[sessionId]/participant-actions'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 
 export async function generateMetadata({
   params,
@@ -50,6 +57,20 @@ export default async function SessionPage({
 
   const session = await getAuthSession()
 
+  // 작성자·코어 이상만 참가자 명단을 직접 관리할 수 있다.
+  const canManageParticipants = await handlePermission(
+    session?.user?.id,
+    'put',
+    'sessions',
+    sessionData.authorId
+  )
+  const isRegistered = sessionData.userToSession.some(
+    (participant) => participant.userId === session?.user?.id
+  )
+  // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+  const registrationOpen =
+    sessionData.endAt !== null && sessionData.endAt > sessionWallClockNow()
+
   return (
     <AdminDefaultLayout>
       <AdminNavigationButton href={'/admin/sessions'}>
@@ -70,6 +91,27 @@ export default async function SessionPage({
           dataId={sessionId}
         />
       </div>
+      {sessionData.displayOnWebsite &&
+        sessionData.part?.generation?.name && (
+          <div className={'flex items-center justify-start gap-2'}>
+            <Link
+              href={`/ko/session/${sessionData.part.generation.name}/${sessionId}`}
+              target={'_blank'}
+              rel={'noreferrer noopener'}
+              className={'bg-primary rounded-lg p-1 px-3 text-sm text-white'}
+            >
+              {t.viewPublishedKo}
+            </Link>
+            <Link
+              href={`/en/session/${sessionData.part.generation.name}/${sessionId}`}
+              target={'_blank'}
+              rel={'noreferrer noopener'}
+              className={'bg-primary rounded-lg p-1 px-3 text-sm text-white'}
+            >
+              {t.viewPublishedEn}
+            </Link>
+          </div>
+        )}
       <div className={'admin-form-grid gap-2'}>
         <div className={'admin-form-grid-full'}>
           <BilingualPanel
@@ -121,24 +163,42 @@ export default async function SessionPage({
           </div>
           <div className={'admin-field-value max-h-48 overflow-y-auto'}>
             {sessionData.userToSession.map((user) => (
-              <div key={user.userId}>
-                {user.user.firstNameKo
-                  ? formatUserName(
-                      user.user.name,
-                      user.user.firstNameKo,
-                      user.user.lastNameKo,
-                      user.user.isForeigner,
-                      true
-                    )
-                  : formatUserName(
-                      user.user.name,
-                      user.user.firstName,
-                      user.user.lastName,
-                      user.user.isForeigner
-                    )}
+              <div
+                key={user.userId}
+                className={
+                  'flex items-center justify-between gap-2'
+                }
+              >
+                <span>
+                  {user.user.firstNameKo
+                    ? formatUserName(
+                        user.user.name,
+                        user.user.firstNameKo,
+                        user.user.lastNameKo,
+                        user.user.isForeigner,
+                        true
+                      )
+                    : formatUserName(
+                        user.user.name,
+                        user.user.firstName,
+                        user.user.lastName,
+                        user.user.isForeigner
+                      )}
+                </span>
+                {canManageParticipants && (
+                  <RemoveParticipantButton
+                    sessionId={sessionId}
+                    userId={user.userId}
+                  />
+                )}
               </div>
             ))}
           </div>
+          {isRegistered && registrationOpen && (
+            <div className={'pt-2'}>
+              <UnregisterButton sessionId={sessionId} />
+            </div>
+          )}
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.internalOpen}</div>
@@ -200,6 +260,8 @@ export default async function SessionPage({
                   hour: 'numeric',
                   minute: 'numeric',
                   day: 'numeric',
+                  // 세션 시간은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
+                  timeZone: 'UTC',
                 })
               : t.tbd}
           </div>
@@ -214,6 +276,7 @@ export default async function SessionPage({
                   hour: 'numeric',
                   minute: 'numeric',
                   day: 'numeric',
+                  timeZone: 'UTC',
                 })
               : t.tbd}
           </div>
@@ -227,6 +290,8 @@ export default async function SessionPage({
               hour: 'numeric',
               minute: 'numeric',
               day: 'numeric',
+              // createdAt/updatedAt 은 실제 시각이므로 Seoul 시간대로 표시한다.
+              timeZone: 'Asia/Seoul',
             })}
           </div>
         </div>
@@ -239,6 +304,7 @@ export default async function SessionPage({
               hour: 'numeric',
               minute: 'numeric',
               day: 'numeric',
+              timeZone: 'Asia/Seoul',
             })}
           </div>
         </div>

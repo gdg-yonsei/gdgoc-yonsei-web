@@ -8,6 +8,7 @@ import { parts } from '@/db/schema/parts'
 import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'
 import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
+import { sessionWallClockNow } from '@/lib/site/datetime'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import {
   BRACKET_VIEWBOX,
@@ -161,7 +162,10 @@ async function publicRouteExists(identity: PublicRouteIdentity) {
         eq(sessions.id, identity.id),
         eq(generations.name, identity.generation),
         eq(sessions.displayOnWebsite, true),
-        lte(sessions.endAt, new Date(getSessionVisibilityBucket()))
+        lte(
+          sessions.endAt,
+          new Date(getSessionVisibilityBucket(sessionWallClockNow()))
+        )
       )
     )
     .limit(1)
@@ -329,12 +333,12 @@ export async function proxy(request: NextRequest) {
 
     // e.g. incoming request is /products
     // The new URL is now /en-US/products
-    return NextResponse.redirect(
-      new URL(
-        `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
-        request.url
-      )
+    const redirectUrl = new URL(
+      `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
+      request.url
     )
+    redirectUrl.search = request.nextUrl.search
+    return NextResponse.redirect(redirectUrl)
   }
 }
 

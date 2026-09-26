@@ -28,10 +28,20 @@ export async function updateProjectAction(
   _prevState: { error: string },
   formData: FormData
 ) {
+  // dataOwnerId 는 프로젝트 행의 authorId 여야 한다 (projectId 가 아니라).
+  const project = await db.query.projects.findFirst({
+    where: eq(projects.id, projectId),
+    columns: { authorId: true },
+  })
+
+  if (!project) {
+    return { error: 'Project not found' }
+  }
+
   const authorization = await authorizeAdminAction({
     action: 'put',
     resource: 'projects',
-    dataOwnerId: projectId,
+    dataOwnerId: project.authorId,
   })
 
   if (!authorization.ok) {

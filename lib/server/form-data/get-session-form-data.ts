@@ -14,6 +14,22 @@ const ACTIVITY_CATEGORIES = [
 
 export type ActivityCategoryFormValue = (typeof ACTIVITY_CATEGORIES)[number]
 
+/**
+ * `datetime-local` 입력에는 타임존이 붙지 않는다. 세션 시간은 "Seoul 벽시계를
+ * UTC 라벨로 저장"하는 규칙이므로 서버 타임존과 무관하게 명시적으로 UTC 로
+ * 파싱한다 — `new Date(str)` 만 쓰면 서버 로컬 타임존으로 해석되어 개발
+ * 환경(KST)에서 9시간 어긋난다.
+ */
+function parseSessionDatetime(value: FormDataEntryValue | null): Date | null {
+  if (typeof value !== 'string' || value.length === 0) {
+    return null
+  }
+
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(value)
+    ? new Date(`${value}Z`)
+    : new Date(value)
+}
+
 function parseStringArrayFromJson(value: FormDataEntryValue | null): string[] {
   if (typeof value !== 'string' || value.length === 0) {
     return []
@@ -89,8 +105,8 @@ export default function getSessionFormData(formData: FormData): {
   const contentImagesArray = parseStringArrayFromJson(
     formData.get('contentImages')
   )
-  const startAt = new Date(formData.get('startAt') as string)
-  const endAt = new Date(formData.get('endAt') as string)
+  const startAt = parseSessionDatetime(formData.get('startAt'))
+  const endAt = parseSessionDatetime(formData.get('endAt'))
 
   return {
     name,
