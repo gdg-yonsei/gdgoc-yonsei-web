@@ -72,9 +72,12 @@ describe('sanitizeAuditInput', () => {
       uploadUrl: 'https://r2/x?X-Amz-Signature=abc',
       nested: { accessToken: 't', text: long },
       list: [{ password: 'p' }],
-    }) as Record<string, any>
+    }) as {
+      nested: { accessToken: string; text: string }
+      list: Array<{ password: string }>
+    }
     expect(sanitized.nested.accessToken).toBe('[redacted]')
-    expect(sanitized.list[0].password).toBe('[redacted]')
+    expect(sanitized.list[0]?.password).toBe('[redacted]')
     expect(sanitized.nested.text.length).toBeLessThan(2100)
     expect(sanitized.nested.text.endsWith('…[truncated]')).toBe(true)
   })
