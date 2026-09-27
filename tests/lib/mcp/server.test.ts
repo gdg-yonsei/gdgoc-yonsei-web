@@ -10,6 +10,7 @@ vi.mock('@/lib/mcp/audit', () => ({ withAudit }))
 vi.mock('@/db', () => ({ default: {} }))
 
 import { defineTool } from '@/lib/mcp/registry'
+import { ALL_TOOLS } from '@/lib/mcp/tools'
 import { createGymsMcpHandler } from '@/lib/mcp/server'
 import { fail, ok, type Actor } from '@/lib/server/services/admin/types'
 
@@ -124,5 +125,56 @@ describe('GYMS MCP server', () => {
     const response = await rpc(member, 'tools/call', { name: 'write_thing', arguments: {} })
     expect(response.error ?? response.result?.isError).toBeTruthy()
     expect(withAudit).not.toHaveBeenCalled()
+  })
+
+  it('serves JSON schemas for every real tool', async () => {
+    const full = createGymsMcpHandler(ALL_TOOLS)
+    const lead: Actor = {
+      userId: 'l',
+      role: 'LEAD',
+      scopes: ['gyms:read', 'gyms:write', 'gyms:admin'],
+      via: 'mcp',
+    }
+    const response = await full.fetch(
+      new Request('http://localhost/api/mcp', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json, text/event-stream',
+          'mcp-protocol-version': '2025-06-18',
+        },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+      }),
+      {
+        authInfo: {
+          token: 't',
+          clientId: 'c',
+          scopes: ['gyms:read', 'gyms:write', 'gyms:admin'],
+          expiresAt: Math.floor(Date.now() / 1000) + 60,
+          extra: { actor: lead },
+        },
+      }
+    )
+    const text = await response.text()
+    const body = JSON.parse(
+      text.startsWith('{')
+        ? text
+        : text
+            .split('\n')
+            .filter((line) => line.startsWith('data:'))
+            .map((line) => line.slice(5))
+            .join('')
+    )
+    const tools = body.result.tools as { name: string; inputSchema: { type: string; properties?: Record<string, unknown> } }[]
+    expect(tools.map((tool) => tool.name).sort()).toEqual(
+      ALL_TOOLS.map((tool) => tool.name).sort()
+    )
+    for (const tool of tools) {
+      expect(tool.inputSchema.type, tool.name).toBe('object')
+    }
+    const update = tools.find((tool) => tool.name === 'update_session')!
+    expect(Object.keys(update.inputSchema.properties ?? {})).toEqual(
+      expect.arrayContaining(['sessionId', 'name', 'startAt', 'participantIds'])
+    )
   })
 })

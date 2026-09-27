@@ -39,4 +39,31 @@ describe('MCP tool visibility', () => {
     expect(new Set(names).size).toBe(names.length)
     expect(names.every((name) => /^[a-z]+(_[a-z]+)*$/.test(name))).toBe(true)
   })
+
+  it('MEMBER never sees delete or role tools', () => {
+    const names = visible('MEMBER', ['gyms:read', 'gyms:write', 'gyms:admin'])
+    expect(names).not.toContain('delete_session')
+    expect(names).not.toContain('update_member_role')
+    expect(names).not.toContain('list_members')
+    expect(names).toContain('create_project')
+    expect(names).toContain('register_session')
+    expect(names).toContain('update_my_profile')
+  })
+
+  it('CORE cannot manage generations or roles but can delete sessions', () => {
+    const names = visible('CORE', ['gyms:read', 'gyms:write', 'gyms:admin'])
+    expect(names).not.toContain('create_generation')
+    expect(names).not.toContain('update_member_role')
+    expect(names).not.toContain('delete_part')
+    expect(names).toContain('delete_session')
+    expect(names).toContain('create_part')
+  })
+
+  it('ALUMNUS can read and edit only their profile', () => {
+    const names = visible('ALUMNUS', ['gyms:read', 'gyms:write', 'gyms:admin'])
+    expect(names).toContain('list_sessions')
+    expect(names).toContain('update_my_profile')
+    expect(names).not.toContain('create_project')
+    expect(names).not.toContain('create_session')
+  })
 })
