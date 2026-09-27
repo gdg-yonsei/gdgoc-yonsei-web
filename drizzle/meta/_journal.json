@@ -232,6 +232,13 @@
       "when": 1790510518455,
       "tag": "0032_tiny_iron_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1790512006436,
+      "tag": "0033_rainy_calypso",
+      "breakpoints": true
     }
   ]
 }
