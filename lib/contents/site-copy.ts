@@ -160,6 +160,7 @@ export type LandingCopy = {
     kickers: Record<ProgramKey, string>
   }
   funnel: { caption: string; steps: { value: string; label: string }[] }
+  programArt: { yonsei: string; korea: string; flags: string }
   parts: { tag: string; title: string; intro: string; partLink: string }
   log: { tag: string; title: string; link: string }
   releases: { tag: string; title: string; link: string }
@@ -222,6 +223,11 @@ export const landingCopy: Record<Locale, LandingCopy> = {
         { value: '3', label: 'in the Top 100' },
         { value: '1', label: 'Top 10 finalist' },
       ],
+    },
+    programArt: {
+      yonsei: 'Yonsei University emblem',
+      korea: 'Korea University emblem',
+      flags: 'The flags of Korea and Japan, crossed on their poles',
     },
     parts: {
       tag: '<parts />',
@@ -292,6 +298,11 @@ export const landingCopy: Record<Locale, LandingCopy> = {
         { value: '3', label: 'Top 100 선정' },
         { value: '1', label: 'Top 10 파이널리스트' },
       ],
+    },
+    programArt: {
+      yonsei: '연세대학교 엠블럼',
+      korea: '고려대학교 엠블럼',
+      flags: '깃대에 교차해 걸린 태극기와 일장기',
     },
     parts: {
       tag: '<parts />',

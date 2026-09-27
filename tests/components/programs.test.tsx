@@ -46,6 +46,20 @@ describe('Programs', () => {
     }
   })
 
+  it('pictures the joint programs by their hosts', () => {
+    render(<Programs lang="ko" />)
+
+    expect(
+      screen.getByRole('img', { name: '연세대학교 엠블럼' })
+    ).toHaveAttribute('src', '/logos/yonsei-university.svg')
+    expect(
+      screen.getByRole('img', { name: '고려대학교 엠블럼' })
+    ).toHaveAttribute('src', '/logos/korea-university.svg')
+    expect(
+      screen.getByRole('img', { name: '깃대에 교차해 걸린 태극기와 일장기' })
+    ).toBeInTheDocument()
+  })
+
   it('draws the Solution Challenge funnel as an ordered list', () => {
     render(<Programs lang="ko" />)
     const funnel = screen.getByRole('figure', {

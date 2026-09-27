@@ -610,13 +610,70 @@
     pointer-events: none;
   }
 
-  /* Wide cards set the funnel beside the Solution Challenge text, which
-     keeps that card short enough to stick below its slot like the rest. */
+  /* A picture of who a joint program brings together: the two host
+     universities' emblems, or the two countries' flags. */
+  .program-art {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .program-crests {
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  .program-crest {
+    block-size: clamp(5.5rem, 14vw, 8rem);
+    inline-size: auto;
+  }
+
+  .program-crests-cross {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--hue);
+  }
+
+  .bridge-flags {
+    inline-size: min(100%, 17rem);
+    block-size: auto;
+    /* The cards' hard "sticker" shadow, at flag scale. */
+    filter: drop-shadow(3px 3px 0 var(--s-fg));
+  }
+
+  .bridge-flags-pole,
+  .bridge-flags-edge {
+    stroke: var(--s-fg);
+    stroke-width: 1.5;
+  }
+
+  .bridge-flags-pole {
+    fill: var(--s-sheet);
+  }
+
+  .bridge-flags-edge {
+    fill: none;
+  }
+
+  .bridge-flags-finial {
+    fill: var(--color-g-yellow);
+    stroke: var(--s-fg);
+    stroke-width: 1.5;
+  }
+
+  /* Wide cards set the funnel or the art beside the text, which keeps
+     those cards short enough to stick below their slots like the rest. */
   @container program-stack (min-width: 42rem) {
-    .program-inner:has(> .sc-funnel) {
+    .program-inner:has(> .sc-funnel, > .program-art) {
       grid-template-columns: minmax(0, 1.5fr) minmax(14rem, 1fr);
       align-items: center;
       column-gap: 2.5rem;
+    }
+
+    .program-inner > .program-art {
+      margin-top: 0;
     }
 
     .program-inner > .sc-funnel {

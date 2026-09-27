@@ -4,6 +4,8 @@ import SectionTag from '@/app/components/site/section-tag'
 import activitySectionContents from '@/lib/contents/activity-section'
 import { landingCopy, type ProgramKey } from '@/lib/contents/site-copy'
 import type { Hue } from '@/lib/site/labels'
+import BridgeFlags from './bridge-flags'
+import DemoDayCrests from './demo-day-crests'
 import ProgramStackFit from './program-stack-fit'
 import ScFunnel from './sc-funnel'
 
@@ -57,6 +59,10 @@ export default function Programs({ lang }: { lang: Locale }) {
                 <p className="program-body">{DESCRIPTIONS.get(key)?.[lang]}</p>
               </div>
               {key === 'Solution Challenge' && <ScFunnel lang={lang} />}
+              {key === 'Yonsei X Korea Demo Day' && (
+                <DemoDayCrests lang={lang} />
+              )}
+              {key === 'The Bridge Hackathon' && <BridgeFlags lang={lang} />}
               <span aria-hidden="true" className="program-index">
                 {String(index + 1).padStart(2, '0')}
               </span>

@@ -31,6 +31,8 @@ const UNLOCALIZED_PUBLIC_PATHS = new Set([
   '/gdgoc-yonsei-logo.svg',
   '/googleda69d559d3e8d484.html',
   '/llms.txt',
+  '/logos/korea-university.svg',
+  '/logos/yonsei-university.svg',
   '/manifest.webmanifest',
   '/naver3b021b84fe69d06591a1108d6f26afac.html',
   '/opengraph-image.png',
