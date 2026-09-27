@@ -2,12 +2,8 @@ import 'server-only'
 
 import { cache } from 'react'
 import { headers } from 'next/headers'
-import { desc, eq } from 'drizzle-orm'
-import db from '@/db'
-import { generations } from '@/db/schema/generations'
-import { parts } from '@/db/schema/parts'
-import { usersToParts } from '@/db/schema/users-to-parts'
 import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 
 export const ADMIN_GENERATION_SCOPE_COOKIE = 'admin-generation-scope'
 export const ADMIN_GENERATION_SCOPE_ALL = 'all'
@@ -81,28 +77,9 @@ function getCookieFromHeader(
 
 async function loadAccessibleGenerationOptions(
   userId: string,
-  canAccessAll: boolean
+  role: Awaited<ReturnType<typeof getUserRole>>
 ): Promise<AdminGenerationOption[]> {
-  if (canAccessAll) {
-    return db
-      .select({
-        id: generations.id,
-        name: generations.name,
-      })
-      .from(generations)
-      .orderBy(desc(generations.id))
-  }
-
-  return db
-    .selectDistinct({
-      id: generations.id,
-      name: generations.name,
-    })
-    .from(usersToParts)
-    .innerJoin(parts, eq(usersToParts.partId, parts.id))
-    .innerJoin(generations, eq(parts.generationsId, generations.id))
-    .where(eq(usersToParts.userId, userId))
-    .orderBy(desc(generations.id))
+  return loadAccessibleGenerations({ userId, role })
 }
 
 export function serializeAdminGenerationScope(
@@ -124,7 +101,7 @@ export const resolveAdminGenerationScope = cache(async function (
 ): Promise<ResolvedAdminGenerationScope> {
   const role = await getUserRole(userId)
   const canAccessAll = role === 'LEAD'
-  const options = await loadAccessibleGenerationOptions(userId, canAccessAll)
+  const options = await loadAccessibleGenerationOptions(userId, role)
 
   if (options.length === 0) {
     return {
@@ -188,7 +165,7 @@ export async function normalizeAdminGenerationScopeValueForUser(
 ): Promise<string | null> {
   const role = await getUserRole(userId)
   const canAccessAll = role === 'LEAD'
-  const options = await loadAccessibleGenerationOptions(userId, canAccessAll)
+  const options = await loadAccessibleGenerationOptions(userId, role)
 
   if (options.length === 0) {
     return null
