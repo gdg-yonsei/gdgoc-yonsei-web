@@ -27,6 +27,8 @@ describe('locale proxy', () => {
       '/llms.txt',
       '/api/auth/session',
       '/auth/sign-in',
+      '/.well-known/oauth-protected-resource/api/mcp',
+      '/.well-known/oauth-authorization-server',
     ]) {
       const response = await proxy(request(path))
 

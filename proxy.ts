@@ -248,6 +248,8 @@ export async function proxy(request: NextRequest) {
   if (
     pathname === '/api' ||
     pathname.startsWith('/api/') ||
+    // OAuth/MCP 디스커버리 문서(RFC 8414, RFC 9728)는 고정 경로여야 한다.
+    pathname.startsWith('/.well-known/') ||
     pathname === '/auth' ||
     pathname.startsWith('/auth/') ||
     // 정적 폰트 에셋(Pretendard 서브셋 92개)은 로케일 프리픽스를 붙이면 안 됩니다.
