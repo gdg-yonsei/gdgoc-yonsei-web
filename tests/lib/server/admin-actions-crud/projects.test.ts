@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
+const mockGetUserRole = vi.fn()
 const mockInvalidateProjectPublicCache = vi.fn()
 const mockRedirect = vi.fn()
 const mockForbidden = vi.fn(() => 'FORBIDDEN')
@@ -32,6 +33,10 @@ const mockGetProjectCacheContext = vi.fn()
 
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
+}))
+
+vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
+  default: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -96,6 +101,7 @@ describe('projects CRUD server actions', () => {
 
     mockAuth.mockResolvedValue({ user: { id: 'lead-user-id' } })
     mockHandlePermission.mockResolvedValue(true)
+    mockGetUserRole.mockResolvedValue('LEAD')
 
     mockUpdateWhere.mockResolvedValue(undefined)
     mockUpdateSet.mockReturnValue({ where: mockUpdateWhere })
@@ -123,7 +129,7 @@ describe('projects CRUD server actions', () => {
     })
   })
 
-  it('returns user error when project author is unavailable in session', async () => {
+  it('forbids project creation when the session has no user id', async () => {
     mockAuth.mockResolvedValue({ user: {} })
 
     const { createProjectAction } =
@@ -146,7 +152,7 @@ describe('projects CRUD server actions', () => {
 
     const result = await createProjectAction({ error: '' }, formData)
 
-    expect(result).toEqual({ error: 'User not found' })
+    expect(result).toBe('FORBIDDEN')
     expect(mockInsert).not.toHaveBeenCalled()
   })
 
