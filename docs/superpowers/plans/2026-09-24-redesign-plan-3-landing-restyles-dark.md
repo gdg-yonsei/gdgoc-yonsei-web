@@ -699,7 +699,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
         oTP: 'Open Tech Project',
         'Solution Challenge': 'Google for Developers',
         'Yonsei X Korea Demo Day': 'GDGoC Korea와 함께',
-        'The Bridge Hackathon': '연세 · 고려 · 도쿄 · 와세다',
+        'The Bridge Hackathon': 'Yonsei · Korea · UTokyo · Waseda',
       },
     },
     funnel: {
