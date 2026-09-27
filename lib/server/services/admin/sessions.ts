@@ -29,6 +29,7 @@ import {
   canAccessGeneration,
 } from '@/lib/server/services/admin/authorize'
 import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
   fail,
   fromZodError,
@@ -54,30 +55,6 @@ function parseSessionInput(input: unknown) {
   return parsed.success
     ? ok(parsed.data)
     : fromZodError(parsed.error)
-}
-
-function publicUser(
-  user: {
-    id: string
-    name: string
-    firstName: string | null
-    lastName: string | null
-    firstNameKo: string | null
-    lastNameKo: string | null
-    image: string | null
-  } | null
-) {
-  return user
-    ? {
-        id: user.id,
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        firstNameKo: user.firstNameKo,
-        lastNameKo: user.lastNameKo,
-        image: user.image,
-      }
-    : null
 }
 
 export async function listSessions(
@@ -108,8 +85,8 @@ async function loadSessionDetail(sessionId: string) {
           generationName: part.generation?.name ?? null,
         }
       : null,
-    author: publicUser(author),
-    participants: participants.map((row) => publicUser(row.user)!),
+    author: author ? toPublicUser(author) : null,
+    participants: participants.map((row) => toPublicUser(row.user)),
   }
 }
 

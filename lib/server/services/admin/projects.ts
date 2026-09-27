@@ -26,6 +26,7 @@ import {
   canAccessGeneration,
 } from '@/lib/server/services/admin/authorize'
 import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
   fail,
   fromZodError,
@@ -72,15 +73,7 @@ async function loadProjectDetail(projectId: string) {
     ...fields,
     generationName: generation?.name ?? null,
     tags: projectsToTags.map((row) => row.tag.name),
-    participants: members.map((row) => ({
-      id: row.user.id,
-      name: row.user.name,
-      firstName: row.user.firstName,
-      lastName: row.user.lastName,
-      firstNameKo: row.user.firstNameKo,
-      lastNameKo: row.user.lastNameKo,
-      image: row.user.image,
-    })),
+    participants: members.map((row) => toPublicUser(row.user)),
   }
 }
 

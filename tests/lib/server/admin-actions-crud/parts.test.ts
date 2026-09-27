@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
+const mockGetUserRole = vi.fn()
 const mockInvalidatePartPublicCache = vi.fn()
 const mockRedirect = vi.fn()
 const mockForbidden = vi.fn(() => 'FORBIDDEN')
@@ -24,6 +25,10 @@ const mockGetGenerationNameForPartId = vi.fn()
 
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
+}))
+
+vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
+  default: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -76,6 +81,7 @@ describe('parts CRUD server actions', () => {
 
     mockAuth.mockResolvedValue({ user: { id: 'lead-user-id' } })
     mockHandlePermission.mockResolvedValue(true)
+    mockGetUserRole.mockResolvedValue('LEAD')
     mockGetGenerationNameById.mockResolvedValue({ name: '1st' })
     mockGetGenerationNameForPartId.mockResolvedValue('1st')
     mockResolveAdminGenerationScope.mockResolvedValue({
