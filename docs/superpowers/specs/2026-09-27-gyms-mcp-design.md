@@ -38,11 +38,11 @@ MCP 클라이언트
    │ ① POST /api/mcp (토큰 없음) → 401 + WWW-Authenticate: resource_metadata=…
    │ ② GET /.well-known/oauth-protected-resource
    │ ③ GET /.well-known/oauth-authorization-server
-   │ ④ POST /api/auth/oauth2/register            (DCR)
+   │ ④ CIMD(client_id = HTTPS 메타데이터 URL) 또는 POST /api/auth/oauth2/register (DCR)
    │ ⑤ 브라우저: /api/auth/oauth2/authorize → /auth/sign-in → /auth/mcp-consent
    │ ⑥ POST /api/auth/oauth2/token (PKCE)
    ▼
-app/api/mcp/[transport]/route.ts   mcp-handler + withMcpAuth (stateless Streamable HTTP)
+app/api/mcp/route.ts               requireMcpAuth + createMcpHandler (2026-07-28 + 2025 stateless 폴백)
    │ 토큰 검증 → Actor { userId, role(DB 최신), scopes, clientId }
    ▼
 lib/mcp/tools/*.ts                 얇은 어댑터: zod 입력 → 서비스 → JSON 결과
@@ -65,14 +65,14 @@ app/(admin)/**/actions.ts          기존 Server Action: FormData → Actor → 
 | 경로 | 역할 |
 |---|---|
 | `auth.ts` | `oauthProvider` 플러그인 추가 |
-| `db/schema/oauth-*.ts` | 플러그인 테이블 (client, access/refresh token, consent 등) |
+| `db/schema/oauth.ts` | 플러그인 테이블 (`auth@1.7.6 generate` 로 생성: oauth client/refresh token/consent/resource, jwks 등) |
 | `db/schema/mcp-audit-log.ts` | 감사 로그 테이블 |
 | `app/.well-known/oauth-protected-resource/route.ts` | RFC 9728 |
 | `app/.well-known/oauth-authorization-server/route.ts` | RFC 8414 |
-| `app/api/mcp/[transport]/route.ts` | MCP 엔드포인트 |
+| `app/api/mcp/route.ts` | MCP 엔드포인트 (`@modelcontextprotocol/server` v2 `createMcpHandler`, 요청마다 Actor 별 서버 생성) |
 | `app/(admin)/auth/mcp-consent/page.tsx` | 동의 화면 |
 | `lib/mcp/server.ts` | MCP 서버 팩토리, 도구 등록 |
-| `lib/mcp/auth.ts` | 토큰 → Actor |
+| `lib/mcp/auth.ts` | 검증된 JWT 클레임 → Actor (DB 역할 조회) |
 | `lib/mcp/registry.ts` | 도구 정의 타입, 스코프/역할 필터, `withAudit` 래퍼 |
 | `lib/mcp/tools/{context,generations,parts,members,profile,projects,sessions,images}.ts` | 도구 |
 | `lib/server/services/admin/{types,authorize,generation-scope}.ts` | 공용 타입·권한·기수 스코프 |
@@ -81,21 +81,30 @@ app/(admin)/**/actions.ts          기존 Server Action: FormData → Actor → 
 
 ## 3. OAuth 정책
 
-`@better-auth/oauth-provider@1.7.6` 을 `auth.ts` 에 추가한다(현재 better-auth 1.7.6 과 버전 일치).
+`@better-auth/mcp@1.7.6`(내부적으로 `@better-auth/oauth-provider`)과 `jwt()`, `@better-auth/cimd` 를
+`auth.ts` 에 추가한다(현재 better-auth 1.7.6 과 버전 일치).
 
-- **DCR 공개 등록**: `allowDynamicClientRegistration: true`,
-  `allowUnauthenticatedClientRegistration: true`. 등록만으로는 아무 권한이 없고,
-  사용자 로그인 + 동의 후에만 토큰이 발급된다. 등록은 기본 레이트리밋(분당 5회).
+- **클라이언트 등록**
+  - **CIMD** (MCP 2026-07-28 기본): `cimd({ fetchClientMetadataResource, metadataProfile: 'mcp-2026-07-28' })`.
+  - **DCR 공개 등록** (2025 세대 클라이언트 호환): `allowDynamicClientRegistration: true`,
+    `allowUnauthenticatedClientRegistration: true`. 등록만으로는 아무 권한이 없고, 사용자 로그인 +
+    동의 후에만 토큰이 발급된다. 등록은 기본 레이트리밋(분당 5회).
 - **공개 클라이언트 + PKCE S256 필수** (`token_endpoint_auth_method: none`).
-- **Opaque 토큰, 해시 저장**: `disableJwtPlugin: true`, `storeTokens: 'hashed'`.
-- **리소스 바인딩**: 토큰 audience 는 `${SITE_URL}/api/mcp` 만 허용.
-- **수명**: access 1시간, refresh 30일(회전). `gyms:admin` 포함 access 토큰은
+- **JWT access 토큰**: `@better-auth/mcp` 의 `requireMcpAuth` 가 JWKS 로 서명·issuer·audience·만료를
+  검증한다. 토큰은 무상태라 발급 후 만료 전까지 유효하다. 대신 **역할은 매 요청 DB 에서 다시 읽으므로**
+  강등·UNVERIFIED 전환·계정 삭제는 즉시 반영된다(설계 결정, 2026-09-27 사용자 승인).
+- **리소스 바인딩**: `mcp({ resource: `${SITE_URL}/api/mcp` })`. 토큰 audience 는 이 값만 허용한다.
+  RFC 9728 보호 리소스 메타데이터는 플러그인이 제공하고, `/.well-known/*` 라우트에서 노출한다.
+- **수명**: access 1시간, refresh 30일(회전, MCP 기본 재사용 간격 30초). `gyms:admin` 포함 access 토큰은
   `scopeExpirations` 로 15분.
 - **스코프**: `gyms:read`, `gyms:write`, `gyms:admin`, `offline_access`.
-- **로그인**: 기존 `/auth/sign-in` 재사용. OAuth 요청 계속 파라미터를 로그인 후 이어받도록 수정.
-- **동의 화면 `/auth/mcp-consent`**: 클라이언트 이름, redirect URI 호스트, 요청 스코프 표시.
-  사용자 역할로 실제 권한이 생기는 스코프만 선택 가능. **UNVERIFIED 는 거절**한다.
-- **회수**: 플러그인 RFC 7009 revoke 엔드포인트와 계정 삭제 cascade 만 제공.
+- **로그인**: 기존 `/auth/sign-in` 재사용. 플러그인이 붙여 주는 서명된 OAuth 쿼리를 로그인 후
+  `/api/auth/oauth2/authorize` 로 이어받도록 수정한다.
+- **동의 화면 `/auth/mcp-consent`**: 서명 쿼리를 `verifyOAuthQueryParams` 로 검증한 뒤 클라이언트 이름,
+  redirect URI 호스트, 요청 스코프를 표시한다. 사용자 역할로 실제 권한이 생기는 스코프만 선택 가능.
+  **UNVERIFIED 는 거절**한다. 승인은 `authClient.oauth2.consent({ accept, scope })`.
+- **회수**: 플러그인 RFC 7009 revoke 엔드포인트(refresh 토큰)와 계정 삭제 cascade 만 제공.
+- **프록시**: `proxy.ts` 의 로케일 리다이렉트 제외 목록에 `/.well-known/` 를 추가한다.
 
 ## 4. 권한 모델
 
@@ -182,7 +191,7 @@ allowed = scopeGrants(token.scopes, tool.scope)
    - 반환: `{ uploadUrl, objectKey, headers, curlExample }`.
 2. 클라이언트가 R2 로 직접 PUT.
 3. `complete_image_upload({ objectKey })`
-   - `HeadObject` 로 존재·크기·타입 확인, Range GET 으로 앞부분 매직 바이트 검사.
+   - `HeadObject` 로 존재·크기·타입 확인, Range GET 으로 앞부분 매직 바이트 검사(JPEG/PNG/WebP/GIF/AVIF).
    - 실패 시 객체 삭제. 성공 시 최종 공개 URL 반환.
 
 ### ② 서버 가져오기 (셸이 없는 클라이언트)
@@ -196,7 +205,9 @@ allowed = scopeGrants(token.scopes, tool.scope)
 
 ### 공통
 
-- 객체 키: `{sessions|projects|members}/{uuid}.{ext}` (기존 규칙).
+- `target` 은 `sessions | projects | users`(멤버 프로필 이미지의 기존 접두사가 `users/`).
+- 객체 키: `{target}/{uuid}.{ext}` (기존 규칙). 허용 확장자는 기존과 같되 **MCP 업로드는 SVG 를 받지 않는다**
+  (매직 바이트로 검증할 수 없고 스크립트를 담을 수 있다): jpg, jpeg, png, webp, gif, avif.
 - 생성·수정 도구의 이미지 필드는 우리 R2 버킷 URL 만 받는다.
 - 참조가 끊긴 이미지는 기존 `deleteRemovedR2Images` 흐름으로 정리된다.
 - 공개 사이트는 `next/image` 로 렌더링하므로 대용량 원본은 첫 최적화가 느릴 수 있다(알려진 한계).
@@ -233,6 +244,8 @@ type ServiceResult<T> =
 - `authorize(actor, action, resource, ownerId?)` 는 기존 매트릭스를 쓰고,
   `actor.scopes !== 'session'` 일 때만 스코프를 추가로 검사한다.
 - 기수 스코프 해석은 쿠키를 읽지 않는 순수 함수 `resolveGenerationScope(actor, requested?)` 로 분리한다.
+- Next 16 의 `updateTag` 는 Server Action 에서만 호출할 수 있다. MCP 라우트는 `AsyncLocalStorage`
+  컨텍스트 안에서 도구를 실행하고, 그 안에서는 `updateCacheTags` 가 `revalidateTag(tag, { expire: 0 })` 로 전환한다.
 
 ### 웹 어댑터
 
