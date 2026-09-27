@@ -1,8 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { findUser, dbUpdate, dbDelete, getMembers, loadAccessibleGenerations } =
-  vi.hoisted(() => ({
+const {
+  findUser,
+  findUsers,
+  dbUpdate,
+  dbDelete,
+  getMembers,
+  loadAccessibleGenerations,
+} = vi.hoisted(() => ({
     findUser: vi.fn(),
+    findUsers: vi.fn(),
     dbUpdate: vi.fn(),
     dbDelete: vi.fn(),
     getMembers: vi.fn(),
@@ -11,7 +18,7 @@ const { findUser, dbUpdate, dbDelete, getMembers, loadAccessibleGenerations } =
 
 vi.mock('@/db', () => ({
   default: {
-    query: { users: { findFirst: findUser } },
+    query: { users: { findFirst: findUser, findMany: findUsers } },
     update: dbUpdate,
     delete: dbDelete,
   },
@@ -34,6 +41,7 @@ import {
   approveMember,
   deleteMember,
   listMembers,
+  listPendingMembers,
   updateMember,
   updateMemberRole,
 } from '@/lib/server/services/admin/members'
@@ -116,5 +124,17 @@ describe('members service', () => {
     expect(result.ok && result.data.map((m) => m.id)).toEqual(['b'])
     const byName = await listMembers(actor('CORE'), { query: '앨리' })
     expect(byName.ok && byName.data.map((m) => m.id)).toEqual(['a'])
+  })
+
+  it('lists pending sign-ups only for users who can approve them', async () => {
+    findUsers.mockResolvedValue([{ id: 'p1', name: 'Pending', email: 'p@x.com' }])
+    await expect(listPendingMembers(actor('CORE'))).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    await expect(listPendingMembers(actor('LEAD'))).resolves.toEqual({
+      ok: true,
+      data: [{ id: 'p1', name: 'Pending', email: 'p@x.com' }],
+    })
   })
 })

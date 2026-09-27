@@ -66,6 +66,36 @@ export async function listMembers(
   return ok(members)
 }
 
+/** 가입 승인을 기다리는(UNVERIFIED) 사용자. 승인 권한이 있는 사람만 본다. */
+export async function listPendingMembers(actor: Actor): Promise<
+  ServiceResult<
+    {
+      id: string
+      name: string
+      email: string
+      image: string | null
+      createdAt: Date
+    }[]
+  >
+> {
+  const authorization = authorize(actor, 'put', 'membersRole')
+  if (!authorization.ok) return authorization
+
+  return ok(
+    await db.query.users.findMany({
+      where: eq(users.role, 'UNVERIFIED'),
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        createdAt: true,
+      },
+      orderBy: (user, { desc }) => [desc(user.createdAt)],
+    })
+  )
+}
+
 export async function getMemberDetail(
   actor: Actor,
   memberId: string
