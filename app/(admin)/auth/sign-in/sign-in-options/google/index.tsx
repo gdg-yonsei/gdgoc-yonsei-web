@@ -7,7 +7,11 @@ import { redirect } from 'next/navigation'
  * Github 로그인 버튼
  * @constructor
  */
-export default function SignInWithGoogle() {
+export default function SignInWithGoogle({
+  callbackURL,
+}: {
+  callbackURL: string
+}) {
   return (
     <form
       action={async () => {
@@ -15,7 +19,7 @@ export default function SignInWithGoogle() {
         const result = await auth.api.signInSocial({
           body: {
             provider: 'google',
-            callbackURL: '/admin',
+            callbackURL,
             errorCallbackURL: '/auth/sign-in',
           },
           headers: await headers(),

@@ -12,7 +12,11 @@ import { useRouter } from 'next/navigation'
  * Passkey 로그인 버튼
  * @constructor
  */
-export default function PasskeySignInButton() {
+export default function PasskeySignInButton({
+  callbackURL,
+}: {
+  callbackURL: string
+}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isAuthenticating, setIsAuthenticating] = useAtom(isAuthenticatingState)
@@ -27,7 +31,12 @@ export default function PasskeySignInButton() {
           try {
             const result = await authClient.signIn.passkey()
             if (!result.error) {
-              router.replace('/admin')
+              // OAuth 요청을 이어 갈 때는 API 라우트로 가야 하므로 전체 이동한다.
+              if (callbackURL.startsWith('/api/')) {
+                window.location.assign(callbackURL)
+              } else {
+                router.replace(callbackURL)
+              }
             }
           } finally {
             setIsAuthenticating(false)
