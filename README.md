@@ -85,10 +85,24 @@ Your app will be available at http://localhost:3000.
 - pnpm format → Format code with Prettier
 - pnpm lint → Run ESLint checks
 
+🤖 GYMS MCP
+
+The admin system can be driven from MCP clients over OAuth, limited by your role.
+
+- Claude Code: `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp`
+- Claude.ai / Desktop: Settings → Connectors → Add custom connector → `https://gdgoc.yonsei.ac.kr/api/mcp`
+- Cursor: add `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }` to `mcp.json`
+
+Sign in with your usual account and choose the scopes on the consent screen.
+Details: [`docs/architecture/mcp.md`](./docs/architecture/mcp.md)
+
+⸻
+
 🧱 Architecture Docs
 
 - Caching and invalidation guide: [`docs/architecture/caching.md`](./docs/architecture/caching.md)
 - CI/CD pipeline and deploy setup: [`docs/architecture/ci-cd.md`](./docs/architecture/ci-cd.md)
+- GYMS MCP server, OAuth and permissions: [`docs/architecture/mcp.md`](./docs/architecture/mcp.md)
 
 ⸻
 
