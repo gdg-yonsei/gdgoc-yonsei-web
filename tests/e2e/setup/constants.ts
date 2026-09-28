@@ -9,6 +9,10 @@ export const PASSKEY_STORAGE_STATE = path.join(
   AUTH_DIR,
   'passkey-storage-state.json'
 )
+export const MEMBER_STORAGE_STATE = path.join(
+  AUTH_DIR,
+  'member-storage-state.json'
+)
 export const UNVERIFIED_STORAGE_STATE = path.join(
   AUTH_DIR,
   'unverified-storage-state.json'
