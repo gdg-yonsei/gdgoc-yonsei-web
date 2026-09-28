@@ -13,7 +13,7 @@ import {
   memberListTag,
 } from '@/lib/server/cache'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
-import { asc, eq } from 'drizzle-orm'
+import { asc, eq, sql } from 'drizzle-orm'
 
 async function getSharedMembersByGeneration(generationName: string) {
   'use cache: remote'
@@ -61,7 +61,16 @@ async function getSharedMembersByGeneration(generationName: string) {
                 },
               },
             },
-            orderBy: [asc(usersToParts.userType), asc(usersToParts.userId)],
+            // Use the role in this part, not the user's global admin role.
+            orderBy: [
+              asc(sql`case ${usersToParts.userType}
+                when 'Core' then 0
+                when 'Primary' then 1
+                when 'Secondary' then 2
+                else 3
+              end`),
+              asc(usersToParts.userId),
+            ],
           },
         },
         orderBy: [asc(parts.displayOrder), asc(parts.id)],

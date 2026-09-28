@@ -335,7 +335,7 @@ const adminMessages = {
     tagsLimit: '태그는 최대 12개예요.',
     removeTag: '태그 삭제',
     member: '멤버',
-    doubleBoardMembers: '복수 운영진',
+    doubleBoardMembers: '더블 보드 멤버',
     mainImage: '메인 이미지',
     contentImages: '본문 이미지',
     startTime: '시작 시간',
