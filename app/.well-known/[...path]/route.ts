@@ -1,3 +1,4 @@
+import { connection } from 'next/server'
 import { auth } from '@/auth'
 
 /**
@@ -7,8 +8,10 @@ import { auth } from '@/auth'
  * `/.well-known/oauth-protected-resource[/api/mcp]`(RFC 9728)를,
  * oauth-provider 는 `/.well-known/oauth-authorization-server`(RFC 8414)와
  * `/.well-known/openid-configuration` 을 처리한다. 둘 다 Better Auth 핸들러로 넘긴다.
+ * 빌드 중 사전 렌더링되지 않도록 요청 시점에만 실행한다.
  */
-export function GET(request: Request) {
+export async function GET(request: Request) {
+  await connection()
   return auth.handler(request)
 }
 

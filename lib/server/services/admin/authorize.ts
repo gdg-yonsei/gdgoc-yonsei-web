@@ -98,3 +98,52 @@ export async function canAccessGeneration(
   const accessible = await loadAccessibleGenerations(actor)
   return accessible.some((generation) => generation.id === generationId)
 }
+
+/** CORE 가 고칠 수 있는 대상 역할. 자기와 같거나 높은 역할(CORE, LEAD)은 LEAD 만 고친다. */
+const CORE_EDITABLE_ROLES: ReadonlySet<Role> = new Set([
+  'MEMBER',
+  'ALUMNUS',
+  'UNVERIFIED',
+])
+
+/**
+ * 멤버 정보를 고칠 수 있는지. 본인은 항상, LEAD 는 누구나,
+ * CORE 는 낮은 역할의 멤버만. (역할 매트릭스의 `put members` 위에 얹는 대상 제한)
+ */
+export function canEditMember(
+  actor: Pick<Actor, 'userId' | 'role'>,
+  target: { id: string; role: Role }
+): boolean {
+  if (target.id === actor.userId) return true
+  if (actor.role === 'LEAD') return true
+  return actor.role === 'CORE' && CORE_EDITABLE_ROLES.has(target.role)
+}
+
+/**
+ * 다른 사람의 이메일은 LEAD 만 바꾼다. 이메일로 소셜 계정을 연결하므로
+ * 남의 이메일을 바꿀 수 있으면 그 계정을 가로챌 수 있다.
+ */
+export function canChangeMemberEmail(
+  actor: Pick<Actor, 'userId' | 'role'>,
+  targetId: string
+): boolean {
+  return targetId === actor.userId || actor.role === 'LEAD'
+}
+
+/**
+ * 두 사람이 한 기수라도 함께 속해 있는지. 본인과 LEAD 는 항상 true.
+ * 연락처(이메일·전화·학번) 공개와 CORE 의 멤버 수정 범위를 정한다.
+ */
+export async function sharesGenerationWith(
+  actor: Pick<Actor, 'userId' | 'role'>,
+  memberId: string
+): Promise<boolean> {
+  if (memberId === actor.userId || actor.role === 'LEAD') return true
+  const [mine, theirs] = await Promise.all([
+    loadAccessibleGenerations(actor),
+    // 역할과 무관하게 소속 파트의 기수만 본다.
+    loadAccessibleGenerations({ userId: memberId, role: 'MEMBER' }),
+  ])
+  const mineIds = new Set(mine.map((generation) => generation.id))
+  return theirs.some((generation) => mineIds.has(generation.id))
+}

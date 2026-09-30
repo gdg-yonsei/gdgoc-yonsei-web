@@ -1,4 +1,3 @@
-import { getAuthSession } from '@/auth'
 import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
 import {
   parseRequestBody,
@@ -6,7 +5,8 @@ import {
   privateForbidden,
   privateJson,
 } from '@/lib/server/http'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
+import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import { getSafeImageExtension } from '@/lib/server/r2-object-key'
 import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 
@@ -25,10 +25,9 @@ export async function POST(request: Request) {
 
   const { memberId, fileName: originalFileName, type } = body.data
 
-  const session = await getAuthSession()
-  if (
-    !(await handlePermission(session?.user?.id, 'put', 'members', memberId))
-  ) {
+  // CORE 는 낮은 역할 멤버의 이미지만 바꿀 수 있다(멤버 수정과 같은 규칙).
+  const actor = await getWebActor()
+  if (!actor || !(await authorizeMemberEdit(actor, memberId)).ok) {
     return privateForbidden()
   }
 

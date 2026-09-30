@@ -1,12 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { insertValues, insert } = vi.hoisted(() => {
-  const insertValues = vi.fn()
-  return { insertValues, insert: vi.fn(() => ({ values: insertValues })) }
-})
-vi.mock('@/db', () => ({ default: { insert } }))
+const { insertValues, insert, findClient, deleteWhere, dbDelete } = vi.hoisted(
+  () => {
+    const insertValues = vi.fn()
+    const deleteWhere = vi.fn(async () => undefined)
+    return {
+      insertValues,
+      insert: vi.fn(() => ({ values: insertValues })),
+      findClient: vi.fn(),
+      deleteWhere,
+      dbDelete: vi.fn(() => ({ where: deleteWhere })),
+    }
+  }
+)
+vi.mock('@/db', () => ({
+  default: {
+    insert,
+    delete: dbDelete,
+    query: { oauthClient: { findFirst: findClient } },
+  },
+}))
 
-import { sanitizeAuditInput, withAudit } from '@/lib/mcp/audit'
+import { pruneAuditLog, sanitizeAuditInput, withAudit } from '@/lib/mcp/audit'
 import type { Actor } from '@/lib/server/services/admin/types'
 
 const actor: Actor = {
@@ -22,6 +37,34 @@ describe('withAudit', () => {
     insert.mockClear()
     insertValues.mockReset()
     insertValues.mockResolvedValue(undefined)
+    findClient.mockReset()
+    findClient.mockResolvedValue({ name: 'Claude' })
+  })
+
+  it('records the OAuth client name', async () => {
+    await withAudit(actor, { tool: 'update_session' }, {}, async () => ({
+      ok: true,
+      data: null,
+    }))
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({ clientName: 'Claude' })
+    )
+  })
+
+  it('records the target of a failed call from its input', async () => {
+    await withAudit(
+      actor,
+      { tool: 'delete_session' },
+      { sessionId: 's9' },
+      async () => ({
+        ok: false,
+        code: 'FORBIDDEN',
+        message: 'no',
+      })
+    )
+    expect(insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({ outcome: 'error', targetId: 's9' })
+    )
   })
 
   it('records a successful call with its target id', async () => {
@@ -64,7 +107,7 @@ describe('withAudit', () => {
       expect.objectContaining({
         outcome: 'error',
         errorCode: 'FORBIDDEN',
-        targetId: null,
+        targetId: 's',
       })
     )
   })
@@ -95,5 +138,53 @@ describe('sanitizeAuditInput', () => {
     expect(sanitized.list[0]?.password).toBe('[redacted]')
     expect(sanitized.nested.text.length).toBeLessThan(2100)
     expect(sanitized.nested.text.endsWith('…[truncated]')).toBe(true)
+  })
+})
+
+describe('sanitizeAuditInput privacy', () => {
+  it('drops query strings from URLs and redacts contact details', () => {
+    expect(
+      sanitizeAuditInput({
+        url: 'https://example.com/a.png?X-Amz-Signature=abc&token=t#frag',
+        email: 'x@x.com',
+        telephone: '010',
+        studentId: '2026',
+        name: 'Kept',
+      })
+    ).toEqual({
+      url: 'https://example.com/a.png',
+      email: '[redacted]',
+      telephone: '[redacted]',
+      studentId: '[redacted]',
+      name: 'Kept',
+    })
+  })
+})
+
+describe('pruneAuditLog', () => {
+  it('deletes year-old rows at most once an hour', async () => {
+    const start = Date.UTC(2099, 0, 1)
+    dbDelete.mockClear()
+    deleteWhere.mockClear()
+    await pruneAuditLog(start)
+    expect(deleteWhere).toHaveBeenCalledTimes(1)
+    await pruneAuditLog(start + 10 * 60 * 1000)
+    expect(dbDelete).toHaveBeenCalledTimes(1)
+    await pruneAuditLog(start + 61 * 60 * 1000)
+    expect(dbDelete).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('sanitizeAuditInput embedded URLs', () => {
+  it('strips query strings from URLs inside longer text', () => {
+    expect(
+      sanitizeAuditInput({
+        description:
+          'Slides: https://r2.example/a.pdf?X-Amz-Signature=secret&X-Amz-Credential=k, see (https://example.com/p?token=t#x).',
+      })
+    ).toEqual({
+      description:
+        'Slides: https://r2.example/a.pdf, see (https://example.com/p).',
+    })
   })
 })

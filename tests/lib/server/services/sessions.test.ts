@@ -30,11 +30,17 @@ vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
 vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: vi.fn(),
 }))
+vi.mock('@/lib/server/services/cache-context', () => ({
+  getGenerationNameForPartId: vi.fn(async () => 'gen'),
+  getSessionCacheContext: vi.fn(async () => ({ generationName: 'gen' })),
+}))
 
 import {
+  createSession,
   deleteSession,
   registerForSession,
   removeSessionParticipant,
+  unregisterFromSession,
   updateSession,
 } from '@/lib/server/services/admin/sessions'
 import type { Actor } from '@/lib/server/services/admin/types'
@@ -132,5 +138,52 @@ describe('sessions service', () => {
     const result = await updateSession(core, SID, {})
     // 권한 검사를 통과하고 입력 검증 단계까지 간다.
     expect(result).toMatchObject({ ok: false, code: 'VALIDATION' })
+  })
+
+  it('refuses a part outside the generation the web form was opened in', async () => {
+    findPart.mockResolvedValue({ generationsId: 5, name: 'Web' })
+    const result = await createSession(
+      core,
+      {
+        name: 'S',
+        nameKo: '에스',
+        description: 'd',
+        descriptionKo: 'ㄷ',
+        mainImage: null,
+        contentImages: [],
+        location: 'L',
+        locationKo: '엘',
+        maxCapacity: 10,
+        internalOpen: false,
+        publicOpen: false,
+        startAt: new Date('2027-01-01T10:00:00Z'),
+        endAt: new Date('2027-01-01T12:00:00Z'),
+        partId: '3',
+        participantId: [],
+        type: 'Part Session',
+        category: 'tech_talk',
+        displayOnWebsite: true,
+      },
+      { expectedGenerationId: 4 }
+    )
+    expect(result).toEqual({
+      ok: false,
+      code: 'VALIDATION',
+      message:
+        'The selected part does not belong to the current generation scope.',
+    })
+  })
+
+  it('requires the gyms:write scope to register or unregister', async () => {
+    const reader: Actor = { ...core, scopes: ['gyms:read'] }
+    await expect(registerForSession(reader, SID)).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    await expect(unregisterFromSession(reader, SID)).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    expect(findSession).not.toHaveBeenCalled()
   })
 })

@@ -16,7 +16,7 @@ import {
   authorize,
   canAccessGeneration,
 } from '@/lib/server/services/admin/authorize'
-import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
   fail,
@@ -69,7 +69,9 @@ export async function listParts(
   const authorization = authorize(actor, 'get', 'partsPage')
   if (!authorization.ok) return authorization
 
-  const scope = await resolveGenerationScope(actor, generation)
+  const resolved = await resolveRequestedGenerationScope(actor, generation)
+  if (!resolved.ok) return resolved
+  const scope = resolved.data
   if (!scope) return ok([])
 
   return ok(await getParts(scope))

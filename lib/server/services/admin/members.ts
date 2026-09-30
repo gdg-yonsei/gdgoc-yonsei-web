@@ -11,8 +11,13 @@ import {
   type AdminMemberListItem,
 } from '@/lib/server/fetcher/admin/get-members'
 import { logger } from '@/lib/server/logger'
-import { authorize } from '@/lib/server/services/admin/authorize'
-import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import {
+  authorize,
+  canChangeMemberEmail,
+  canEditMember,
+  sharesGenerationWith,
+} from '@/lib/server/services/admin/authorize'
+import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import {
   fail,
   fromZodError,
@@ -26,7 +31,17 @@ import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { memberValidation } from '@/lib/validations/member'
 
 export type MemberInput = z.input<typeof memberValidation>
-export type MemberDetail = NonNullable<Awaited<ReturnType<typeof getMember>>>
+export type MemberRecord = NonNullable<Awaited<ReturnType<typeof getMember>>>
+
+/** 연락처는 같은 기수·본인·LEAD 에게만 보인다. */
+export type MemberDetail = Omit<
+  MemberRecord,
+  'email' | 'telephone' | 'studentId'
+> & {
+  email: string | null
+  telephone: string | null
+  studentId: number | null
+}
 
 const NOT_FOUND = 'Member not found'
 
@@ -47,7 +62,9 @@ export async function listMembers(
   const authorization = authorize(actor, 'get', 'membersPage')
   if (!authorization.ok) return authorization
 
-  const scope = await resolveGenerationScope(actor, generation)
+  const resolved = await resolveRequestedGenerationScope(actor, generation)
+  if (!resolved.ok) return resolved
+  const scope = resolved.data
   if (!scope) return ok([])
 
   const needle = query?.trim().toLowerCase()
@@ -107,10 +124,25 @@ export async function getMemberDetail(
   }
 
   const member = await getMember(memberId)
+  if (!member) return fail('NOT_FOUND', NOT_FOUND)
+
+  if (await sharesGenerationWith(actor, memberId)) return ok(member)
+  return ok({ ...member, email: null, telephone: null, studentId: null })
+}
+
+/** 고칠 권한이 있는 사람에게 연락처를 포함한 전체 기록을 준다(부분 수정 병합용). */
+export async function getMemberForEdit(
+  actor: Actor,
+  memberId: string
+): Promise<ServiceResult<MemberRecord>> {
+  const editable = await authorizeMemberEdit(actor, memberId)
+  if (!editable.ok) return editable
+
+  const member = await getMember(memberId)
   return member ? ok(member) : fail('NOT_FOUND', NOT_FOUND)
 }
 
-export function memberToInput(detail: MemberDetail): MemberInput {
+export function memberToInput(detail: MemberRecord): MemberInput {
   return {
     name: detail.name,
     firstName: detail.firstName ?? '',
@@ -130,17 +162,56 @@ export function memberToInput(detail: MemberDetail): MemberInput {
   }
 }
 
+/**
+ * 이 멤버의 정보(프로필 이미지 포함)를 고칠 수 있는지 확인하고 대상을 돌려준다.
+ * 역할 매트릭스 + 대상 역할 제한(CORE 는 낮은 역할만)을 함께 본다.
+ */
+export async function authorizeMemberEdit(
+  actor: Actor,
+  memberId: string
+): Promise<ServiceResult<{ id: string; role: Role; email: string }>> {
+  const authorization = authorize(actor, 'put', 'members', memberId)
+  if (!authorization.ok) return authorization
+
+  const target = await db.query.users.findFirst({
+    where: eq(users.id, memberId),
+    columns: { id: true, role: true, email: true },
+  })
+  if (!target) return fail('NOT_FOUND', NOT_FOUND)
+  if (!canEditMember(actor, target)) {
+    return fail(
+      'FORBIDDEN',
+      'Only a LEAD can edit members whose role is CORE or LEAD.'
+    )
+  }
+  if (!(await sharesGenerationWith(actor, memberId))) {
+    return fail(
+      'FORBIDDEN',
+      'You can only edit members of your own generations.'
+    )
+  }
+  return ok(target)
+}
+
 /** 멤버 정보를 갱신한다. 역할 필드는 역할 변경 권한이 있을 때만 반영한다. */
 export async function updateMember(
   actor: Actor,
   memberId: string,
   input: unknown
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'put', 'members', memberId)
-  if (!authorization.ok) return authorization
+  const editable = await authorizeMemberEdit(actor, memberId)
+  if (!editable.ok) return editable
+  const target = editable.data
 
   const parsed = memberValidation.safeParse(input)
   if (!parsed.success) return fromZodError(parsed.error)
+
+  if (
+    parsed.data.email !== target.email &&
+    !canChangeMemberEmail(actor, memberId)
+  ) {
+    return fail('FORBIDDEN', "Only a LEAD can change another member's email.")
+  }
 
   const {
     name,

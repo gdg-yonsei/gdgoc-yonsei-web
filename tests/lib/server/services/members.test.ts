@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
+  sharesGenerationWith,
+  getMember,
   findUser,
   findUsers,
   dbUpdate,
@@ -8,6 +10,8 @@ const {
   getMembers,
   loadAccessibleGenerations,
 } = vi.hoisted(() => ({
+  sharesGenerationWith: vi.fn(),
+  getMember: vi.fn(),
   findUser: vi.fn(),
   findUsers: vi.fn(),
   dbUpdate: vi.fn(),
@@ -29,7 +33,9 @@ vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
     typeof import('@/lib/server/services/admin/authorize')
   >()),
   loadAccessibleGenerations,
+  sharesGenerationWith,
 }))
+vi.mock('@/lib/server/fetcher/admin/get-member', () => ({ getMember }))
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: vi.fn(),
 }))
@@ -40,6 +46,8 @@ vi.mock('@/lib/server/services/cache-context', () => ({
 import {
   approveMember,
   deleteMember,
+  getMemberDetail,
+  getMemberForEdit,
   listMembers,
   listPendingMembers,
   updateMember,
@@ -75,6 +83,7 @@ const validMember = {
 beforeEach(() => {
   vi.clearAllMocks()
   loadAccessibleGenerations.mockResolvedValue([{ id: 1, name: '1st' }])
+  sharesGenerationWith.mockResolvedValue(true)
 })
 
 describe('members service', () => {
@@ -153,6 +162,126 @@ describe('members service', () => {
     await expect(listPendingMembers(actor('LEAD'))).resolves.toEqual({
       ok: true,
       data: [{ id: 'p1', name: 'Pending', email: 'p@x.com' }],
+    })
+  })
+
+  it('forbids CORE from editing a LEAD profile', async () => {
+    findUser.mockResolvedValue({
+      id: 'lead',
+      role: 'LEAD',
+      email: 'lead@x.com',
+    })
+    await expect(
+      updateMember(actor('CORE'), 'lead', {
+        ...validMember,
+        email: 'lead@x.com',
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it("forbids CORE from changing a member's email", async () => {
+    findUser.mockResolvedValue({ id: 'm1', role: 'MEMBER', email: 'old@x.com' })
+    await expect(
+      updateMember(actor('CORE'), 'm1', {
+        ...validMember,
+        email: 'attacker@x.com',
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it('lets CORE edit a member profile when the email is unchanged', async () => {
+    findUser.mockResolvedValue({
+      id: 'm1',
+      role: 'MEMBER',
+      email: 'm@example.com',
+    })
+    const where = vi.fn(async () => undefined)
+    const set = vi.fn(() => ({ where }))
+    dbUpdate.mockReturnValue({ set })
+    await expect(
+      updateMember(actor('CORE'), 'm1', validMember)
+    ).resolves.toEqual({
+      ok: true,
+      data: { id: 'm1' },
+    })
+  })
+
+  it('returns NOT_FOUND for an unknown member', async () => {
+    findUser.mockResolvedValue(undefined)
+    await expect(
+      updateMember(actor('LEAD'), 'ghost', validMember)
+    ).resolves.toMatchObject({
+      ok: false,
+      code: 'NOT_FOUND',
+    })
+  })
+
+  it('hides contact details of members outside your generations', async () => {
+    getMember.mockResolvedValue({
+      id: 'x',
+      name: 'X',
+      email: 'x@x.com',
+      telephone: '010',
+      studentId: 1,
+    })
+    sharesGenerationWith.mockResolvedValue(false)
+    await expect(getMemberDetail(actor('CORE'), 'x')).resolves.toMatchObject({
+      ok: true,
+      data: {
+        id: 'x',
+        name: 'X',
+        email: null,
+        telephone: null,
+        studentId: null,
+      },
+    })
+  })
+
+  it('shows contact details to members of the same generation', async () => {
+    getMember.mockResolvedValue({
+      id: 'x',
+      name: 'X',
+      email: 'x@x.com',
+      telephone: '010',
+      studentId: 1,
+    })
+    await expect(getMemberDetail(actor('CORE'), 'x')).resolves.toMatchObject({
+      data: { email: 'x@x.com', telephone: '010', studentId: 1 },
+    })
+  })
+
+  it('forbids CORE from editing a member outside their generations', async () => {
+    findUser.mockResolvedValue({
+      id: 'm1',
+      role: 'MEMBER',
+      email: 'm@example.com',
+    })
+    sharesGenerationWith.mockResolvedValue(false)
+    await expect(
+      updateMember(actor('CORE'), 'm1', validMember)
+    ).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it('getMemberForEdit returns the full record to someone who may edit it', async () => {
+    findUser.mockResolvedValue({
+      id: 'm1',
+      role: 'MEMBER',
+      email: 'm@example.com',
+    })
+    getMember.mockResolvedValue({
+      id: 'm1',
+      email: 'm@example.com',
+      telephone: '010',
+    })
+    await expect(getMemberForEdit(actor('CORE'), 'm1')).resolves.toMatchObject({
+      ok: true,
+      data: { telephone: '010' },
     })
   })
 })

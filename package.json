@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "drizzle-kit generate && drizzle-kit migrate && next build",
+    "build": "drizzle-kit generate && drizzle-kit migrate && pnpm auth:prepare && next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -26,6 +26,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed-dev.ts",
+    "auth:prepare": "tsx --conditions=react-server scripts/prepare-auth.ts",
     "email:dev": "email dev"
   },
   "dependencies": {

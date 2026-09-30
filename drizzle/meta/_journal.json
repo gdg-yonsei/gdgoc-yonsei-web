@@ -239,6 +239,13 @@
       "when": 1790512006436,
       "tag": "0033_rainy_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1790765594620,
+      "tag": "0034_lively_cannonball",
+      "breakpoints": true
     }
   ]
 }

@@ -27,6 +27,7 @@ export type ServiceErrorCode =
   | 'NOT_FOUND'
   | 'VALIDATION'
   | 'CONFLICT'
+  | 'RATE_LIMITED'
   | 'INTERNAL'
 
 export type ServiceFailure = {

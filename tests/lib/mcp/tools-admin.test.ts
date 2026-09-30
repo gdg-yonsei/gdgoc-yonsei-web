@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const services = vi.hoisted(() => ({
   listMembers: vi.fn(),
   getMemberDetail: vi.fn(),
+  getMemberForEdit: vi.fn(),
   updateMember: vi.fn(),
   memberToInput: vi.fn(),
   updateMemberRole: vi.fn(),
@@ -71,8 +72,8 @@ describe('member tools', () => {
     })
   })
 
-  it('update_member merges the patch into the current record', async () => {
-    services.getMemberDetail.mockResolvedValue({ ok: true, data: { id: 'u' } })
+  it('update_member merges the patch into the full (unredacted) record', async () => {
+    services.getMemberForEdit.mockResolvedValue({ ok: true, data: { id: 'u' } })
     services.memberToInput.mockReturnValue({
       name: 'Old',
       email: 'old@x.com',

@@ -25,7 +25,9 @@ export async function createSessionAction(
     return { error: 'Select a specific generation scope before creating data.' }
   }
 
-  const result = await createSession(actor, getSessionFormData(formData))
+  const result = await createSession(actor, getSessionFormData(formData), {
+    expectedGenerationId: resolvedScope.scope.generationId,
+  })
   if (!result.ok) {
     return toActionError(result)
   }
