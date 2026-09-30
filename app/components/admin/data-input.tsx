@@ -18,6 +18,7 @@ import { cn } from '@/lib/cn'
  * @param type - input type
  * @param isChecked - input checked 여부
  * @param required - is Essential
+ * @param readOnly - 값은 제출되지만 고칠 수 없다(disabled 와 달리 폼에 포함된다)
  * @constructor
  */
 export default function DataInput({
@@ -28,6 +29,7 @@ export default function DataInput({
   type,
   isChecked,
   required = false,
+  readOnly = false,
 }: {
   defaultValue: string | number | undefined | null
   name: string
@@ -36,6 +38,7 @@ export default function DataInput({
   type?: HTMLInputTypeAttribute
   isChecked?: boolean
   required?: boolean
+  readOnly?: boolean
 }) {
   const inputId = useId()
   const isCheckbox = type === 'checkbox'
@@ -55,7 +58,8 @@ export default function DataInput({
         type={type ? type : 'text'}
         className={cn(
           'admin-input',
-          isCheckbox && 'mr-auto ml-0.5 size-6 w-auto p-0'
+          isCheckbox && 'mr-auto ml-0.5 size-6 w-auto p-0',
+          readOnly && 'text-ink-muted cursor-not-allowed'
         )}
         defaultValue={defaultValue ?? ''}
         name={name}
@@ -63,6 +67,7 @@ export default function DataInput({
         defaultChecked={isChecked}
         required={required}
         aria-required={required || undefined}
+        readOnly={readOnly}
       />
     </div>
   )

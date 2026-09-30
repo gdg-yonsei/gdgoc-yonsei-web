@@ -11,7 +11,11 @@ import {
   type AdminMemberListItem,
 } from '@/lib/server/fetcher/admin/get-members'
 import { logger } from '@/lib/server/logger'
-import { authorize } from '@/lib/server/services/admin/authorize'
+import {
+  authorize,
+  canChangeMemberEmail,
+  canEditMember,
+} from '@/lib/server/services/admin/authorize'
 import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import {
   fail,
@@ -130,17 +134,50 @@ export function memberToInput(detail: MemberDetail): MemberInput {
   }
 }
 
+/**
+ * 이 멤버의 정보(프로필 이미지 포함)를 고칠 수 있는지 확인하고 대상을 돌려준다.
+ * 역할 매트릭스 + 대상 역할 제한(CORE 는 낮은 역할만)을 함께 본다.
+ */
+export async function authorizeMemberEdit(
+  actor: Actor,
+  memberId: string
+): Promise<ServiceResult<{ id: string; role: Role; email: string }>> {
+  const authorization = authorize(actor, 'put', 'members', memberId)
+  if (!authorization.ok) return authorization
+
+  const target = await db.query.users.findFirst({
+    where: eq(users.id, memberId),
+    columns: { id: true, role: true, email: true },
+  })
+  if (!target) return fail('NOT_FOUND', NOT_FOUND)
+  if (!canEditMember(actor, target)) {
+    return fail(
+      'FORBIDDEN',
+      'Only a LEAD can edit members whose role is CORE or LEAD.'
+    )
+  }
+  return ok(target)
+}
+
 /** 멤버 정보를 갱신한다. 역할 필드는 역할 변경 권한이 있을 때만 반영한다. */
 export async function updateMember(
   actor: Actor,
   memberId: string,
   input: unknown
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'put', 'members', memberId)
-  if (!authorization.ok) return authorization
+  const editable = await authorizeMemberEdit(actor, memberId)
+  if (!editable.ok) return editable
+  const target = editable.data
 
   const parsed = memberValidation.safeParse(input)
   if (!parsed.success) return fromZodError(parsed.error)
+
+  if (
+    parsed.data.email !== target.email &&
+    !canChangeMemberEmail(actor, memberId)
+  ) {
+    return fail('FORBIDDEN', "Only a LEAD can change another member's email.")
+  }
 
   const {
     name,

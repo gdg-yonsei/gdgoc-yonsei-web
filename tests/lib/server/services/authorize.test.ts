@@ -4,6 +4,8 @@ vi.mock('@/db', () => ({ default: {} }))
 
 import {
   authorize,
+  canChangeMemberEmail,
+  canEditMember,
   requiredScopeFor,
   roleCouldEver,
 } from '@/lib/server/services/admin/authorize'
@@ -65,5 +67,54 @@ describe('roleCouldEver', () => {
     expect(roleCouldEver('MEMBER', 'delete', 'projects')).toBe(false)
     expect(roleCouldEver('CORE', 'put', 'membersRole')).toBe(false)
     expect(roleCouldEver('ALUMNUS', 'post', 'projects')).toBe(false)
+  })
+})
+
+describe('canEditMember', () => {
+  const web = (role: Role, userId = 'me'): Actor => ({
+    userId,
+    role,
+    scopes: 'session',
+    via: 'web',
+  })
+
+  it('lets anyone edit their own record', () => {
+    expect(canEditMember(web('MEMBER'), { id: 'me', role: 'MEMBER' })).toBe(
+      true
+    )
+  })
+
+  it('lets LEAD edit anyone', () => {
+    expect(canEditMember(web('LEAD'), { id: 'x', role: 'LEAD' })).toBe(true)
+  })
+
+  it.each([
+    ['MEMBER', true],
+    ['ALUMNUS', true],
+    ['UNVERIFIED', true],
+    ['CORE', false],
+    ['LEAD', false],
+  ] as const)('CORE editing a %s → %s', (role, allowed) => {
+    expect(canEditMember(web('CORE'), { id: 'x', role })).toBe(allowed)
+  })
+
+  it('never lets MEMBER edit someone else', () => {
+    expect(canEditMember(web('MEMBER'), { id: 'x', role: 'ALUMNUS' })).toBe(
+      false
+    )
+  })
+})
+
+describe('canChangeMemberEmail', () => {
+  it('allows only the owner or a LEAD', () => {
+    const actor = (role: Role): Actor => ({
+      userId: 'me',
+      role,
+      scopes: 'session',
+      via: 'web',
+    })
+    expect(canChangeMemberEmail(actor('MEMBER'), 'me')).toBe(true)
+    expect(canChangeMemberEmail(actor('CORE'), 'x')).toBe(false)
+    expect(canChangeMemberEmail(actor('LEAD'), 'x')).toBe(true)
   })
 })

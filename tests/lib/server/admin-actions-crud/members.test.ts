@@ -151,8 +151,13 @@ describe('members CRUD server actions', () => {
   })
 
   it('updates member profile without role field when role permission is denied', async () => {
-    // CORE 는 멤버 정보를 고칠 수 있지만 역할은 바꿀 수 없다.
+    // CORE 는 낮은 역할 멤버의 정보를 고칠 수 있지만 역할·이메일은 바꿀 수 없다.
     mockGetUserRole.mockResolvedValue('CORE')
+    mockUserFindFirst.mockResolvedValue({
+      id: 'member-2',
+      role: 'MEMBER',
+      email: 'updated-member@example.com',
+    })
 
     const { updateMemberAction } =
       await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
@@ -179,6 +184,33 @@ describe('members CRUD server actions', () => {
 
     const setArg = mockUpdateSet.mock.calls[0]![0]
     expect(setArg).not.toHaveProperty('role')
+  })
+
+  it('forbids a CORE from editing a LEAD from the web form', async () => {
+    mockGetUserRole.mockResolvedValue('CORE')
+    mockUserFindFirst.mockResolvedValue({
+      id: 'lead-1',
+      role: 'LEAD',
+      email: 'lead@example.com',
+    })
+
+    const { updateMemberAction } =
+      await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
+
+    const formData = createFormData({
+      name: 'lead',
+      firstName: 'Lead',
+      firstNameKo: '리드',
+      lastName: 'User',
+      lastNameKo: '유저',
+      email: 'attacker@example.com',
+      isForeigner: 'false',
+    })
+
+    await expect(
+      updateMemberAction('lead-1', { error: '' }, formData)
+    ).rejects.toThrow('FORBIDDEN')
+    expect(mockUpdate).not.toHaveBeenCalled()
   })
 
   it('approves pending member and maps role value', async () => {

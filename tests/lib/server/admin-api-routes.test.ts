@@ -9,6 +9,8 @@ const mockUpdateSet = vi.fn()
 const mockDbUpdate = vi.fn()
 const mockInvalidateMemberPublicCache = vi.fn()
 const mockGetGenerationNamesForUserId = vi.fn()
+const mockGetUserRole = vi.fn()
+const mockUserFindFirst = vi.fn()
 
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
@@ -31,7 +33,12 @@ vi.mock('@/lib/server/r2-client', () => ({
 vi.mock('@/db', () => ({
   default: {
     update: mockDbUpdate,
+    query: { users: { findFirst: mockUserFindFirst } },
   },
+}))
+
+vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
+  default: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
@@ -50,6 +57,12 @@ describe('admin api route validations', () => {
 
     mockAuth.mockResolvedValue({ user: { id: 'lead-user-id' } })
     mockHandlePermission.mockResolvedValue(true)
+    mockGetUserRole.mockResolvedValue('LEAD')
+    mockUserFindFirst.mockResolvedValue({
+      id: 'user-1',
+      role: 'MEMBER',
+      email: 'user-1@example.com',
+    })
     mockGetPreSignedUrl.mockResolvedValue('https://upload.example')
     mockGetGenerationNamesForUserId.mockResolvedValue(['seed-gen'])
 
@@ -164,6 +177,55 @@ describe('admin api route validations', () => {
       memberId: 'user-1',
       generationNames: ['seed-gen'],
     })
+  })
+
+  it("forbids a CORE from changing a LEAD's profile image", async () => {
+    mockAuth.mockResolvedValue({ user: { id: 'core-user-id' } })
+    mockGetUserRole.mockResolvedValue('CORE')
+    mockUserFindFirst.mockResolvedValue({
+      id: 'lead-1',
+      role: 'LEAD',
+      email: 'l@example.com',
+    })
+    const { PUT } = await import('@/app/api/admin/members/[memberId]/route')
+
+    const response = await PUT(
+      new Request('http://localhost/api/admin/members/lead-1', {
+        method: 'PUT',
+        body: JSON.stringify({
+          profileImage: 'https://cdn.example/users/lead-1/a.png',
+        }),
+      }),
+      { params: Promise.resolve({ memberId: 'lead-1' }) }
+    )
+
+    expect(response.status).toBe(403)
+    expect(mockDbUpdate).not.toHaveBeenCalled()
+  })
+
+  it('refuses a presigned profile upload for a LEAD requested by a CORE', async () => {
+    mockAuth.mockResolvedValue({ user: { id: 'core-user-id' } })
+    mockGetUserRole.mockResolvedValue('CORE')
+    mockUserFindFirst.mockResolvedValue({
+      id: 'lead-1',
+      role: 'LEAD',
+      email: 'l@example.com',
+    })
+    const { POST } = await import('@/app/api/admin/members/profile-image/route')
+
+    const response = await POST(
+      new Request('http://localhost/api/admin/members/profile-image', {
+        method: 'POST',
+        body: JSON.stringify({
+          memberId: 'lead-1',
+          fileName: 'a.png',
+          type: 'image/png',
+        }),
+      })
+    )
+
+    expect(response.status).toBe(403)
+    expect(mockGetPreSignedUrl).not.toHaveBeenCalled()
   })
 
   it('rejects invalid project main-image POST payload', async () => {

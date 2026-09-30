@@ -155,4 +155,57 @@ describe('members service', () => {
       data: [{ id: 'p1', name: 'Pending', email: 'p@x.com' }],
     })
   })
+
+  it('forbids CORE from editing a LEAD profile', async () => {
+    findUser.mockResolvedValue({
+      id: 'lead',
+      role: 'LEAD',
+      email: 'lead@x.com',
+    })
+    await expect(
+      updateMember(actor('CORE'), 'lead', {
+        ...validMember,
+        email: 'lead@x.com',
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it("forbids CORE from changing a member's email", async () => {
+    findUser.mockResolvedValue({ id: 'm1', role: 'MEMBER', email: 'old@x.com' })
+    await expect(
+      updateMember(actor('CORE'), 'm1', {
+        ...validMember,
+        email: 'attacker@x.com',
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it('lets CORE edit a member profile when the email is unchanged', async () => {
+    findUser.mockResolvedValue({
+      id: 'm1',
+      role: 'MEMBER',
+      email: 'm@example.com',
+    })
+    const where = vi.fn(async () => undefined)
+    const set = vi.fn(() => ({ where }))
+    dbUpdate.mockReturnValue({ set })
+    await expect(
+      updateMember(actor('CORE'), 'm1', validMember)
+    ).resolves.toEqual({
+      ok: true,
+      data: { id: 'm1' },
+    })
+  })
+
+  it('returns NOT_FOUND for an unknown member', async () => {
+    findUser.mockResolvedValue(undefined)
+    await expect(
+      updateMember(actor('LEAD'), 'ghost', validMember)
+    ).resolves.toMatchObject({
+      ok: false,
+      code: 'NOT_FOUND',
+    })
+  })
 })

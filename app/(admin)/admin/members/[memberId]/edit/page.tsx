@@ -6,7 +6,10 @@ import formatUserName from '@/lib/format-user-name'
 import { updateMemberAction } from '@/app/(admin)/admin/members/[memberId]/edit/actions'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import { requirePermission } from '@/lib/server/permission/require-permission'
-import { notFound } from 'next/navigation'
+import { forbidden, notFound } from 'next/navigation'
+import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
+import { canChangeMemberEmail } from '@/lib/server/services/admin/authorize'
+import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-upload'
 import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/member-role-manager'
@@ -32,6 +35,15 @@ export default async function EditMemberPage({
   const { memberId } = await params
   // 가드가 통과한 세션을 아래 역할 관리 UI 노출 여부 판단에 재사용한다.
   const session = await requirePermission('put', 'members', memberId)
+  // CORE 는 낮은 역할의 멤버만 고칠 수 있고, 남의 이메일은 LEAD 만 바꾼다.
+  const actor = await getWebActor()
+  const editable = actor ? await authorizeMemberEdit(actor, memberId) : null
+  if (!actor || !editable) forbidden()
+  if (!editable.ok) {
+    if (editable.code === 'NOT_FOUND') notFound()
+    forbidden()
+  }
+  const emailReadOnly = !canChangeMemberEmail(actor, memberId)
   // Member 정보 가져오기
   const memberData = await getMember(memberId)
   if (!memberData) {
@@ -118,6 +130,7 @@ export default async function EditMemberPage({
             defaultValue={memberData.email}
             name={'email'}
             placeholder={t.email}
+            readOnly={emailReadOnly}
           />
           <DataInput
             title={t.githubId}
