@@ -112,7 +112,8 @@ export const sessionTools = [
                 result.data.filter(
                   (session) =>
                     (session.internalOpen || session.publicOpen) &&
-                    (session.endAt === null || session.endAt > now)
+                    (session.endAt === null || session.endAt > now) &&
+                    session.participantCount < (session.maxCapacity ?? 0)
                 )
               )
             : result
@@ -178,10 +179,23 @@ export const sessionTools = [
 
       const current = await getSessionDetail(actor, id)
       if (!current.ok) return current
+
+      // 날짜가 비어 있는 옛 세션은 두 시각을 함께 받아야 검증을 통과한다.
+      const fields = converted.fields ?? {}
+      if (
+        (current.data.startAt === null && !('startAt' in fields)) ||
+        (current.data.endAt === null && !('endAt' in fields))
+      ) {
+        return fail(
+          'VALIDATION',
+          'This session has no start or end time yet. Include both startAt and endAt in the update.'
+        )
+      }
+
       return updateSession(
         actor,
         id,
-        mergePatch(sessionToInput(current.data), converted.fields ?? {})
+        mergePatch(sessionToInput(current.data), fields)
       )
     },
     targetId: idOf,

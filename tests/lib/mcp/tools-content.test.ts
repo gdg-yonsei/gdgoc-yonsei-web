@@ -116,6 +116,37 @@ describe('session tools', () => {
     expect(sent.startAt.toISOString()).toBe('2027-01-01T10:00:00.000Z')
   })
 
+  it('update_session explains that an undated session needs both times', async () => {
+    services.getSessionDetail.mockResolvedValue({
+      ok: true,
+      data: { ...sessionDetail, startAt: null, endAt: null },
+    })
+    const input = tool('update_session').input.parse({
+      sessionId: SID,
+      name: 'Renamed',
+    })
+    const result = await tool('update_session').run(core, input)
+    expect(result).toMatchObject({ ok: false, code: 'VALIDATION' })
+    expect(result.ok ? '' : result.message).toMatch(/startAt and endAt/)
+    expect(services.updateSession).not.toHaveBeenCalled()
+  })
+
+  it('update_session goes through for an undated session once both times are given', async () => {
+    services.getSessionDetail.mockResolvedValue({
+      ok: true,
+      data: { ...sessionDetail, startAt: null, endAt: null },
+    })
+    services.updateSession.mockResolvedValue({ ok: true, data: { id: SID } })
+    const input = tool('update_session').input.parse({
+      sessionId: SID,
+      startAt: '2027-02-01T10:00',
+      endAt: '2027-02-01T12:00',
+    })
+    await expect(
+      tool('update_session').run(core, input)
+    ).resolves.toMatchObject({ ok: true })
+  })
+
   it('create_session reports an invalid time as a validation error', async () => {
     const input = tool('create_session').input.parse({
       name: 'S',
@@ -139,27 +170,21 @@ describe('session tools', () => {
   })
 
   it('list_sessions can keep only sessions open for registration', async () => {
+    const open = {
+      internalOpen: true,
+      publicOpen: false,
+      endAt: new Date('2999-01-01T00:00:00Z'),
+      maxCapacity: 10,
+      participantCount: 1,
+    }
     services.listSessions.mockResolvedValue({
       ok: true,
       data: [
-        {
-          id: '1',
-          internalOpen: true,
-          publicOpen: false,
-          endAt: new Date('2999-01-01T00:00:00Z'),
-        },
-        {
-          id: '2',
-          internalOpen: false,
-          publicOpen: false,
-          endAt: new Date('2999-01-01T00:00:00Z'),
-        },
-        {
-          id: '3',
-          internalOpen: true,
-          publicOpen: true,
-          endAt: new Date('2000-01-01T00:00:00Z'),
-        },
+        { id: '1', ...open },
+        { id: '2', ...open, internalOpen: false },
+        { id: '3', ...open, endAt: new Date('2000-01-01T00:00:00Z') },
+        // 정원이 찬 세션은 신청할 수 없으므로 빠져야 한다.
+        { id: '4', ...open, participantCount: 10 },
       ],
     })
     const input = tool('list_sessions').input.parse({

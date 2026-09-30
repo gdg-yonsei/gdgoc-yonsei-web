@@ -1,11 +1,12 @@
 import 'server-only'
 
 import { cache } from 'react'
-import { and, desc, eq } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { sessions } from '@/db/schema/sessions'
+import { userToSession } from '@/db/schema/user-to-session'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export type AdminSessionListItem = {
@@ -18,6 +19,7 @@ export type AdminSessionListItem = {
   internalOpen: boolean | null
   publicOpen: boolean | null
   maxCapacity: number | null
+  participantCount: number
   partId: number | null
   partName: string | null
   generationId: number | null
@@ -37,6 +39,7 @@ export const getSessions = cache(
         internalOpen: sessions.internalOpen,
         publicOpen: sessions.publicOpen,
         maxCapacity: sessions.maxCapacity,
+        participantCount: sql<number>`(select count(*)::int from ${userToSession} where ${userToSession.sessionId} = ${sessions.id})`,
         partId: sessions.partId,
         partName: parts.name,
         generationId: generations.id,

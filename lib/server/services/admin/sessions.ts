@@ -219,7 +219,11 @@ async function sendNewSessionEmails({
 
 export async function createSession(
   actor: Actor,
-  input: unknown
+  input: unknown,
+  options: {
+    /** 웹 폼은 선택된 기수에서만 만든다. 파트가 그 기수가 아니면 거절한다. */
+    expectedGenerationId?: number
+  } = {}
 ): Promise<ServiceResult<{ id: string }>> {
   const authorization = authorize(actor, 'post', 'sessions')
   if (!authorization.ok) return authorization
@@ -260,6 +264,17 @@ export async function createSession(
       }),
       getGenerationNameForPartId(Number(partId)),
     ])
+
+    if (
+      selectedPart?.generationsId &&
+      options.expectedGenerationId !== undefined &&
+      selectedPart.generationsId !== options.expectedGenerationId
+    ) {
+      return fail(
+        'VALIDATION',
+        'The selected part does not belong to the current generation scope.'
+      )
+    }
 
     if (
       !selectedPart?.generationsId ||
