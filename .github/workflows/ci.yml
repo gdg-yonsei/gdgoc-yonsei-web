@@ -91,7 +91,8 @@ jobs:
             ALLOW_DESTRUCTIVE_MIGRATION=true
           fi
           export ALLOW_DESTRUCTIVE_MIGRATION
-          node scripts/ci/check-migrations.mjs $BASE_REF
+          # BASE_REF is empty on push; pass no argument rather than an empty one.
+          node scripts/ci/check-migrations.mjs ${BASE_REF:+"$BASE_REF"}
 
   unit:
     name: Unit tests
@@ -111,6 +112,8 @@ jobs:
       - name: Coverage summary
         if: always() && hashFiles('coverage/coverage-summary.json') != ''
         run: |
+          # The ${...} below is a JavaScript template literal, not shell expansion.
+          # shellcheck disable=SC2016
           node -e '
             const { total } = require("./coverage/coverage-summary.json")
             const rows = ["lines", "statements", "functions", "branches"]
