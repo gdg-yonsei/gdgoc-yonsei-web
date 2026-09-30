@@ -174,3 +174,17 @@ describe('pruneAuditLog', () => {
     expect(dbDelete).toHaveBeenCalledTimes(2)
   })
 })
+
+describe('sanitizeAuditInput embedded URLs', () => {
+  it('strips query strings from URLs inside longer text', () => {
+    expect(
+      sanitizeAuditInput({
+        description:
+          'Slides: https://r2.example/a.pdf?X-Amz-Signature=secret&X-Amz-Credential=k, see (https://example.com/p?token=t#x).',
+      })
+    ).toEqual({
+      description:
+        'Slides: https://r2.example/a.pdf, see (https://example.com/p).',
+    })
+  })
+})

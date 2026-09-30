@@ -24,15 +24,26 @@ const TARGET_KEYS = [
 const RETENTION_MS = 365 * 24 * 60 * 60 * 1000
 const PRUNE_INTERVAL_MS = 60 * 60 * 1000
 
-/** 서명된 URL 같은 비밀이 쿼리에 실려 오므로 URL 은 origin + path 만 남긴다. */
-function withoutQuery(value: string): string {
-  if (!/^https?:\/\//i.test(value)) return value
+const URL_IN_TEXT = /https?:\/\/[^\s"'<>()]+/gi
+
+function stripQuery(value: string): string {
   try {
     const url = new URL(value)
     return `${url.origin}${url.pathname}`
   } catch {
     return value
   }
+}
+
+/**
+ * 서명된 URL 같은 비밀이 쿼리에 실려 오므로, 문자열 안의 모든 URL 을 origin + path 만
+ * 남긴다(설명 같은 긴 텍스트에 붙여 넣은 URL 포함). URL 뒤 문장부호는 보존한다.
+ */
+function withoutQuery(value: string): string {
+  return value.replace(URL_IN_TEXT, (match) => {
+    const trailing = match.match(/[.,;:!?]+$/)?.[0] ?? ''
+    return stripQuery(match.slice(0, match.length - trailing.length)) + trailing
+  })
 }
 
 /** 감사 로그에 넣을 입력: 비밀성 키는 가리고 긴 문자열은 자른다. */
