@@ -6,6 +6,7 @@ import type { FullConfig } from '@playwright/test'
 import {
   ADMIN_STORAGE_STATE,
   AUTH_DIR,
+  MEMBER_STORAGE_STATE,
   PASSKEY_STORAGE_STATE,
   SEEDED_DATA_FILE,
   SeededE2EData,
@@ -13,6 +14,7 @@ import {
 } from './constants'
 import {
   getSeededAdminSessionToken,
+  getSeededMemberSessionToken,
   getSeededPasskeySessionToken,
   getSeededUnverifiedSessionToken,
   resetAndSeedE2EDatabase,
@@ -74,6 +76,11 @@ export async function prepareE2EData(baseURL: string) {
     baseURL,
     getSeededPasskeySessionToken(),
     PASSKEY_STORAGE_STATE
+  )
+  await writeAuthState(
+    baseURL,
+    getSeededMemberSessionToken(),
+    MEMBER_STORAGE_STATE
   )
   await writeAuthState(
     baseURL,

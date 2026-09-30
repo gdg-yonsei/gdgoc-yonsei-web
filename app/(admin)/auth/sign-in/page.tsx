@@ -3,6 +3,11 @@ import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 import { Metadata } from 'next'
 import ErrorNotification from '@/app/(admin)/auth/sign-in/error-notification'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getAuthSession } from '@/auth'
+import { getAdminLocale } from '@/lib/admin-i18n/server'
+import { localizeAdminHref } from '@/lib/admin-i18n'
+import { oauthQueryString, postLoginPath } from '@/lib/mcp/consent'
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -16,7 +21,25 @@ export const metadata: Metadata = {
  * 셸과 동일하게 `lg:` 브레이크포인트로 통일했습니다.
  * @constructor
  */
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  // MCP 클라이언트의 OAuth 요청으로 왔다면 로그인 뒤 그 요청을 이어 간다.
+  const query = oauthQueryString(await searchParams)
+  const callbackURL = postLoginPath(query)
+
+  const session = await getAuthSession()
+  // 만약 로그인 되어 있다면 어드민 페이지(또는 이어 갈 OAuth 요청)로 이동
+  if (session) {
+    return redirect(
+      callbackURL === '/admin'
+        ? localizeAdminHref('/admin', await getAdminLocale())
+        : callbackURL
+    )
+  }
+
   return (
     <div
       className={
@@ -43,7 +66,7 @@ export default function SignInPage() {
             </div>
           </div>
           <div className={'w-full lg:w-64'}>
-            <SignInOptions />
+            <SignInOptions callbackURL={callbackURL} />
           </div>
         </div>
 

@@ -7,7 +7,11 @@ import { redirect } from 'next/navigation'
  * Github 로그인 버튼
  * @constructor
  */
-export default function SignInWithGithub() {
+export default function SignInWithGithub({
+  callbackURL,
+}: {
+  callbackURL: string
+}) {
   return (
     <form
       action={async () => {
@@ -15,7 +19,7 @@ export default function SignInWithGithub() {
         const result = await auth.api.signInSocial({
           body: {
             provider: 'github',
-            callbackURL: '/admin',
+            callbackURL,
             errorCallbackURL: '/auth/sign-in',
           },
           headers: await headers(),

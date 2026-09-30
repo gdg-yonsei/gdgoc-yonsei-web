@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
+const mockGetUserRole = vi.fn()
 const mockInvalidateGenerationPublicCache = vi.fn()
 const mockInvalidatePartPublicCache = vi.fn()
 const mockInvalidateProjectPublicCache = vi.fn()
@@ -18,6 +19,9 @@ const mockDeleteWhere = vi.fn()
 const mockDeleteR2Images = vi.fn()
 
 const mockQuery = {
+  parts: {
+    findFirst: vi.fn(),
+  },
   generations: {
     findFirst: vi.fn(),
   },
@@ -35,6 +39,10 @@ const mockGetGenerationNameForPartId = vi.fn()
 
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
+}))
+
+vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
+  default: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -76,11 +84,13 @@ describe('delete-resource server actions', () => {
 
     mockAuth.mockResolvedValue({ user: { id: 'lead-user-id' } })
     mockHandlePermission.mockResolvedValue(true)
+    mockGetUserRole.mockResolvedValue('LEAD')
 
     mockDeleteWhere.mockResolvedValue(undefined)
     mockDelete.mockReturnValue({ where: mockDeleteWhere })
 
     mockQuery.generations.findFirst.mockResolvedValue({ name: '10th' })
+    mockQuery.parts.findFirst.mockResolvedValue({ generationsId: 1 })
     mockQuery.sessions.findFirst.mockResolvedValue(null)
     mockQuery.projects.findFirst.mockResolvedValue(null)
     mockGetProjectCacheContext.mockResolvedValue({
@@ -109,7 +119,8 @@ describe('delete-resource server actions', () => {
   })
 
   it('returns forbidden when user has no delete permission', async () => {
-    mockHandlePermission.mockResolvedValue(false)
+    // CORE 는 파트를 삭제할 수 없다(LEAD 전용).
+    mockGetUserRole.mockResolvedValue('CORE')
 
     const { default: deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')

@@ -1,45 +1,28 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { forbidden, redirect } from 'next/navigation'
 import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
-import { projectValidation } from '@/lib/validations/project'
-import db from '@/db'
-import { projects } from '@/db/schema/projects'
-import { usersToProjects } from '@/db/schema/users-to-projects'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { invalidateProjectPublicCache } from '@/lib/server/cache'
-import { logger } from '@/lib/server/logger'
-import { syncProjectTags } from '@/lib/server/services/project-tags'
-import { getGenerationNameById } from '@/lib/server/services/cache-context'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { createProject } from '@/lib/server/services/admin/projects'
 import {
-  authorizeAdminAction,
-  insertRowsIfAny,
-  parseActionInput,
-  stripHtmlCharacters,
-} from '@/lib/server/actions/admin'
+  getWebActor,
+  toActionError,
+} from '@/lib/server/services/admin/web-actor'
 
 export async function createProjectAction(
   _prev: { error: string },
   formData: FormData
 ) {
-  const authorization = await authorizeAdminAction({
-    action: 'post',
-    resource: 'projects',
-  })
-
-  if (!authorization.ok) {
-    return authorization.response
-  }
-
-  const { session } = authorization
-  if (!session?.user?.id) {
-    return { error: 'User not found' }
+  const actor = await getWebActor()
+  if (!actor) {
+    return forbidden()
   }
 
   const formValues = getProjectFormData(formData)
 
-  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
+  // 웹 화면은 현재 선택된 기수에서만 데이터를 만든다.
+  const resolvedScope = await resolveAdminGenerationScope(actor.userId)
   if (
     resolvedScope.scope?.kind !== 'generation' ||
     resolvedScope.scope.generationId !== Number(formValues.generationId)
@@ -47,74 +30,9 @@ export async function createProjectAction(
     return { error: 'Select a specific generation scope before creating data.' }
   }
 
-  const parsed = parseActionInput(
-    projectValidation,
-    formValues,
-    'Validation failed'
-  )
-  if (!parsed.ok) {
-    return { error: parsed.error }
-  }
-
-  const {
-    name,
-    nameKo,
-    description,
-    descriptionKo,
-    content,
-    contentKo,
-    mainImage,
-    contentImages,
-    participants,
-    generationId,
-    repoUrl,
-    demoUrl,
-    tags,
-  } = parsed.data
-
-  try {
-    const nextGeneration = await getGenerationNameById(Number(generationId))
-
-    const createProject = (
-      await db
-        .insert(projects)
-        .values({
-          name,
-          nameKo,
-          description,
-          descriptionKo,
-          authorId: session.user.id,
-          generationId: Number(generationId),
-          images: contentImages,
-          mainImage,
-          content: stripHtmlCharacters(content),
-          contentKo: stripHtmlCharacters(contentKo),
-          repoUrl,
-          demoUrl,
-        })
-        .returning({ id: projects.id })
-    )[0]
-
-    if (!createProject) {
-      return { error: 'Failed to create project' }
-    }
-
-    await insertRowsIfAny(
-      participants.map((participant) => ({
-        projectId: createProject.id,
-        userId: participant,
-      })),
-      (rows) => db.insert(usersToProjects).values(rows)
-    )
-    await syncProjectTags(createProject.id, tags)
-
-    invalidateProjectPublicCache({
-      projectId: createProject.id,
-      nextGenerationName: nextGeneration?.name,
-    })
-  } catch (e) {
-    logger.error('admin.projects.create', e)
-    return { error: 'DB Update Error' }
+  const result = await createProject(actor, formValues)
+  if (!result.ok) {
+    return toActionError(result)
   }
 
   redirect(await getLocalizedAdminPath('/admin/projects'))

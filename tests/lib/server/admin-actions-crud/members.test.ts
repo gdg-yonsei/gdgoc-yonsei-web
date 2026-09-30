@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockAuth = vi.fn()
 const mockHandlePermission = vi.fn()
+const mockGetUserRole = vi.fn()
+const mockUserFindFirst = vi.fn()
 const mockInvalidateMemberPublicCache = vi.fn()
 const mockRedirect = vi.fn()
 // 실제 next/navigation 의 forbidden() 은 반환하지 않고 throw 한다.
@@ -20,6 +22,10 @@ const mockGetGenerationNamesForUserId = vi.fn()
 
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
+}))
+
+vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
+  default: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -43,6 +49,7 @@ vi.mock('@/db', () => ({
   default: {
     update: mockUpdate,
     delete: mockDelete,
+    query: { users: { findFirst: mockUserFindFirst } },
   },
 }))
 
@@ -68,10 +75,12 @@ describe('members CRUD server actions', () => {
 
     mockDeleteWhere.mockResolvedValue(undefined)
     mockDelete.mockReturnValue({ where: mockDeleteWhere })
+    mockGetUserRole.mockResolvedValue('LEAD')
+    mockUserFindFirst.mockResolvedValue({ id: 'pending-1', role: 'UNVERIFIED' })
   })
 
   it('returns forbidden when member edit permission is denied', async () => {
-    mockHandlePermission.mockResolvedValue(false)
+    mockGetUserRole.mockResolvedValue('MEMBER')
 
     const { updateMemberAction } =
       await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
@@ -103,7 +112,7 @@ describe('members CRUD server actions', () => {
   })
 
   it('updates member profile and applies role when allowed', async () => {
-    mockHandlePermission.mockResolvedValueOnce(true).mockResolvedValueOnce(true)
+    mockGetUserRole.mockResolvedValue('LEAD')
 
     const { updateMemberAction } =
       await import('@/app/(admin)/admin/members/[memberId]/edit/actions')
@@ -142,9 +151,8 @@ describe('members CRUD server actions', () => {
   })
 
   it('updates member profile without role field when role permission is denied', async () => {
-    mockHandlePermission
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(false)
+    // CORE 는 멤버 정보를 고칠 수 있지만 역할은 바꿀 수 없다.
+    mockGetUserRole.mockResolvedValue('CORE')
 
     const { updateMemberAction } =
       await import('@/app/(admin)/admin/members/[memberId]/edit/actions')

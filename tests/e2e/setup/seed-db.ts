@@ -24,6 +24,8 @@ const FIXTURE_IDS = {
   sessionToken: 'e2e-admin-session-token',
   // Signing out revokes a session, so the passkey test gets its own.
   passkeySessionToken: 'e2e-passkey-session-token',
+  // MCP e2e 가 MEMBER 권한으로 연결할 때 쓴다.
+  memberSessionToken: 'e2e-member-session-token',
 }
 
 /**
@@ -295,6 +297,12 @@ export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
       expiresAt: new Date('2099-01-01T00:00:00.000Z'),
     },
     {
+      id: 'e2e-member-session',
+      token: FIXTURE_IDS.memberSessionToken,
+      userId: FIXTURE_IDS.memberUserId,
+      expiresAt: new Date('2099-01-01T00:00:00.000Z'),
+    },
+    {
       id: 'e2e-unverified-session',
       token: FIXTURE_IDS.unverifiedSessionToken,
       userId: FIXTURE_IDS.unverifiedUserId,
@@ -326,6 +334,10 @@ export function getSeededAdminSessionToken() {
 
 export function getSeededPasskeySessionToken() {
   return FIXTURE_IDS.passkeySessionToken
+}
+
+export function getSeededMemberSessionToken() {
+  return FIXTURE_IDS.memberSessionToken
 }
 
 export function getSeededUnverifiedSessionToken() {

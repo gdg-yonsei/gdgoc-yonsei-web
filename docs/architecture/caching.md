@@ -15,6 +15,9 @@ This project uses `cacheComponents: true` in [`next.config.ts`](../../next.confi
 - `cacheLife` profiles are registered centrally in [`policy.ts`](../../lib/server/cache/policy.ts).
 - `cacheTag` usage is centralized behind [`index.ts`](../../lib/server/cache/index.ts).
 - `updateTag` is used for immediate freshness after admin writes.
+  It only works inside Server Actions; the MCP route runs services inside
+  `runWithRouteHandlerInvalidation`, where `updateCacheTags` uses
+  `revalidateTag(tag, { expire: 0 })` instead.
 - `revalidateTag(..., 'max')` is used for broader background revalidation.
 - `revalidatePath` is only used as a targeted supplement for localized public routes and `sitemap.xml`.
 

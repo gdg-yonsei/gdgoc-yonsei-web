@@ -3,6 +3,7 @@ import 'server-only'
 import { revalidatePath, revalidateTag, updateTag } from 'next/cache'
 import type { Locale } from '@/i18n-config'
 import { i18n } from '@/i18n-config'
+import { isRouteHandlerInvalidation } from '@/lib/server/cache/invalidation-context'
 
 export type LocalizedPublicRoute = `/${string}`
 
@@ -15,8 +16,13 @@ function normalizeTags(tags: readonly string[] | string): string[] {
 }
 
 export function updateCacheTags(tags: readonly string[] | string) {
+  const routeHandler = isRouteHandlerInvalidation()
   for (const tag of normalizeTags(tags)) {
-    updateTag(tag)
+    if (routeHandler) {
+      revalidateTag(tag, { expire: 0 })
+    } else {
+      updateTag(tag)
+    }
   }
 }
 

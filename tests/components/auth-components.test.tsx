@@ -101,7 +101,7 @@ describe('auth components', () => {
     } as never)
 
     const user = userEvent.setup()
-    render(<PasskeySignInButton />)
+    render(<PasskeySignInButton callbackURL={'/admin'} />)
 
     const button = screen.getByRole('button', {
       name: /Sign in with Passkey/i,
@@ -114,6 +114,40 @@ describe('auth components', () => {
     })
   })
 
+  it('does a full navigation to resume an MCP OAuth request after passkey sign-in', async () => {
+    mockedPasskeySignIn.mockResolvedValue({
+      data: {},
+      error: null,
+    } as never)
+    const assign = vi.fn()
+    const originalLocation = window.location
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...originalLocation, assign },
+    })
+
+    const user = userEvent.setup()
+    render(
+      <PasskeySignInButton
+        callbackURL={'/api/auth/oauth2/authorize?client_id=c&sig=s'}
+      />
+    )
+    await user.click(
+      screen.getByRole('button', { name: /Sign in with Passkey/i })
+    )
+
+    await waitFor(() => {
+      expect(assign).toHaveBeenCalledWith(
+        '/api/auth/oauth2/authorize?client_id=c&sig=s'
+      )
+    })
+    expect(mockedRouterReplace).not.toHaveBeenCalled()
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+  })
+
   it('uses App Router navigation after successful passkey authentication', async () => {
     mockedPasskeySignIn.mockResolvedValue({
       data: {},
@@ -121,7 +155,7 @@ describe('auth components', () => {
     } as never)
 
     const user = userEvent.setup()
-    render(<PasskeySignInButton />)
+    render(<PasskeySignInButton callbackURL={'/admin'} />)
     await user.click(
       screen.getByRole('button', { name: /Sign in with Passkey/i })
     )

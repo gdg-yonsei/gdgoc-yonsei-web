@@ -1,158 +1,31 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { forbidden, redirect } from 'next/navigation'
 import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
-import { projectValidation } from '@/lib/validations/project'
-import db from '@/db'
-import { projects } from '@/db/schema/projects'
-import { eq } from 'drizzle-orm'
-import { usersToProjects } from '@/db/schema/users-to-projects'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { invalidateProjectPublicCache } from '@/lib/server/cache'
-import { logger } from '@/lib/server/logger'
-import { syncProjectTags } from '@/lib/server/services/project-tags'
+import { updateProject } from '@/lib/server/services/admin/projects'
 import {
-  getGenerationNameById,
-  getProjectCacheContext,
-} from '@/lib/server/services/cache-context'
-import {
-  authorizeAdminAction,
-  deleteRemovedR2Images,
-  parseActionInput,
-  replaceRelationRows,
-  stripHtmlCharacters,
-} from '@/lib/server/actions/admin'
+  getWebActor,
+  toActionError,
+} from '@/lib/server/services/admin/web-actor'
 
 export async function updateProjectAction(
   projectId: string,
   _prevState: { error: string },
   formData: FormData
 ) {
-  // dataOwnerId 는 프로젝트 행의 authorId 여야 한다 (projectId 가 아니라).
-  const project = await db.query.projects.findFirst({
-    where: eq(projects.id, projectId),
-    columns: { authorId: true },
-  })
-
-  if (!project) {
-    return { error: 'Project not found' }
+  const actor = await getWebActor()
+  if (!actor) {
+    return forbidden()
   }
 
-  const authorization = await authorizeAdminAction({
-    action: 'put',
-    resource: 'projects',
-    dataOwnerId: project.authorId,
-  })
-
-  if (!authorization.ok) {
-    return authorization.response
-  }
-
-  const parsed = parseActionInput(
-    projectValidation,
+  const result = await updateProject(
+    actor,
+    projectId,
     getProjectFormData(formData)
   )
-  if (!parsed.ok) {
-    return { error: parsed.error }
-  }
-
-  const {
-    name,
-    nameKo,
-    description,
-    descriptionKo,
-    content,
-    contentKo,
-    contentImages,
-    mainImage,
-    participants,
-    generationId,
-    repoUrl,
-    demoUrl,
-    tags,
-  } = parsed.data
-
-  try {
-    const [previousProject, existingProject] = await Promise.all([
-      getProjectCacheContext(projectId),
-      db.query.projects.findFirst({
-        where: eq(projects.id, projectId),
-        columns: {
-          generationId: true,
-        },
-      }),
-    ])
-
-    if (
-      !existingProject ||
-      existingProject.generationId !== Number(generationId)
-    ) {
-      return { error: 'Project generation cannot be changed from this screen.' }
-    }
-
-    const prevImages = (
-      await db
-        .select({ images: projects.images, mainImage: projects.mainImage })
-        .from(projects)
-        .where(eq(projects.id, projectId))
-        .limit(1)
-    )[0]
-
-    if (!prevImages) {
-      return { error: 'Project not found' }
-    }
-
-    await deleteRemovedR2Images({
-      previousImages: prevImages.images,
-      nextImages: contentImages,
-      previousMainImage: prevImages.mainImage,
-      nextMainImage: mainImage,
-      prefix: 'projects',
-    })
-
-    await db
-      .update(projects)
-      .set({
-        name,
-        nameKo,
-        description,
-        descriptionKo,
-        content: stripHtmlCharacters(content),
-        contentKo: stripHtmlCharacters(contentKo),
-        images: contentImages,
-        mainImage,
-        generationId: Number(generationId),
-        repoUrl,
-        demoUrl,
-        updatedAt: new Date(),
-      })
-      .where(eq(projects.id, projectId))
-
-    await replaceRelationRows({
-      deleteRows: () =>
-        db
-          .delete(usersToProjects)
-          .where(eq(usersToProjects.projectId, projectId)),
-      rows: participants.map((user) => ({
-        projectId,
-        userId: user,
-      })),
-      insertRows: (rows) => db.insert(usersToProjects).values(rows),
-    })
-    await syncProjectTags(projectId, tags)
-
-    const nextGeneration = await getGenerationNameById(Number(generationId))
-
-    invalidateProjectPublicCache({
-      projectId,
-      previousGenerationName: previousProject.generationName,
-      nextGenerationName: nextGeneration?.name,
-    })
-  } catch (e) {
-    logger.error('admin.projects.update', e, {
-      projectId,
-    })
-    return { error: 'DB Update Error' }
+  if (!result.ok) {
+    return toActionError(result)
   }
 
   redirect(await getLocalizedAdminPath(`/admin/projects/${projectId}`))

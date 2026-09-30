@@ -15,6 +15,9 @@ export type AdminSessionListItem = {
   mainImage: string
   startAt: Date | null
   endAt: Date | null
+  internalOpen: boolean | null
+  publicOpen: boolean | null
+  maxCapacity: number | null
   partId: number | null
   partName: string | null
   generationId: number | null
@@ -31,6 +34,9 @@ export const getSessions = cache(
         mainImage: sessions.mainImage,
         startAt: sessions.startAt,
         endAt: sessions.endAt,
+        internalOpen: sessions.internalOpen,
+        publicOpen: sessions.publicOpen,
+        maxCapacity: sessions.maxCapacity,
         partId: sessions.partId,
         partName: parts.name,
         generationId: generations.id,

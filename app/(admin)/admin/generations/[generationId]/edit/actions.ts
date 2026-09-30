@@ -1,16 +1,13 @@
 'use server'
 
-import db from '@/db'
-import { redirect } from 'next/navigation'
-import { eq } from 'drizzle-orm'
-import { requirePermission } from '@/lib/server/permission/require-permission'
-import { generations } from '@/db/schema/generations'
-import { generationValidation } from '@/lib/validations/generation'
+import { forbidden, redirect } from 'next/navigation'
 import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { invalidateGenerationPublicCache } from '@/lib/server/cache'
-import { logger } from '@/lib/server/logger'
-import { parseActionInput } from '@/lib/server/actions/admin'
+import { updateGeneration } from '@/lib/server/services/admin/generations'
+import {
+  getWebActor,
+  toActionError,
+} from '@/lib/server/services/admin/web-actor'
 
 /**
  * Update Generation Action
@@ -23,48 +20,18 @@ export async function updateGenerationAction(
   _prevState: { error: string },
   formData: FormData
 ) {
-  // 사용자 권한 확인
-  await requirePermission('put', 'generations', generationId)
-
-  // form data 에서 generation data 추출 후 검증
-  const parsed = parseActionInput(
-    generationValidation,
-    getGenerationFormData(formData)
-  )
-  if (!parsed.ok) {
-    return { error: parsed.error }
+  const actor = await getWebActor()
+  if (!actor) {
+    return forbidden()
   }
 
-  const parsedGenerationData = parsed.data
-
-  // generation data 업데이트
-  try {
-    const previousGeneration = await db.query.generations.findFirst({
-      where: eq(generations.id, Number(generationId)),
-      columns: {
-        name: true,
-      },
-    })
-
-    await db
-      .update(generations)
-      .set({
-        name: parsedGenerationData.name,
-        startDate: parsedGenerationData.startDate,
-        endDate: parsedGenerationData.endDate,
-        updatedAt: new Date(),
-      })
-      .where(eq(generations.id, Number(generationId)))
-
-    invalidateGenerationPublicCache({
-      previousGenerationName: previousGeneration?.name,
-      nextGenerationName: parsedGenerationData.name,
-    })
-  } catch (e) {
-    logger.error('admin.generations.update', e, {
-      generationId,
-    })
-    return { error: 'DB Update Error' }
+  const result = await updateGeneration(
+    actor,
+    Number(generationId),
+    getGenerationFormData(formData)
+  )
+  if (!result.ok) {
+    return toActionError(result)
   }
 
   // 성공 시 해당 generation 페이지로 이동

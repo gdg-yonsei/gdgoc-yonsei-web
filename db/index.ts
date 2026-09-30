@@ -21,6 +21,8 @@ import * as verificationTokensSchema from './schema/verification-tokens'
 import * as externalParticipantsSchema from './schema/external-participants'
 import * as userToSessionSchema from './schema/user-to-session'
 import * as bookingRequestsSchema from './schema/booking-requests'
+import * as oauthSchema from './schema/oauth'
+import * as mcpAuditLogSchema from './schema/mcp-audit-log'
 import { getDatabaseEnv } from '@/lib/server/env-core'
 
 const databaseEnv = getDatabaseEnv()
@@ -49,8 +51,9 @@ const db = drizzle(client, {
     ...externalParticipantsSchema,
     ...userToSessionSchema,
     ...bookingRequestsSchema,
+    ...oauthSchema,
+    ...mcpAuditLogSchema,
   },
 })
 
 export default db
-

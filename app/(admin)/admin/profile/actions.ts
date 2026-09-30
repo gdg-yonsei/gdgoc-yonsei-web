@@ -1,40 +1,24 @@
 'use server'
 
-import { getAuthSession } from '@/auth'
-import { getMember } from '@/lib/server/fetcher/admin/get-member'
-import db from '@/db'
-import { users } from '@/db/schema/users'
-import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
+import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { logger } from '@/lib/server/logger'
+import { setSessionNotificationEmail } from '@/lib/server/services/admin/profile'
+import { getWebActor } from '@/lib/server/services/admin/web-actor'
 
 export async function toggleSessionNotificationEmailAction(
   _formData: FormData
 ) {
   void _formData
-  const session = await getAuthSession()
+  const actor = await getWebActor()
 
-  if (!session?.user?.id) {
+  if (!actor) {
     return redirect(await getLocalizedAdminPath('/admin/profile'))
   }
 
-  const userData = await getMember(session.user.id)
-  if (!userData) {
-    return redirect(await getLocalizedAdminPath('/admin/profile'))
-  }
-
-  try {
-    await db
-      .update(users)
-      .set({
-        sessionNotiEmail: !userData.sessionNotiEmail,
-      })
-      .where(eq(users.id, session.user.id))
-  } catch (error) {
-    logger.error('admin.profile.toggle-session-notification', error, {
-      userId: session.user.id,
-    })
+  const userData = await getMember(actor.userId)
+  if (userData) {
+    await setSessionNotificationEmail(actor, !userData.sessionNotiEmail)
   }
 
   redirect(await getLocalizedAdminPath('/admin/profile'))

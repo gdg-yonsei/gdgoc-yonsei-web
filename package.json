@@ -29,11 +29,16 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1140.0",
-    "@aws-sdk/s3-request-presigner": "^3.1140.0",
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@aws-sdk/lib-storage": "^3.1141.0",
+    "@aws-sdk/s3-request-presigner": "^3.1141.0",
+    "@better-auth/cimd": "1.7.6",
+    "@better-auth/mcp": "1.7.6",
+    "@better-auth/oauth-provider": "1.7.6",
     "@better-auth/passkey": "1.7.6",
     "@formatjs/intl-localematcher": "^0.9.0",
     "@heroicons/react": "^2.2.0",
+    "@modelcontextprotocol/server": "2.1.0",
     "@next/third-parties": "16.3.6",
     "@tailwindcss/postcss": "^4.3.3",
     "animejs": "4.5.0",

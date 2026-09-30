@@ -1,8 +1,5 @@
 import { ReactNode } from 'react'
-import { getAuthSession } from '@/auth'
-import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
-import { getAdminLocale, localizeAdminHref } from '@/lib/admin-i18n/server'
 
 export const metadata: Metadata = {
   title: {
@@ -13,17 +10,10 @@ export const metadata: Metadata = {
     'Google Developer Group on Campus Yonsei University Management System',
 }
 
-export default async function AuthLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
-  const locale = await getAdminLocale()
-  const session = await getAuthSession()
-  // 만약 로그인 되어 있다면 어드민 페이지로 이동
-  if (session) {
-    return redirect(localizeAdminHref('/admin', locale))
-  }
-
+/**
+ * 로그인 여부에 따른 이동은 각 페이지가 정한다.
+ * 로그인 화면은 로그인한 사용자를 돌려보내고, MCP 동의 화면은 로그인한 사용자만 받는다.
+ */
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
