@@ -4,7 +4,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 import { getAuthEnv } from '@/lib/server/env-core'
 
 /** 발급 뒤 complete_image_upload 까지 허용하는 시간. 업로드 URL(15분)보다 넉넉히. */
-const UPLOAD_TOKEN_TTL_SECONDS = 60 * 60
+export const UPLOAD_TOKEN_TTL_SECONDS = 60 * 60
 
 function sign(payload: string) {
   return createHmac('sha256', getAuthEnv().BETTER_AUTH_SECRET)

@@ -239,6 +239,13 @@
       "when": 1790512006436,
       "tag": "0033_rainy_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1790764254197,
+      "tag": "0034_fresh_paladin",
+      "breakpoints": true
     }
   ]
 }

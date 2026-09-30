@@ -32,12 +32,27 @@ import {
   fetchPublicImage,
 } from '@/lib/server/uploads/remote-fetch'
 import {
+  UPLOAD_TOKEN_TTL_SECONDS,
   issueUploadToken,
   verifyUploadToken,
 } from '@/lib/server/uploads/upload-token'
+import {
+  claimExpiredUploads,
+  countRecentUploads,
+  forgetUpload,
+  markUploadCompleted,
+  recordUpload,
+} from '@/lib/server/uploads/upload-records'
 
 /** MCP 이미지 업로드 한도: 200MB. */
 export const MAX_IMAGE_UPLOAD_BYTES = 209_715_200
+
+/** 사용자당 한 시간에 시작할 수 있는 업로드(직접 업로드 + URL 가져오기) 수. */
+export const UPLOADS_PER_HOUR = 100
+/** 한 번에 치우는 만료된 미완료 업로드 수. 요청 지연을 짧게 유지한다. */
+const CLEANUP_BATCH = 20
+/** URL 가져오기 기록의 만료. 전체 전송 한도(10분)보다 조금 길게. */
+const IMPORT_RECORD_TTL_MS = 15 * 60 * 1000
 
 export const IMAGE_TARGETS = ['sessions', 'projects', 'users'] as const
 export type ImageTarget = (typeof IMAGE_TARGETS)[number]
@@ -77,6 +92,42 @@ function publicUrl(key: string) {
 
 function newObjectKey(target: ImageTarget, type: DetectedImageType) {
   return `${target}/${crypto.randomUUID()}.${IMAGE_TYPE_EXTENSIONS[type][0]}`
+}
+
+/**
+ * 업로드를 시작하기 전: 시간당 한도를 확인하고, 완료되지 않은 채 만료된 업로드를
+ * 몇 개 치운다(크론 없이 사용할 때마다 조금씩 정리한다).
+ */
+async function beginUpload(actor: Actor): Promise<ServiceResult<void>> {
+  const now = new Date()
+  const recent = await countRecentUploads(
+    actor.userId,
+    new Date(now.getTime() - 60 * 60 * 1000)
+  )
+  if (recent >= UPLOADS_PER_HOUR) {
+    return fail(
+      'RATE_LIMITED',
+      `Upload limit reached (${UPLOADS_PER_HOUR} per hour). Try again later.`
+    )
+  }
+
+  try {
+    const abandoned = await claimExpiredUploads(now, CLEANUP_BATCH)
+    await Promise.all(abandoned.map((key) => discard(key)))
+  } catch (error) {
+    logger.error('mcp.images.cleanup', error)
+  }
+  return ok(undefined)
+}
+
+/** 검증에 실패한 업로드: 객체와 기록을 함께 지운다. */
+async function rejectUpload(key: string) {
+  await discard(key)
+  try {
+    await forgetUpload(key)
+  } catch (error) {
+    logger.error('mcp.images.forget', error, { key })
+  }
 }
 
 async function discard(key: string) {
@@ -128,7 +179,16 @@ export async function createImageUpload(
     )
   }
 
+  const started = await beginUpload(actor)
+  if (!started.ok) return started
+
   const objectKey = newObjectKey(input.target, type)
+  await recordUpload({
+    objectKey,
+    userId: actor.userId,
+    kind: 'presigned',
+    expiresAt: new Date(Date.now() + UPLOAD_TOKEN_TTL_SECONDS * 1000),
+  })
   const uploadUrl = await presignImagePut(
     objectKey,
     input.mimeType,
@@ -191,7 +251,7 @@ export async function completeImageUpload(
   }
 
   if (sizeBytes < 1 || sizeBytes > MAX_IMAGE_UPLOAD_BYTES) {
-    await discard(key)
+    await rejectUpload(key)
     return fail(
       'VALIDATION',
       'The uploaded file is empty or larger than 200MB.'
@@ -200,13 +260,14 @@ export async function completeImageUpload(
 
   const detected = detectImageType(await readImageHead(key))
   if (detected !== expectedType) {
-    await discard(key)
+    await rejectUpload(key)
     return fail(
       'VALIDATION',
       'The uploaded file is not a valid image of the declared type. It was deleted.'
     )
   }
 
+  await markUploadCompleted(key)
   return ok({
     url: publicUrl(key),
     objectKey: key,
@@ -222,6 +283,9 @@ export async function importImageFromUrl(
 ): Promise<ServiceResult<UploadedImage>> {
   const authorization = authorizeTarget(actor, input.target)
   if (!authorization.ok) return authorization
+
+  const started = await beginUpload(actor)
+  if (!started.ok) return started
 
   let remote: Awaited<ReturnType<typeof fetchPublicImage>>
   try {
@@ -249,6 +313,12 @@ export async function importImageFromUrl(
   }
 
   const key = newObjectKey(input.target, type)
+  await recordUpload({
+    objectKey: key,
+    userId: actor.userId,
+    kind: 'import',
+    expiresAt: new Date(Date.now() + IMPORT_RECORD_TTL_MS),
+  })
   let stored: Awaited<ReturnType<typeof streamImageToR2>>
   try {
     stored = await streamImageToR2(
@@ -258,7 +328,7 @@ export async function importImageFromUrl(
       MAX_IMAGE_UPLOAD_BYTES
     )
   } catch (error) {
-    await discard(key)
+    await rejectUpload(key)
     if (error instanceof Error && error.message === 'TOO_LARGE') {
       return fail('VALIDATION', 'The image exceeds the 200MB limit.')
     }
@@ -267,13 +337,14 @@ export async function importImageFromUrl(
   }
 
   if (detectImageType(stored.head) !== type) {
-    await discard(key)
+    await rejectUpload(key)
     return fail(
       'VALIDATION',
       'The downloaded file is not a valid image of its declared type.'
     )
   }
 
+  await markUploadCompleted(key)
   return ok({
     url: publicUrl(key),
     objectKey: key,
