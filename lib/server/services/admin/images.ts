@@ -37,11 +37,13 @@ import {
   verifyUploadToken,
 } from '@/lib/server/uploads/upload-token'
 import {
+  assignUploadKey,
   claimExpiredUploads,
-  countRecentUploads,
-  forgetUpload,
+  finishUploadCleanup,
   markUploadCompleted,
-  recordUpload,
+  markUploadRejected,
+  pruneSettledUploads,
+  reserveUpload,
 } from '@/lib/server/uploads/upload-records'
 
 /** MCP 이미지 업로드 한도: 200MB. */
@@ -53,6 +55,11 @@ export const UPLOADS_PER_HOUR = 100
 const CLEANUP_BATCH = 20
 /** URL 가져오기 기록의 만료. 전체 전송 한도(10분)보다 조금 길게. */
 const IMPORT_RECORD_TTL_MS = 15 * 60 * 1000
+/** 정리 임대 시간. 이 안에 R2 삭제가 끝나지 않으면 다음 정리가 다시 시도한다. */
+const CLEANUP_LEASE_MS = 10 * 60 * 1000
+/** 끝난(완료·거절) 기록을 남겨 두는 기간. 한도는 한 시간만 보면 된다. */
+const SETTLED_RETENTION_MS = 2 * 24 * 60 * 60 * 1000
+const HOUR_MS = 60 * 60 * 1000
 
 export const IMAGE_TARGETS = ['sessions', 'projects', 'users'] as const
 export type ImageTarget = (typeof IMAGE_TARGETS)[number]
@@ -95,38 +102,75 @@ function newObjectKey(target: ImageTarget, type: DetectedImageType) {
 }
 
 /**
- * 업로드를 시작하기 전: 시간당 한도를 확인하고, 완료되지 않은 채 만료된 업로드를
- * 몇 개 치운다(크론 없이 사용할 때마다 조금씩 정리한다).
+ * 업로드를 시작한다: 시간당 한도 안에서 기록을 원자적으로 예약하고(거절·실패한
+ * 시도도 한도에 포함된다), 완료되지 않은 채 만료된 업로드를 몇 개 치운다
+ * (크론 없이 사용할 때마다 조금씩 정리한다).
  */
-async function beginUpload(actor: Actor): Promise<ServiceResult<void>> {
+async function beginUpload(
+  actor: Actor,
+  upload: {
+    kind: 'presigned' | 'import'
+    objectKey: string | null
+    ttlMs: number
+  }
+): Promise<ServiceResult<string>> {
   const now = new Date()
-  const recent = await countRecentUploads(
-    actor.userId,
-    new Date(now.getTime() - 60 * 60 * 1000)
-  )
-  if (recent >= UPLOADS_PER_HOUR) {
+  const id = await reserveUpload({
+    userId: actor.userId,
+    kind: upload.kind,
+    objectKey: upload.objectKey,
+    expiresAt: new Date(now.getTime() + upload.ttlMs),
+    limit: UPLOADS_PER_HOUR,
+    windowStart: new Date(now.getTime() - HOUR_MS),
+  })
+  if (!id) {
     return fail(
       'RATE_LIMITED',
       `Upload limit reached (${UPLOADS_PER_HOUR} per hour). Try again later.`
     )
   }
 
+  await cleanUpAbandonedUploads(now)
+  return ok(id)
+}
+
+/**
+ * 만료된 미완료 업로드를 임대해 R2 객체를 지우고, 지운 것만 기록에서 뺀다.
+ * R2 삭제가 실패하면 기록이 남아 임대가 끝난 뒤 다시 시도된다.
+ */
+async function cleanUpAbandonedUploads(now: Date) {
   try {
-    const abandoned = await claimExpiredUploads(now, CLEANUP_BATCH)
-    await Promise.all(abandoned.map((key) => discard(key)))
+    const claimed = await claimExpiredUploads(
+      now,
+      CLEANUP_BATCH,
+      CLEANUP_LEASE_MS
+    )
+    await Promise.all(
+      claimed.map(async ({ id, objectKey }) => {
+        try {
+          if (objectKey) await deleteImage(objectKey)
+          await finishUploadCleanup(id)
+        } catch (error) {
+          logger.error('mcp.images.cleanup', error, { id, objectKey })
+        }
+      })
+    )
+    await pruneSettledUploads(new Date(now.getTime() - SETTLED_RETENTION_MS))
   } catch (error) {
     logger.error('mcp.images.cleanup', error)
   }
-  return ok(undefined)
 }
 
-/** 검증에 실패한 업로드: 객체와 기록을 함께 지운다. */
-async function rejectUpload(key: string) {
-  await discard(key)
+/** 검증에 실패한 업로드: 객체를 지우고 기록은 거절로 남긴다(한도에 계속 포함). */
+async function rejectUpload(
+  target: { id: string } | { objectKey: string },
+  objectKey?: string
+) {
+  if (objectKey) await discard(objectKey)
   try {
-    await forgetUpload(key)
+    await markUploadRejected(target)
   } catch (error) {
-    logger.error('mcp.images.forget', error, { key })
+    logger.error('mcp.images.reject', error, { ...target })
   }
 }
 
@@ -179,16 +223,14 @@ export async function createImageUpload(
     )
   }
 
-  const started = await beginUpload(actor)
+  const objectKey = newObjectKey(input.target, type)
+  const started = await beginUpload(actor, {
+    kind: 'presigned',
+    objectKey,
+    ttlMs: UPLOAD_TOKEN_TTL_SECONDS * 1000,
+  })
   if (!started.ok) return started
 
-  const objectKey = newObjectKey(input.target, type)
-  await recordUpload({
-    objectKey,
-    userId: actor.userId,
-    kind: 'presigned',
-    expiresAt: new Date(Date.now() + UPLOAD_TOKEN_TTL_SECONDS * 1000),
-  })
   const uploadUrl = await presignImagePut(
     objectKey,
     input.mimeType,
@@ -251,7 +293,7 @@ export async function completeImageUpload(
   }
 
   if (sizeBytes < 1 || sizeBytes > MAX_IMAGE_UPLOAD_BYTES) {
-    await rejectUpload(key)
+    await rejectUpload({ objectKey: key }, key)
     return fail(
       'VALIDATION',
       'The uploaded file is empty or larger than 200MB.'
@@ -260,14 +302,20 @@ export async function completeImageUpload(
 
   const detected = detectImageType(await readImageHead(key))
   if (detected !== expectedType) {
-    await rejectUpload(key)
+    await rejectUpload({ objectKey: key }, key)
     return fail(
       'VALIDATION',
       'The uploaded file is not a valid image of the declared type. It was deleted.'
     )
   }
 
-  await markUploadCompleted(key)
+  // 만료돼 정리 작업이 가져간 업로드는 곧 지워지므로 URL 을 주지 않는다.
+  if (!(await markUploadCompleted(key))) {
+    return fail(
+      'NOT_FOUND',
+      'This upload expired and is being cleaned up. Start a new upload.'
+    )
+  }
   return ok({
     url: publicUrl(key),
     objectKey: key,
@@ -284,8 +332,14 @@ export async function importImageFromUrl(
   const authorization = authorizeTarget(actor, input.target)
   if (!authorization.ok) return authorization
 
-  const started = await beginUpload(actor)
+  // 받기 전에 예약한다: 실패한 가져오기도 한도에 포함돼야 한다.
+  const started = await beginUpload(actor, {
+    kind: 'import',
+    objectKey: null,
+    ttlMs: IMPORT_RECORD_TTL_MS,
+  })
   if (!started.ok) return started
+  const uploadId = started.data
 
   let remote: Awaited<ReturnType<typeof fetchPublicImage>>
   try {
@@ -293,6 +347,7 @@ export async function importImageFromUrl(
       maxBytes: MAX_IMAGE_UPLOAD_BYTES,
     })
   } catch (error) {
+    await rejectUpload({ id: uploadId })
     if (error instanceof UploadError) {
       return fail(
         error.code === 'FETCH_FAILED' ? 'INTERNAL' : 'VALIDATION',
@@ -303,52 +358,68 @@ export async function importImageFromUrl(
     return fail('INTERNAL', 'The image could not be downloaded.')
   }
 
-  const type = TYPE_BY_MIME.get(remote.contentType)
-  if (!type) {
-    await remote.body.cancel().catch(() => undefined)
-    return fail(
-      'VALIDATION',
-      'Only jpg, png, webp, gif and avif images can be imported.'
-    )
-  }
-
-  const key = newObjectKey(input.target, type)
-  await recordUpload({
-    objectKey: key,
-    userId: actor.userId,
-    kind: 'import',
-    expiresAt: new Date(Date.now() + IMPORT_RECORD_TTL_MS),
-  })
-  let stored: Awaited<ReturnType<typeof streamImageToR2>>
+  // 여기부터 응답 본문은 이 함수의 책임이다. 스트리밍에 넘기지 못하고 끝나면 닫는다.
+  let bodyHandedOff = false
   try {
-    stored = await streamImageToR2(
-      key,
-      remote.body,
-      remote.contentType,
-      MAX_IMAGE_UPLOAD_BYTES
-    )
-  } catch (error) {
-    await rejectUpload(key)
-    if (error instanceof Error && error.message === 'TOO_LARGE') {
-      return fail('VALIDATION', 'The image exceeds the 200MB limit.')
+    const type = TYPE_BY_MIME.get(remote.contentType)
+    if (!type) {
+      await rejectUpload({ id: uploadId })
+      return fail(
+        'VALIDATION',
+        'Only jpg, png, webp, gif and avif images can be imported.'
+      )
     }
-    logger.error('mcp.images.import.store', error, { key })
-    return fail('INTERNAL', 'The image could not be stored.')
-  }
 
-  if (detectImageType(stored.head) !== type) {
-    await rejectUpload(key)
-    return fail(
-      'VALIDATION',
-      'The downloaded file is not a valid image of its declared type.'
-    )
-  }
+    const key = newObjectKey(input.target, type)
+    try {
+      await assignUploadKey(uploadId, key)
+    } catch (error) {
+      logger.error('mcp.images.import.record', error, { uploadId })
+      await rejectUpload({ id: uploadId })
+      return fail('INTERNAL', 'The image could not be stored.')
+    }
 
-  await markUploadCompleted(key)
-  return ok({
-    url: publicUrl(key),
-    objectKey: key,
-    sizeBytes: stored.sizeBytes,
-    contentType: remote.contentType,
-  })
+    let stored: Awaited<ReturnType<typeof streamImageToR2>>
+    try {
+      bodyHandedOff = true
+      stored = await streamImageToR2(
+        key,
+        remote.body,
+        remote.contentType,
+        MAX_IMAGE_UPLOAD_BYTES
+      )
+    } catch (error) {
+      await rejectUpload({ id: uploadId }, key)
+      if (error instanceof Error && error.message === 'TOO_LARGE') {
+        return fail('VALIDATION', 'The image exceeds the 200MB limit.')
+      }
+      logger.error('mcp.images.import.store', error, { key })
+      return fail('INTERNAL', 'The image could not be stored.')
+    }
+
+    if (detectImageType(stored.head) !== type) {
+      await rejectUpload({ id: uploadId }, key)
+      return fail(
+        'VALIDATION',
+        'The downloaded file is not a valid image of its declared type.'
+      )
+    }
+
+    if (!(await markUploadCompleted(key))) {
+      return fail(
+        'NOT_FOUND',
+        'This import took too long and is being cleaned up. Try again.'
+      )
+    }
+    return ok({
+      url: publicUrl(key),
+      objectKey: key,
+      sizeBytes: stored.sizeBytes,
+      contentType: remote.contentType,
+    })
+  } finally {
+    if (!bodyHandedOff) {
+      await remote.body.cancel().catch(() => undefined)
+    }
+  }
 }

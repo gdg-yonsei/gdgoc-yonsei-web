@@ -10,11 +10,13 @@ const r2 = vi.hoisted(() => ({
 }))
 const remote = vi.hoisted(() => ({ fetchPublicImage: vi.fn() }))
 const records = vi.hoisted(() => ({
-  countRecentUploads: vi.fn(),
-  recordUpload: vi.fn(),
+  reserveUpload: vi.fn(),
+  assignUploadKey: vi.fn(),
   markUploadCompleted: vi.fn(),
-  forgetUpload: vi.fn(),
+  markUploadRejected: vi.fn(),
   claimExpiredUploads: vi.fn(),
+  finishUploadCleanup: vi.fn(),
+  pruneSettledUploads: vi.fn(),
 }))
 vi.mock('@/lib/server/uploads/upload-records', () => records)
 
@@ -55,7 +57,10 @@ const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
 
 beforeEach(() => {
   vi.clearAllMocks()
-  records.countRecentUploads.mockResolvedValue(0)
+  records.reserveUpload.mockResolvedValue('upload-1')
+  records.assignUploadKey.mockResolvedValue(undefined)
+  records.markUploadCompleted.mockResolvedValue(true)
+  r2.deleteImage.mockResolvedValue(undefined)
   records.claimExpiredUploads.mockResolvedValue([])
   r2.presignImagePut.mockResolvedValue(
     'https://r2.example/put?X-Amz-Signature=x'
@@ -310,21 +315,32 @@ describe('upload limits and cleanup', () => {
     expect(UPLOADS_PER_HOUR).toBe(100)
   })
 
-  it('rate-limits presigned uploads past the hourly quota', async () => {
-    records.countRecentUploads.mockResolvedValue(UPLOADS_PER_HOUR)
+  it('reserves a quota slot atomically before issuing a presigned upload', async () => {
+    const created = await createImageUpload(core, request)
+    const { objectKey } = created.ok
+      ? (created.data as { objectKey: string })
+      : { objectKey: '' }
+    expect(records.reserveUpload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'core',
+        kind: 'presigned',
+        objectKey,
+        limit: UPLOADS_PER_HOUR,
+      })
+    )
+  })
+
+  it('rate-limits presigned uploads when no slot is left', async () => {
+    records.reserveUpload.mockResolvedValue(null)
     await expect(createImageUpload(core, request)).resolves.toMatchObject({
       ok: false,
       code: 'RATE_LIMITED',
     })
     expect(r2.presignImagePut).not.toHaveBeenCalled()
-    expect(records.countRecentUploads).toHaveBeenCalledWith(
-      'core',
-      expect.any(Date)
-    )
   })
 
-  it('rate-limits URL imports past the hourly quota', async () => {
-    records.countRecentUploads.mockResolvedValue(UPLOADS_PER_HOUR)
+  it('reserves before fetching, so failed imports still count', async () => {
+    records.reserveUpload.mockResolvedValue(null)
     await expect(
       importImageFromUrl(core, {
         target: 'projects',
@@ -332,38 +348,80 @@ describe('upload limits and cleanup', () => {
       })
     ).resolves.toMatchObject({ ok: false, code: 'RATE_LIMITED' })
     expect(remote.fetchPublicImage).not.toHaveBeenCalled()
-  })
 
-  it('records each issued upload and cleans up abandoned ones', async () => {
-    records.claimExpiredUploads.mockResolvedValue([
-      'sessions/old-1.png',
-      'projects/old-2.png',
-    ])
-    const created = await createImageUpload(core, request)
-    const { objectKey } = created.ok
-      ? (created.data as { objectKey: string })
-      : { objectKey: '' }
-    expect(records.recordUpload).toHaveBeenCalledWith(
-      expect.objectContaining({ objectKey, userId: 'core', kind: 'presigned' })
+    records.reserveUpload.mockResolvedValue('upload-2')
+    remote.fetchPublicImage.mockRejectedValue(
+      new UploadError(
+        'BLOCKED_URL',
+        'The URL resolves to a non-public address.'
+      )
     )
-    expect(r2.deleteImage).toHaveBeenCalledWith('sessions/old-1.png')
-    expect(r2.deleteImage).toHaveBeenCalledWith('projects/old-2.png')
+    await importImageFromUrl(core, {
+      target: 'projects',
+      url: 'https://internal.test/a.png',
+    })
+    expect(records.reserveUpload).toHaveBeenLastCalledWith(
+      expect.objectContaining({ kind: 'import', objectKey: null })
+    )
+    expect(records.markUploadRejected).toHaveBeenCalledWith({ id: 'upload-2' })
   })
 
-  it('marks a verified upload completed and forgets a rejected one', async () => {
+  it('keeps rejected uploads counted instead of forgetting them', async () => {
     r2.headImage.mockResolvedValue({ ContentLength: 100 })
-    r2.readImageHead.mockResolvedValue(PNG)
-    const good = await issued()
-    await completeImageUpload(core, good)
-    expect(records.markUploadCompleted).toHaveBeenCalledWith(good.objectKey)
-
     r2.readImageHead.mockResolvedValue(new Uint8Array([0x25, 0x50]))
     const bad = await issued()
     await completeImageUpload(core, bad)
-    expect(records.forgetUpload).toHaveBeenCalledWith(bad.objectKey)
+    expect(r2.deleteImage).toHaveBeenCalledWith(bad.objectKey)
+    expect(records.markUploadRejected).toHaveBeenCalledWith({
+      objectKey: bad.objectKey,
+    })
   })
 
-  it('tracks URL imports and forgets failed ones', async () => {
+  it('does not hand out a URL for an upload cleanup already claimed', async () => {
+    r2.headImage.mockResolvedValue({ ContentLength: 100 })
+    r2.readImageHead.mockResolvedValue(PNG)
+    records.markUploadCompleted.mockResolvedValue(false)
+    const upload = await issued()
+    await expect(completeImageUpload(core, upload)).resolves.toMatchObject({
+      ok: false,
+      code: 'NOT_FOUND',
+    })
+  })
+
+  it('removes a cleanup record only after its object is deleted', async () => {
+    records.claimExpiredUploads.mockResolvedValue([
+      { id: 'a', objectKey: 'sessions/old.png' },
+      { id: 'b', objectKey: null },
+      { id: 'c', objectKey: 'projects/old.png' },
+    ])
+    r2.deleteImage.mockImplementation(async (key: string) => {
+      if (key === 'sessions/old.png') throw new Error('R2 timeout')
+    })
+    await createImageUpload(core, request)
+    expect(records.finishUploadCleanup).not.toHaveBeenCalledWith('a')
+    expect(records.finishUploadCleanup).toHaveBeenCalledWith('b')
+    expect(records.finishUploadCleanup).toHaveBeenCalledWith('c')
+  })
+
+  it('cancels an unconsumed download when the import cannot proceed', async () => {
+    const cancel = vi.fn(async () => undefined)
+    remote.fetchPublicImage.mockResolvedValue({
+      body: { cancel } as unknown as ReadableStream,
+      contentType: 'image/png',
+      contentLength: 8,
+    })
+    records.assignUploadKey.mockRejectedValue(new Error('db down'))
+    await expect(
+      importImageFromUrl(core, {
+        target: 'projects',
+        url: 'https://example.com/a.png',
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'INTERNAL' })
+    expect(cancel).toHaveBeenCalled()
+    expect(r2.streamImageToR2).not.toHaveBeenCalled()
+  })
+
+  it('marks a finished import completed', async () => {
     remote.fetchPublicImage.mockResolvedValue({
       body: new ReadableStream(),
       contentType: 'image/png',
@@ -374,16 +432,10 @@ describe('upload limits and cleanup', () => {
       target: 'projects',
       url: 'https://example.com/a.png',
     })
-    expect(records.recordUpload).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: 'import' })
+    expect(records.assignUploadKey).toHaveBeenCalledWith(
+      'upload-1',
+      expect.stringMatching(/^projects\//)
     )
     expect(records.markUploadCompleted).toHaveBeenCalled()
-
-    r2.streamImageToR2.mockRejectedValue(new Error('TOO_LARGE'))
-    await importImageFromUrl(core, {
-      target: 'projects',
-      url: 'https://example.com/b.png',
-    })
-    expect(records.forgetUpload).toHaveBeenCalled()
   })
 })

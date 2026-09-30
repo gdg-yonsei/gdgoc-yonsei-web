@@ -1,11 +1,13 @@
 CREATE TABLE "mcp_image_upload" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"objectKey" text NOT NULL,
+	"objectKey" text,
 	"userId" text,
 	"kind" text NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"expiresAt" timestamp NOT NULL,
 	"completedAt" timestamp,
+	"rejectedAt" timestamp,
+	"claimedAt" timestamp,
 	CONSTRAINT "mcp_image_upload_objectKey_unique" UNIQUE("objectKey")
 );
 --> statement-breakpoint

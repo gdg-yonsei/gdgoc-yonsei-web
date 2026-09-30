@@ -1,5 +1,5 @@
 {
-  "id": "16e5f6a2-5d27-487e-b33e-31f7110756e2",
+  "id": "657ed021-46d2-43bc-9cdf-3f40ddccfacf",
   "prevId": "e1ee0caf-fe2c-471d-ba93-f53e36cb30de",
   "version": "7",
   "dialect": "postgresql",
@@ -804,7 +804,7 @@
           "name": "objectKey",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "userId": {
           "name": "userId",
@@ -833,6 +833,18 @@
         },
         "completedAt": {
           "name": "completedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejectedAt": {
+          "name": "rejectedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claimedAt": {
+          "name": "claimedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
