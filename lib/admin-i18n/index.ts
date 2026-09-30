@@ -208,6 +208,15 @@ const adminMessages = {
     pendingApprovals: 'Pending approvals',
     viewAll: 'View all',
     tools: 'Tools',
+    mcpConnect: 'Connect AI to GYMS (MCP)',
+    mcpConnectHint:
+      'Add GYMS to Claude, ChatGPT or Codex to view and manage sessions, projects and members by chatting. The AI can only do what your role allows.',
+    mcpServerUrl: 'MCP server URL',
+    mcpClient: 'AI client',
+    mcpPermissionNote:
+      'Only approved members can connect. You pick the permissions (read, write, admin) on the consent screen, and you can remove the connection from the client at any time.',
+    copy: 'Copy',
+    copied: 'Copied',
 
     // ── States ──
     errorOccurred: 'Something went wrong',
@@ -448,6 +457,15 @@ const adminMessages = {
     pendingApprovals: '승인 대기',
     viewAll: '전체 보기',
     tools: '도구',
+    mcpConnect: 'AI 에 GYMS 연결하기 (MCP)',
+    mcpConnectHint:
+      'Claude, ChatGPT, Codex 에 GYMS 를 추가하면 대화로 세션, 프로젝트, 멤버를 조회하고 관리할 수 있습니다. AI 는 내 권한 안에서만 작업합니다.',
+    mcpServerUrl: 'MCP 서버 주소',
+    mcpClient: 'AI 클라이언트',
+    mcpPermissionNote:
+      '승인된 멤버만 연결할 수 있습니다. 동의 화면에서 허용할 권한(읽기, 쓰기, 관리)을 직접 고르며, 연결은 클라이언트에서 언제든 삭제할 수 있습니다.',
+    copy: '복사',
+    copied: '복사됨',
 
     // ── States ──
     errorOccurred: '문제가 발생했습니다',

@@ -45,7 +45,7 @@ export function useAdminI18n() {
   }
   const fallbackMessages = getAdminMessages('en')
   return {
-    locale: 'en',
+    locale: 'en' as Locale,
     messages: fallbackMessages,
     t: (key: AdminMessageKey) => fallbackMessages[key],
   }
