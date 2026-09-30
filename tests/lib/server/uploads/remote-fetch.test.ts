@@ -18,6 +18,10 @@ describe('isPublicAddress', () => {
     'fc00::1',
     'fe80::1',
     '::ffff:127.0.0.1',
+    '::7f00:1',
+    '2002:7f00:1::',
+    '64:ff9b:1::1',
+    '100::1',
     'not-an-ip',
   ])('blocks %s', (ip) => {
     expect(isPublicAddress(ip)).toBe(false)
@@ -138,5 +142,45 @@ describe('fetchPublicImage', () => {
     expect(result.contentType).toBe('image/png')
     expect(result.contentLength).toBe(3)
     expect(result.body).toBeInstanceOf(ReadableStream)
+  })
+
+  it('cancels the body of a redirect response before following it', async () => {
+    const cancel = vi.fn(async () => undefined)
+    const redirect = new Response('moved', {
+      status: 302,
+      headers: { location: 'https://public.test/b.png' },
+    })
+    Object.defineProperty(redirect, 'body', { value: { cancel } })
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(redirect)
+      .mockResolvedValueOnce(
+        new Response('png', { headers: { 'content-type': 'image/png' } })
+      )
+    await fetchPublicImage('https://public.test/a.png', {
+      maxBytes: 10,
+      lookup: publicLookup,
+      fetchImpl,
+    })
+    expect(cancel).toHaveBeenCalledTimes(1)
+  })
+
+  it('gives up when the server does not answer within the header timeout', async () => {
+    const fetchImpl = vi.fn(
+      (_url: URL, init: { signal: AbortSignal }) =>
+        new Promise<Response>((_, reject) => {
+          init.signal.addEventListener('abort', () =>
+            reject(init.signal.reason)
+          )
+        })
+    )
+    await expect(
+      fetchPublicImage('https://public.test/a.png', {
+        maxBytes: 10,
+        lookup: publicLookup,
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+        headersTimeoutMs: 20,
+      })
+    ).rejects.toMatchObject({ code: 'FETCH_FAILED' })
   })
 })

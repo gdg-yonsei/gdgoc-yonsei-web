@@ -36,9 +36,14 @@ for (const [network, prefix] of [
   blocked.addSubnet(network, prefix, 'ipv4')
 }
 for (const [network, prefix] of [
-  ['::', 128],
+  // IPv4-compatible(::a.b.c.d)·미지정·루프백 주소를 포함한다.
+  ['::', 96],
   ['::1', 128],
   ['64:ff9b::', 96],
+  ['64:ff9b:1::', 48],
+  ['100::', 64],
+  // 6to4: 안에 임의의 IPv4(사설 포함)를 담을 수 있다.
+  ['2002::', 16],
   ['2001:db8::', 32],
   ['fc00::', 7],
   ['fe80::', 10],
@@ -69,6 +74,10 @@ const defaultLookup: LookupFn = (hostname) =>
  * 연결 시점에도 같은 검사를 하는 dispatcher. 검사 뒤 DNS 가 바뀌어
  * 내부 주소로 붙는 DNS rebinding 을 막는다.
  */
+const HEADERS_TIMEOUT_MS = 30_000
+/** 200MB 를 느린 원본에서 받는 데 필요한 전체 전송 한도. */
+const TRANSFER_TIMEOUT_MS = 10 * 60 * 1000
+
 const pinnedDispatcher = new Agent({
   connect: {
     lookup: (hostname, options, callback) => {
@@ -120,6 +129,7 @@ export async function fetchPublicImage(
     maxRedirects?: number
     lookup?: LookupFn
     fetchImpl?: typeof fetch
+    headersTimeoutMs?: number
   }
 ): Promise<{
   body: ReadableStream<Uint8Array>
@@ -129,6 +139,8 @@ export async function fetchPublicImage(
   const lookup = opts.lookup ?? defaultLookup
   const fetchImpl = opts.fetchImpl ?? defaultFetch
   const maxRedirects = opts.maxRedirects ?? 3
+  // 전체 전송은 10분, 응답 헤더까지는 30초. 헤더가 오면 그 타이머만 푼다.
+  const transfer = AbortSignal.timeout(TRANSFER_TIMEOUT_MS)
 
   let url: URL
   try {
@@ -159,11 +171,16 @@ export async function fetchPublicImage(
       )
     }
 
+    const headersWait = new AbortController()
+    const headersTimer = setTimeout(
+      () => headersWait.abort(new Error('headers timeout')),
+      opts.headersTimeoutMs ?? HEADERS_TIMEOUT_MS
+    )
     let response: Response
     try {
       response = await fetchImpl(url, {
         redirect: 'manual',
-        signal: AbortSignal.timeout(120_000),
+        signal: AbortSignal.any([transfer, headersWait.signal]),
       })
     } catch (error) {
       if (error instanceof UploadError) throw error
@@ -171,9 +188,13 @@ export async function fetchPublicImage(
         'FETCH_FAILED',
         'The image could not be downloaded.'
       )
+    } finally {
+      clearTimeout(headersTimer)
     }
 
     if (response.status >= 300 && response.status < 400) {
+      // 따라가지 않는 응답 본문은 바로 닫아 연결을 돌려준다.
+      await response.body?.cancel().catch(() => undefined)
       const location = response.headers.get('location')
       if (!location) {
         throw new UploadError('FETCH_FAILED', 'Redirect without a location.')
