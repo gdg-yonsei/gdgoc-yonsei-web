@@ -13,8 +13,7 @@ export function parseSessionDateTime(value: string): Date | null {
   if (LOCAL.test(value)) {
     const date = new Date(`${value}Z`)
     // 2026-02-30 처럼 넘치는 날짜는 다른 날로 굴러가므로 되돌려 비교한다.
-    return !Number.isNaN(date.getTime()) &&
-      date.toISOString().startsWith(value)
+    return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value)
       ? date
       : null
   }

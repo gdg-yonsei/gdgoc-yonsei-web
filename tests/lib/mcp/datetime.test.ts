@@ -14,9 +14,9 @@ it('converts offset input to Seoul wall clock', () => {
   expect(parseSessionDateTime('2026-10-01T10:00:00Z')?.toISOString()).toBe(
     '2026-10-01T19:00:00.000Z'
   )
-  expect(
-    parseSessionDateTime('2026-10-01T19:00:00+09:00')?.toISOString()
-  ).toBe('2026-10-01T19:00:00.000Z')
+  expect(parseSessionDateTime('2026-10-01T19:00:00+09:00')?.toISOString()).toBe(
+    '2026-10-01T19:00:00.000Z'
+  )
 })
 
 it('rejects anything else', () => {

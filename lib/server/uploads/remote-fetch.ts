@@ -5,10 +5,7 @@ import { BlockList, isIP } from 'node:net'
 import { Agent, fetch as undiciFetch } from 'undici'
 
 export type UploadErrorCode =
-  | 'BLOCKED_URL'
-  | 'TOO_LARGE'
-  | 'NOT_IMAGE'
-  | 'FETCH_FAILED'
+  'BLOCKED_URL' | 'TOO_LARGE' | 'NOT_IMAGE' | 'FETCH_FAILED'
 
 export class UploadError extends Error {
   constructor(
@@ -82,11 +79,17 @@ const pinnedDispatcher = new Agent({
           : [{ address, family }]
         if (
           addresses.some(
-            (entry) => !isPublicAddress(typeof entry === 'string' ? entry : entry.address)
+            (entry) =>
+              !isPublicAddress(
+                typeof entry === 'string' ? entry : entry.address
+              )
           )
         ) {
           return callback(
-            new UploadError('BLOCKED_URL', 'The URL resolves to a non-public address.'),
+            new UploadError(
+              'BLOCKED_URL',
+              'The URL resolves to a non-public address.'
+            ),
             address,
             family
           )
@@ -136,7 +139,10 @@ export async function fetchPublicImage(
 
   for (let hop = 0; hop <= maxRedirects; hop++) {
     if (url.protocol !== 'https:' || url.username || url.password) {
-      throw new UploadError('BLOCKED_URL', 'Only public https URLs are allowed.')
+      throw new UploadError(
+        'BLOCKED_URL',
+        'Only public https URLs are allowed.'
+      )
     }
 
     const hostname = url.hostname.replace(/^\[|\]$/g, '')
@@ -161,7 +167,10 @@ export async function fetchPublicImage(
       })
     } catch (error) {
       if (error instanceof UploadError) throw error
-      throw new UploadError('FETCH_FAILED', 'The image could not be downloaded.')
+      throw new UploadError(
+        'FETCH_FAILED',
+        'The image could not be downloaded.'
+      )
     }
 
     if (response.status >= 300 && response.status < 400) {
@@ -181,8 +190,11 @@ export async function fetchPublicImage(
     }
 
     const contentType =
-      response.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase() ??
-      ''
+      response.headers
+        .get('content-type')
+        ?.split(';')[0]
+        ?.trim()
+        .toLowerCase() ?? ''
     if (!contentType.startsWith('image/')) {
       throw new UploadError('NOT_IMAGE', 'The URL does not point to an image.')
     }

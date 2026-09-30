@@ -62,22 +62,22 @@ app/(admin)/**/actions.ts          기존 Server Action: FormData → Actor → 
 
 ### 파일 구성
 
-| 경로 | 역할 |
-|---|---|
-| `auth.ts` | `oauthProvider` 플러그인 추가 |
-| `db/schema/oauth.ts` | 플러그인 테이블 (`auth@1.7.6 generate` 로 생성: oauth client/refresh token/consent/resource, jwks 등) |
-| `db/schema/mcp-audit-log.ts` | 감사 로그 테이블 |
-| `app/.well-known/oauth-protected-resource/route.ts` | RFC 9728 |
-| `app/.well-known/oauth-authorization-server/route.ts` | RFC 8414 |
-| `app/api/mcp/route.ts` | MCP 엔드포인트 (`@modelcontextprotocol/server` v2 `createMcpHandler`, 요청마다 Actor 별 서버 생성) |
-| `app/(admin)/auth/mcp-consent/page.tsx` | 동의 화면 |
-| `lib/mcp/server.ts` | MCP 서버 팩토리, 도구 등록 |
-| `lib/mcp/auth.ts` | 검증된 JWT 클레임 → Actor (DB 역할 조회) |
-| `lib/mcp/registry.ts` | 도구 정의 타입, 스코프/역할 필터, `withAudit` 래퍼 |
-| `lib/mcp/tools/{context,generations,parts,members,profile,projects,sessions,images}.ts` | 도구 |
-| `lib/server/services/admin/{types,authorize,generation-scope}.ts` | 공용 타입·권한·기수 스코프 |
-| `lib/server/services/admin/{sessions,projects,parts,generations,members,profile,images}.ts` | 도메인 서비스 |
-| `lib/server/uploads/{remote-fetch,image-signature}.ts` | SSRF 방어 fetch, 매직 바이트 검사 |
+| 경로                                                                                        | 역할                                                                                                  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `auth.ts`                                                                                   | `oauthProvider` 플러그인 추가                                                                         |
+| `db/schema/oauth.ts`                                                                        | 플러그인 테이블 (`auth@1.7.6 generate` 로 생성: oauth client/refresh token/consent/resource, jwks 등) |
+| `db/schema/mcp-audit-log.ts`                                                                | 감사 로그 테이블                                                                                      |
+| `app/.well-known/oauth-protected-resource/route.ts`                                         | RFC 9728                                                                                              |
+| `app/.well-known/oauth-authorization-server/route.ts`                                       | RFC 8414                                                                                              |
+| `app/api/mcp/route.ts`                                                                      | MCP 엔드포인트 (`@modelcontextprotocol/server` v2 `createMcpHandler`, 요청마다 Actor 별 서버 생성)    |
+| `app/(admin)/auth/mcp-consent/page.tsx`                                                     | 동의 화면                                                                                             |
+| `lib/mcp/server.ts`                                                                         | MCP 서버 팩토리, 도구 등록                                                                            |
+| `lib/mcp/auth.ts`                                                                           | 검증된 JWT 클레임 → Actor (DB 역할 조회)                                                              |
+| `lib/mcp/registry.ts`                                                                       | 도구 정의 타입, 스코프/역할 필터, `withAudit` 래퍼                                                    |
+| `lib/mcp/tools/{context,generations,parts,members,profile,projects,sessions,images}.ts`     | 도구                                                                                                  |
+| `lib/server/services/admin/{types,authorize,generation-scope}.ts`                           | 공용 타입·권한·기수 스코프                                                                            |
+| `lib/server/services/admin/{sessions,projects,parts,generations,members,profile,images}.ts` | 도메인 서비스                                                                                         |
+| `lib/server/uploads/{remote-fetch,image-signature}.ts`                                      | SSRF 방어 fetch, 매직 바이트 검사                                                                     |
 
 ## 3. OAuth 정책
 
@@ -126,21 +126,21 @@ allowed = scopeGrants(token.scopes, tool.scope)
 
 ### 스코프별 도구 종류
 
-| 스코프 | 도구 |
-|---|---|
-| `gyms:read` | 조회 전부 |
+| 스코프       | 도구                                                                  |
+| ------------ | --------------------------------------------------------------------- |
+| `gyms:read`  | 조회 전부                                                             |
 | `gyms:write` | 생성·수정, 세션 신청/취소, 참가자 제거, 이미지 업로드, 내 프로필 수정 |
-| `gyms:admin` | 삭제, 멤버 승인, 역할 변경 |
+| `gyms:admin` | 삭제, 멤버 승인, 역할 변경                                            |
 
 ### 역할별 요약
 
-| 역할 | MCP 로 가능한 것 |
-|---|---|
-| LEAD | 전부 |
-| CORE | 세션·프로젝트·파트·멤버 CRUD, 세션·프로젝트 삭제. 역할 변경·기수 관리 불가 |
-| MEMBER | 세션·프로젝트 조회, 프로젝트 생성·본인 프로젝트 수정, 세션 신청/취소, 본인 프로필 |
-| ALUMNUS | 세션·프로젝트 조회, 본인 프로필 수정 |
-| UNVERIFIED | 연결 불가 |
+| 역할       | MCP 로 가능한 것                                                                  |
+| ---------- | --------------------------------------------------------------------------------- |
+| LEAD       | 전부                                                                              |
+| CORE       | 세션·프로젝트·파트·멤버 CRUD, 세션·프로젝트 삭제. 역할 변경·기수 관리 불가        |
+| MEMBER     | 세션·프로젝트 조회, 프로젝트 생성·본인 프로젝트 수정, 세션 신청/취소, 본인 프로필 |
+| ALUMNUS    | 세션·프로젝트 조회, 본인 프로필 수정                                              |
+| UNVERIFIED | 연결 불가                                                                         |
 
 ## 5. 도구 카탈로그
 
@@ -154,27 +154,27 @@ allowed = scopeGrants(token.scopes, tool.scope)
 
 ### 도구 목록
 
-| 도메인 | 도구 | 스코프 |
-|---|---|---|
-| 컨텍스트 | `whoami` | read |
-| 기수 | `list_generations`, `get_generation` | read |
-| | `create_generation`, `update_generation` | write |
-| | `delete_generation` | admin |
-| 파트 | `list_parts`, `get_part` | read |
-| | `create_part`, `update_part` | write |
-| | `delete_part` | admin |
-| 멤버 | `list_members`, `get_member` | read |
-| | `update_member` | write |
-| | `approve_member`, `update_member_role`, `delete_member` | admin |
-| 내 프로필 | `get_my_profile` | read |
-| | `update_my_profile` | write |
-| 프로젝트 | `list_projects`, `get_project` | read |
-| | `create_project`, `update_project` | write |
-| | `delete_project` | admin |
-| 세션 | `list_sessions`, `get_session` | read |
-| | `create_session`, `update_session`, `register_session`, `unregister_session`, `remove_session_participant` | write |
-| | `delete_session` | admin |
-| 이미지 | `create_image_upload`, `complete_image_upload`, `import_image_from_url` | write |
+| 도메인    | 도구                                                                                                       | 스코프 |
+| --------- | ---------------------------------------------------------------------------------------------------------- | ------ |
+| 컨텍스트  | `whoami`                                                                                                   | read   |
+| 기수      | `list_generations`, `get_generation`                                                                       | read   |
+|           | `create_generation`, `update_generation`                                                                   | write  |
+|           | `delete_generation`                                                                                        | admin  |
+| 파트      | `list_parts`, `get_part`                                                                                   | read   |
+|           | `create_part`, `update_part`                                                                               | write  |
+|           | `delete_part`                                                                                              | admin  |
+| 멤버      | `list_members`, `get_member`                                                                               | read   |
+|           | `update_member`                                                                                            | write  |
+|           | `approve_member`, `update_member_role`, `delete_member`                                                    | admin  |
+| 내 프로필 | `get_my_profile`                                                                                           | read   |
+|           | `update_my_profile`                                                                                        | write  |
+| 프로젝트  | `list_projects`, `get_project`                                                                             | read   |
+|           | `create_project`, `update_project`                                                                         | write  |
+|           | `delete_project`                                                                                           | admin  |
+| 세션      | `list_sessions`, `get_session`                                                                             | read   |
+|           | `create_session`, `update_session`, `register_session`, `unregister_session`, `remove_session_participant` | write  |
+|           | `delete_session`                                                                                           | admin  |
+| 이미지    | `create_image_upload`, `complete_image_upload`, `import_image_from_url`                                    | write  |
 
 `create_session` 은 `internalOpen` 이면 웹과 동일하게 기수 멤버에게 안내 메일을 보낸다(도구 설명에 명시).
 
@@ -258,20 +258,20 @@ type ServiceResult<T> =
 
 `mcp_audit_log`
 
-| 컬럼 | 타입 | 설명 |
-|---|---|---|
-| `id` | uuid pk | |
-| `createdAt` | timestamp | |
-| `userId` | text → user.id, on delete set null | |
-| `role` | role enum | 호출 당시 역할 |
-| `clientId` | text | OAuth 클라이언트 |
-| `clientName` | text | |
-| `tool` | text | 도구 이름 |
-| `input` | jsonb | 비밀성 필드 마스킹, 긴 문자열 2KB 절단 |
-| `outcome` | text (`ok` / `error`) | |
-| `errorCode` | text null | |
-| `targetId` | text null | 생성·수정·삭제 대상 ID |
-| `durationMs` | integer | |
+| 컬럼         | 타입                               | 설명                                   |
+| ------------ | ---------------------------------- | -------------------------------------- |
+| `id`         | uuid pk                            |                                        |
+| `createdAt`  | timestamp                          |                                        |
+| `userId`     | text → user.id, on delete set null |                                        |
+| `role`       | role enum                          | 호출 당시 역할                         |
+| `clientId`   | text                               | OAuth 클라이언트                       |
+| `clientName` | text                               |                                        |
+| `tool`       | text                               | 도구 이름                              |
+| `input`      | jsonb                              | 비밀성 필드 마스킹, 긴 문자열 2KB 절단 |
+| `outcome`    | text (`ok` / `error`)              |                                        |
+| `errorCode`  | text null                          |                                        |
+| `targetId`   | text null                          | 생성·수정·삭제 대상 ID                 |
+| `durationMs` | integer                            |                                        |
 
 - write·admin 스코프 도구 전부 기록(조회 제외). 실패 호출도 기록.
 - 레지스트리의 `withAudit()` 가 모든 해당 핸들러를 감싼다.
@@ -279,15 +279,15 @@ type ServiceResult<T> =
 
 ## 9. 오류 처리
 
-| 상황 | 응답 |
-|---|---|
-| 토큰 없음/만료/audience 불일치 | HTTP 401 + `WWW-Authenticate: Bearer resource_metadata="…"` |
-| 스코프 부족 | HTTP 403 + `WWW-Authenticate: Bearer error="insufficient_scope", scope="…"` |
-| 사용자가 UNVERIFIED 로 강등 | 401 |
-| 역할/소유권/기수 권한 실패 | `isError`, `FORBIDDEN` |
-| 검증 실패 | `isError`, `VALIDATION` + `fieldErrors` |
-| 대상 없음 | `isError`, `NOT_FOUND` |
-| 예상 못한 예외 | `isError`, `INTERNAL` + 일반 메시지. 상세는 `logger.error` 에만 |
+| 상황                           | 응답                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| 토큰 없음/만료/audience 불일치 | HTTP 401 + `WWW-Authenticate: Bearer resource_metadata="…"`                 |
+| 스코프 부족                    | HTTP 403 + `WWW-Authenticate: Bearer error="insufficient_scope", scope="…"` |
+| 사용자가 UNVERIFIED 로 강등    | 401                                                                         |
+| 역할/소유권/기수 권한 실패     | `isError`, `FORBIDDEN`                                                      |
+| 검증 실패                      | `isError`, `VALIDATION` + `fieldErrors`                                     |
+| 대상 없음                      | `isError`, `NOT_FOUND`                                                      |
+| 예상 못한 예외                 | `isError`, `INTERNAL` + 일반 메시지. 상세는 `logger.error` 에만             |
 
 ## 10. 테스트
 

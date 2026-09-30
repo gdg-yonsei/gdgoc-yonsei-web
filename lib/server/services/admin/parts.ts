@@ -218,7 +218,10 @@ export async function updatePart(
   } = parsed.data
 
   if (existingPart.generationsId !== generationId) {
-    return fail('VALIDATION', 'Part generation cannot be changed from this screen.')
+    return fail(
+      'VALIDATION',
+      'Part generation cannot be changed from this screen.'
+    )
   }
 
   try {

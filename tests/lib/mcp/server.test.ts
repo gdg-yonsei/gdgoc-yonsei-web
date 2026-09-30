@@ -3,7 +3,12 @@ import { z } from 'zod'
 
 const { withAudit } = vi.hoisted(() => ({
   withAudit: vi.fn(
-    async (_actor: unknown, _meta: unknown, _input: unknown, run: () => Promise<unknown>) => run()
+    async (
+      _actor: unknown,
+      _meta: unknown,
+      _input: unknown,
+      run: () => Promise<unknown>
+    ) => run()
   ),
 }))
 vi.mock('@/lib/mcp/audit', () => ({ withAudit }))
@@ -80,8 +85,18 @@ async function rpc(actor: Actor, method: string, params: object = {}) {
   return json
 }
 
-const member: Actor = { userId: 'm', role: 'MEMBER', scopes: ['gyms:read', 'gyms:write'], via: 'mcp' }
-const core: Actor = { userId: 'c', role: 'CORE', scopes: ['gyms:read', 'gyms:write'], via: 'mcp' }
+const member: Actor = {
+  userId: 'm',
+  role: 'MEMBER',
+  scopes: ['gyms:read', 'gyms:write'],
+  via: 'mcp',
+}
+const core: Actor = {
+  userId: 'c',
+  role: 'CORE',
+  scopes: ['gyms:read', 'gyms:write'],
+  via: 'mcp',
+}
 
 describe('GYMS MCP server', () => {
   beforeEach(() => {
@@ -89,7 +104,9 @@ describe('GYMS MCP server', () => {
   })
 
   it('lists only the tools the actor may use', async () => {
-    const memberTools = (await rpc(member, 'tools/list')).result.tools.map((t: { name: string }) => t.name)
+    const memberTools = (await rpc(member, 'tools/list')).result.tools.map(
+      (t: { name: string }) => t.name
+    )
     expect(memberTools.sort()).toEqual(['crash_thing', 'read_thing'])
     const coreTools = (await rpc(core, 'tools/list')).result.tools
     expect(coreTools.map((t: { name: string }) => t.name).sort()).toEqual([
@@ -97,32 +114,52 @@ describe('GYMS MCP server', () => {
       'read_thing',
       'write_thing',
     ])
-    const write = coreTools.find((t: { name: string }) => t.name === 'write_thing')
-    expect(write.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: false })
+    const write = coreTools.find(
+      (t: { name: string }) => t.name === 'write_thing'
+    )
+    expect(write.annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: false,
+    })
   })
 
   it('returns structured results for read tools without auditing', async () => {
-    const response = await rpc(member, 'tools/call', { name: 'read_thing', arguments: { id: 'x' } })
+    const response = await rpc(member, 'tools/call', {
+      name: 'read_thing',
+      arguments: { id: 'x' },
+    })
     expect(response.result.structuredContent).toEqual({ result: { id: 'x' } })
     expect(withAudit).not.toHaveBeenCalled()
   })
 
   it('maps service failures to isError and audits write tools', async () => {
-    const response = await rpc(core, 'tools/call', { name: 'write_thing', arguments: {} })
+    const response = await rpc(core, 'tools/call', {
+      name: 'write_thing',
+      arguments: {},
+    })
     expect(response.result.isError).toBe(true)
-    expect(response.result.structuredContent.error).toEqual({ code: 'FORBIDDEN', message: 'nope' })
+    expect(response.result.structuredContent.error).toEqual({
+      code: 'FORBIDDEN',
+      message: 'nope',
+    })
     expect(withAudit).toHaveBeenCalledTimes(1)
   })
 
   it('hides unexpected exception details', async () => {
-    const response = await rpc(member, 'tools/call', { name: 'crash_thing', arguments: {} })
+    const response = await rpc(member, 'tools/call', {
+      name: 'crash_thing',
+      arguments: {},
+    })
     expect(response.result.isError).toBe(true)
     expect(JSON.stringify(response)).not.toContain('secret database detail')
     expect(response.result.structuredContent.error.code).toBe('INTERNAL')
   })
 
   it('does not let a member call a hidden tool', async () => {
-    const response = await rpc(member, 'tools/call', { name: 'write_thing', arguments: {} })
+    const response = await rpc(member, 'tools/call', {
+      name: 'write_thing',
+      arguments: {},
+    })
     expect(response.error ?? response.result?.isError).toBeTruthy()
     expect(withAudit).not.toHaveBeenCalled()
   })
@@ -143,7 +180,12 @@ describe('GYMS MCP server', () => {
           accept: 'application/json, text/event-stream',
           'mcp-protocol-version': '2025-06-18',
         },
-        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list',
+          params: {},
+        }),
       }),
       {
         authInfo: {
@@ -165,7 +207,10 @@ describe('GYMS MCP server', () => {
             .map((line) => line.slice(5))
             .join('')
     )
-    const tools = body.result.tools as { name: string; inputSchema: { type: string; properties?: Record<string, unknown> } }[]
+    const tools = body.result.tools as {
+      name: string
+      inputSchema: { type: string; properties?: Record<string, unknown> }
+    }[]
     expect(tools.map((tool) => tool.name).sort()).toEqual(
       ALL_TOOLS.map((tool) => tool.name).sort()
     )

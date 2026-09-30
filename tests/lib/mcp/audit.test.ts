@@ -27,7 +27,10 @@ describe('withAudit', () => {
   it('records a successful call with its target id', async () => {
     const result = await withAudit(
       actor,
-      { tool: 'create_session', targetId: (data) => (data as { id: string }).id },
+      {
+        tool: 'create_session',
+        targetId: (data) => (data as { id: string }).id,
+      },
       { name: 'x' },
       async () => ({ ok: true, data: { id: 's1' } })
     )
@@ -47,20 +50,32 @@ describe('withAudit', () => {
   })
 
   it('records a failed call with its error code', async () => {
-    await withAudit(actor, { tool: 'delete_session' }, { sessionId: 's' }, async () => ({
-      ok: false,
-      code: 'FORBIDDEN',
-      message: 'no',
-    }))
+    await withAudit(
+      actor,
+      { tool: 'delete_session' },
+      { sessionId: 's' },
+      async () => ({
+        ok: false,
+        code: 'FORBIDDEN',
+        message: 'no',
+      })
+    )
     expect(insertValues).toHaveBeenCalledWith(
-      expect.objectContaining({ outcome: 'error', errorCode: 'FORBIDDEN', targetId: null })
+      expect.objectContaining({
+        outcome: 'error',
+        errorCode: 'FORBIDDEN',
+        targetId: null,
+      })
     )
   })
 
   it('returns the tool result even when the audit insert fails', async () => {
     insertValues.mockRejectedValue(new Error('db down'))
     await expect(
-      withAudit(actor, { tool: 'update_session' }, {}, async () => ({ ok: true, data: 1 }))
+      withAudit(actor, { tool: 'update_session' }, {}, async () => ({
+        ok: true,
+        data: 1,
+      }))
     ).resolves.toEqual({ ok: true, data: 1 })
   })
 })

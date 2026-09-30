@@ -50,7 +50,11 @@ describe('toActionError', () => {
 
   it('keeps other failures as form errors', () => {
     expect(
-      toActionError({ ok: false, code: 'NOT_FOUND', message: 'Session not found' })
+      toActionError({
+        ok: false,
+        code: 'NOT_FOUND',
+        message: 'Session not found',
+      })
     ).toEqual({ error: 'Session not found' })
   })
 })

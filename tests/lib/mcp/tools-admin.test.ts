@@ -20,7 +20,9 @@ vi.mock('@/db', () => ({ default: {} }))
 vi.mock('@/lib/server/services/admin/members', () => services)
 vi.mock('@/lib/server/services/admin/profile', () => services)
 vi.mock('@/lib/server/services/admin/parts', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/server/services/admin/parts')>()),
+  ...(await importOriginal<
+    typeof import('@/lib/server/services/admin/parts')
+  >()),
   getPartDetail: services.getPartDetail,
   updatePart: services.updatePart,
 }))
@@ -71,10 +73,18 @@ describe('member tools', () => {
 
   it('update_member merges the patch into the current record', async () => {
     services.getMemberDetail.mockResolvedValue({ ok: true, data: { id: 'u' } })
-    services.memberToInput.mockReturnValue({ name: 'Old', email: 'old@x.com', major: 'CS', role: null })
+    services.memberToInput.mockReturnValue({
+      name: 'Old',
+      email: 'old@x.com',
+      major: 'CS',
+      role: null,
+    })
     services.updateMember.mockResolvedValue({ ok: true, data: { id: 'u' } })
 
-    const input = tool('update_member').input.parse({ memberId: 'u', major: 'EE' })
+    const input = tool('update_member').input.parse({
+      memberId: 'u',
+      major: 'EE',
+    })
     await tool('update_member').run(lead, input)
 
     expect(services.updateMember).toHaveBeenCalledWith(lead, 'u', {
@@ -86,10 +96,18 @@ describe('member tools', () => {
   })
 
   it('update_my_profile can toggle the notification email alone', async () => {
-    services.setSessionNotificationEmail.mockResolvedValue({ ok: true, data: { sessionNotiEmail: false } })
-    const input = tool('update_my_profile').input.parse({ sessionNotificationEmail: false })
+    services.setSessionNotificationEmail.mockResolvedValue({
+      ok: true,
+      data: { sessionNotiEmail: false },
+    })
+    const input = tool('update_my_profile').input.parse({
+      sessionNotificationEmail: false,
+    })
     const result = await tool('update_my_profile').run(lead, input)
-    expect(services.setSessionNotificationEmail).toHaveBeenCalledWith(lead, false)
+    expect(services.setSessionNotificationEmail).toHaveBeenCalledWith(
+      lead,
+      false
+    )
     expect(services.updateMyProfile).not.toHaveBeenCalled()
     expect(result).toMatchObject({ ok: true })
   })
@@ -112,7 +130,10 @@ describe('part tools', () => {
     })
     services.updatePart.mockResolvedValue({ ok: true, data: { id: 7 } })
 
-    const input = tool('update_part').input.parse({ partId: 7, name: 'Frontend' })
+    const input = tool('update_part').input.parse({
+      partId: 7,
+      name: 'Frontend',
+    })
     await tool('update_part').run(lead, input)
 
     expect(services.updatePart).toHaveBeenCalledWith(lead, 7, {
@@ -128,7 +149,13 @@ describe('part tools', () => {
 
 describe('tool metadata', () => {
   it('marks destructive tools as admin scope', () => {
-    for (const name of ['delete_generation', 'delete_part', 'delete_member', 'update_member_role', 'approve_member']) {
+    for (const name of [
+      'delete_generation',
+      'delete_part',
+      'delete_member',
+      'update_member_role',
+      'approve_member',
+    ]) {
       expect(tool(name).scope, name).toBe('gyms:admin')
     }
   })

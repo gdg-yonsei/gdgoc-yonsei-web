@@ -67,8 +67,12 @@ async function loadProjectDetail(projectId: string) {
   const project = await getProject(projectId)
   if (!project) return null
 
-  const { usersToProjects: members, projectsToTags, generation, ...fields } =
-    project
+  const {
+    usersToProjects: members,
+    projectsToTags,
+    generation,
+    ...fields
+  } = project
   return {
     ...fields,
     generationName: generation?.name ?? null,
@@ -103,9 +107,10 @@ export function projectToInput(detail: ProjectDetail): ProjectInput {
     contentKo: detail.contentKo,
     mainImage: detail.mainImage,
     contentImages: detail.images as [string, ...string[]],
-    participants: detail.participants.map(
-      (participant) => participant.id
-    ) as [string, ...string[]],
+    participants: detail.participants.map((participant) => participant.id) as [
+      string,
+      ...string[],
+    ],
     generationId: String(detail.generationId),
     repoUrl: detail.repoUrl,
     demoUrl: detail.demoUrl,

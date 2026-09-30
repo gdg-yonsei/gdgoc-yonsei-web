@@ -14,7 +14,9 @@ vi.mock('@/lib/server/env', () => ({
 vi.mock('@aws-sdk/lib-storage', () => ({
   // 실제 멀티파트 대신 Body 스트림을 끝까지 읽는다(한도 검사가 스트림에서 일어난다).
   Upload: class {
-    constructor(private readonly options: { params: { Body: ReadableStream<Uint8Array> } }) {}
+    constructor(
+      private readonly options: { params: { Body: ReadableStream<Uint8Array> } }
+    ) {}
     async done() {
       const reader = this.options.params.Body.getReader()
       for (;;) {
@@ -41,7 +43,9 @@ function streamOf(...chunks: Uint8Array[]) {
 
 describe('presignImagePut', () => {
   it('signs content-type and content-length so R2 rejects other sizes', async () => {
-    const url = new URL(await presignImagePut('sessions/a.png', 'image/png', 1234))
+    const url = new URL(
+      await presignImagePut('sessions/a.png', 'image/png', 1234)
+    )
     const signed = url.searchParams.get('X-Amz-SignedHeaders') ?? ''
     expect(signed.split(';')).toEqual(
       expect.arrayContaining(['content-length', 'content-type', 'host'])
@@ -54,7 +58,10 @@ describe('streamImageToR2', () => {
   it('uploads and returns the size and leading bytes', async () => {
     const result = await streamImageToR2(
       'sessions/a.png',
-      streamOf(new Uint8Array([0x89, 0x50]), new Uint8Array([0x4e, 0x47, 1, 2])),
+      streamOf(
+        new Uint8Array([0x89, 0x50]),
+        new Uint8Array([0x4e, 0x47, 1, 2])
+      ),
       'image/png',
       100
     )

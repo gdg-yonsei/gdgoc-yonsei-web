@@ -34,7 +34,10 @@ describe('fetchPublicImage', () => {
 
   it('rejects non-https URLs', async () => {
     await expect(
-      fetchPublicImage('http://example.com/a.png', { maxBytes: 10, lookup: publicLookup })
+      fetchPublicImage('http://example.com/a.png', {
+        maxBytes: 10,
+        lookup: publicLookup,
+      })
     ).rejects.toMatchObject({ code: 'BLOCKED_URL' })
   })
 
@@ -62,7 +65,11 @@ describe('fetchPublicImage', () => {
         })
     )
     await expect(
-      fetchPublicImage('https://public.test/a.png', { maxBytes: 10, lookup, fetchImpl })
+      fetchPublicImage('https://public.test/a.png', {
+        maxBytes: 10,
+        lookup,
+        fetchImpl,
+      })
     ).rejects.toMatchObject({ code: 'BLOCKED_URL' })
     expect(fetchImpl).toHaveBeenCalledTimes(1)
   })
@@ -91,16 +98,25 @@ describe('fetchPublicImage', () => {
         })
     )
     await expect(
-      fetchPublicImage('https://public.test/a.png', { maxBytes: 10, lookup: publicLookup, fetchImpl })
+      fetchPublicImage('https://public.test/a.png', {
+        maxBytes: 10,
+        lookup: publicLookup,
+        fetchImpl,
+      })
     ).rejects.toMatchObject({ code: 'TOO_LARGE' })
   })
 
   it('rejects non-image responses', async () => {
     const fetchImpl = vi.fn(
-      async () => new Response('<html>', { headers: { 'content-type': 'text/html' } })
+      async () =>
+        new Response('<html>', { headers: { 'content-type': 'text/html' } })
     )
     await expect(
-      fetchPublicImage('https://public.test/a.png', { maxBytes: 10, lookup: publicLookup, fetchImpl })
+      fetchPublicImage('https://public.test/a.png', {
+        maxBytes: 10,
+        lookup: publicLookup,
+        fetchImpl,
+      })
     ).rejects.toMatchObject({ code: 'NOT_IMAGE' })
   })
 
@@ -108,7 +124,10 @@ describe('fetchPublicImage', () => {
     const fetchImpl = vi.fn(
       async () =>
         new Response('png', {
-          headers: { 'content-type': 'image/png; charset=binary', 'content-length': '3' },
+          headers: {
+            'content-type': 'image/png; charset=binary',
+            'content-length': '3',
+          },
         })
     )
     const result = await fetchPublicImage('https://public.test/a.png', {

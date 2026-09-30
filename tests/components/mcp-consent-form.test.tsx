@@ -27,7 +27,12 @@ describe('MCP consent form', () => {
       <ConsentForm
         clientName={'Claude'}
         redirectHost={'claude.ai'}
-        requestedScopes={['offline_access', 'gyms:read', 'gyms:write', 'gyms:admin']}
+        requestedScopes={[
+          'offline_access',
+          'gyms:read',
+          'gyms:write',
+          'gyms:admin',
+        ]}
         selectableScopes={['gyms:read', 'gyms:write']}
       />
     )
@@ -39,7 +44,10 @@ describe('MCP consent form', () => {
   })
 
   it('approves the selected scopes and keeps offline_access', async () => {
-    consent.mockResolvedValue({ data: { redirect_uri: 'https://claude.ai/cb?code=1' }, error: null })
+    consent.mockResolvedValue({
+      data: { redirect_uri: 'https://claude.ai/cb?code=1' },
+      error: null,
+    })
     const user = userEvent.setup()
     render(
       <ConsentForm
@@ -63,7 +71,10 @@ describe('MCP consent form', () => {
   })
 
   it('denies the request', async () => {
-    consent.mockResolvedValue({ data: { redirect_uri: 'https://claude.ai/cb?error=access_denied' }, error: null })
+    consent.mockResolvedValue({
+      data: { redirect_uri: 'https://claude.ai/cb?error=access_denied' },
+      error: null,
+    })
     const user = userEvent.setup()
     render(
       <ConsentForm
@@ -78,7 +89,9 @@ describe('MCP consent form', () => {
 
     await waitFor(() => {
       expect(consent).toHaveBeenCalledWith({ accept: false })
-      expect(assign).toHaveBeenCalledWith('https://claude.ai/cb?error=access_denied')
+      expect(assign).toHaveBeenCalledWith(
+        'https://claude.ai/cb?error=access_denied'
+      )
     })
   })
 

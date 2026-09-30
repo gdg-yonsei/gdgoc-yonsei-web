@@ -25,7 +25,11 @@ export async function updateMemberAction(
     return forbidden()
   }
 
-  const result = await updateMember(actor, memberId, getMemberFormData(formData))
+  const result = await updateMember(
+    actor,
+    memberId,
+    getMemberFormData(formData)
+  )
   if (!result.ok) {
     return toActionError(result)
   }

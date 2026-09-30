@@ -12,7 +12,9 @@ test.describe.configure({ mode: 'serial' })
 const ALL_SCOPES = ['gyms:read', 'gyms:write', 'gyms:admin']
 
 test.describe('GYMS MCP over OAuth', () => {
-  test('discovery chain points clients at the authorization server', async ({ baseURL }) => {
+  test('discovery chain points clients at the authorization server', async ({
+    baseURL,
+  }) => {
     const unauthenticated = await mcpRequest(baseURL!, null, 'tools/list')
     expect(unauthenticated.status).toBe(401)
     expect(unauthenticated.headers.get('www-authenticate')).toContain(
@@ -23,12 +25,16 @@ test.describe('GYMS MCP over OAuth', () => {
       await fetch(`${baseURL}/.well-known/oauth-protected-resource/api/mcp`)
     ).json()
     expect(resource.resource).toBe(`${baseURL}/api/mcp`)
-    expect(resource.scopes_supported).toEqual(expect.arrayContaining(ALL_SCOPES))
+    expect(resource.scopes_supported).toEqual(
+      expect.arrayContaining(ALL_SCOPES)
+    )
 
     const issuer = resource.authorization_servers[0] as string
     const issuerPath = new URL(issuer).pathname
     const metadata = await (
-      await fetch(`${baseURL}/.well-known/oauth-authorization-server${issuerPath}`)
+      await fetch(
+        `${baseURL}/.well-known/oauth-authorization-server${issuerPath}`
+      )
     ).json()
     expect(metadata.issuer).toBe(issuer)
     expect(metadata.code_challenge_methods_supported).toContain('S256')
@@ -36,31 +42,61 @@ test.describe('GYMS MCP over OAuth', () => {
     expect(metadata.client_id_metadata_document_supported).toBe(true)
   })
 
-  test('LEAD with full scopes sees admin tools, MEMBER does not', async ({ browser, baseURL }) => {
-    const lead = await connectAs(browser, baseURL!, ADMIN_STORAGE_STATE, ALL_SCOPES)
+  test('LEAD with full scopes sees admin tools, MEMBER does not', async ({
+    browser,
+    baseURL,
+  }) => {
+    const lead = await connectAs(
+      browser,
+      baseURL!,
+      ADMIN_STORAGE_STATE,
+      ALL_SCOPES
+    )
     const claims = JSON.parse(
       Buffer.from(lead.accessToken.split('.')[1]!, 'base64url').toString('utf8')
-    ) as { exp: number; iat: number; aud: string | string[]; azp?: string; client_id?: string }
+    ) as {
+      exp: number
+      iat: number
+      aud: string | string[]
+      azp?: string
+      client_id?: string
+    }
     // gyms:admin 이 든 토큰은 15분, 그 외는 1시간.
     expect(claims.exp - claims.iat).toBe(900)
     expect([claims.aud].flat()).toContain(`${baseURL}/api/mcp`)
     expect(claims.azp ?? claims.client_id).toBeTruthy()
     const leadTools = await lead.toolNames()
-    expect(leadTools).toEqual(expect.arrayContaining(['update_member_role', 'delete_session', 'create_generation']))
+    expect(leadTools).toEqual(
+      expect.arrayContaining([
+        'update_member_role',
+        'delete_session',
+        'create_generation',
+      ])
+    )
 
-    const member = await connectAs(browser, baseURL!, MEMBER_STORAGE_STATE, ['gyms:read', 'gyms:write'])
+    const member = await connectAs(browser, baseURL!, MEMBER_STORAGE_STATE, [
+      'gyms:read',
+      'gyms:write',
+    ])
     const memberClaims = JSON.parse(
-      Buffer.from(member.accessToken.split('.')[1]!, 'base64url').toString('utf8')
+      Buffer.from(member.accessToken.split('.')[1]!, 'base64url').toString(
+        'utf8'
+      )
     ) as { exp: number; iat: number }
     expect(memberClaims.exp - memberClaims.iat).toBe(3600)
     const memberTools = await member.toolNames()
-    expect(memberTools).toEqual(expect.arrayContaining(['create_project', 'register_session', 'whoami']))
+    expect(memberTools).toEqual(
+      expect.arrayContaining(['create_project', 'register_session', 'whoami'])
+    )
     expect(memberTools).not.toContain('delete_session')
     expect(memberTools).not.toContain('list_members')
     expect(member.scope.split(' ')).not.toContain('gyms:admin')
   })
 
-  test('UNVERIFIED users are refused on the consent screen', async ({ browser, baseURL }) => {
+  test('UNVERIFIED users are refused on the consent screen', async ({
+    browser,
+    baseURL,
+  }) => {
     await expect(
       connectAs(browser, baseURL!, UNVERIFIED_STORAGE_STATE, ['gyms:read'])
     ).rejects.toThrow(/admin page access/)
@@ -68,7 +104,12 @@ test.describe('GYMS MCP over OAuth', () => {
 
   test('session round trip is audited', async ({ browser, baseURL }) => {
     const seeded = await readSeededData()
-    const lead = await connectAs(browser, baseURL!, ADMIN_STORAGE_STATE, ALL_SCOPES)
+    const lead = await connectAs(
+      browser,
+      baseURL!,
+      ADMIN_STORAGE_STATE,
+      ALL_SCOPES
+    )
 
     const whoami = await lead.call('whoami')
     expect(whoami.structuredContent?.result).toMatchObject({ role: 'LEAD' })
@@ -90,7 +131,10 @@ test.describe('GYMS MCP over OAuth', () => {
     expect(created.isError).toBeFalsy()
     const sessionId = (created.structuredContent?.result as { id: string }).id
 
-    const updated = await lead.call('update_session', { sessionId, name: 'MCP Session Renamed' })
+    const updated = await lead.call('update_session', {
+      sessionId,
+      name: 'MCP Session Renamed',
+    })
     expect(updated.isError).toBeFalsy()
 
     const fetched = await lead.call('get_session', { sessionId })
@@ -119,16 +163,29 @@ test.describe('GYMS MCP over OAuth', () => {
     }
   })
 
-  test('a read-only token cannot call write tools', async ({ browser, baseURL }) => {
-    const reader = await connectAs(browser, baseURL!, ADMIN_STORAGE_STATE, ['gyms:read'])
+  test('a read-only token cannot call write tools', async ({
+    browser,
+    baseURL,
+  }) => {
+    const reader = await connectAs(browser, baseURL!, ADMIN_STORAGE_STATE, [
+      'gyms:read',
+    ])
     expect(await reader.toolNames()).not.toContain('create_session')
-    const { body } = await reader.rawCall('tools/call', { name: 'create_session', arguments: {} })
+    const { body } = await reader.rawCall('tools/call', {
+      name: 'create_session',
+      arguments: {},
+    })
     expect(body?.error ?? body?.result?.isError).toBeTruthy()
   })
 
-  test('demoting a member revokes MCP access on the next request', async ({ browser, baseURL }) => {
+  test('demoting a member revokes MCP access on the next request', async ({
+    browser,
+    baseURL,
+  }) => {
     const seeded = await readSeededData()
-    const member = await connectAs(browser, baseURL!, MEMBER_STORAGE_STATE, ['gyms:read'])
+    const member = await connectAs(browser, baseURL!, MEMBER_STORAGE_STATE, [
+      'gyms:read',
+    ])
     expect((await member.rawCall('tools/list')).status).toBe(200)
 
     const sql = e2eDatabase()

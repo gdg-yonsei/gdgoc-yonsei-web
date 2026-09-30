@@ -6,10 +6,7 @@ import type {
   ActionType,
   ResourceType,
 } from '@/lib/server/permission/handle-permission'
-import {
-  hasScope,
-  roleCouldEver,
-} from '@/lib/server/services/admin/authorize'
+import { hasScope, roleCouldEver } from '@/lib/server/services/admin/authorize'
 import type {
   Actor,
   Scope,

@@ -21,7 +21,9 @@ const memberIds = z
   .describe('User ids of the part members (from list_members).')
 const doubleBoardMemberIds = z
   .array(z.string())
-  .describe('User ids of members whose primary part is elsewhere (double board).')
+  .describe(
+    'User ids of members whose primary part is elsewhere (double board).'
+  )
 const partFields = {
   name: z.string().describe('Part name, e.g. "Web".'),
   description: z.string().nullable().describe('Short description.'),
@@ -97,7 +99,15 @@ export const partTools = [
       memberIds: memberIds.optional(),
       doubleBoardMemberIds: doubleBoardMemberIds.optional(),
     }),
-    run: (actor, { partId: id, memberIds: members, doubleBoardMemberIds: doubles, ...patch }) =>
+    run: (
+      actor,
+      {
+        partId: id,
+        memberIds: members,
+        doubleBoardMemberIds: doubles,
+        ...patch
+      }
+    ) =>
       patchWith(
         getPartDetail(actor, id),
         partToInput,

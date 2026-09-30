@@ -5,7 +5,10 @@ describe('withLoopbackApplicationType (SEP-837 default)', () => {
   it('marks loopback-only registrations as native', () => {
     expect(
       withLoopbackApplicationType({
-        redirect_uris: ['http://localhost:9999/callback', 'http://127.0.0.1:1/cb'],
+        redirect_uris: [
+          'http://localhost:9999/callback',
+          'http://127.0.0.1:1/cb',
+        ],
       })
     ).toMatchObject({ application_type: 'native' })
   })

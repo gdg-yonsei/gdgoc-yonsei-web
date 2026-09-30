@@ -1,18 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { actorFromClaims, mcpFetch, isRouteHandlerInvalidation } = vi.hoisted(() => ({
-  actorFromClaims: vi.fn(),
-  mcpFetch: vi.fn(),
-  isRouteHandlerInvalidation: { value: false },
-}))
+const { actorFromClaims, mcpFetch, isRouteHandlerInvalidation } = vi.hoisted(
+  () => ({
+    actorFromClaims: vi.fn(),
+    mcpFetch: vi.fn(),
+    isRouteHandlerInvalidation: { value: false },
+  })
+)
 
 vi.mock('@/auth', () => ({ auth: {} }))
 vi.mock('@better-auth/mcp', () => ({
   // 토큰 검증은 플러그인 몫이다. 여기서는 검증을 통과한 클레임을 넘긴다고 가정한다.
   requireMcpAuth:
-    (_auth: unknown, handler: (request: Request, claims: unknown) => Promise<Response>) =>
+    (
+      _auth: unknown,
+      handler: (request: Request, claims: unknown) => Promise<Response>
+    ) =>
     (request: Request) =>
-      handler(request, { sub: 'u1', scope: 'gyms:read', azp: 'c1', exp: 2_000_000_000 }),
+      handler(request, {
+        sub: 'u1',
+        scope: 'gyms:read',
+        azp: 'c1',
+        exp: 2_000_000_000,
+      }),
 }))
 vi.mock('@/lib/mcp/config', () => ({
   getMcpResourceUrl: () => 'https://gdgoc.test/api/mcp',
@@ -21,9 +31,8 @@ vi.mock('@/lib/mcp/actor', () => ({ actorFromClaims }))
 vi.mock('@/lib/mcp/server', () => ({
   createGymsMcpHandler: () => ({
     fetch: async (request: Request, options: unknown) => {
-      const { isRouteHandlerInvalidation: check } = await import(
-        '@/lib/server/cache/invalidation-context'
-      )
+      const { isRouteHandlerInvalidation: check } =
+        await import('@/lib/server/cache/invalidation-context')
       isRouteHandlerInvalidation.value = check()
       return mcpFetch(request, options)
     },
@@ -53,7 +62,13 @@ describe('POST /api/mcp', () => {
   })
 
   it('serves the request as the actor inside the route-handler invalidation context', async () => {
-    const actor = { userId: 'u1', role: 'CORE', scopes: ['gyms:read'], via: 'mcp', clientId: 'c1' }
+    const actor = {
+      userId: 'u1',
+      role: 'CORE',
+      scopes: ['gyms:read'],
+      via: 'mcp',
+      clientId: 'c1',
+    }
     actorFromClaims.mockResolvedValue(actor)
     mcpFetch.mockResolvedValue(new Response('ok'))
 

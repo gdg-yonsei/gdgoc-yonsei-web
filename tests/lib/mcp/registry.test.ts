@@ -31,7 +31,9 @@ describe('MCP tool visibility', () => {
   })
 
   it('UNVERIFIED sees nothing', () => {
-    expect(visible('UNVERIFIED', ['gyms:read', 'gyms:write', 'gyms:admin'])).toEqual([])
+    expect(
+      visible('UNVERIFIED', ['gyms:read', 'gyms:write', 'gyms:admin'])
+    ).toEqual([])
   })
 
   it('every tool name is unique and snake_case', () => {

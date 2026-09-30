@@ -34,15 +34,29 @@ beforeEach(() => vi.clearAllMocks())
 
 describe('generations service', () => {
   it('forbids CORE from creating a generation', async () => {
-    const core: Actor = { userId: 'c', role: 'CORE', scopes: [...all], via: 'mcp' }
+    const core: Actor = {
+      userId: 'c',
+      role: 'CORE',
+      scopes: [...all],
+      via: 'mcp',
+    }
     await expect(
-      createGeneration(core, { name: '13th', startDate: '2027-01-01', endDate: null })
+      createGeneration(core, {
+        name: '13th',
+        startDate: '2027-01-01',
+        endDate: null,
+      })
     ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
     expect(dbInsert).not.toHaveBeenCalled()
   })
 
   it('lists only accessible generations for a MEMBER', async () => {
-    const member: Actor = { userId: 'm', role: 'MEMBER', scopes: ['gyms:read'], via: 'mcp' }
+    const member: Actor = {
+      userId: 'm',
+      role: 'MEMBER',
+      scopes: ['gyms:read'],
+      via: 'mcp',
+    }
     loadAccessibleGenerations.mockResolvedValue([{ id: 12, name: '12th' }])
     getGenerations.mockResolvedValue([
       { id: 12, name: '12th', startDate: '2026-03-01', endDate: null },

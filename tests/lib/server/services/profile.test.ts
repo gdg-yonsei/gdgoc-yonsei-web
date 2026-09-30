@@ -53,7 +53,9 @@ describe('profile service', () => {
     })
     expect(result).toEqual({ ok: true, data: { id: 'me' } })
     expect(updateSet.mock.calls[0]![0]).not.toHaveProperty('role')
-    expect(updateSet.mock.calls[0]![0]).toMatchObject({ telephone: '01011112222' })
+    expect(updateSet.mock.calls[0]![0]).toMatchObject({
+      telephone: '01011112222',
+    })
   })
 
   it('sets the session notification email flag for the caller', async () => {
@@ -66,7 +68,9 @@ describe('profile service', () => {
 
   it('rejects a read-only token', async () => {
     const reader: Actor = { ...alumnus, scopes: ['gyms:read'] }
-    await expect(setSessionNotificationEmail(reader, true)).resolves.toMatchObject({
+    await expect(
+      setSessionNotificationEmail(reader, true)
+    ).resolves.toMatchObject({
       ok: false,
       code: 'FORBIDDEN',
     })

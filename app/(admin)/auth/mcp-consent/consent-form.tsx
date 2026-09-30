@@ -10,8 +10,7 @@ const SCOPE_LABELS: Record<string, { title: string; detail: string }> = {
   },
   'gyms:write': {
     title: 'Write',
-    detail:
-      'Create and edit data, register for sessions and upload images.',
+    detail: 'Create and edit data, register for sessions and upload images.',
   },
   'gyms:admin': {
     title: 'Admin',
@@ -56,7 +55,9 @@ export default function ConsentForm({
     startTransition(async () => {
       const scope = [
         ...offered.filter((item) => selected.includes(item)),
-        ...(requestedScopes.includes('offline_access') ? ['offline_access'] : []),
+        ...(requestedScopes.includes('offline_access')
+          ? ['offline_access']
+          : []),
       ].join(' ')
       const result = await authClient.oauth2.consent(
         accept ? { accept, scope } : { accept }
@@ -75,8 +76,8 @@ export default function ConsentForm({
       <div className={'flex flex-col gap-1'}>
         <h1 className={'type-heading-2 text-ink'}>Connect {clientName}</h1>
         <p className={'type-body-sm text-ink-muted'}>
-          This app wants to use GYMS on your behalf through MCP. After you
-          allow it, you will be sent back to{' '}
+          This app wants to use GYMS on your behalf through MCP. After you allow
+          it, you will be sent back to{' '}
           <span className={'text-ink font-medium'}>{redirectHost}</span>.
         </p>
       </div>

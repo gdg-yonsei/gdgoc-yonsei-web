@@ -57,4 +57,3 @@ const db = drizzle(client, {
 })
 
 export default db
-

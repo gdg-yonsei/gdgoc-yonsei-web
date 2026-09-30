@@ -8,7 +8,10 @@ type JsonRpcResponse = {
   result?: {
     tools?: { name: string }[]
     isError?: boolean
-    structuredContent?: { result?: unknown; error?: { code: string; message: string } }
+    structuredContent?: {
+      result?: unknown
+      error?: { code: string; message: string }
+    }
   }
   error?: { code: number; message: string }
 }
@@ -17,14 +20,21 @@ export type McpConnection = {
   accessToken: string
   refreshToken: string | undefined
   scope: string
-  rawCall: (method: string, params?: object) => Promise<{ status: number; body: JsonRpcResponse | null }>
+  rawCall: (
+    method: string,
+    params?: object
+  ) => Promise<{ status: number; body: JsonRpcResponse | null }>
   toolNames: () => Promise<string[]>
-  call: (name: string, args?: object) => Promise<NonNullable<JsonRpcResponse['result']>>
+  call: (
+    name: string,
+    args?: object
+  ) => Promise<NonNullable<JsonRpcResponse['result']>>
 }
 
 function parseRpc(text: string): JsonRpcResponse | null {
   if (!text) return null
-  if (text.trimStart().startsWith('{')) return JSON.parse(text) as JsonRpcResponse
+  if (text.trimStart().startsWith('{'))
+    return JSON.parse(text) as JsonRpcResponse
   const data = text
     .split('\n')
     .filter((line) => line.startsWith('data:'))
@@ -181,7 +191,12 @@ export async function connectAs(
 
   const accessToken = tokens.access_token
   const rawCall = async (method: string, params: object = {}) => {
-    const { status, body } = await mcpRequest(baseURL, accessToken, method, params)
+    const { status, body } = await mcpRequest(
+      baseURL,
+      accessToken,
+      method,
+      params
+    )
     return { status, body }
   }
 
@@ -191,10 +206,13 @@ export async function connectAs(
     scope: tokens.scope ?? '',
     rawCall,
     toolNames: async () =>
-      ((await rawCall('tools/list')).body?.result?.tools ?? []).map((tool) => tool.name),
+      ((await rawCall('tools/list')).body?.result?.tools ?? []).map(
+        (tool) => tool.name
+      ),
     call: async (name, args = {}) => {
       const { body } = await rawCall('tools/call', { name, arguments: args })
-      if (!body?.result) throw new Error(`tools/call ${name} failed: ${JSON.stringify(body)}`)
+      if (!body?.result)
+        throw new Error(`tools/call ${name} failed: ${JSON.stringify(body)}`)
       return body.result
     },
   }

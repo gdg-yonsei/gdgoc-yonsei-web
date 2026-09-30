@@ -8,13 +8,13 @@ const {
   getMembers,
   loadAccessibleGenerations,
 } = vi.hoisted(() => ({
-    findUser: vi.fn(),
-    findUsers: vi.fn(),
-    dbUpdate: vi.fn(),
-    dbDelete: vi.fn(),
-    getMembers: vi.fn(),
-    loadAccessibleGenerations: vi.fn(),
-  }))
+  findUser: vi.fn(),
+  findUsers: vi.fn(),
+  dbUpdate: vi.fn(),
+  dbDelete: vi.fn(),
+  getMembers: vi.fn(),
+  loadAccessibleGenerations: vi.fn(),
+}))
 
 vi.mock('@/db', () => ({
   default: {
@@ -117,8 +117,24 @@ describe('members service', () => {
 
   it('filters the member list by role and name query', async () => {
     getMembers.mockResolvedValue([
-      { id: 'a', name: 'Alice', firstName: 'Alice', lastName: 'Kim', firstNameKo: '앨리스', lastNameKo: '김', role: 'CORE' },
-      { id: 'b', name: 'Bob', firstName: 'Bob', lastName: 'Lee', firstNameKo: '밥', lastNameKo: '이', role: 'MEMBER' },
+      {
+        id: 'a',
+        name: 'Alice',
+        firstName: 'Alice',
+        lastName: 'Kim',
+        firstNameKo: '앨리스',
+        lastNameKo: '김',
+        role: 'CORE',
+      },
+      {
+        id: 'b',
+        name: 'Bob',
+        firstName: 'Bob',
+        lastName: 'Lee',
+        firstNameKo: '밥',
+        lastNameKo: '이',
+        role: 'MEMBER',
+      },
     ])
     const result = await listMembers(actor('CORE'), { role: 'MEMBER' })
     expect(result.ok && result.data.map((m) => m.id)).toEqual(['b'])
@@ -127,7 +143,9 @@ describe('members service', () => {
   })
 
   it('lists pending sign-ups only for users who can approve them', async () => {
-    findUsers.mockResolvedValue([{ id: 'p1', name: 'Pending', email: 'p@x.com' }])
+    findUsers.mockResolvedValue([
+      { id: 'p1', name: 'Pending', email: 'p@x.com' },
+    ])
     await expect(listPendingMembers(actor('CORE'))).resolves.toMatchObject({
       ok: false,
       code: 'FORBIDDEN',

@@ -17,7 +17,9 @@ const date = z
   .describe('Date as YYYY-MM-DD.')
 const name = z
   .string()
-  .describe('URL-safe generation name, e.g. "25-26" (letters, numbers, single hyphens).')
+  .describe(
+    'URL-safe generation name, e.g. "25-26" (letters, numbers, single hyphens).'
+  )
 
 export const generationTools = [
   defineTool({
@@ -44,7 +46,11 @@ export const generationTools = [
     description: 'Creates a generation (LEAD only).',
     scope: 'gyms:write',
     gate: [{ action: 'post', resource: 'generations' }],
-    input: z.object({ name, startDate: date, endDate: date.nullable().optional() }),
+    input: z.object({
+      name,
+      startDate: date,
+      endDate: date.nullable().optional(),
+    }),
     run: (actor, input) =>
       createGeneration(actor, { ...input, endDate: input.endDate ?? null }),
     targetId: idOf,

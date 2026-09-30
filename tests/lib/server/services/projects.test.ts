@@ -67,8 +67,14 @@ beforeEach(() => {
 
 describe('projects service', () => {
   it('forbids MEMBER from updating a project owned by someone else', async () => {
-    findProject.mockResolvedValue({ id: PID, authorId: 'other', generationId: 1 })
-    await expect(updateProject(member, PID, validProject)).resolves.toMatchObject({
+    findProject.mockResolvedValue({
+      id: PID,
+      authorId: 'other',
+      generationId: 1,
+    })
+    await expect(
+      updateProject(member, PID, validProject)
+    ).resolves.toMatchObject({
       ok: false,
       code: 'FORBIDDEN',
     })
@@ -95,14 +101,19 @@ describe('projects service', () => {
   })
 
   it('returns VALIDATION with field errors for bad input', async () => {
-    const result = await createProject(member, { ...validProject, participants: [] })
+    const result = await createProject(member, {
+      ...validProject,
+      participants: [],
+    })
     expect(result).toMatchObject({ ok: false, code: 'VALIDATION' })
     expect(result.ok ? {} : result.fieldErrors).toHaveProperty('participants')
   })
 
   it('returns NOT_FOUND for an unknown project', async () => {
     findProject.mockResolvedValue(undefined)
-    await expect(updateProject(member, PID, validProject)).resolves.toMatchObject({
+    await expect(
+      updateProject(member, PID, validProject)
+    ).resolves.toMatchObject({
       ok: false,
       code: 'NOT_FOUND',
     })
