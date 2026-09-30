@@ -14,6 +14,7 @@ const records = vi.hoisted(() => ({
   assignUploadKey: vi.fn(),
   markUploadCompleted: vi.fn(),
   markUploadRejected: vi.fn(),
+  expireUploadNow: vi.fn(),
   claimExpiredUploads: vi.fn(),
   finishUploadCleanup: vi.fn(),
   pruneSettledUploads: vi.fn(),
@@ -373,6 +374,19 @@ describe('upload limits and cleanup', () => {
     await completeImageUpload(core, bad)
     expect(r2.deleteImage).toHaveBeenCalledWith(bad.objectKey)
     expect(records.markUploadRejected).toHaveBeenCalledWith({
+      objectKey: bad.objectKey,
+    })
+  })
+
+  it('leaves a rejected upload to cleanup when deleting its object fails', async () => {
+    r2.headImage.mockResolvedValue({ ContentLength: 100 })
+    r2.readImageHead.mockResolvedValue(new Uint8Array([0x25, 0x50]))
+    r2.deleteImage.mockRejectedValue(new Error('R2 timeout'))
+    const bad = await issued()
+    await completeImageUpload(core, bad)
+    // 거절로 표시하면 정리 대상에서 빠져 객체가 영구히 남는다.
+    expect(records.markUploadRejected).not.toHaveBeenCalled()
+    expect(records.expireUploadNow).toHaveBeenCalledWith({
       objectKey: bad.objectKey,
     })
   })

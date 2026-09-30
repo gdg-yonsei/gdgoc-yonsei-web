@@ -145,3 +145,20 @@ export async function pruneSettledUploads(before: Date) {
       )
     )
 }
+
+/**
+ * 거절했지만 R2 객체를 지우지 못한 업로드: 거절로 닫지 않고 지금 만료시켜
+ * 정리 작업이 객체 삭제를 다시 시도하게 한다(줄은 그때까지 한도에 포함된다).
+ */
+export async function expireUploadNow(
+  target: { id: string } | { objectKey: string }
+) {
+  await db
+    .update(mcpImageUpload)
+    .set({ expiresAt: new Date() })
+    .where(
+      'id' in target
+        ? eq(mcpImageUpload.id, target.id)
+        : eq(mcpImageUpload.objectKey, target.objectKey)
+    )
+}

@@ -39,6 +39,7 @@ import {
 import {
   assignUploadKey,
   claimExpiredUploads,
+  expireUploadNow,
   finishUploadCleanup,
   markUploadCompleted,
   markUploadRejected,
@@ -161,24 +162,27 @@ async function cleanUpAbandonedUploads(now: Date) {
   }
 }
 
-/** 검증에 실패한 업로드: 객체를 지우고 기록은 거절로 남긴다(한도에 계속 포함). */
+/**
+ * 검증에 실패한 업로드: 객체를 지우고 기록은 거절로 남긴다(한도에 계속 포함).
+ * 객체 삭제가 실패하면 거절로 닫지 않고 바로 만료시켜 정리 작업이 다시 지우게 한다.
+ */
 async function rejectUpload(
   target: { id: string } | { objectKey: string },
   objectKey?: string
 ) {
-  if (objectKey) await discard(objectKey)
   try {
+    if (objectKey) {
+      try {
+        await deleteImage(objectKey)
+      } catch (error) {
+        logger.error('mcp.images.discard', error, { key: objectKey })
+        await expireUploadNow(target)
+        return
+      }
+    }
     await markUploadRejected(target)
   } catch (error) {
     logger.error('mcp.images.reject', error, { ...target })
-  }
-}
-
-async function discard(key: string) {
-  try {
-    await deleteImage(key)
-  } catch (error) {
-    logger.error('mcp.images.discard', error, { key })
   }
 }
 
