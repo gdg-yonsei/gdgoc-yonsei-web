@@ -134,7 +134,8 @@ a user cuts off MCP access immediately. Tokens are JWTs: access tokens live
   atomically; failed and rejected attempts count too. Past that the tools
   return `RATE_LIMITED`. Attempts are recorded in `mcp_image_upload`; each new
   upload request leases up to 20 that expired without completing, deletes
-  their R2 objects and only then their records (a failed delete is retried
+  their R2 objects and only then settles their records, which keep counting
+  toward the hour (a failed delete is retried
   after the lease ends). An upload that cleanup already claimed can no longer
   be completed.
 - Remote imports block private, loopback, link-local, IPv4-compatible,

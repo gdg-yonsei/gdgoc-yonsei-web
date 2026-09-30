@@ -8,7 +8,8 @@ import { users } from '@/db/schema/users'
  *   URL 가져오기는 객체 키를 알기 전에 예약하므로 objectKey 가 잠시 비어 있다.
  * - 끝나면 completedAt 또는 rejectedAt 이 찍힌다. 거절된 줄도 한도에 포함된다.
  * - 어느 쪽도 아닌 채 만료되면 정리 작업이 claimedAt(임대)을 찍고 R2 객체를 지운 뒤
- *   줄을 지운다. 지우기에 실패하면 임대가 끝난 뒤 다시 시도한다.
+ *   줄을 끝난(rejectedAt) 것으로 표시한다. 지우기에 실패하면 임대가 끝난 뒤 다시 시도한다.
+ * - 끝난 줄은 한도 창(1시간)이 지나고 한참 뒤(2일) pruneSettledUploads 가 지운다.
  * 사용자가 삭제돼도 정리를 위해 기록은 남긴다(userId 만 비운다).
  */
 export const mcpImageUpload = pgTable(

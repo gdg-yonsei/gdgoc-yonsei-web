@@ -94,7 +94,7 @@ export async function markUploadRejected(
 /**
  * 완료·거절 없이 만료된 업로드를 최대 limit 개 임대한다(한 문장, SKIP LOCKED).
  * 임대가 끝난(leaseMs 지난) 줄은 이전 정리가 실패한 것이므로 다시 가져온다.
- * 호출자는 R2 객체를 지운 뒤에만 finishUploadCleanup 으로 줄을 지운다.
+ * 호출자는 R2 객체를 지운 뒤에만 finishUploadCleanup 으로 줄을 끝낸다.
  */
 export async function claimExpiredUploads(
   now: Date,
@@ -126,9 +126,16 @@ export async function claimExpiredUploads(
     .returning({ id: mcpImageUpload.id, objectKey: mcpImageUpload.objectKey })
 }
 
-/** R2 객체를 지운(또는 키가 없던) 정리 대상 줄을 지운다. */
+/**
+ * R2 객체를 지운(또는 키가 없던) 정리 대상 줄을 끝난 것으로 표시한다.
+ * 줄은 지우지 않는다: 그 시도는 한 시간 동안 한도에 계속 포함돼야 하고,
+ * 끝난 줄은 pruneSettledUploads 가 나중에 지운다.
+ */
 export async function finishUploadCleanup(id: string) {
-  await db.delete(mcpImageUpload).where(eq(mcpImageUpload.id, id))
+  await db
+    .update(mcpImageUpload)
+    .set({ rejectedAt: new Date() })
+    .where(eq(mcpImageUpload.id, id))
 }
 
 /** 한도 계산에 더 필요 없는 끝난 줄(완료·거절)을 지운다. */

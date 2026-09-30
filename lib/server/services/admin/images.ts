@@ -136,7 +136,7 @@ async function beginUpload(
 }
 
 /**
- * 만료된 미완료 업로드를 임대해 R2 객체를 지우고, 지운 것만 기록에서 뺀다.
+ * 만료된 미완료 업로드를 임대해 R2 객체를 지우고, 지운 것만 끝난 것으로 표시한다(한도에는 계속 포함).
  * R2 삭제가 실패하면 기록이 남아 임대가 끝난 뒤 다시 시도된다.
  */
 async function cleanUpAbandonedUploads(now: Date) {

@@ -8,11 +8,23 @@
  * 여기서 먼저 시드해 두면 빌드 워커들은 이미 있는 행을 찾기만 한다.
  *
  * `auth.ts` 가 `server-only` 를 가져오므로 `tsx --conditions=react-server` 로 실행한다.
- * `.env` 는 읽지 않는다: 배포·e2e 모두 환경 변수를 직접 넘긴다.
  */
-import { auth } from '../auth'
+import path from 'node:path'
+import dotenv from 'dotenv'
+
+// `next build` 와 같은 환경을 만든다: 셸 변수(배포·e2e)가 항상 이기고, 비어 있는 값만
+// Next 의 production 우선순위대로 env 파일에서 채운다. 로컬에서 `.env` 만으로
+// `pnpm build` 를 돌려도 동작해야 한다.
+dotenv.config({
+  path: ['.env.production.local', '.env.local', '.env.production', '.env'].map(
+    (file) => path.join(process.cwd(), file)
+  ),
+  quiet: true,
+})
 
 async function main() {
+  // env 파일을 읽은 뒤에 가져와야 auth 모듈이 설정을 찾는다.
+  const { auth } = await import('../auth')
   await auth.$context
   console.log('Better Auth initialized (OAuth resources seeded).')
 }
