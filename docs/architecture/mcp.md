@@ -61,6 +61,18 @@ A tool call is allowed only when all three hold:
 `tools/list` only returns tools the role could ever use with the granted
 scopes; ownership is checked when the tool runs.
 
+Rules for member data (web and MCP alike):
+
+- **Contact details** (email, telephone, student id) are visible only to the
+  member, a LEAD, or someone who shares a generation with them. Other callers
+  get `null` for those fields. Names, parts and generations stay visible.
+- **Editing members:** anyone can edit their own profile. A LEAD can edit
+  anyone. A CORE can edit only MEMBER, ALUMNUS and UNVERIFIED members who share
+  a generation with them.
+- **Email changes:** only the member themselves or a LEAD can change an email
+  (sign-in links accounts by email, so changing someone else's would hand over
+  their account).
+
 | Scope        | Unlocks                                                                              |
 | ------------ | ------------------------------------------------------------------------------------ |
 | `gyms:read`  | All read tools                                                                       |
@@ -72,7 +84,7 @@ scopes; ownership is checked when the tool runs.
 | LEAD       | Everything                                                                                                  |
 | CORE       | Sessions, projects, parts and members CRUD; delete sessions and projects. No role or generation management. |
 | MEMBER     | Read sessions and projects, create projects, edit own projects, register for sessions, own profile          |
-| ALUMNUS    | Read sessions and projects, own profile                                                                     |
+| ALUMNUS    | Read sessions and projects, register for sessions, own profile                                              |
 | UNVERIFIED | Cannot connect                                                                                              |
 
 The role is read from the database on every request, so demoting or deleting
@@ -97,6 +109,12 @@ a user cuts off MCP access immediately. Tokens are JWTs: access tokens live
   converted to Seoul time.
 - `create_session` with `internalOpen` emails the generation's members, as on
   the web.
+- An explicit `generationId` you cannot access returns `FORBIDDEN` (omit it
+  for your default generation).
+- `list_sessions` with `openForRegistration` leaves out ended and full
+  sessions; each row carries `participantCount`.
+- `update_session` on an older session without dates needs both `startAt` and
+  `endAt` in the same update.
 
 ### Images (up to 200MB, Cloudflare R2)
 
@@ -110,12 +128,23 @@ a user cuts off MCP access immediately. Tokens are JWTs: access tokens live
   link-local addresses are refused on every redirect hop and again at
   connect time (DNS rebinding).
 - Accepted: jpg, jpeg, png, webp, gif, avif. SVG is refused.
+- Image fields in create/update tools accept only URLs returned by these
+  tools, under the matching prefix (`sessions/`, `projects/`, `users/`).
+- Limit: 100 uploads (direct + imports) per user per hour; past that the tools
+  return `RATE_LIMITED`. Uploads are recorded in `mcp_image_upload`, and each
+  new upload request deletes up to 20 that expired without being completed.
+- Remote imports block private, loopback, link-local, IPv4-compatible,
+  6to4, local NAT64 and discard-only ranges. They wait up to 30 seconds for
+  response headers and 10 minutes for the whole transfer.
 
 ## Audit log
 
 Every write/admin tool call, successful or not, is stored in
-`mcp_audit_log` with the user, role, OAuth client, tool, sanitized input
-(secrets redacted, long strings truncated), outcome and target id.
+`mcp_audit_log` with the user, role, OAuth client id and name, tool,
+sanitized input, outcome and target id (taken from the input when the call
+failed). Sanitizing redacts secret-like keys and email, telephone and student
+id values, drops URL query strings (signed URLs) and truncates long strings.
+Rows older than one year are deleted automatically.
 
 ```sql
 select "createdAt", tool, outcome, "errorCode", "targetId", "clientId"
