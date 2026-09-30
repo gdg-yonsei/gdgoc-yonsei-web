@@ -46,6 +46,8 @@ export default defineConfig({
   webServer: {
     command: [
       'pnpm exec tsx tests/e2e/setup/prepare-production.ts',
+      // 빌드 워커들이 동시에 OAuth 리소스를 시드하다 충돌하지 않도록 먼저 한 번 초기화한다.
+      'pnpm auth:prepare',
       'pnpm exec next build',
       `pnpm exec next start --port ${port.toString()}`,
     ].join(' && '),
