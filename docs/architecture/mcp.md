@@ -130,9 +130,13 @@ a user cuts off MCP access immediately. Tokens are JWTs: access tokens live
 - Accepted: jpg, jpeg, png, webp, gif, avif. SVG is refused.
 - Image fields in create/update tools accept only URLs returned by these
   tools, under the matching prefix (`sessions/`, `projects/`, `users/`).
-- Limit: 100 uploads (direct + imports) per user per hour; past that the tools
-  return `RATE_LIMITED`. Uploads are recorded in `mcp_image_upload`, and each
-  new upload request deletes up to 20 that expired without being completed.
+- Limit: 100 upload attempts (direct + imports) per user per hour, counted
+  atomically; failed and rejected attempts count too. Past that the tools
+  return `RATE_LIMITED`. Attempts are recorded in `mcp_image_upload`; each new
+  upload request leases up to 20 that expired without completing, deletes
+  their R2 objects and only then their records (a failed delete is retried
+  after the lease ends). An upload that cleanup already claimed can no longer
+  be completed.
 - Remote imports block private, loopback, link-local, IPv4-compatible,
   6to4, local NAT64 and discard-only ranges. They wait up to 30 seconds for
   response headers and 10 minutes for the whole transfer.
