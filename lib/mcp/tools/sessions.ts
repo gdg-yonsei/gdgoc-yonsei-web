@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import {
   generationArg,
-  imageUrl,
+  r2ImageUrl,
   listArgs,
   listPage,
   mergePatch,
@@ -59,8 +59,8 @@ const sessionFields = {
     'demo_day',
     'devrel',
   ]),
-  mainImage: imageUrl.nullable(),
-  contentImages: z.array(imageUrl),
+  mainImage: r2ImageUrl('sessions').nullable(),
+  contentImages: z.array(r2ImageUrl('sessions')),
   participantIds: z
     .array(z.string())
     .describe('User ids already registered for the session.'),
@@ -210,8 +210,7 @@ export const sessionTools = [
   defineTool({
     name: 'remove_session_participant',
     title: 'Remove session participant',
-    description:
-      'Removes a participant from a session you wrote or manage.',
+    description: 'Removes a participant from a session you wrote or manage.',
     scope: 'gyms:write',
     gate: [{ action: 'put', resource: 'sessions' }],
     input: z.object({ sessionId, userId: z.string() }),
@@ -222,8 +221,7 @@ export const sessionTools = [
   defineTool({
     name: 'delete_session',
     title: 'Delete session',
-    description:
-      'Deletes a session and its images. This cannot be undone.',
+    description: 'Deletes a session and its images. This cannot be undone.',
     scope: 'gyms:admin',
     gate: [{ action: 'delete', resource: 'sessions' }],
     input: z.object({ sessionId }),

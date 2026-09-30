@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { getImageEnv } from '@/lib/server/env'
+import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
 import {
   ok,
   type Actor,
@@ -80,7 +82,30 @@ export async function patchWith<Detail, Input extends object, Out>(
   return save(mergePatch(toInput(current.data), patch))
 }
 
-export const imageUrl = z
-  .string()
-  .url()
-  .describe('Image URL returned by complete_image_upload or import_image_from_url.')
+/**
+ * 이미지 필드: 업로드 도구가 돌려준 우리 R2 URL(해당 접두사)만 받는다.
+ * 외부 URL 은 공개 페이지의 next/image 허용 호스트가 아니라 깨지고, 다른 항목의
+ * 이미지를 가리키면 그 항목을 수정할 때 deleteRemovedR2Images 가 공유 객체를 지운다.
+ */
+export function r2ImageUrl(prefix: 'sessions' | 'projects' | 'users') {
+  return z
+    .string()
+    .url()
+    .refine(
+      (value) => {
+        const base = getImageEnv()
+          .NEXT_PUBLIC_IMAGE_URL.trim()
+          .replace(/\/+$/, '')
+        return (
+          value.startsWith(`${base}/`) &&
+          normalizeR2ImageObjectKey(value, prefix) !== null
+        )
+      },
+      {
+        message: `Use a URL returned by the image upload tools with target "${prefix}".`,
+      }
+    )
+    .describe(
+      `Image URL returned by complete_image_upload or import_image_from_url (target "${prefix}").`
+    )
+}

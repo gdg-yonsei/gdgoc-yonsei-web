@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import {
   generationArg,
-  imageUrl,
+  r2ImageUrl,
   listArgs,
   listPage,
   patchWith,
@@ -25,8 +25,8 @@ const projectFields = {
   descriptionKo: z.string().describe('One-line description in Korean.'),
   content: z.string().describe('Body in English (Markdown).'),
   contentKo: z.string().describe('Body in Korean (Markdown).'),
-  mainImage: imageUrl,
-  contentImages: z.array(imageUrl).min(1),
+  mainImage: r2ImageUrl('projects'),
+  contentImages: z.array(r2ImageUrl('projects')).min(1),
   participantIds: z
     .array(z.string())
     .min(1)

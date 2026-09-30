@@ -121,4 +121,16 @@ describe('sessions service', () => {
       message: 'Already registered',
     })
   })
+
+  it('lets the author edit their own session outside their current generations', async () => {
+    findSession.mockResolvedValue({
+      id: SID,
+      authorId: 'core',
+      part: { generationsId: 9 },
+    })
+    canAccessGeneration.mockResolvedValue(false)
+    const result = await updateSession(core, SID, {})
+    // 권한 검사를 통과하고 입력 검증 단계까지 간다.
+    expect(result).toMatchObject({ ok: false, code: 'VALIDATION' })
+  })
 })

@@ -36,7 +36,13 @@ export const imageTools = [
       target,
       fileName: z.string().describe('Original file name with extension.'),
       mimeType: z
-        .enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'])
+        .enum([
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'image/gif',
+          'image/avif',
+        ])
         .describe('Must match the file extension.'),
       sizeBytes: z
         .number()
@@ -57,6 +63,7 @@ export const imageTools = [
     gate: [...gate],
     input: z.object({
       objectKey: z.string().describe('objectKey from create_image_upload.'),
+      uploadToken: z.string().describe('uploadToken from create_image_upload.'),
     }),
     run: (actor, input) => completeImageUpload(actor, input),
     targetId: uploadedKey,
@@ -73,7 +80,10 @@ export const imageTools = [
       url: z
         .string()
         .url()
-        .refine((value) => value.startsWith('https://'), 'Only https URLs are allowed.'),
+        .refine(
+          (value) => value.startsWith('https://'),
+          'Only https URLs are allowed.'
+        ),
     }),
     run: (actor, input) => importImageFromUrl(actor, input),
     targetId: uploadedKey,

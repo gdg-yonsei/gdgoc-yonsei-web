@@ -6,6 +6,7 @@ import {
   listPage,
   mergePatch,
   patchWith,
+  r2ImageUrl,
 } from '@/lib/mcp/tools/common'
 import {
   approveMember,
@@ -46,12 +47,7 @@ export const memberPatchFields = {
     .describe('Digits only.'),
   telephone: z.string().nullable().optional(),
   isForeigner: z.boolean().optional(),
-  profileImage: z
-    .string()
-    .url()
-    .nullable()
-    .optional()
-    .describe('Image URL from the image upload tools (target "users").'),
+  profileImage: r2ImageUrl('users').nullable().optional(),
 }
 
 export const memberTools = [
@@ -136,8 +132,7 @@ export const memberTools = [
   defineTool({
     name: 'update_member_role',
     title: 'Change member role',
-    description:
-      "Changes a member's role. You cannot change your own role.",
+    description: "Changes a member's role. You cannot change your own role.",
     scope: 'gyms:admin',
     gate: [{ action: 'put', resource: 'membersRole' }],
     input: z.object({ userId: z.string(), role: z.enum(ROLES) }),

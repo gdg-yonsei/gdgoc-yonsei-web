@@ -52,9 +52,7 @@ class SessionFullError extends Error {}
 
 function parseSessionInput(input: unknown) {
   const parsed = sessionValidation.safeParse(input)
-  return parsed.success
-    ? ok(parsed.data)
-    : fromZodError(parsed.error)
+  return parsed.success ? ok(parsed.data) : fromZodError(parsed.error)
 }
 
 export async function listSessions(
@@ -369,7 +367,11 @@ export async function updateSession(
   )
   if (!authorization.ok) return authorization
 
-  if (!(await canAccessGeneration(actor, existingSession.part?.generationsId))) {
+  // 작성자는 자기 세션을 기수와 무관하게 고칠 수 있다(프로젝트와 같은 규칙).
+  if (
+    existingSession.authorId !== actor.userId &&
+    !(await canAccessGeneration(actor, existingSession.part?.generationsId))
+  ) {
     return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
   }
 
@@ -714,7 +716,9 @@ export async function deleteSession(
     return fail('NOT_FOUND', 'Data not found')
   }
 
-  if (!(await canAccessGeneration(actor, sessionImageList.part?.generationsId))) {
+  if (
+    !(await canAccessGeneration(actor, sessionImageList.part?.generationsId))
+  ) {
     return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
   }
 

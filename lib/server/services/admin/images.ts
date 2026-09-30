@@ -31,6 +31,10 @@ import {
   UploadError,
   fetchPublicImage,
 } from '@/lib/server/uploads/remote-fetch'
+import {
+  issueUploadToken,
+  verifyUploadToken,
+} from '@/lib/server/uploads/upload-token'
 
 /** MCP 이미지 업로드 한도: 200MB. */
 export const MAX_IMAGE_UPLOAD_BYTES = 209_715_200
@@ -46,10 +50,11 @@ type UploadedImage = {
 }
 
 const TYPE_BY_EXTENSION = new Map<string, DetectedImageType>(
-  (Object.entries(IMAGE_TYPE_EXTENSIONS) as [DetectedImageType, string[]][])
-    .flatMap(([type, extensions]) =>
-      extensions.map((extension) => [extension, type] as const)
-    )
+  (
+    Object.entries(IMAGE_TYPE_EXTENSIONS) as [DetectedImageType, string[]][]
+  ).flatMap(([type, extensions]) =>
+    extensions.map((extension) => [extension, type] as const)
+  )
 )
 const TYPE_BY_MIME = new Map<string, DetectedImageType>(
   (Object.entries(IMAGE_TYPE_MIME) as [DetectedImageType, string][]).map(
@@ -133,6 +138,7 @@ export async function createImageUpload(
   return ok({
     uploadUrl,
     objectKey,
+    uploadToken: issueUploadToken(objectKey, actor.userId),
     method: 'PUT',
     headers: {
       'Content-Type': input.mimeType,
@@ -140,18 +146,26 @@ export async function createImageUpload(
     },
     expiresInSeconds: PRESIGNED_UPLOAD_TTL_SECONDS,
     curlExample: `curl -X PUT -H 'Content-Type: ${input.mimeType}' --data-binary @'${input.fileName.replaceAll("'", '')}' '${uploadUrl}'`,
-    next: 'After the upload succeeds, call complete_image_upload with objectKey.',
+    next: 'After the upload succeeds, call complete_image_upload with objectKey and uploadToken.',
   })
 }
 
 /** 직접 업로드 2단계: 올라온 객체가 한도 안의 진짜 이미지인지 확인하고 URL 을 돌려준다. */
 export async function completeImageUpload(
   actor: Actor,
-  input: { objectKey: string }
+  input: { objectKey: string; uploadToken: string }
 ): Promise<ServiceResult<UploadedImage>> {
   const prefix = input.objectKey.split('/')[0] as ImageTarget
-  if (!IMAGE_TARGETS.includes(prefix)) {
-    return fail('VALIDATION', 'objectKey must come from create_image_upload.')
+  // 이 흐름이 발급한 키만 확인·삭제한다. 사이트에 이미 있는 이미지 키를 넘겨
+  // 검증 실패로 지우게 만들 수 없도록 발급 토큰으로 묶는다.
+  if (
+    !IMAGE_TARGETS.includes(prefix) ||
+    !verifyUploadToken(input.uploadToken, input.objectKey, actor.userId)
+  ) {
+    return fail(
+      'VALIDATION',
+      'objectKey and uploadToken must come from your own create_image_upload call (valid for one hour).'
+    )
   }
 
   const authorization = authorizeTarget(actor, prefix)
@@ -178,7 +192,10 @@ export async function completeImageUpload(
 
   if (sizeBytes < 1 || sizeBytes > MAX_IMAGE_UPLOAD_BYTES) {
     await discard(key)
-    return fail('VALIDATION', 'The uploaded file is empty or larger than 200MB.')
+    return fail(
+      'VALIDATION',
+      'The uploaded file is empty or larger than 200MB.'
+    )
   }
 
   const detected = detectImageType(await readImageHead(key))

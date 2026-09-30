@@ -10,6 +10,7 @@ import { oauthClient } from '@/db/schema/oauth'
 import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
 import {
   canConnectMcp,
+  consentRedirectHost,
   oauthQueryString,
   selectableScopesFor,
 } from '@/lib/mcp/consent'
@@ -72,9 +73,7 @@ export default async function McpConsentPage({
   const query = oauthQueryString(params)
   const clientId = typeof params.client_id === 'string' ? params.client_id : ''
   if (!clientId) {
-    return (
-      <ConsentError message={'This authorization request is invalid.'} />
-    )
+    return <ConsentError message={'This authorization request is invalid.'} />
   }
 
   const session = await getAuthSession()
@@ -107,7 +106,14 @@ export default async function McpConsentPage({
       <ConsentForm
         clientName={client?.name || hostOf(clientId) || clientId}
         redirectHost={
-          hostOf(client?.redirectUris?.[0]) || hostOf(clientId) || clientId
+          consentRedirectHost({
+            requestRedirectUri:
+              typeof params.redirect_uri === 'string'
+                ? params.redirect_uri
+                : undefined,
+            registeredRedirectUris: client?.redirectUris ?? [],
+            clientId,
+          }) || clientId
         }
         requestedScopes={requestedScopes}
         selectableScopes={selectableScopesFor(role)}

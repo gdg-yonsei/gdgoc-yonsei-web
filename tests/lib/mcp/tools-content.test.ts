@@ -11,15 +11,23 @@ const services = vi.hoisted(() => ({
 }))
 
 vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/lib/server/env', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/env')>()),
+  getImageEnv: () => ({ NEXT_PUBLIC_IMAGE_URL: 'https://cdn.example/' }),
+}))
 vi.mock('@/lib/server/services/admin/sessions', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/server/services/admin/sessions')>()),
+  ...(await importOriginal<
+    typeof import('@/lib/server/services/admin/sessions')
+  >()),
   getSessionDetail: services.getSessionDetail,
   updateSession: services.updateSession,
   createSession: services.createSession,
   listSessions: services.listSessions,
 }))
 vi.mock('@/lib/server/services/admin/projects', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/server/services/admin/projects')>()),
+  ...(await importOriginal<
+    typeof import('@/lib/server/services/admin/projects')
+  >()),
   getProjectDetail: services.getProjectDetail,
   updateProject: services.updateProject,
   createProject: services.createProject,
@@ -67,10 +75,16 @@ beforeEach(() => {
 
 describe('session tools', () => {
   it('update_session without participantIds keeps existing participants and images', async () => {
-    services.getSessionDetail.mockResolvedValue({ ok: true, data: sessionDetail })
+    services.getSessionDetail.mockResolvedValue({
+      ok: true,
+      data: sessionDetail,
+    })
     services.updateSession.mockResolvedValue({ ok: true, data: { id: SID } })
 
-    const input = tool('update_session').input.parse({ sessionId: SID, name: 'New name' })
+    const input = tool('update_session').input.parse({
+      sessionId: SID,
+      name: 'New name',
+    })
     await tool('update_session').run(core, input)
 
     expect(services.updateSession).toHaveBeenCalledWith(
@@ -86,7 +100,10 @@ describe('session tools', () => {
   })
 
   it('update_session converts offset times to Seoul wall clock', async () => {
-    services.getSessionDetail.mockResolvedValue({ ok: true, data: sessionDetail })
+    services.getSessionDetail.mockResolvedValue({
+      ok: true,
+      data: sessionDetail,
+    })
     services.updateSession.mockResolvedValue({ ok: true, data: { id: SID } })
 
     const input = tool('update_session').input.parse({
@@ -112,7 +129,9 @@ describe('session tools', () => {
       maxCapacity: 10,
       partId: 3,
     })
-    await expect(tool('create_session').run(core, input)).resolves.toMatchObject({
+    await expect(
+      tool('create_session').run(core, input)
+    ).resolves.toMatchObject({
       ok: false,
       code: 'VALIDATION',
     })
@@ -123,14 +142,34 @@ describe('session tools', () => {
     services.listSessions.mockResolvedValue({
       ok: true,
       data: [
-        { id: '1', internalOpen: true, publicOpen: false, endAt: new Date('2999-01-01T00:00:00Z') },
-        { id: '2', internalOpen: false, publicOpen: false, endAt: new Date('2999-01-01T00:00:00Z') },
-        { id: '3', internalOpen: true, publicOpen: true, endAt: new Date('2000-01-01T00:00:00Z') },
+        {
+          id: '1',
+          internalOpen: true,
+          publicOpen: false,
+          endAt: new Date('2999-01-01T00:00:00Z'),
+        },
+        {
+          id: '2',
+          internalOpen: false,
+          publicOpen: false,
+          endAt: new Date('2999-01-01T00:00:00Z'),
+        },
+        {
+          id: '3',
+          internalOpen: true,
+          publicOpen: true,
+          endAt: new Date('2000-01-01T00:00:00Z'),
+        },
       ],
     })
-    const input = tool('list_sessions').input.parse({ openForRegistration: true })
+    const input = tool('list_sessions').input.parse({
+      openForRegistration: true,
+    })
     const result = await tool('list_sessions').run(core, input)
-    expect(result.ok && (result.data as { items: { id: string }[] }).items.map((s) => s.id)).toEqual(['1'])
+    expect(
+      result.ok &&
+        (result.data as { items: { id: string }[] }).items.map((s) => s.id)
+    ).toEqual(['1'])
   })
 })
 
@@ -152,7 +191,68 @@ describe('project tools', () => {
     await tool('create_project').run(core, input)
     expect(services.createProject).toHaveBeenCalledWith(
       core,
-      expect.objectContaining({ generationId: '7', participants: ['core'], tags: [], repoUrl: null })
+      expect.objectContaining({
+        generationId: '7',
+        participants: ['core'],
+        tags: [],
+        repoUrl: null,
+      })
     )
+  })
+})
+
+describe('image fields', () => {
+  const base = {
+    name: 'S',
+    nameKo: '에스',
+    description: 'd',
+    descriptionKo: 'ㄷ',
+    location: 'L',
+    locationKo: '엘',
+    startAt: '2027-01-01T10:00',
+    endAt: '2027-01-01T12:00',
+    maxCapacity: 10,
+    partId: 3,
+  }
+
+  it('accept only uploaded R2 images under the matching prefix', () => {
+    const input = tool('create_session').input
+    expect(
+      input.safeParse({
+        ...base,
+        mainImage: 'https://cdn.example/sessions/a.png',
+      }).success
+    ).toBe(true)
+    expect(
+      input.safeParse({
+        ...base,
+        mainImage: 'https://evil.example/sessions/a.png',
+      }).success
+    ).toBe(false)
+    expect(
+      input.safeParse({
+        ...base,
+        contentImages: ['https://cdn.example/projects/a.png'],
+      }).success
+    ).toBe(false)
+  })
+
+  it('reject foreign images in project and profile updates', () => {
+    expect(
+      tool('update_project').input.safeParse({
+        projectId: '00000000-0000-4000-8000-000000000001',
+        mainImage: 'https://example.com/x.png',
+      }).success
+    ).toBe(false)
+    expect(
+      tool('update_my_profile').input.safeParse({
+        profileImage: 'https://cdn.example/sessions/a.png',
+      }).success
+    ).toBe(false)
+    expect(
+      tool('update_my_profile').input.safeParse({
+        profileImage: 'https://cdn.example/users/a.png',
+      }).success
+    ).toBe(true)
   })
 })

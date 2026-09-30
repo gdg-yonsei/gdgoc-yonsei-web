@@ -11,7 +11,12 @@ const WRITABLE: ResourceType[] = [
   'parts',
   'generations',
 ]
-const DELETABLE: ResourceType[] = ['sessions', 'projects', 'parts', 'generations']
+const DELETABLE: ResourceType[] = [
+  'sessions',
+  'projects',
+  'parts',
+  'generations',
+]
 
 /**
  * 동의 화면에서 고를 수 있는 스코프: 그 역할에 실제로 권한이 생기는 것만.
@@ -68,4 +73,34 @@ export function postLoginPath(query: string): string {
   return params.has('client_id') && params.has('sig')
     ? `/api/auth/oauth2/authorize?${query}`
     : '/admin'
+}
+
+function hostOf(value: string | null | undefined): string {
+  if (!value) return ''
+  try {
+    return new URL(value).host
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * 동의 화면에 보여 줄 "돌아갈 곳". 인가 코드는 이번 요청의 redirect_uri 로 가므로
+ * 반드시 그 값을 보여 준다. 등록된 목록의 첫 URI 를 보여 주면, 여러 URI 를 등록한
+ * 클라이언트가 믿을 만한 호스트를 앞에 두고 다른 호스트로 코드를 받을 수 있다.
+ * (redirect_uri 는 authorize 가 등록 목록과 대조해 검증한 뒤 서명해 넘긴다.)
+ */
+export function consentRedirectHost({
+  requestRedirectUri,
+  registeredRedirectUris,
+  clientId,
+}: {
+  requestRedirectUri: string | undefined
+  registeredRedirectUris: string[]
+  clientId: string
+}): string {
+  if (requestRedirectUri) return hostOf(requestRedirectUri)
+  return registeredRedirectUris.length === 1
+    ? hostOf(registeredRedirectUris[0])
+    : hostOf(clientId)
 }
