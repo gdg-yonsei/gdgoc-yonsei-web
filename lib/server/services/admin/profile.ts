@@ -7,7 +7,7 @@ import { invalidateMemberPublicCache } from '@/lib/server/cache'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { logger } from '@/lib/server/logger'
 import { authorize } from '@/lib/server/services/admin/authorize'
-import type { MemberDetail } from '@/lib/server/services/admin/members'
+import type { MemberRecord } from '@/lib/server/services/admin/members'
 import {
   fail,
   fromZodError,
@@ -20,7 +20,7 @@ import { memberValidation } from '@/lib/validations/member'
 
 export async function getMyProfile(
   actor: Actor
-): Promise<ServiceResult<MemberDetail>> {
+): Promise<ServiceResult<MemberRecord>> {
   const authorization = authorize(actor, 'get', 'profilePage')
   if (!authorization.ok) return authorization
 

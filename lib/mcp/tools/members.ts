@@ -12,6 +12,7 @@ import {
   approveMember,
   deleteMember,
   getMemberDetail,
+  getMemberForEdit,
   listMembers,
   listPendingMembers,
   memberToInput,
@@ -97,7 +98,8 @@ export const memberTools = [
     input: z.object({ memberId: z.string(), ...memberPatchFields }),
     run: (actor, { memberId, ...patch }) =>
       patchWith(
-        getMemberDetail(actor, memberId),
+        // 부분 수정 병합은 가려지지 않은 전체 기록으로 해야 연락처가 null 로 덮이지 않는다.
+        getMemberForEdit(actor, memberId),
         memberToInput,
         patch,
         (input) => updateMember(actor, memberId, { ...input, role: null })

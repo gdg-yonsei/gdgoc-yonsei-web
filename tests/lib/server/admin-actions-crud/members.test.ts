@@ -28,6 +28,14 @@ vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
   default: mockGetUserRole,
 }))
 
+vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@/lib/server/services/admin/authorize')
+  >()),
+  // 이 파일의 CORE 사례는 같은 기수의 멤버를 고친다.
+  sharesGenerationWith: vi.fn(async () => true),
+}))
+
 vi.mock('@/lib/server/permission/handle-permission', () => ({
   default: mockHandlePermission,
 }))

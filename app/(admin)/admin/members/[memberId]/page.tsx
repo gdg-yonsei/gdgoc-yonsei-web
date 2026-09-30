@@ -14,6 +14,8 @@ import {
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { notFound } from 'next/navigation'
+import { sharesGenerationWith } from '@/lib/server/services/admin/authorize'
+import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import { Metadata } from 'next'
 
 export async function generateMetadata({
@@ -57,6 +59,12 @@ export default async function MemberPage({
   if (!memberData) {
     notFound()
   }
+  // 연락처(이메일·학번·전화)는 같은 기수·본인·LEAD 에게만 보인다.
+  const actor = await getWebActor()
+  const showContact = actor
+    ? await sharesGenerationWith(actor, memberId)
+    : false
+  const hidden = '—'
 
   return (
     <AdminDefaultLayout>
@@ -131,7 +139,9 @@ export default async function MemberPage({
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.email}</div>
-          <div className={'admin-field-value'}>{memberData.email}</div>
+          <div className={'admin-field-value'}>
+            {showContact ? memberData.email : hidden}
+          </div>
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.role}</div>
@@ -163,11 +173,15 @@ export default async function MemberPage({
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.studentId}</div>
-          <div className={'admin-field-value'}>{memberData.studentId}</div>
+          <div className={'admin-field-value'}>
+            {showContact ? memberData.studentId : hidden}
+          </div>
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.telephone}</div>
-          <div className={'admin-field-value'}>{memberData.telephone}</div>
+          <div className={'admin-field-value'}>
+            {showContact ? memberData.telephone : hidden}
+          </div>
         </div>
         <div className={'admin-card'}>
           <div className={'admin-field-label'}>{t.foreigner}</div>

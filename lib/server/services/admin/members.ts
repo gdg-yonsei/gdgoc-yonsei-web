@@ -15,6 +15,7 @@ import {
   authorize,
   canChangeMemberEmail,
   canEditMember,
+  sharesGenerationWith,
 } from '@/lib/server/services/admin/authorize'
 import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import {
@@ -30,7 +31,17 @@ import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { memberValidation } from '@/lib/validations/member'
 
 export type MemberInput = z.input<typeof memberValidation>
-export type MemberDetail = NonNullable<Awaited<ReturnType<typeof getMember>>>
+export type MemberRecord = NonNullable<Awaited<ReturnType<typeof getMember>>>
+
+/** 연락처는 같은 기수·본인·LEAD 에게만 보인다. */
+export type MemberDetail = Omit<
+  MemberRecord,
+  'email' | 'telephone' | 'studentId'
+> & {
+  email: string | null
+  telephone: string | null
+  studentId: number | null
+}
 
 const NOT_FOUND = 'Member not found'
 
@@ -111,10 +122,25 @@ export async function getMemberDetail(
   }
 
   const member = await getMember(memberId)
+  if (!member) return fail('NOT_FOUND', NOT_FOUND)
+
+  if (await sharesGenerationWith(actor, memberId)) return ok(member)
+  return ok({ ...member, email: null, telephone: null, studentId: null })
+}
+
+/** 고칠 권한이 있는 사람에게 연락처를 포함한 전체 기록을 준다(부분 수정 병합용). */
+export async function getMemberForEdit(
+  actor: Actor,
+  memberId: string
+): Promise<ServiceResult<MemberRecord>> {
+  const editable = await authorizeMemberEdit(actor, memberId)
+  if (!editable.ok) return editable
+
+  const member = await getMember(memberId)
   return member ? ok(member) : fail('NOT_FOUND', NOT_FOUND)
 }
 
-export function memberToInput(detail: MemberDetail): MemberInput {
+export function memberToInput(detail: MemberRecord): MemberInput {
   return {
     name: detail.name,
     firstName: detail.firstName ?? '',
@@ -154,6 +180,12 @@ export async function authorizeMemberEdit(
     return fail(
       'FORBIDDEN',
       'Only a LEAD can edit members whose role is CORE or LEAD.'
+    )
+  }
+  if (!(await sharesGenerationWith(actor, memberId))) {
+    return fail(
+      'FORBIDDEN',
+      'You can only edit members of your own generations.'
     )
   }
   return ok(target)

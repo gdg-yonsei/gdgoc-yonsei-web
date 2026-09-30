@@ -129,3 +129,21 @@ export function canChangeMemberEmail(
 ): boolean {
   return targetId === actor.userId || actor.role === 'LEAD'
 }
+
+/**
+ * 두 사람이 한 기수라도 함께 속해 있는지. 본인과 LEAD 는 항상 true.
+ * 연락처(이메일·전화·학번) 공개와 CORE 의 멤버 수정 범위를 정한다.
+ */
+export async function sharesGenerationWith(
+  actor: Pick<Actor, 'userId' | 'role'>,
+  memberId: string
+): Promise<boolean> {
+  if (memberId === actor.userId || actor.role === 'LEAD') return true
+  const [mine, theirs] = await Promise.all([
+    loadAccessibleGenerations(actor),
+    // 역할과 무관하게 소속 파트의 기수만 본다.
+    loadAccessibleGenerations({ userId: memberId, role: 'MEMBER' }),
+  ])
+  const mineIds = new Set(mine.map((generation) => generation.id))
+  return theirs.some((generation) => mineIds.has(generation.id))
+}
