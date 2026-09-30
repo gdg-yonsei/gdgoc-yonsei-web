@@ -15,6 +15,7 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { notFound } from 'next/navigation'
 import { sharesGenerationWith } from '@/lib/server/services/admin/authorize'
+import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import { Metadata } from 'next'
 
@@ -65,6 +66,10 @@ export default async function MemberPage({
     ? await sharesGenerationWith(actor, memberId)
     : false
   const hidden = '—'
+  // 수정 화면과 같은 판단(대상 역할·기수)으로 수정 버튼을 보인다.
+  const canEdit = actor
+    ? (await authorizeMemberEdit(actor, memberId)).ok
+    : false
 
   return (
     <AdminDefaultLayout>
@@ -86,6 +91,7 @@ export default async function MemberPage({
           session={currentSession}
           dataOwnerId={memberId}
           dataType={'members'}
+          allowed={canEdit}
           href={localizeAdminHref(`/admin/members/${memberId}/edit`, locale)}
         />
       </div>

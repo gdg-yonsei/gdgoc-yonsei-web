@@ -17,6 +17,7 @@ import {
  * @param dataOwnerId - 수정하는 프로젝트의 소유자 ID
  * @param href - 수정 페이지 링크
  * @param dataType - 수정하는 데이터 종류
+ * @param allowed - 호출부가 이미 판단한 수정 가능 여부. 역할 매트릭스보다 세밀한 규칙(대상 역할·기수)이 있을 때 넘긴다.
  * @constructor
  */
 export default async function DataEditLink({
@@ -24,21 +25,20 @@ export default async function DataEditLink({
   dataOwnerId,
   href,
   dataType,
+  allowed,
 }: {
   session: AuthSession | null
   dataOwnerId?: string
   href: string
   dataType: ResourceType
+  allowed?: boolean
 }) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   // 사용자가 수정할 수 있는지 확인
-  const canEdit = await handlePermission(
-    session?.user?.id,
-    'put',
-    dataType,
-    dataOwnerId
-  )
+  const canEdit =
+    allowed ??
+    (await handlePermission(session?.user?.id, 'put', dataType, dataOwnerId))
 
   return (
     <>
