@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import QRCodeGenerator from '@/app/components/admin/qr-code-generator'
+import McpInstallGuide from '@/app/components/admin/mcp-install-guide'
+import { getMcpResourceUrl } from '@/lib/mcp/config'
 import DashboardStats, {
   DashboardStatsSkeleton,
 } from '@/app/(admin)/admin/dashboard-stats'
@@ -166,6 +168,8 @@ export default async function AdminPage() {
               </ol>
             </div>
           </div>
+
+          <McpInstallGuide mcpUrl={getMcpResourceUrl()} />
         </div>
       </section>
     </AdminDefaultLayout>

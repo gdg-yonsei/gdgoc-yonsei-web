@@ -10,11 +10,19 @@ do what the admin pages do, limited by the signed-in user's role.
 
 ## Connecting
 
-| Client              | How                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------------- |
-| Claude Code         | `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp`                   |
-| Claude.ai / Desktop | Settings → Connectors → Add custom connector → paste the endpoint URL                       |
-| Cursor              | `mcp.json`: `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }` |
+Members see a per-client install guide on the GYMS dashboard (`/admin`,
+[`mcp-install-guide.tsx`](../../app/components/admin/mcp-install-guide.tsx)).
+Update [`mcp-install-guides.ts`](../../app/components/admin/mcp-install-guides.ts)
+when a client renames its menus.
+
+| Client                  | How                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| Claude Code             | `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp`, then `/mcp` → Authenticate  |
+| Codex (CLI / IDE / app) | `codex mcp add gyms --url https://gdgoc.yonsei.ac.kr/api/mcp`, then `codex mcp login gyms`             |
+| Claude web / Desktop    | Customize → Connectors → + → Add custom connector → paste the endpoint URL                             |
+| ChatGPT web             | Settings → Security and login → Developer mode, then Apps → Create (OAuth), use via + → Developer mode |
+| ChatGPT Desktop         | Register on the web first; developer-mode apps cannot be created in the desktop app                    |
+| Cursor                  | `mcp.json`: `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }`            |
 
 The client opens a browser, you sign in with the usual GitHub / Google /
 passkey login, and a consent screen (`/auth/mcp-consent`) lets you pick the
