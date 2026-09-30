@@ -7,7 +7,10 @@ vi.mock('@/lib/server/services/admin/authorize', () => ({
   loadAccessibleGenerations: mockLoadAccessibleGenerations,
 }))
 
-import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import {
+  resolveGenerationScope,
+  resolveRequestedGenerationScope,
+} from '@/lib/server/services/admin/generation-scope'
 
 const options = [
   { id: 12, name: '12th' },
@@ -48,5 +51,41 @@ describe('resolveGenerationScope', () => {
     await expect(
       resolveGenerationScope({ userId: 'u', role: 'MEMBER' })
     ).resolves.toBeNull()
+  })
+})
+
+describe('resolveRequestedGenerationScope', () => {
+  beforeEach(() => {
+    mockLoadAccessibleGenerations.mockResolvedValue(options)
+  })
+
+  it('refuses an explicit generation the user cannot access', async () => {
+    await expect(
+      resolveRequestedGenerationScope({ userId: 'u', role: 'CORE' }, 3)
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+  })
+
+  it('refuses "all" for non-LEAD users', async () => {
+    await expect(
+      resolveRequestedGenerationScope({ userId: 'u', role: 'CORE' }, 'all')
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+  })
+
+  it('keeps the default fallback when nothing is requested', async () => {
+    await expect(
+      resolveRequestedGenerationScope({ userId: 'u', role: 'CORE' })
+    ).resolves.toEqual({
+      ok: true,
+      data: { kind: 'generation', generationId: 12 },
+    })
+  })
+
+  it('accepts an accessible explicit generation', async () => {
+    await expect(
+      resolveRequestedGenerationScope({ userId: 'u', role: 'CORE' }, 11)
+    ).resolves.toEqual({
+      ok: true,
+      data: { kind: 'generation', generationId: 11 },
+    })
   })
 })

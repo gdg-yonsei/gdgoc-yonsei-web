@@ -40,6 +40,7 @@ import {
   deleteSession,
   registerForSession,
   removeSessionParticipant,
+  unregisterFromSession,
   updateSession,
 } from '@/lib/server/services/admin/sessions'
 import type { Actor } from '@/lib/server/services/admin/types'
@@ -171,5 +172,18 @@ describe('sessions service', () => {
       message:
         'The selected part does not belong to the current generation scope.',
     })
+  })
+
+  it('requires the gyms:write scope to register or unregister', async () => {
+    const reader: Actor = { ...core, scopes: ['gyms:read'] }
+    await expect(registerForSession(reader, SID)).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    await expect(unregisterFromSession(reader, SID)).resolves.toMatchObject({
+      ok: false,
+      code: 'FORBIDDEN',
+    })
+    expect(findSession).not.toHaveBeenCalled()
   })
 })

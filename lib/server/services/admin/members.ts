@@ -17,7 +17,7 @@ import {
   canEditMember,
   sharesGenerationWith,
 } from '@/lib/server/services/admin/authorize'
-import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import {
   fail,
   fromZodError,
@@ -62,7 +62,9 @@ export async function listMembers(
   const authorization = authorize(actor, 'get', 'membersPage')
   if (!authorization.ok) return authorization
 
-  const scope = await resolveGenerationScope(actor, generation)
+  const resolved = await resolveRequestedGenerationScope(actor, generation)
+  if (!resolved.ok) return resolved
+  const scope = resolved.data
   if (!scope) return ok([])
 
   const needle = query?.trim().toLowerCase()

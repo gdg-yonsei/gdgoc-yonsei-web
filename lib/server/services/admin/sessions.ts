@@ -27,8 +27,9 @@ import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
 import {
   authorize,
   canAccessGeneration,
+  hasScope,
 } from '@/lib/server/services/admin/authorize'
-import { resolveGenerationScope } from '@/lib/server/services/admin/generation-scope'
+import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
   fail,
@@ -62,7 +63,9 @@ export async function listSessions(
   const authorization = authorize(actor, 'get', 'sessionsPage')
   if (!authorization.ok) return authorization
 
-  const scope = await resolveGenerationScope(actor, generation)
+  const resolved = await resolveRequestedGenerationScope(actor, generation)
+  if (!resolved.ok) return resolved
+  const scope = resolved.data
   if (!scope) return ok([])
 
   return ok(await getSessions(scope))
@@ -515,6 +518,10 @@ export async function registerForSession(
   if (!isUuid(sessionId)) return fail('NOT_FOUND', NOT_FOUND)
 
   // 사용자가 session에 등록할 권한이 있는지 확인
+  // 신청·취소는 쓰기다. 권한 매트릭스는 조회 권한으로 판단하므로 스코프를 따로 본다.
+  if (!hasScope(actor, 'gyms:write')) {
+    return fail('FORBIDDEN', 'The access token does not grant this operation.')
+  }
   const authorization = authorize(actor, 'get', 'sessionsPage')
   if (!authorization.ok) return authorization
 
@@ -633,6 +640,10 @@ export async function unregisterFromSession(
   actor: Actor,
   sessionId: string
 ): Promise<ServiceResult<{ sessionId: string }>> {
+  // 신청·취소는 쓰기다. 권한 매트릭스는 조회 권한으로 판단하므로 스코프를 따로 본다.
+  if (!hasScope(actor, 'gyms:write')) {
+    return fail('FORBIDDEN', 'The access token does not grant this operation.')
+  }
   const authorization = authorize(actor, 'get', 'sessionsPage')
   if (!authorization.ok) return authorization
   if (!isUuid(sessionId)) return fail('NOT_FOUND', NOT_FOUND)
