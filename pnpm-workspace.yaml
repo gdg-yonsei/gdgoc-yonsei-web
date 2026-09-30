@@ -14,8 +14,8 @@ overrides:
   #   sharp     0.34.5 -> 패치 >=0.35.0
   #   esbuild   0.18.20 -> 패치 >=0.24.3, 폐기된 @esbuild-kit/* 경유
   next: 16.3.6
-  postcss: 8.5.25
-  sharp: 0.35.3
+  postcss: 8.5.28
+  sharp: 0.35.4
   esbuild: 0.28.1
 minimumReleaseAgeExclude:
   - '@aws-sdk/checksums@3.1000.26'
