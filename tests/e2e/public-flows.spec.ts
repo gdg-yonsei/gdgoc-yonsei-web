@@ -5,8 +5,6 @@ const extraPublicRoutes = [
   '/ko/privacy-policy',
   '/en/terms-of-service',
   '/ko/terms-of-service',
-  '/en/2026-freshman-ot',
-  '/ko/2026-freshman-ot',
 ]
 
 test('extra public pages load correctly', async ({ page }) => {
@@ -46,23 +44,6 @@ test('desktop navigation routes user to calendar page', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/en\/calendar$/)
   await expect(page.getByRole('heading', { name: 'Calendar' })).toBeVisible()
-})
-
-test('freshman orientation banner navigates to OT page', async ({ page }) => {
-  await page.goto('/en', { waitUntil: 'domcontentloaded' })
-
-  const bannerLink = page
-    .getByRole('link', { name: /2026 Freshman Orientation/i })
-    .first()
-
-  if ((await bannerLink.count()) > 0) {
-    await bannerLink.click()
-  } else {
-    await page.goto('/en/2026-freshman-ot', { waitUntil: 'domcontentloaded' })
-  }
-
-  await expect(page).toHaveURL(/\/en\/2026-freshman-ot\/?$/)
-  await expect(page.getByText('Google Developer Group').first()).toBeVisible()
 })
 
 test.describe('mobile navigation', () => {

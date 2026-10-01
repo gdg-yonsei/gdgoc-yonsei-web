@@ -21,7 +21,6 @@ export type ChromeCopy = {
   chapterPage: string
   privacy: string
   terms: string
-  freshmanOt: string
   source: string
   gyms: string
   clockLabel: string
@@ -50,7 +49,6 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     chapterPage: 'Official GDG chapter',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
-    freshmanOt: '2026 Freshman Orientation',
     source: 'Source code',
     gyms: 'GYMS for members',
     clockLabel: 'Sinchon, Seoul',
@@ -77,7 +75,6 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     chapterPage: '공식 GDG 챕터 페이지',
     privacy: '개인정보처리방침',
     terms: '이용약관',
-    freshmanOt: '2026 신입생 OT',
     source: '소스 코드',
     gyms: '멤버 전용 GYMS',
     clockLabel: '서울 신촌',

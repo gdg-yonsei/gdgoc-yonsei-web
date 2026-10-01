@@ -154,15 +154,6 @@ export default function Footer({ lang }: { lang: Locale }) {
               </Link>
             </li>
             <li>
-              <Link
-                href={`/${lang}/2026-freshman-ot`}
-                prefetch={false}
-                className="site-footer-link"
-              >
-                {copy.freshmanOt}
-              </Link>
-            </li>
-            <li>
               <a
                 href={CHANNELS.source}
                 target="_blank"

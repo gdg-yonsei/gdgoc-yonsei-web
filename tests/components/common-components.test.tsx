@@ -135,9 +135,6 @@ describe('common components', () => {
     expect(
       screen.getAllByRole('link', { name: /한국어/ }).at(-1)
     ).toHaveAttribute('href', '/ko/project')
-    expect(
-      screen.getByRole('link', { name: '2026 Freshman Orientation' })
-    ).toHaveAttribute('href', '/en/2026-freshman-ot')
   })
 
   it('draws footer link arrows as icons, not glyphs outside the Latin font subset', () => {

@@ -21,7 +21,6 @@ export const STATIC_SITEMAP_PATHS: readonly SitemapPath[] = [
   { path: '/member' },
   { path: '/privacy-policy' },
   { path: '/terms-of-service' },
-  { path: '/2026-freshman-ot' },
 ]
 
 const touched = (item: Dated) =>
