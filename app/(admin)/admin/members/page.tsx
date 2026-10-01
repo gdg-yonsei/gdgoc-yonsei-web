@@ -49,11 +49,7 @@ export default async function MembersPage() {
         }
       />
       <Suspense fallback={<AdminTableSkeleton />}>
-        <MembersTable
-          scope={resolvedScope?.scope ?? null}
-          locale={locale}
-          t={t}
-        />
+        <MembersTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )

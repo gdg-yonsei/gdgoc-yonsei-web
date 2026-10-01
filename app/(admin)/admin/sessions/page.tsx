@@ -65,11 +65,7 @@ export default async function SessionsPage() {
         }
       />
       <Suspense fallback={<AdminTableSkeleton />}>
-        <SessionsTable
-          scope={resolvedScope?.scope ?? null}
-          locale={locale}
-          t={t}
-        />
+        <SessionsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
       <div className={'border-hairline flex flex-col gap-6 border-t pt-6'}>
         <Suspense fallback={<AdminCardSkeleton />}>

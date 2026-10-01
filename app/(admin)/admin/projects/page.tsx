@@ -57,11 +57,7 @@ export default async function ProjectsPage() {
         }
       />
       <Suspense fallback={<AdminTableSkeleton />}>
-        <ProjectsTable
-          scope={resolvedScope?.scope ?? null}
-          locale={locale}
-          t={t}
-        />
+        <ProjectsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )
