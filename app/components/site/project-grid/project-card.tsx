@@ -17,6 +17,7 @@ import {
   projectTitle,
   type ShowcaseProject,
 } from '@/lib/site/project-showcase'
+import { projectPath, localeHref } from '@/lib/site/routes'
 
 const COVER_SIZES = '(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw'
 const FEATURED_SIZES =
@@ -80,7 +81,10 @@ export default function ProjectCard({
           <p className="release-generation">{project.generationName}</p>
           <Title className="release-title">
             <Link
-              href={`/${lang}/project/${project.generationName}/${project.id}`}
+              href={localeHref(
+                lang,
+                projectPath(project.generationName, project.id)
+              )}
               className="stretched-link"
               transitionTypes={['nav-forward']}
             >

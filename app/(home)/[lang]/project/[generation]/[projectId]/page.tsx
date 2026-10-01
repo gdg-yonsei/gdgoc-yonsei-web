@@ -32,6 +32,7 @@ import {
 } from '@/lib/site/project-showcase'
 import ProjectDetailLoading from './loading'
 import { toLocale } from '@/lib/i18n'
+import { generationPath, projectPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
@@ -83,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = projectTitle(loaded.project, locale)
   return createLocalizedMetadata({
     locale,
-    path: `/project/${generation}/${projectId}`,
+    path: projectPath(generation, projectId),
     title,
     description: summarizeForMetadata(
       projectSummary(loaded.project, locale),
@@ -125,7 +126,7 @@ async function ProjectDetail({
   const copy = projectArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
   const title = projectTitle(project, locale)
-  const url = getLocalizedUrl(locale, `/project/${generation}/${projectId}`)
+  const url = getLocalizedUrl(locale, projectPath(generation, projectId))
 
   return (
     <div className="site-page">
@@ -158,7 +159,10 @@ async function ProjectDetail({
             },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/project/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('project', generation)
+              ),
             },
             { name: title, url },
           ]),

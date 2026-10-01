@@ -20,6 +20,7 @@ import {
 import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 import { toLocale } from '@/lib/i18n'
+import { generationPath, localeHref } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -114,7 +115,10 @@ async function MemberHubContent({ params }: Props) {
               name: fillTemplate(copy.generationTitle, {
                 generation: generation.name,
               }),
-              url: getLocalizedUrl(lang, `/member/${generation.name}`),
+              url: getLocalizedUrl(
+                lang,
+                generationPath('member', generation.name)
+              ),
             })),
           }),
           breadcrumbList([
@@ -127,7 +131,7 @@ async function MemberHubContent({ params }: Props) {
         {generations.map((generation) => (
           <li key={generation.id}>
             <Link
-              href={`/${lang}/member/${generation.name}`}
+              href={localeHref(lang, generationPath('member', generation.name))}
               prefetch={true}
               transitionTypes={['nav-forward']}
               className="member-generation"

@@ -32,6 +32,7 @@ import {
   sortShowcase,
 } from '@/lib/site/project-showcase'
 import { toLocale } from '@/lib/i18n'
+import { generationPath, projectPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -62,7 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = projectArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/project/${generation}`,
+    path: generationPath('project', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
     noindex: projects.length === 0,
@@ -161,7 +162,7 @@ async function ProjectGenerationContent({
   }
 
   const facets = projectFacets(projects)
-  const url = getLocalizedUrl(lang, `/project/${generation}`)
+  const url = getLocalizedUrl(lang, generationPath('project', generation))
 
   return (
     <>
@@ -178,10 +179,7 @@ async function ProjectGenerationContent({
             websiteId: `${getSiteUrl()}#website`,
             items: projects.map((project) => ({
               name: projectTitle(project, lang),
-              url: getLocalizedUrl(
-                lang,
-                `/project/${generation}/${project.id}`
-              ),
+              url: getLocalizedUrl(lang, projectPath(generation, project.id)),
             })),
           }),
           breadcrumbList([

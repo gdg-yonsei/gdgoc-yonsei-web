@@ -11,6 +11,7 @@ import {
   sessionTitle,
   type LogSession,
 } from '@/lib/site/session-log'
+import { sessionPath, localeHref } from '@/lib/site/routes'
 
 /** One commit on the log. The title link stretches over the whole row. */
 export default function SessionRow({
@@ -50,7 +51,10 @@ export default function SessionRow({
           </p>
           <Title className="log-title">
             <Link
-              href={`/${lang}/session/${session.generationName}/${session.id}`}
+              href={localeHref(
+                lang,
+                sessionPath(session.generationName, session.id)
+              )}
               transitionTypes={['nav-forward']}
             >
               {sessionTitle(session, lang)}

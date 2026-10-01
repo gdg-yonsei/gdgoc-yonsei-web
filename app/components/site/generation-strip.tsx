@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import type { StripGeneration } from '@/lib/site/generations'
+import { generationPath, localeHref } from '@/lib/site/routes'
 
 /**
  * Every generation as a pill. Ones with public records link to their page
@@ -30,7 +31,7 @@ export default function GenerationStrip({
           <li key={name}>
             {count > 0 ? (
               <Link
-                href={`/${lang}/${basePath}/${name}`}
+                href={localeHref(lang, generationPath(basePath, name))}
                 prefetch={true}
                 transitionTypes={['nav-forward']}
                 aria-current={name === current ? 'page' : undefined}

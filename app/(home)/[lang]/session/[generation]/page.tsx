@@ -33,6 +33,7 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import { toLocale } from '@/lib/i18n'
+import { generationPath, sessionPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -63,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = sessionArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/session/${generation}`,
+    path: generationPath('session', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
     // Reachable, linked from nowhere, and not worth an index slot.
@@ -161,7 +162,7 @@ async function SessionGenerationContent({
   }
 
   const facets = sessionFacets(sessions, lang)
-  const url = getLocalizedUrl(lang, `/session/${generation}`)
+  const url = getLocalizedUrl(lang, generationPath('session', generation))
 
   return (
     <>
@@ -178,10 +179,7 @@ async function SessionGenerationContent({
             websiteId: `${getSiteUrl()}#website`,
             items: sessions.map((session) => ({
               name: sessionTitle(session, lang),
-              url: getLocalizedUrl(
-                lang,
-                `/session/${generation}/${session.id}`
-              ),
+              url: getLocalizedUrl(lang, sessionPath(generation, session.id)),
             })),
           }),
           breadcrumbList([

@@ -30,6 +30,7 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import { toLocale } from '@/lib/i18n'
+import { sessionPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -126,7 +127,7 @@ async function SessionHubContent({ params }: Props) {
               name: sessionTitle(session, lang),
               url: getLocalizedUrl(
                 lang,
-                `/session/${session.generationName}/${session.id}`
+                sessionPath(session.generationName, session.id)
               ),
             })),
           }),

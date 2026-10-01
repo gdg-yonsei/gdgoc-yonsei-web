@@ -2,6 +2,7 @@ import type { Locale } from '@/lib/i18n'
 import { formatSessionTime, toKstIso } from '@/lib/format/datetime'
 import { categoryHue, categoryLabel, type Hue } from '@/lib/site/labels'
 import { sessionLocation, sessionTitle } from '@/lib/site/session-log'
+import { sessionPath, localeHref } from '@/lib/site/routes'
 
 /** A dated public session as the calendar read model returns it. */
 export type CalendarSession = {
@@ -87,7 +88,7 @@ export function toCalendarEvents(
             : null,
         dateTime: toKstIso(session.startAt),
         href: published
-          ? `/${locale}/session/${session.generationName}/${session.id}`
+          ? localeHref(locale, sessionPath(session.generationName, session.id))
           : null,
       }
     })

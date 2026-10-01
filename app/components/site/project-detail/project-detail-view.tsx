@@ -23,6 +23,7 @@ import {
   projectTitle,
   type ShowcaseProject,
 } from '@/lib/site/project-showcase'
+import { generationPath, localeHref } from '@/lib/site/routes'
 
 export type ProjectDetail = ShowcaseProject & {
   content: string
@@ -157,7 +158,10 @@ export default function ProjectDetailView({
                 })}
               </ul>
               <Link
-                href={`/${lang}/member/${project.generationName}`}
+                href={localeHref(
+                  lang,
+                  generationPath('member', project.generationName)
+                )}
                 className="detail-more"
               >
                 {fillTemplate(copy.allMembers, {

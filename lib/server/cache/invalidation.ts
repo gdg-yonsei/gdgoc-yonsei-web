@@ -26,14 +26,15 @@ import {
   uniqueStrings,
   updateCacheTags,
 } from '@/lib/server/cache/utils'
+import { generationPath, projectPath, sessionPath } from '@/lib/site/routes'
 
 function generationScopedPaths(
   generationNames: readonly string[]
 ): LocalizedPublicRoute[] {
   return generationNames.flatMap((generationName) => [
-    toLocalizedPublicRoute(`/member/${generationName}`),
-    toLocalizedPublicRoute(`/project/${generationName}`),
-    toLocalizedPublicRoute(`/session/${generationName}`),
+    toLocalizedPublicRoute(generationPath('member', generationName)),
+    toLocalizedPublicRoute(generationPath('project', generationName)),
+    toLocalizedPublicRoute(generationPath('session', generationName)),
   ])
 }
 
@@ -193,8 +194,8 @@ export function invalidateProjectPublicCache(args: {
     ...localizedPublicPaths(['/project']),
     ...localizedPublicPaths(
       generationNames.flatMap((generationName) => [
-        toLocalizedPublicRoute(`/project/${generationName}`),
-        toLocalizedPublicRoute(`/project/${generationName}/${args.projectId}`),
+        toLocalizedPublicRoute(generationPath('project', generationName)),
+        toLocalizedPublicRoute(projectPath(generationName, args.projectId)),
       ])
     ),
   ])
@@ -235,8 +236,8 @@ export function invalidateSessionPublicCache(args: {
     ...localizedPublicPaths(['/calendar', '/session']),
     ...localizedPublicPaths(
       generationNames.flatMap((generationName) => [
-        toLocalizedPublicRoute(`/session/${generationName}`),
-        toLocalizedPublicRoute(`/session/${generationName}/${args.sessionId}`),
+        toLocalizedPublicRoute(generationPath('session', generationName)),
+        toLocalizedPublicRoute(sessionPath(generationName, args.sessionId)),
       ])
     ),
   ])

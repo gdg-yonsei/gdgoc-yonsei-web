@@ -29,6 +29,7 @@ import {
   sortShowcase,
 } from '@/lib/site/project-showcase'
 import { toLocale } from '@/lib/i18n'
+import { projectPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -123,7 +124,7 @@ async function ProjectHubContent({ params }: Props) {
               name: projectTitle(project, lang),
               url: getLocalizedUrl(
                 lang,
-                `/project/${project.generationName}/${project.id}`
+                projectPath(project.generationName, project.id)
               ),
             })),
           }),

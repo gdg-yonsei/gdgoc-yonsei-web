@@ -22,6 +22,7 @@ import { generationNeighbors } from '@/lib/site/generations'
 import { breadcrumbList } from '@/lib/site/json-ld'
 import { partHue } from '@/lib/site/labels'
 import { toLocale } from '@/lib/i18n'
+import { generationPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = memberArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/member/${generation}`,
+    path: generationPath('member', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
   })
@@ -72,7 +73,10 @@ export default async function MembersPage({ params }: Props) {
             { name: common.members, url: getLocalizedUrl(locale, '/member') },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/member/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('member', generation)
+              ),
             },
           ])}
         />

@@ -3,6 +3,7 @@ import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/lib/i18n'
 import type { GenerationRef } from '@/lib/site/generations'
+import { generationPath, localeHref } from '@/lib/site/routes'
 
 /* Same page, another generation: links crossfade (PAGE_TRANSITIONS). Arrows
    are SVG icons: arrow glyphs would pull Google Sans Flex's symbols subset
@@ -30,7 +31,7 @@ export default function GenerationPager({
     <nav aria-label={label} className="generation-pager">
       {newer && (
         <Link
-          href={`/${lang}/${basePath}/${newer.name}`}
+          href={localeHref(lang, generationPath(basePath, newer.name))}
           transitionTypes={['generation-switch']}
         >
           <ArrowLeftIcon aria-hidden="true" className="size-4" />
@@ -39,7 +40,7 @@ export default function GenerationPager({
       )}
       {older && (
         <Link
-          href={`/${lang}/${basePath}/${older.name}`}
+          href={localeHref(lang, generationPath(basePath, older.name))}
           transitionTypes={['generation-switch']}
         >
           {olderLabel} · {older.name}

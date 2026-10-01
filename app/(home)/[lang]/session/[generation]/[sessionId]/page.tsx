@@ -36,6 +36,7 @@ import {
 } from '@/lib/site/session-log'
 import SessionDetailLoading from './loading'
 import { toLocale } from '@/lib/i18n'
+import { generationPath, sessionPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
@@ -78,7 +79,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return createLocalizedMetadata({
     locale,
-    path: `/session/${generation}/${sessionId}`,
+    path: sessionPath(generation, sessionId),
     // "25-26 Sixth T19 · Tech Talk · Nov 4, 2025"
     title: [
       title,
@@ -130,7 +131,7 @@ async function SessionDetail({
   const description =
     locale === 'ko' ? session.descriptionKo : session.description
   const location = sessionLocation(session, locale)
-  const url = getLocalizedUrl(locale, `/session/${generation}/${sessionId}`)
+  const url = getLocalizedUrl(locale, sessionPath(generation, sessionId))
   const summary = summarizeForMetadata(
     description,
     fallbackDescription(locale, title, generation)
@@ -177,7 +178,10 @@ async function SessionDetail({
             },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/session/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('session', generation)
+              ),
             },
             { name: title, url },
           ]),
