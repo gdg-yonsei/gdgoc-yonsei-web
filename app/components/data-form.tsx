@@ -1,36 +1,25 @@
 'use client'
 
+import { useActionState, useState, type FormEvent, type ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
-import { FormEvent, ReactNode, useActionState, useState } from 'react'
+import {
+  getLanguageCompletion,
+  parseFieldNames,
+  type BilingualLanguage,
+} from '@/app/components/admin/bilingual-completion'
+import { fillTemplate } from '@/lib/format/text'
 
 const initialState = {
   error: '',
 }
 
-type MissingLanguage = 'en' | 'ko'
-
+/** 제출을 막아야 할, 한쪽 언어가 빠진 패널. */
 interface MissingBilingualPanel {
   fieldLabel: string
-  missingLanguages: MissingLanguage[]
+  missingLanguages: BilingualLanguage[]
 }
 
-function parseFieldNames(value?: string): string[] {
-  return (value ?? '')
-    .split(',')
-    .map((name) => name.trim())
-    .filter(Boolean)
-}
-
-function isFilledValue(value: FormDataEntryValue | null): boolean {
-  if (typeof value === 'string') {
-    return value.trim().length > 0
-  }
-  if (value instanceof File) {
-    return value.size > 0
-  }
-  return false
-}
-
+/** 폼 안에서 양쪽 언어가 필수인 패널 중 빠진 언어가 있는 패널을 찾는다. */
 function getMissingBilingualPanels(
   formElement: HTMLFormElement,
   formData: FormData
@@ -44,25 +33,18 @@ function getMissingBilingualPanels(
   return panelElements.flatMap((panelElement) => {
     const enFieldNames = parseFieldNames(panelElement.dataset.bilingualEnFields)
     const koFieldNames = parseFieldNames(panelElement.dataset.bilingualKoFields)
-
     if (!enFieldNames.length || !koFieldNames.length) {
       return []
     }
 
-    const missingLanguages: MissingLanguage[] = []
-
-    if (
-      !enFieldNames.every((fieldName) => isFilledValue(formData.get(fieldName)))
-    ) {
-      missingLanguages.push('en')
-    }
-
-    if (
-      !koFieldNames.every((fieldName) => isFilledValue(formData.get(fieldName)))
-    ) {
-      missingLanguages.push('ko')
-    }
-
+    const completion = getLanguageCompletion(
+      formData,
+      enFieldNames,
+      koFieldNames
+    )
+    const missingLanguages = (['en', 'ko'] as const).filter(
+      (language) => !completion[language]
+    )
     if (!missingLanguages.length) {
       return []
     }
@@ -79,33 +61,12 @@ function getMissingBilingualPanels(
   })
 }
 
-function toBilingualValidationMessage(
-  missingPanels: MissingBilingualPanel[],
-  locale: string
-): string {
-  const isKorean = locale === 'ko'
-  const detailMessages = missingPanels.map((panel) => {
-    const languages = panel.missingLanguages.map((language) => {
-      if (isKorean) {
-        return language === 'en' ? '영어' : '한국어'
-      }
-      return language === 'en' ? 'English' : 'Korean'
-    })
-    return `${panel.fieldLabel} (${languages.join(', ')})`
-  })
-
-  if (isKorean) {
-    return `한글/영어 버전을 모두 작성해 주세요: ${detailMessages.join(', ')}`
-  }
-  return `Please complete both Korean and English versions: ${detailMessages.join(', ')}`
-}
-
 /**
- * Data Form
- * @param action - form action
- * @param children - React Children
- * @param className - classname of form
- * @constructor
+ * 관리자 생성·수정 폼 공용 래퍼.
+ *
+ * Server Action을 `useActionState`로 연결하고, 서버가 돌려준 오류 문구를 폼 아래에
+ * 보여 준다. 제출 직전에는 양쪽 언어가 필수인 패널을 검사해 빠진 언어가 있으면
+ * 서버 왕복 없이 제출을 막는다.
  */
 export default function DataForm({
   action,
@@ -123,7 +84,7 @@ export default function DataForm({
 }) {
   const [state, formAction] = useActionState(action, initialState)
   const [clientError, setClientError] = useState('')
-  const { locale } = useAdminI18n()
+  const { t } = useAdminI18n()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     const formElement = event.currentTarget
@@ -136,7 +97,18 @@ export default function DataForm({
     if (missingBilingualPanels.length > 0) {
       event.preventDefault()
       setClientError(
-        toBilingualValidationMessage(missingBilingualPanels, locale)
+        fillTemplate(t('bilingualCompleteBoth'), {
+          details: missingBilingualPanels
+            .map(
+              (panel) =>
+                `${panel.fieldLabel} (${panel.missingLanguages
+                  .map((language) =>
+                    t(language === 'en' ? 'languageNameEn' : 'languageNameKo')
+                  )
+                  .join(', ')})`
+            )
+            .join(', '),
+        })
       )
       return
     }

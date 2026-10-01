@@ -233,4 +233,9 @@ export const ko = {
   // ── Bilingual panel ──
   written: '작성됨',
   notWritten: '미작성',
+  bilingualThisField: '이 항목',
+  bilingualFillVersion: '{label}: {languages} 버전을 작성해 주세요.',
+  bilingualCompleteBoth: '한글/영어 버전을 모두 작성해 주세요: {details}',
+  languageNameEn: '영어',
+  languageNameKo: '한국어',
 } as const satisfies AdminMessages

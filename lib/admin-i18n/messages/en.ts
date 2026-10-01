@@ -238,4 +238,10 @@ export const en = {
   // ── Bilingual panel ──
   written: 'Done',
   notWritten: 'Missing',
+  bilingualThisField: 'This field',
+  bilingualFillVersion: '{label}: Please fill the {languages} version.',
+  bilingualCompleteBoth:
+    'Please complete both Korean and English versions: {details}',
+  languageNameEn: 'English',
+  languageNameKo: 'Korean',
 } as const

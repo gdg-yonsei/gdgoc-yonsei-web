@@ -1,11 +1,18 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { formatUserName } from '@/lib/format/user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import {
+  findMembership,
+  listMembershipGenerations,
+  listMembershipParts,
+  memberDisplayName,
+  memberMatchesSearch,
+  normalizeMemberSearch,
+  type MemberMembership,
+} from '@/lib/admin/member-options'
 import { cn } from '@/lib/cn'
-import type { MemberMembership } from '@/lib/admin/member-options'
 
 type PartOption = {
   id: number
@@ -33,43 +40,13 @@ type MemberOption = {
   memberships: MemberMembership[]
 }
 
-type NamedMember = Omit<MemberOption, 'memberships'>
-
-function displayName(member: NamedMember) {
-  return member.firstNameKo
-    ? formatUserName(
-        member.name,
-        member.firstNameKo,
-        member.lastNameKo,
-        member.isForeigner,
-        !member.isForeigner
-      )
-    : formatUserName(
-        member.name,
-        member.firstName,
-        member.lastName,
-        member.isForeigner
-      )
-}
-
-// 빈 필터는 모든 값과 일치합니다.
-function findMembership(
-  member: MemberOption,
-  generation: string,
-  part: string
-) {
-  return member.memberships.find(
-    (membership) =>
-      (!generation || membership.generation === generation) &&
-      (!part || membership.part === part)
-  )
-}
-
-// 한글 이름은 "김 승연"처럼 띄어 입력해도 찾을 수 있도록 공백을 제거하고 비교합니다.
-function normalizeSearch(value: string) {
-  return value.toLowerCase().replace(/\s+/g, '')
-}
-
+/**
+ * 세션 폼의 파트·참가자 선택.
+ *
+ * 왼쪽에서 파트를 고르면 그 파트 구성원이 기본 참가자로 채워지고, 오른쪽에서 기수·
+ * 파트·이름으로 다른 멤버를 찾아 추가하거나 뺄 수 있다. 결과는 숨은 입력
+ * `partId`, `participantId`(JSON 배열)로 폼에 실린다.
+ */
 export default function SessionPartParticipantsInput({
   defaultValue,
   members,
@@ -95,68 +72,16 @@ export default function SessionPartParticipantsInput({
   const [generationFilter, setGenerationFilter] = useState('')
   const [partFilter, setPartFilter] = useState('')
 
-  const currentPart = useMemo(
-    () => parts.find((part) => part.id === partId) ?? null,
-    [partId, parts]
+  const currentPart = parts.find((part) => part.id === partId) ?? null
+  const memberGenerations = listMembershipGenerations(members)
+  // 기수를 고르면 그 기수에 있는 파트만 보여 준다.
+  const memberParts = listMembershipParts(members, generationFilter)
+  const normalizedQuery = normalizeMemberSearch(query)
+  const filteredMembers = members.filter(
+    (member) =>
+      findMembership(member.memberships, generationFilter, partFilter) &&
+      memberMatchesSearch(member, normalizedQuery)
   )
-
-  const memberGenerations = useMemo(() => {
-    const generations = new Map<string, number>()
-    for (const member of members) {
-      for (const { generation, generationId } of member.memberships) {
-        if (generation) {
-          generations.set(generation, generationId ?? 0)
-        }
-      }
-    }
-    // 최신 기수가 먼저 보이도록 정렬합니다.
-    return Array.from(generations.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([generation]) => generation)
-  }, [members])
-
-  // 기수를 고르면 그 기수에 있는 파트만 보여줍니다.
-  const memberParts = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          members
-            .flatMap((member) => member.memberships)
-            .filter(
-              (membership) =>
-                !generationFilter || membership.generation === generationFilter
-            )
-            .map((membership) => membership.part)
-            .filter((part): part is string => Boolean(part))
-        )
-      ).sort((a, b) => a.localeCompare(b)),
-    [generationFilter, members]
-  )
-
-  const filteredMembers = useMemo(() => {
-    const needle = normalizeSearch(query)
-
-    return members.filter((member) => {
-      if (!findMembership(member, generationFilter, partFilter)) {
-        return false
-      }
-      if (!needle) {
-        return true
-      }
-      return normalizeSearch(
-        [
-          displayName(member),
-          member.name,
-          member.firstName,
-          member.lastName,
-          member.firstNameKo,
-          member.lastNameKo,
-        ]
-          .filter(Boolean)
-          .join(' ')
-      ).includes(needle)
-    })
-  }, [generationFilter, members, partFilter, query])
 
   const allFilteredSelected =
     filteredMembers.length > 0 &&
@@ -256,7 +181,7 @@ export default function SessionPartParticipantsInput({
                       )
                     }}
                   >
-                    {displayName(member)}
+                    {memberDisplayName(member)}
                   </button>
                 )
               })}
@@ -303,7 +228,7 @@ export default function SessionPartParticipantsInput({
               if (
                 partFilter &&
                 !members.some((member) =>
-                  findMembership(member, generation, partFilter)
+                  findMembership(member.memberships, generation, partFilter)
                 )
               ) {
                 setPartFilter('')
@@ -361,10 +286,13 @@ export default function SessionPartParticipantsInput({
             >
               {filteredMembers.map((member) => {
                 const selected = selectedMembers.includes(member.id)
-                const memberName = displayName(member)
+                const memberName = memberDisplayName(member)
                 const membership =
-                  findMembership(member, generationFilter, partFilter) ??
-                  member.memberships[0]
+                  findMembership(
+                    member.memberships,
+                    generationFilter,
+                    partFilter
+                  ) ?? member.memberships[0]
                 const membershipLabel = [
                   membership?.generation,
                   membership?.part,
