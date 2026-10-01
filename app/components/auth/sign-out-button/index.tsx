@@ -1,6 +1,6 @@
 'use client'
 
-import signOutAction from '@/app/components/auth/sign-out-button/actions'
+import { signOutAction } from '@/app/components/auth/sign-out-button/actions'
 import { useFormStatus } from 'react-dom'
 import LoadingSpinner from '@/app/components/loading-spinner'
 

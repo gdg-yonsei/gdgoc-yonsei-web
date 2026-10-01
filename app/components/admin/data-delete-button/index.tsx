@@ -2,7 +2,7 @@ import type { AuthSession } from '@/auth'
 import handlePermission, {
   ResourceType,
 } from '@/lib/server/permission/handle-permission'
-import deleteResourceAction from '@/app/components/admin/data-delete-button/actions'
+import { deleteResourceAction } from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'

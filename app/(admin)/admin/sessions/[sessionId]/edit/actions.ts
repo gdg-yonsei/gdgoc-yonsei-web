@@ -1,32 +1,20 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { updateSession } from '@/lib/server/services/admin/sessions'
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parseSessionForm } from '@/lib/server/form-data/admin-forms'
+import { updateSession } from '@/lib/server/services/admin/sessions'
 
+/** 세션을 고치고 세션 상세로 이동한다. 첫 인자는 `bind`로 고정한다. */
 export async function updateSessionAction(
   sessionId: string,
-  _prevState: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await updateSession(
-    actor,
-    sessionId,
-    getSessionFormData(formData)
-  )
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath(`/admin/sessions/${sessionId}`))
+  return runAdminFormAction({
+    run: (actor) => updateSession(actor, sessionId, parseSessionForm(formData)),
+    redirectTo: `/admin/sessions/${sessionId}`,
+  })
 }

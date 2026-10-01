@@ -1,53 +1,55 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import { deleteResourceValidation } from '@/lib/validations/admin-api'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import {
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
 import { deleteGeneration } from '@/lib/server/services/admin/generations'
 import { deletePart } from '@/lib/server/services/admin/parts'
 import { deleteProject } from '@/lib/server/services/admin/projects'
 import { deleteSession } from '@/lib/server/services/admin/sessions'
+import type { Actor, ServiceResult } from '@/lib/server/services/admin/types'
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  deleteResourceValidation,
+  type DeleteResourceType,
+} from '@/lib/validations/admin-api'
 
-export default async function deleteResourceAction(
-  prev: { error: string },
+/**
+ * 리소스 종류별 삭제 서비스.
+ * 세션·프로젝트 ID는 UUID 문자열, 기수·파트 ID는 숫자이므로 여기서 변환한다.
+ */
+const deleteServices: Record<
+  DeleteResourceType,
+  (actor: Actor, id: string) => Promise<ServiceResult<unknown>>
+> = {
+  sessions: (actor: Actor, id: string) => deleteSession(actor, id),
+  projects: (actor: Actor, id: string) => deleteProject(actor, id),
+  generations: (actor: Actor, id: string) =>
+    deleteGeneration(actor, Number(id)),
+  parts: (actor: Actor, id: string) => deletePart(actor, Number(id)),
+}
+
+/**
+ * 상세 화면의 삭제 버튼이 호출하는 공용 삭제 액션.
+ * 폼의 `dataType`/`dataId`를 먼저 검증하고, 삭제 후 해당 리소스 목록으로 이동한다.
+ */
+export async function deleteResourceAction(
+  _prev: AdminFormState,
   formData: FormData
-) {
-  void prev
-
-  const validationResult = deleteResourceValidation.safeParse({
+): Promise<AdminFormState> {
+  const validation = deleteResourceValidation.safeParse({
     dataType: formData.get('dataType'),
     dataId: formData.get('dataId'),
   })
-
-  if (!validationResult.success) {
+  if (!validation.success) {
     return {
-      error: validationResult.error.issues[0]?.message ?? 'Validation failed',
+      error: validation.error.issues[0]?.message ?? 'Validation failed',
     }
   }
 
-  const { dataType, dataId } = validationResult.data
-
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result =
-    dataType === 'sessions'
-      ? await deleteSession(actor, dataId)
-      : dataType === 'projects'
-        ? await deleteProject(actor, dataId)
-        : dataType === 'generations'
-          ? await deleteGeneration(actor, Number(dataId))
-          : await deletePart(actor, Number(dataId))
-
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/' + dataType))
+  const { dataType, dataId } = validation.data
+  return runAdminFormAction({
+    run: (actor) => deleteServices[dataType](actor, dataId),
+    redirectTo: `/admin/${dataType}`,
+  })
 }

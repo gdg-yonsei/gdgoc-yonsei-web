@@ -222,7 +222,7 @@ describe('members CRUD server actions', () => {
   })
 
   it('approves pending member and maps role value', async () => {
-    const { default: acceptMemberAction } =
+    const { acceptMemberAction } =
       await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
@@ -241,14 +241,14 @@ describe('members CRUD server actions', () => {
   })
 
   it('deletes pending user from accept page', async () => {
-    const { deleteUserAction } =
+    const { deleteMemberAction } =
       await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
       userId: 'pending-2',
     })
 
-    await deleteUserAction({ error: '' }, formData)
+    await deleteMemberAction({ error: '' }, formData)
 
     expect(mockDelete).toHaveBeenCalled()
     expect(mockInvalidateMemberPublicCache).toHaveBeenCalledWith({

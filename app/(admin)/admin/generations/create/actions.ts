@@ -1,28 +1,19 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { createGeneration } from '@/lib/server/services/admin/generations'
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parseGenerationForm } from '@/lib/server/form-data/admin-forms'
+import { createGeneration } from '@/lib/server/services/admin/generations'
 
+/** 기수를 만들고 기수 목록으로 이동한다. */
 export async function createGenerationAction(
-  _prev: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await createGeneration(actor, getGenerationFormData(formData))
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  // generation 페이지로 이동
-  redirect(await getLocalizedAdminPath('/admin/generations'))
+  return runAdminFormAction({
+    run: (actor) => createGeneration(actor, parseGenerationForm(formData)),
+    redirectTo: '/admin/generations',
+  })
 }

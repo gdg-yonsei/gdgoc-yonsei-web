@@ -4,10 +4,8 @@ import { auth } from '@/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-/**
- * 로그아웃 액션
- */
-export default async function signOutAction() {
+/** 현재 세션을 끝내고 로그인 화면으로 이동한다. */
+export async function signOutAction() {
   await auth.api.signOut({ headers: await headers() })
   redirect('/auth/sign-in')
 }

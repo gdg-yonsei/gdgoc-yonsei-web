@@ -327,7 +327,7 @@ describe('projects CRUD server actions', () => {
       generationName: 'seed-gen',
     })
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

@@ -293,9 +293,8 @@ describe('refresh-all-data action', () => {
   it('denies cache refresh when the caller is not allowed on admin pages', async () => {
     mockHandlePermission.mockResolvedValue(false)
 
-    const revalidateAllDataAction = (
+    const { revalidateAllDataAction } =
       await import('@/app/components/admin/refresh-all-data-button/actions')
-    ).default
 
     await expect(revalidateAllDataAction()).rejects.toThrow('FORBIDDEN')
 
@@ -304,9 +303,8 @@ describe('refresh-all-data action', () => {
   })
 
   it('refreshes cache only for authorized admin users', async () => {
-    const revalidateAllDataAction = (
+    const { revalidateAllDataAction } =
       await import('@/app/components/admin/refresh-all-data-button/actions')
-    ).default
 
     await revalidateAllDataAction()
 

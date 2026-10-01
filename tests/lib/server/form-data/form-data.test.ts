@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
-import getAcceptMemberFormData from '@/lib/server/form-data/get-accept-member-form-data'
-import getDeleteMemberFormData from '@/lib/server/form-data/get-delete-member-form-data'
-import getGenerationFormData from '@/lib/server/form-data/get-generation-form-data'
-import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
-import getPartFormData from '@/lib/server/form-data/get-part-form-data'
-import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
-import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
+import {
+  parseAcceptMemberForm,
+  parseDeleteMemberForm,
+  parseGenerationForm,
+  parseMemberForm,
+  parsePartForm,
+  parseProjectForm,
+  parseSessionForm,
+} from '@/lib/server/form-data/admin-forms'
 
 function createFormData(entries: Record<string, string>) {
   const formData = new FormData()
@@ -24,7 +26,7 @@ describe('form-data parsers', () => {
       role: 'CORE',
     })
 
-    expect(getAcceptMemberFormData(formData)).toEqual({
+    expect(parseAcceptMemberForm(formData)).toEqual({
       userId: 'user-1',
       role: 'CORE',
     })
@@ -35,7 +37,7 @@ describe('form-data parsers', () => {
       userId: 'user-2',
     })
 
-    expect(getDeleteMemberFormData(formData)).toEqual({
+    expect(parseDeleteMemberForm(formData)).toEqual({
       userId: 'user-2',
     })
   })
@@ -47,7 +49,7 @@ describe('form-data parsers', () => {
       endDate: '2025-12-31',
     })
 
-    expect(getGenerationFormData(formData)).toEqual({
+    expect(parseGenerationForm(formData)).toEqual({
       name: '11th',
       startDate: '2025-01-01',
       endDate: '2025-12-31',
@@ -73,7 +75,7 @@ describe('form-data parsers', () => {
       profileImage: '/profile.png',
     })
 
-    expect(getMemberFormData(formData)).toEqual({
+    expect(parseMemberForm(formData)).toEqual({
       name: '홍길동',
       firstName: 'Gildong',
       firstNameKo: '길동',
@@ -101,7 +103,7 @@ describe('form-data parsers', () => {
       doubleBoardMembersList: JSON.stringify(['u3']),
     })
 
-    expect(getPartFormData(formData)).toEqual({
+    expect(parsePartForm(formData)).toEqual({
       name: 'Web',
       description: 'Web Part',
       generationId: 10,
@@ -120,7 +122,7 @@ describe('form-data parsers', () => {
       doubleBoardMembersList: 'invalid-json',
     })
 
-    expect(getPartFormData(formData)).toEqual({
+    expect(parsePartForm(formData)).toEqual({
       name: 'Web',
       description: 'Web Part',
       generationId: 10,
@@ -146,7 +148,7 @@ describe('form-data parsers', () => {
       participants: JSON.stringify(['u1', 'u2']),
     })
 
-    expect(getProjectFormData(formData)).toEqual({
+    expect(parseProjectForm(formData)).toEqual({
       name: 'Project',
       nameKo: '프로젝트',
       description: 'desc',
@@ -178,7 +180,7 @@ describe('form-data parsers', () => {
       participants: 'invalid-json',
     })
 
-    const result = getProjectFormData(formData)
+    const result = parseProjectForm(formData)
 
     expect(result.contentImages).toEqual([])
     expect(result.participants).toEqual([])
@@ -209,7 +211,7 @@ describe('form-data parsers', () => {
       displayOnWebsite: 'true',
     })
 
-    const result = getSessionFormData(formData)
+    const result = parseSessionForm(formData)
 
     expect(result).toMatchObject({
       name: 'Session',
@@ -258,7 +260,7 @@ describe('form-data parsers', () => {
       displayOnWebsite: 'false',
     })
 
-    expect(getSessionFormData(formData).type).toBe('Part Session')
+    expect(parseSessionForm(formData).type).toBe('Part Session')
   })
 
   it('returns empty participant array when participantId is invalid json', () => {
@@ -284,7 +286,7 @@ describe('form-data parsers', () => {
       displayOnWebsite: 'false',
     })
 
-    expect(getSessionFormData(formData).participantId).toEqual([])
+    expect(parseSessionForm(formData).participantId).toEqual([])
     expect(errorSpy).toHaveBeenCalled()
 
     errorSpy.mockRestore()

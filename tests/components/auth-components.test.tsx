@@ -18,7 +18,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/app/components/auth/sign-out-button/actions', () => ({
-  default: vi.fn(),
+  signOutAction: vi.fn(),
 }))
 
 import { authClient } from '@/lib/auth-client'

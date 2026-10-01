@@ -1,6 +1,6 @@
 'use client'
 
-import acceptMemberAction from '@/app/(admin)/admin/members/accept/actions'
+import { acceptMemberAction } from '@/app/(admin)/admin/members/accept/actions'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'

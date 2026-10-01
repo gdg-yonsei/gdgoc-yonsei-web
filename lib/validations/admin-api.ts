@@ -49,6 +49,9 @@ const deleteResourceTypeSchema = z.enum([
   'parts',
 ])
 
+/** 공용 삭제 버튼이 지울 수 있는 리소스 종류. */
+export type DeleteResourceType = z.infer<typeof deleteResourceTypeSchema>
+
 export const deleteResourceValidation = z
   .object({
     dataType: deleteResourceTypeSchema,

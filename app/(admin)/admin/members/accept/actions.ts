@@ -1,51 +1,37 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getAcceptMemberFormData from '@/lib/server/form-data/get-accept-member-form-data'
-import getDeleteMemberFormData from '@/lib/server/form-data/get-delete-member-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+import {
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import {
+  parseAcceptMemberForm,
+  parseDeleteMemberForm,
+} from '@/lib/server/form-data/admin-forms'
 import {
   approveMember,
   deleteMember,
 } from '@/lib/server/services/admin/members'
-import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
 
-export default async function acceptMemberAction(
-  _prev: { error: string },
+/** 가입 대기 사용자를 승인하고 역할을 부여한다. */
+export async function acceptMemberAction(
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await approveMember(actor, getAcceptMemberFormData(formData))
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/members/accept'))
+  return runAdminFormAction({
+    run: (actor) => approveMember(actor, parseAcceptMemberForm(formData)),
+    redirectTo: '/admin/members/accept',
+  })
 }
 
-export async function deleteUserAction(
-  _prev: { error: string },
+/** 가입 대기 사용자를 거절(계정 삭제)한다. */
+export async function deleteMemberAction(
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await deleteMember(
-    actor,
-    getDeleteMemberFormData(formData).userId ?? ''
-  )
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/members/accept'))
+  return runAdminFormAction({
+    run: (actor) =>
+      deleteMember(actor, parseDeleteMemberForm(formData).userId ?? ''),
+    redirectTo: '/admin/members/accept',
+  })
 }

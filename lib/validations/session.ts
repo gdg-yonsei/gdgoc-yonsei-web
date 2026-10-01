@@ -1,14 +1,23 @@
 import { z } from 'zod'
 
-const SessionTypeEnum = z.enum(['Part Session', 'General Session'])
+/** 세션 종류. DB `sessionType` enum과 같은 값이어야 한다. */
+export const SESSION_TYPES = ['Part Session', 'General Session'] as const
 
-const ActivityCategoryEnum = z.enum([
+/** 활동 분류. DB `activityCategory` enum과 같은 값이어야 한다. */
+export const ACTIVITY_CATEGORIES = [
   'tech_talk',
   'part_session',
   'hackathon',
   'demo_day',
   'devrel',
-])
+] as const
+
+export type SessionType = (typeof SESSION_TYPES)[number]
+export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number]
+
+const SessionTypeEnum = z.enum(SESSION_TYPES)
+
+const ActivityCategoryEnum = z.enum(ACTIVITY_CATEGORIES)
 
 export const sessionValidation = z
   .object({

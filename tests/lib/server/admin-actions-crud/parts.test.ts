@@ -285,7 +285,7 @@ describe('parts CRUD server actions', () => {
   )
 
   it('deletes part from shared delete action path', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

@@ -106,7 +106,7 @@ describe('delete-resource server actions', () => {
   })
 
   it('rejects delete request when dataId format is invalid', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -123,7 +123,7 @@ describe('delete-resource server actions', () => {
     // CORE 는 파트를 삭제할 수 없다(LEAD 전용).
     mockGetUserRole.mockResolvedValue('CORE')
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -145,7 +145,7 @@ describe('delete-resource server actions', () => {
     })
     mockDeleteR2Images.mockResolvedValue(false)
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -159,7 +159,7 @@ describe('delete-resource server actions', () => {
   })
 
   it('deletes part resource when request form is valid', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -187,7 +187,7 @@ describe('delete-resource server actions', () => {
       generationName: '10th',
     })
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

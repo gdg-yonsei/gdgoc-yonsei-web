@@ -1,36 +1,29 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getSessionFormData from '@/lib/server/form-data/get-session-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { createSession } from '@/lib/server/services/admin/sessions'
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  requireCreationScope,
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parseSessionForm } from '@/lib/server/form-data/admin-forms'
+import { createSession } from '@/lib/server/services/admin/sessions'
 
+/**
+ * 현재 선택한 기수에 세션을 만들고 세션 목록으로 이동한다.
+ * 세션 폼에는 기수 필드가 없으므로, 고른 파트가 선택한 기수에 속하는지는 서비스가 확인한다.
+ */
 export async function createSessionAction(
-  _prev: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  // 웹 화면은 현재 선택된 기수에서만 데이터를 만든다.
-  const resolvedScope = await resolveAdminGenerationScope(actor.userId)
-  if (resolvedScope.scope?.kind !== 'generation') {
-    return { error: 'Select a specific generation scope before creating data.' }
-  }
-
-  const result = await createSession(actor, getSessionFormData(formData), {
-    expectedGenerationId: resolvedScope.scope.generationId,
+  return runAdminFormAction({
+    run: async (actor) => {
+      const scope = await requireCreationScope(actor)
+      if (!scope.ok) return scope
+      return createSession(actor, parseSessionForm(formData), {
+        expectedGenerationId: scope.data,
+      })
+    },
+    redirectTo: '/admin/sessions',
   })
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/sessions'))
 }
