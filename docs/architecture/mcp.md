@@ -20,8 +20,8 @@ when a client renames its menus.
 | Claude Code             | `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp`, then `/mcp` → Authenticate  |
 | Codex (CLI / IDE / app) | `codex mcp add gyms --url https://gdgoc.yonsei.ac.kr/api/mcp`, then `codex mcp login gyms`             |
 | Claude web / Desktop    | Customize → Connectors → + → Add custom connector → paste the endpoint URL                             |
-| ChatGPT web             | Settings → Security and login → Developer mode, then Apps → Create (OAuth), use via + → Developer mode |
-| ChatGPT Desktop         | Register on the web first; developer-mode apps cannot be created in the desktop app                    |
+| ChatGPT web             | Settings → Security and login → Developer mode, then chatgpt.com/plugins → + → Connection URL (`/mcp`) |
+| ChatGPT Desktop         | Create the connection on the web first, then add it from the tools menu in a new chat                  |
 | Cursor                  | `mcp.json`: `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }`            |
 
 The client opens a browser, you sign in with the usual GitHub / Google /
