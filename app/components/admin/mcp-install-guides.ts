@@ -111,36 +111,36 @@ export function getMcpInstallGuides(
         name: 'ChatGPT (웹)',
         steps: [
           {
-            text: 'chatgpt.com 에서 Settings → Security and login 으로 이동해 Developer mode 를 켭니다. (Plus, Pro, Business, Enterprise, Edu)',
+            text: 'chatgpt.com 에서 Settings → Security and login 으로 이동해 Developer mode 를 켭니다.',
           },
           {
-            text: '설정의 Apps(앱) 화면에서 + 또는 Create 를 누릅니다.',
+            text: 'chatgpt.com/plugins (Plugins) 로 이동해 + 버튼을 누릅니다.',
           },
           {
-            text: '이름은 GYMS, MCP Server URL 에 아래 주소를 넣고 Authentication 은 OAuth 를 고른 뒤 만듭니다.',
+            text: '이름은 GYMS 로 쓰고 설명을 입력합니다. Connection 의 MCP 서버 URL 에는 /mcp 경로까지 포함된 아래 주소를 넣습니다.',
             code: url,
           },
           {
-            text: 'GYMS 계정으로 로그인하고 권한을 고릅니다.',
+            text: '연결을 만들면 GYMS 계정 로그인과 권한 선택 화면이 열립니다. 로그인한 뒤 서버에서 불러온 도구 목록을 확인합니다.',
           },
           {
-            text: '채팅 입력창의 + → Developer mode 에서 GYMS 를 골라 사용합니다.',
+            text: '새 대화를 열고 도구 메뉴(입력창의 +)에서 GYMS 연결을 추가해 사용합니다.',
           },
         ],
-        note: 'Developer mode 에서는 쓰기 도구도 쓸 수 있습니다. ChatGPT 가 쓰기 작업 전에 확인을 요청하면 내용을 꼭 확인하세요.',
+        note: 'Developer mode 는 계정·워크스페이스 정책에 따라 쓸 수 없을 수 있고, 쓰기 도구도 쓸 수 있습니다. ChatGPT 가 쓰기 작업 전에 확인을 요청하면 내용을 꼭 확인하세요. 도구가 바뀐 뒤에는 Plugins 에서 GYMS 연결을 열어 Refresh 를 누르세요.',
       },
       {
         id: 'chatgpt-desktop',
         name: 'ChatGPT Desktop',
         steps: [
           {
-            text: 'Developer mode 앱은 웹에서만 만들 수 있습니다. 먼저 ChatGPT (웹) 탭의 방법대로 GYMS 앱을 등록하세요.',
+            text: 'MCP 연결은 웹에서 만드는 것을 권장합니다. 먼저 ChatGPT (웹) 탭의 방법대로 GYMS 연결을 등록하세요.',
           },
           {
-            text: '같은 계정으로 로그인한 데스크톱 앱에서 채팅 입력창의 + → Developer mode 를 열고 GYMS 를 고릅니다.',
+            text: '같은 계정으로 로그인한 데스크톱 앱에서 새 대화를 열고 도구 메뉴에서 GYMS 연결을 추가합니다.',
           },
         ],
-        note: '앱 버전에 따라 데스크톱에서 Developer mode 가 보이지 않을 수 있습니다. 그럴 때는 웹에서 사용하세요.',
+        note: '앱 버전에 따라 데스크톱에서 GYMS 연결이 보이지 않을 수 있습니다. 그럴 때는 웹에서 사용하세요.',
       },
     ]
   }
@@ -224,36 +224,36 @@ export function getMcpInstallGuides(
       name: 'ChatGPT (web)',
       steps: [
         {
-          text: 'On chatgpt.com, open Settings → Security and login and turn on Developer mode. (Plus, Pro, Business, Enterprise, Edu)',
+          text: 'On chatgpt.com, open Settings → Security and login and turn on Developer mode.',
         },
         {
-          text: 'On the Apps page in Settings, click + or Create.',
+          text: 'Go to chatgpt.com/plugins (Plugins) and click the + button.',
         },
         {
-          text: 'Name it GYMS, paste this URL as the MCP Server URL, choose OAuth for Authentication and create it.',
+          text: 'Name it GYMS and add a description. Under Connection, paste this URL as the MCP server URL, including the /mcp path.',
           code: url,
         },
         {
-          text: 'Sign in with your GYMS account and choose permissions.',
+          text: 'Create the connection, sign in with your GYMS account and choose permissions, then review the tools discovered from the server.',
         },
         {
-          text: 'In a chat, open + → Developer mode and select GYMS.',
+          text: 'Start a new chat and add the GYMS connection from the tools menu (+ in the composer).',
         },
       ],
-      note: 'Developer mode can run write tools. Read the details when ChatGPT asks you to confirm a write.',
+      note: 'Developer mode may be unavailable depending on your account or workspace policy, and it can run write tools. Read the details when ChatGPT asks you to confirm a write. After the tools change, open the GYMS connection in Plugins and click Refresh.',
     },
     {
       id: 'chatgpt-desktop',
       name: 'ChatGPT Desktop',
       steps: [
         {
-          text: 'Developer mode apps can only be created on the web. Register GYMS first by following the ChatGPT (web) tab.',
+          text: 'We recommend creating the MCP connection on the web. Register GYMS first by following the ChatGPT (web) tab.',
         },
         {
-          text: 'In the desktop app, signed in with the same account, open + → Developer mode in a chat and select GYMS.',
+          text: 'In the desktop app, signed in with the same account, start a new chat and add the GYMS connection from the tools menu.',
         },
       ],
-      note: 'Some app versions do not show Developer mode on desktop yet. If so, use ChatGPT on the web.',
+      note: 'Some app versions may not show the GYMS connection on desktop. If so, use ChatGPT on the web.',
     },
   ]
 }
