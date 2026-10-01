@@ -20,6 +20,7 @@ import {
   getSessions,
   type AdminSessionListItem,
 } from '@/lib/server/fetcher/admin/get-sessions'
+import { runAfterResponse } from '@/lib/server/after-response'
 import { sendEmails } from '@/lib/server/email'
 import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
@@ -336,22 +337,23 @@ export async function createSession(
 
   // endAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
   if (internalOpen && endAt > sessionWallClockNow()) {
-    try {
-      await sendNewSessionEmails({
-        sessionId,
-        partId: Number(partId),
-        participantId,
-        name,
-        locationKo,
-        startAt,
-        endAt,
-        maxCapacity,
-      })
-    } catch (e) {
-      // 세션은 이미 만들어졌다 — 메일 실패로 생성을 실패 처리하면
-      // 호출자가 재시도해 세션이 중복된다.
-      logger.error('admin.sessions.create.email', e, { sessionId })
-    }
+    // 세션은 이미 만들어졌으므로 메일은 응답 뒤에 보낸다. 메일 실패를 생성 실패로
+    // 처리하면 호출자가 재시도해 세션이 중복되므로 로그만 남긴다.
+    runAfterResponse(
+      'admin.sessions.create.email',
+      () =>
+        sendNewSessionEmails({
+          sessionId,
+          partId: Number(partId),
+          participantId,
+          name,
+          locationKo,
+          startAt,
+          endAt,
+          maxCapacity,
+        }),
+      { sessionId }
+    )
   }
 
   return ok({ id: sessionId })
@@ -582,44 +584,41 @@ export async function registerForSession(
     return fail('INTERNAL', 'Registration failed')
   }
 
-  // 알림 메일은 트랜잭션 커밋 뒤에 보낸다 — 트랜잭션 안에서 외부 API 를
-  // 호출하면 메일 지연이 잠금을 붙잡고, 실패 시 등록이 롤백된다.
-  if (sessionData.author?.email) {
-    try {
-      const { default: NewParticipant } =
-        await import('@/emails/new-participant')
-      const userData = await db.query.users.findFirst({
-        where: eq(users.id, actor.userId),
-      })
-      await sendEmails([
-        {
-          to: sessionData.author.email,
-          subject: `[GDGoC Yonsei] 새로운 참가자가 등록했습니다.`,
-          react: NewParticipant({
-            session: {
-              name: sessionData.nameKo,
-              location: sessionData.locationKo!,
-              startAt: sessionData.startAt
-                ? sessionData.startAt?.toISOString()
-                : 'TBD',
-              endAt: sessionData.endAt
-                ? sessionData.endAt?.toISOString()
-                : 'TBD',
-              leftCapacity: sessionData.maxCapacity
-                ? sessionData.maxCapacity - sessionData.userToSession.length - 1
-                : 0,
-            },
-            participantName: userData?.name ? userData?.name : '',
-          }),
-        },
-      ])
-    } catch (e) {
-      // 등록은 이미 성공 — 메일 실패는 로깅만 한다.
-      logger.error('admin.sessions.register.email', e, {
-        sessionId,
-        userId: actor.userId,
-      })
-    }
+  // 알림 메일은 트랜잭션 커밋 뒤, 응답을 보낸 다음에 보낸다. 트랜잭션 안에서 외부
+  // API를 호출하면 메일 지연이 잠금을 붙잡고, 실패 시 등록까지 롤백되기 때문이다.
+  const authorEmail = sessionData.author?.email
+  if (authorEmail) {
+    runAfterResponse(
+      'admin.sessions.register.email',
+      async () => {
+        const { default: NewParticipant } =
+          await import('@/emails/new-participant')
+        const userData = await db.query.users.findFirst({
+          where: eq(users.id, actor.userId),
+        })
+        await sendEmails([
+          {
+            to: authorEmail,
+            subject: `[GDGoC Yonsei] 새로운 참가자가 등록했습니다.`,
+            react: NewParticipant({
+              session: {
+                name: sessionData.nameKo,
+                location: sessionData.locationKo!,
+                startAt: sessionData.startAt?.toISOString() ?? 'TBD',
+                endAt: sessionData.endAt?.toISOString() ?? 'TBD',
+                leftCapacity: sessionData.maxCapacity
+                  ? sessionData.maxCapacity -
+                    sessionData.userToSession.length -
+                    1
+                  : 0,
+              },
+              participantName: userData?.name ?? '',
+            }),
+          },
+        ])
+      },
+      { sessionId, userId: actor.userId }
+    )
   }
 
   return ok({ sessionId })

@@ -30,24 +30,27 @@ export default async function AdminLayout({
 }: {
   children: ReactNode
 }) {
-  const locale = await getAdminLocale()
+  const [locale, session] = await Promise.all([
+    getAdminLocale(),
+    getAuthSession(),
+  ])
   const messages = getAdminMessages(locale)
 
-  /** 사용자가 로그인 되어 있는지 확인 */
-  const session = await getAuthSession()
-  if (!session?.user?.id) {
+  // 로그인하지 않았으면 로그인 화면으로, 가입 승인 전이면 403.
+  const userId = session?.user?.id
+  if (!userId) {
     redirect('/auth/sign-in')
   }
-  // 인증되지 않은 사용자의 경우 접근 금지
-  if ((await getUserRole(session?.user?.id)) === 'UNVERIFIED') {
+  if ((await getUserRole(userId)) === 'UNVERIFIED') {
     forbidden()
   }
 
-  // 사용자의 권한에 따라 네비게이션 목록을 가져옴
-  const navigations = await getAdminNavigationItems(session?.user?.id, locale)
-  const resolvedScope = await resolveAdminGenerationScope(session.user.id)
-
-  const cookieStore = await cookies()
+  // 역할 조회는 요청 단위로 캐시되므로 아래 작업들은 서로 기다릴 필요가 없다.
+  const [navigations, resolvedScope, cookieStore] = await Promise.all([
+    getAdminNavigationItems(userId, locale),
+    resolveAdminGenerationScope(userId),
+    cookies(),
+  ])
   const theme = normalizeAdminTheme(cookieStore.get(ADMIN_THEME_COOKIE)?.value)
 
   return (
