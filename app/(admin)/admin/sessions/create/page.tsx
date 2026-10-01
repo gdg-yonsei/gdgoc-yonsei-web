@@ -1,7 +1,7 @@
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'

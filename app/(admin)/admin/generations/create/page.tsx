@@ -1,5 +1,5 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import { createGenerationAction } from '@/app/(admin)/admin/generations/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'

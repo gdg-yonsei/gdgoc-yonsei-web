@@ -2,9 +2,9 @@
 
 import { useTransition } from 'react'
 import { KeyIcon } from '@heroicons/react/24/outline'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { useAtom } from 'jotai'
-import { isAuthenticatingState } from '@/lib/atoms'
+import { isAuthenticatingState } from '@/lib/admin/atoms'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 

@@ -8,9 +8,9 @@ vi.mock('@/lib/hooks/use-reduced-motion', () => ({
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en/project',
 }))
-import LoadingSpinner from '@/app/components/loading-spinner'
-import UserProfileImage from '@/app/components/user-profile-image'
-import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
+import UserProfileImagePreview from '@/app/components/admin/user-profile-image-preview'
 import Footer from '@/app/components/footer'
 
 describe('common components', () => {
@@ -151,7 +151,7 @@ describe('common components', () => {
     }))
 
     const { default: BackToPageButton } =
-      await import('@/app/components/back-to-page-button')
+      await import('@/app/components/admin/back-to-page-button')
 
     const user = userEvent.setup()
     render(<BackToPageButton />)

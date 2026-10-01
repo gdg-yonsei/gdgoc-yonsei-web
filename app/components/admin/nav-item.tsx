@@ -14,7 +14,7 @@ import {
 } from '@heroicons/react/24/outline'
 import type { ComponentType, SVGProps } from 'react'
 import { useSetAtom } from 'jotai'
-import { menuBarState } from '@/lib/atoms'
+import { menuBarState } from '@/lib/admin/atoms'
 import { isLocale } from '@/lib/i18n'
 import type {
   NavigationItem,

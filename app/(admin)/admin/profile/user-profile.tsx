@@ -1,5 +1,5 @@
 import { getAuthSession } from '@/auth'
-import UserProfileImage from '@/app/components/user-profile-image'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { notFound } from 'next/navigation'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'

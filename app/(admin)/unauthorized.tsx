@@ -1,4 +1,4 @@
-import BackToPageButton from '@/app/components/back-to-page-button'
+import BackToPageButton from '@/app/components/admin/back-to-page-button'
 
 export default function Unauthorized() {
   return (

@@ -3,7 +3,7 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import { notFound } from 'next/navigation'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { registerSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/register/actions'
 import { formatUserName } from '@/lib/format/user-name'

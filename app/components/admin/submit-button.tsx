@@ -1,9 +1,9 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { useAtom } from 'jotai'
-import { isLoadingState } from '@/lib/atoms'
+import { isLoadingState } from '@/lib/admin/atoms'
 import { ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'

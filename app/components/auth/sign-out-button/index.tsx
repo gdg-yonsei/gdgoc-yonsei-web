@@ -2,7 +2,7 @@
 
 import { signOutAction } from '@/app/components/auth/sign-out-button/actions'
 import { useFormStatus } from 'react-dom'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 
 /**
  * 로그아웃 form submit 버튼

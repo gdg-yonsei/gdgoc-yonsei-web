@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 

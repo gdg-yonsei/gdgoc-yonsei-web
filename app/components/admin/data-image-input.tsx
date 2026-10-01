@@ -3,7 +3,7 @@
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
-import { uploadSingleImageState } from '@/lib/atoms'
+import { uploadSingleImageState } from '@/lib/admin/atoms'
 import { deleteUploadedImage, uploadSingleImage } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 

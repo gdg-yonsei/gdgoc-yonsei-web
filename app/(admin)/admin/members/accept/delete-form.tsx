@@ -1,6 +1,6 @@
 'use client'
 
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import { deleteMemberAction } from '@/app/(admin)/admin/members/accept/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'

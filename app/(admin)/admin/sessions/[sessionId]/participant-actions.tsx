@@ -1,6 +1,6 @@
 'use client'
 
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
 import {
   removeParticipantAction,

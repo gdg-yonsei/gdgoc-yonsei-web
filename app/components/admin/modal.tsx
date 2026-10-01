@@ -2,7 +2,7 @@
 
 import { useAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
-import { modalState } from '@/lib/atoms'
+import { modalState } from '@/lib/admin/atoms'
 import { AnimatePresence, motion } from 'motion/react'
 import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'

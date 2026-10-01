@@ -1,7 +1,7 @@
 'use client'
 
 import { useAtom } from 'jotai'
-import { menuBarState } from '@/lib/atoms'
+import { menuBarState } from '@/lib/admin/atoms'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'

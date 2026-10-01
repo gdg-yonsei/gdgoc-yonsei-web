@@ -8,7 +8,7 @@ import {
   uploadMultipleImagesState,
   uploadProfileImageState,
   uploadSingleImageState,
-} from '@/lib/atoms'
+} from '@/lib/admin/atoms'
 
 describe('shared jotai atoms', () => {
   it('initializes primitive atoms with expected defaults', () => {

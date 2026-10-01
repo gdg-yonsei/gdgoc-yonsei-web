@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { useAtom } from 'jotai'
-import { isAuthenticatingState } from '@/lib/atoms'
+import { isAuthenticatingState } from '@/lib/admin/atoms'
 import Google from '@/app/components/svg/google'
 
 /**

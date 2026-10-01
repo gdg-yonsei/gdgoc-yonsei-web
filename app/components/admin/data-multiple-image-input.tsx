@@ -4,7 +4,7 @@ import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
-import { uploadMultipleImagesState } from '@/lib/atoms'
+import { uploadMultipleImagesState } from '@/lib/admin/atoms'
 import { uploadMultipleImages } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 

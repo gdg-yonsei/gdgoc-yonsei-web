@@ -2,10 +2,10 @@
 
 import { useRef, useState } from 'react'
 import { useAtom } from 'jotai'
-import { uploadProfileImageState } from '@/lib/atoms'
+import { uploadProfileImageState } from '@/lib/admin/atoms'
 import { uploadProfileImage } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
-import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
+import UserProfileImagePreview from '@/app/components/admin/user-profile-image-preview'
 import SelectImageButton from '@/app/(admin)/admin/members/[memberId]/edit/select-image-button'
 
 /**

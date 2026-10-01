@@ -2,7 +2,7 @@
 
 import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
-import { menuBarState } from '@/lib/atoms'
+import { menuBarState } from '@/lib/admin/atoms'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**

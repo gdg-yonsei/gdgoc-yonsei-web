@@ -1,4 +1,4 @@
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import { motion } from 'motion/react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'

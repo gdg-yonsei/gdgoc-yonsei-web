@@ -4,7 +4,7 @@ import { formatUserName } from '@/lib/format/user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getAuthSession } from '@/auth'
-import UserProfileImage from '@/app/components/user-profile-image'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import {
   getAdminLocale,

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Link from 'next/link'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import MenuBar from '@/app/components/admin/menu-bar'
 import ToggleMenubarButton from '@/app/components/admin/toggle-menubar-button'
 

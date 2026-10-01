@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import UserProfileImage from '@/app/components/user-profile-image'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
 import type { AdminColumn } from '@/app/components/admin/data-table'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'

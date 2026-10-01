@@ -14,7 +14,7 @@ import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-uploa
 import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/member-role-manager'
 import DataInput from '@/app/components/admin/data-input'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'

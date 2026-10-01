@@ -1,4 +1,4 @@
-import BackToPageButton from '@/app/components/back-to-page-button'
+import BackToPageButton from '@/app/components/admin/back-to-page-button'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 

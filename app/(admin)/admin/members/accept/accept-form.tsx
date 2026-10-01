@@ -2,7 +2,7 @@
 
 import { acceptMemberAction } from '@/app/(admin)/admin/members/accept/actions'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'

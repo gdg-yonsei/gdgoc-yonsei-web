@@ -1,5 +1,5 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { createProjectAction } from '@/app/(admin)/admin/projects/create/actions'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
