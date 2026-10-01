@@ -28,6 +28,7 @@ import {
 } from '@/lib/server/services/admin/types'
 import { getGenerationNamesForUserId } from '@/lib/server/services/admin/cache-context'
 import { acceptMemberValidation } from '@/lib/validations/accept-member'
+import { updateMemberProfileImageValidation } from '@/lib/validations/admin-api'
 import { memberValidation } from '@/lib/validations/member'
 
 export type MemberInput = z.input<typeof memberValidation>
@@ -266,6 +267,39 @@ export async function updateMember(
       memberId,
     })
     return fail('INTERNAL', 'DB Update Error')
+  }
+
+  return ok({ id: memberId })
+}
+
+/**
+ * 멤버의 프로필 이미지 URL만 바꾼다(관리자 화면의 이미지 업로드 버튼).
+ * 권한 규칙은 멤버 정보 수정과 같고, 권한을 먼저 확인한 뒤 입력을 검증한다.
+ */
+export async function updateMemberProfileImage(
+  actor: Actor,
+  memberId: string,
+  input: unknown
+): Promise<ServiceResult<{ id: string }>> {
+  const editable = await authorizeMemberEdit(actor, memberId)
+  if (!editable.ok) return editable
+
+  const parsed = updateMemberProfileImageValidation.safeParse(input)
+  if (!parsed.success) return fromZodError(parsed.error)
+  const { profileImage } = parsed.data
+
+  try {
+    const generationNames = await getGenerationNamesForUserId(memberId)
+
+    await db
+      .update(users)
+      .set({ image: profileImage })
+      .where(eq(users.id, memberId))
+
+    invalidateMemberPublicCache({ memberId, generationNames })
+  } catch (error) {
+    logger.error('api.admin.members.profile-image', error, { memberId })
+    return fail('INTERNAL', 'Failed to update the profile image')
   }
 
   return ok({ id: memberId })
