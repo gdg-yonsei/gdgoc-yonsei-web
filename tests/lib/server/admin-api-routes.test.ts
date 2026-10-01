@@ -20,12 +20,13 @@ vi.mock('@/lib/server/permission/handle-permission', () => ({
   default: mockHandlePermission,
 }))
 
-vi.mock('@/lib/server/get-pre-signed-url', () => ({
-  default: mockGetPreSignedUrl,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  presignImageUpload: mockGetPreSignedUrl,
 }))
 
-vi.mock('@/lib/server/r2-client', () => ({
-  default: {
+vi.mock('@/lib/server/storage/r2-client', () => ({
+  r2Client: {
     send: mockR2Send,
   },
 }))
@@ -45,7 +46,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: mockInvalidateMemberPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: mockGetGenerationNamesForUserId,
 }))
 

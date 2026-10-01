@@ -6,13 +6,12 @@ import db from '@/db'
 import { projects } from '@/db/schema/projects'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import {
-  deleteRemovedR2Images,
   insertRowsIfAny,
   replaceRelationRows,
   stripHtmlCharacters,
-} from '@/lib/server/actions/admin'
+} from '@/lib/server/services/admin/shared'
+import { deleteImages, deleteRemovedImages } from '@/lib/server/storage/r2'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
-import deleteR2Images from '@/lib/server/delete-r2-images'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import {
   getProjects,
@@ -20,7 +19,7 @@ import {
 } from '@/lib/server/fetcher/admin/get-projects'
 import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
+import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import {
   authorize,
   canAccessGeneration,
@@ -37,8 +36,8 @@ import {
 import {
   getGenerationNameById,
   getProjectCacheContext,
-} from '@/lib/server/services/cache-context'
-import { syncProjectTags } from '@/lib/server/services/project-tags'
+} from '@/lib/server/services/admin/cache-context'
+import { syncProjectTags } from '@/lib/server/services/admin/project-tags'
 import { projectValidation } from '@/lib/validations/project'
 
 export type ProjectInput = z.input<typeof projectValidation>
@@ -271,7 +270,7 @@ export async function updateProject(
       return fail('NOT_FOUND', NOT_FOUND)
     }
 
-    await deleteRemovedR2Images({
+    await deleteRemovedImages({
       previousImages: prevImages.images,
       nextImages: contentImages,
       previousMainImage: prevImages.mainImage,
@@ -361,7 +360,7 @@ export async function deleteProject(
       normalizeR2ImageObjectKey(projectImageList.mainImage, 'projects'),
     ].filter(Boolean) as string[]
 
-    if (!(await deleteR2Images(projectImageKeys))) {
+    if (!(await deleteImages(projectImageKeys))) {
       return fail('INTERNAL', 'R2 Image Delete Error')
     }
 

@@ -26,7 +26,7 @@ import {
   type Role,
   type ServiceResult,
 } from '@/lib/server/services/admin/types'
-import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context'
+import { getGenerationNamesForUserId } from '@/lib/server/services/admin/cache-context'
 import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { memberValidation } from '@/lib/validations/member'
 

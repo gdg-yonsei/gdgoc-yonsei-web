@@ -1,11 +1,11 @@
 import 'server-only'
 
-import { getImageEnv } from '@/lib/server/env'
 import { logger } from '@/lib/server/logger'
 import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
-} from '@/lib/server/r2-object-key'
+  publicImageUrl,
+} from '@/lib/server/storage/object-key'
 import { authorize } from '@/lib/server/services/admin/authorize'
 import {
   fail,
@@ -23,10 +23,10 @@ import {
   PRESIGNED_UPLOAD_TTL_SECONDS,
   deleteImage,
   headImage,
-  presignImagePut,
+  presignSizedImageUpload,
   readImageHead,
   streamImageToR2,
-} from '@/lib/server/uploads/r2-upload'
+} from '@/lib/server/storage/r2'
 import {
   UploadError,
   fetchPublicImage,
@@ -92,10 +92,6 @@ function authorizeTarget(
   return target === 'users'
     ? authorize(actor, 'put', 'members', actor.userId)
     : authorize(actor, 'post', target)
-}
-
-function publicUrl(key: string) {
-  return `${getImageEnv().NEXT_PUBLIC_IMAGE_URL.trim().replace(/\/+$/, '')}/${key}`
 }
 
 function newObjectKey(target: ImageTarget, type: DetectedImageType) {
@@ -235,7 +231,7 @@ export async function createImageUpload(
   })
   if (!started.ok) return started
 
-  const uploadUrl = await presignImagePut(
+  const uploadUrl = await presignSizedImageUpload(
     objectKey,
     input.mimeType,
     input.sizeBytes
@@ -321,7 +317,7 @@ export async function completeImageUpload(
     )
   }
   return ok({
-    url: publicUrl(key),
+    url: publicImageUrl(key),
     objectKey: key,
     sizeBytes,
     contentType: IMAGE_TYPE_MIME[detected],
@@ -416,7 +412,7 @@ export async function importImageFromUrl(
       )
     }
     return ok({
-      url: publicUrl(key),
+      url: publicImageUrl(key),
       objectKey: key,
       sizeBytes: stored.sizeBytes,
       contentType: remote.contentType,

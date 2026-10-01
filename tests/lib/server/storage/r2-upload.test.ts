@@ -1,8 +1,8 @@
 import { S3Client } from '@aws-sdk/client-s3'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/lib/server/r2-client', () => ({
-  default: new S3Client({
+vi.mock('@/lib/server/storage/r2-client', () => ({
+  r2Client: new S3Client({
     region: 'auto',
     endpoint: 'https://account.r2.cloudflarestorage.com',
     credentials: { accessKeyId: 'key', secretAccessKey: 'secret' },
@@ -28,9 +28,9 @@ vi.mock('@aws-sdk/lib-storage', () => ({
 }))
 
 import {
-  presignImagePut,
+  presignSizedImageUpload,
   streamImageToR2,
-} from '@/lib/server/uploads/r2-upload'
+} from '@/lib/server/storage/r2'
 
 function streamOf(...chunks: Uint8Array[]) {
   return new ReadableStream<Uint8Array>({
@@ -41,10 +41,10 @@ function streamOf(...chunks: Uint8Array[]) {
   })
 }
 
-describe('presignImagePut', () => {
+describe('presignSizedImageUpload', () => {
   it('signs content-type and content-length so R2 rejects other sizes', async () => {
     const url = new URL(
-      await presignImagePut('sessions/a.png', 'image/png', 1234)
+      await presignSizedImageUpload('sessions/a.png', 'image/png', 1234)
     )
     const signed = url.searchParams.get('X-Amz-SignedHeaders') ?? ''
     expect(signed.split(';')).toEqual(

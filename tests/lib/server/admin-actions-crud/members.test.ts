@@ -44,7 +44,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: mockInvalidateMemberPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: mockGetGenerationNamesForUserId,
 }))
 

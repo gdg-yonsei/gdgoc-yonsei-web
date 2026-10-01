@@ -58,7 +58,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateProjectPublicCache: vi.fn(),
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
   getSessionCacheContext: mockGetSessionCacheContext,
   getProjectCacheContext: vi.fn(),
@@ -91,14 +91,15 @@ vi.mock('@/db', () => ({
   },
 }))
 
-vi.mock('@/lib/server/r2-client', () => ({
-  default: {
+vi.mock('@/lib/server/storage/r2-client', () => ({
+  r2Client: {
     send: mockR2Send,
   },
 }))
 
-vi.mock('@/lib/server/delete-r2-images', () => ({
-  default: mockDeleteR2Images,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  deleteImages: mockDeleteR2Images,
 }))
 
 vi.mock('resend', () => ({

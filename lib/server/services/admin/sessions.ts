@@ -9,13 +9,12 @@ import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { users } from '@/db/schema/users'
 import {
-  deleteRemovedR2Images,
   insertRowsIfAny,
   replaceRelationRows,
   stripHtmlCharacters,
-} from '@/lib/server/actions/admin'
+} from '@/lib/server/services/admin/shared'
+import { deleteImages, deleteRemovedImages } from '@/lib/server/storage/r2'
 import { invalidateSessionPublicCache } from '@/lib/server/cache'
-import deleteR2Images from '@/lib/server/delete-r2-images'
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import {
   getSessions,
@@ -23,7 +22,7 @@ import {
 } from '@/lib/server/fetcher/admin/get-sessions'
 import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
+import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import {
   authorize,
   canAccessGeneration,
@@ -41,7 +40,7 @@ import {
 import {
   getGenerationNameForPartId,
   getSessionCacheContext,
-} from '@/lib/server/services/cache-context'
+} from '@/lib/server/services/admin/cache-context'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 import { sessionValidation } from '@/lib/validations/session'
 
@@ -450,7 +449,7 @@ export async function updateSession(
       return fail('NOT_FOUND', NOT_FOUND)
     }
 
-    await deleteRemovedR2Images({
+    await deleteRemovedImages({
       previousImages: prevImages.images,
       nextImages: contentImages,
       previousMainImage: prevImages.mainImage,
@@ -757,7 +756,7 @@ export async function deleteSession(
       normalizeR2ImageObjectKey(sessionImageList.mainImage, 'sessions'),
     ].filter(Boolean) as string[]
 
-    if (!(await deleteR2Images(sessionImageKeys))) {
+    if (!(await deleteImages(sessionImageKeys))) {
       return fail('INTERNAL', 'R2 Image Delete Error')
     }
     await db.delete(sessions).where(eq(sessions.id, sessionId))

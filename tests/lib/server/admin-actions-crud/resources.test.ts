@@ -56,7 +56,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: mockInvalidateSessionPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getProjectCacheContext: mockGetProjectCacheContext,
   getSessionCacheContext: mockGetSessionCacheContext,
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
@@ -74,8 +74,9 @@ vi.mock('@/db', () => ({
   },
 }))
 
-vi.mock('@/lib/server/delete-r2-images', () => ({
-  default: mockDeleteR2Images,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  deleteImages: mockDeleteR2Images,
 }))
 
 describe('delete-resource server actions', () => {

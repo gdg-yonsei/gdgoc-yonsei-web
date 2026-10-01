@@ -6,6 +6,7 @@
  * 취급됐고, `undefined`가 섞인 URL이 폼 히든 필드에 실려 그대로 DB에 저장됐다.
  * 응답 검사와 형태 확인을 이 모듈 한 곳으로 모아 호출부가 실패를 놓칠 수 없게 한다.
  */
+import { toPublicImageUrl } from '@/lib/image-url'
 
 export class ImageUploadError extends Error {
   readonly status?: number
@@ -20,12 +21,6 @@ export class ImageUploadError extends Error {
 interface PresignedUpload {
   uploadUrl: string
   fileName: string
-}
-
-function toPublicImageUrl(objectKey: string) {
-  // NEXT_PUBLIC_IMAGE_URL 에 후행 슬래시가 있든 없든 한 개의 슬래시로 이어 붙인다.
-  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL ?? ''
-  return `${baseUrl.replace(/\/+$/, '')}/${objectKey}`
 }
 
 /**

@@ -42,7 +42,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: vi.fn(),
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNameById: mockGetGenerationNameById,
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
   getProjectCacheContext: vi.fn(),

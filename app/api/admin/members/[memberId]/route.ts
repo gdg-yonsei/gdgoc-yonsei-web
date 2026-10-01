@@ -11,7 +11,7 @@ import {
 import { logger } from '@/lib/server/logger'
 import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
-import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context'
+import { getGenerationNamesForUserId } from '@/lib/server/services/admin/cache-context'
 import { updateMemberProfileImageValidation } from '@/lib/validations/admin-api'
 
 /**

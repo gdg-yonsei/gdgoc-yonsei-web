@@ -1,10 +1,6 @@
 import 'server-only'
 
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getAuthSession } from '@/auth'
-import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
-import r2Client from '@/lib/server/r2-client'
-import { getR2BucketEnv } from '@/lib/server/env'
 import {
   parseRequestBody,
   privateError,
@@ -17,7 +13,8 @@ import handlePermission from '@/lib/server/permission/handle-permission'
 import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
-} from '@/lib/server/r2-object-key'
+} from '@/lib/server/storage/object-key'
+import { deleteImage, presignImageUpload } from '@/lib/server/storage/r2'
 import {
   imageDeleteValidation,
   multipleImageUploadValidation,
@@ -62,7 +59,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
       return privateError('Invalid file extension', 400)
     }
 
-    const uploadUrl = await getPreSignedUrl(fileName, body.data.type)
+    const uploadUrl = await presignImageUpload(fileName, body.data.type)
 
     return privateJson({ uploadUrl, fileName })
   }
@@ -87,12 +84,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
     }
 
     try {
-      await r2Client.send(
-        new DeleteObjectCommand({
-          Bucket: getR2BucketEnv().R2_BUCKET_NAME,
-          Key: objectKey,
-        })
-      )
+      await deleteImage(objectKey)
     } catch (error) {
       logger.error(`api.admin.${resource}.image-delete`, error, { objectKey })
       return privateError('Failed to delete the image', 500)
@@ -133,7 +125,7 @@ export function createMultipleImageUploadRoute({ resource }: ImageRouteConfig) {
     // 앞쪽 파일의 URL 을 이미 발급해 둔 상태로 400 을 반환했다.
     const uploadUrls = await Promise.all(
       fileNames.map((fileName, index) =>
-        getPreSignedUrl(fileName, body.data.images[index]!.type)
+        presignImageUpload(fileName, body.data.images[index]!.type)
       )
     )
 

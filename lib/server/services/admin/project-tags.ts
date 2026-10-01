@@ -4,7 +4,7 @@ import { asc, eq, inArray, sql } from 'drizzle-orm'
 import db from '@/db'
 import { projectsToTags } from '@/db/schema/projects-to-tags'
 import { tags } from '@/db/schema/tags'
-import { replaceRelationRows } from '@/lib/server/actions/admin'
+import { replaceRelationRows } from '@/lib/server/services/admin/shared'
 
 /** Every tag name, for the admin chip input's suggestions. */
 export async function getTagNames(): Promise<string[]> {

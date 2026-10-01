@@ -28,7 +28,7 @@ import {
 import {
   getGenerationNameById,
   getGenerationNameForPartId,
-} from '@/lib/server/services/cache-context'
+} from '@/lib/server/services/admin/cache-context'
 import { partValidation } from '@/lib/validations/part'
 
 export type PartInput = z.input<typeof partValidation>

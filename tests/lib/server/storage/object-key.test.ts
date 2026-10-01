@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
-} from '@/lib/server/r2-object-key'
+} from '@/lib/server/storage/object-key'
 
 describe('r2 object key security helpers', () => {
   beforeEach(() => {

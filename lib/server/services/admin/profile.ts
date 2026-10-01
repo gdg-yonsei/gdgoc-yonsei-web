@@ -15,7 +15,7 @@ import {
   type Actor,
   type ServiceResult,
 } from '@/lib/server/services/admin/types'
-import { getGenerationNamesForUserId } from '@/lib/server/services/cache-context'
+import { getGenerationNamesForUserId } from '@/lib/server/services/admin/cache-context'
 import { memberValidation } from '@/lib/validations/member'
 
 export async function getMyProfile(
