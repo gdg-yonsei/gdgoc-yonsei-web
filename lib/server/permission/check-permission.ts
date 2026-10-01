@@ -2,15 +2,7 @@
  * @file This file defines the permission structure for different user roles in the application.
  */
 
-/**
- * Represents the possible user roles.
- * - MEMBER: Regular member.
- * - CORE: Core member with more privileges.
- * - LEAD: Lead member with full privileges.
- * - ALUMNUS: Graduated member.
- * - UNVERIFIED: User who has not yet been verified.
- */
-type Role = 'MEMBER' | 'CORE' | 'LEAD' | 'ALUMNUS' | 'UNVERIFIED'
+import type { Role } from '@/db/schema/users'
 
 /**
  * Defines the structure for permissions, mapping actions to resources.

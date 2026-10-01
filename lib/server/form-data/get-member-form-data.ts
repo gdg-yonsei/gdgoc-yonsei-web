@@ -2,10 +2,7 @@
  * @file This file contains a function to extract member profile data from a FormData object.
  */
 
-/**
- * Represents the possible user roles.
- */
-type Role = 'MEMBER' | 'CORE' | 'LEAD' | 'ALUMNUS' | 'UNVERIFIED' | null
+import type { Role } from '@/db/schema/users'
 
 /**
  * Extracts member-related data from a FormData object.

@@ -17,6 +17,7 @@ import {
   getProjects,
   type AdminProjectListItem,
 } from '@/lib/server/fetcher/admin/get-projects'
+import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
@@ -353,12 +354,12 @@ export async function deleteProject(
 
   try {
     const projectCacheContext = await getProjectCacheContext(projectId)
-    const projectImageKeys = [
+    const projectImageKeys = uniqueStrings([
       ...projectImageList.images
         .map((image) => normalizeR2ImageObjectKey(image, 'projects'))
         .filter(Boolean),
       normalizeR2ImageObjectKey(projectImageList.mainImage, 'projects'),
-    ].filter(Boolean) as string[]
+    ])
 
     if (!(await deleteImages(projectImageKeys))) {
       return fail('INTERNAL', 'R2 Image Delete Error')

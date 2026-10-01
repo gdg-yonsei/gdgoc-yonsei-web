@@ -27,6 +27,9 @@ export const roleEnum = pgEnum('role', [
   'UNVERIFIED',
 ])
 
+/** 사용자 역할 유니온 타입. 역할 목록의 단일 출처는 위 `roleEnum`이다. */
+export type Role = (typeof roleEnum.enumValues)[number]
+
 export const users = pgTable('user', {
   id: text('id')
     .primaryKey()

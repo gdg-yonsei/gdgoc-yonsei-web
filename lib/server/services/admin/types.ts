@@ -1,9 +1,9 @@
 import 'server-only'
 
 import type { z } from 'zod'
-import type { roleEnum } from '@/db/schema/users'
+import type { Role } from '@/db/schema/users'
 
-export type Role = (typeof roleEnum.enumValues)[number]
+export type { Role }
 
 export const SCOPES = ['gyms:read', 'gyms:write', 'gyms:admin'] as const
 export type Scope = (typeof SCOPES)[number]

@@ -7,8 +7,14 @@ import { isRouteHandlerInvalidation } from '@/lib/server/cache/invalidation-cont
 
 export type LocalizedPublicRoute = `/${string}`
 
-export function uniqueStrings(values: readonly string[]): string[] {
-  return [...new Set(values)]
+/**
+ * 빈 값(`null`, `undefined`, 빈 문자열)을 빼고 중복을 제거한 문자열 목록을 만든다.
+ * 캐시 태그나 기수 이름 목록처럼 선택적 값이 섞인 배열을 정리할 때 쓴다.
+ */
+export function uniqueStrings(
+  values: readonly (string | null | undefined)[]
+): string[] {
+  return [...new Set(values.filter((value): value is string => Boolean(value)))]
 }
 
 function normalizeTags(tags: readonly string[] | string): string[] {

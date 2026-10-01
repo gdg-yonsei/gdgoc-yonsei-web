@@ -6,12 +6,7 @@ import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { eq } from 'drizzle-orm'
-
-function uniqueStrings(
-  values: readonly (string | null | undefined)[]
-): string[] {
-  return [...new Set(values.filter(Boolean) as string[])]
-}
+import { uniqueStrings } from '@/lib/server/cache/utils'
 
 export async function getGenerationNameById(generationId: number) {
   return db.query.generations.findFirst({

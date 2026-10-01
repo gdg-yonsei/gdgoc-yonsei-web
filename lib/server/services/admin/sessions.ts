@@ -20,6 +20,8 @@ import {
   getSessions,
   type AdminSessionListItem,
 } from '@/lib/server/fetcher/admin/get-sessions'
+import { sendEmails } from '@/lib/server/email'
+import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
@@ -187,35 +189,29 @@ async function sendNewSessionEmails({
     })
   })
 
-  const [{ Resend }, { default: NewSession }, { getResendEnv, getSiteEnv }] =
-    await Promise.all([
-      import('resend'),
-      import('@/emails/new-session'),
-      import('@/lib/server/env'),
-    ])
-  const resend = new Resend(getResendEnv().RESEND_API_KEY)
+  const [{ default: NewSession }, { getSiteEnv }] = await Promise.all([
+    import('@/emails/new-session'),
+    import('@/lib/server/env'),
+  ])
   const siteEnv = getSiteEnv()
 
-  await Promise.all(
-    userEmailList.map((email) =>
-      resend.emails.send({
-        from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-        to: email,
-        subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
-        react: NewSession({
-          session: {
-            name,
-            location: locationKo,
-            startAt: startAt.toISOString(),
-            endAt: endAt.toISOString(),
-            leftCapacity: maxCapacity - participantId.length,
-          },
-          part: partGeneration.name,
-          generation: generationUsers?.name || '',
-          registerUrl: `${siteEnv.NEXT_PUBLIC_SITE_URL}/admin/sessions/${sessionId}/register`,
-        }),
-      })
-    )
+  await sendEmails(
+    userEmailList.map((email) => ({
+      to: email,
+      subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
+      react: NewSession({
+        session: {
+          name,
+          location: locationKo,
+          startAt: startAt.toISOString(),
+          endAt: endAt.toISOString(),
+          leftCapacity: maxCapacity - participantId.length,
+        },
+        part: partGeneration.name,
+        generation: generationUsers?.name || '',
+        registerUrl: `${siteEnv.NEXT_PUBLIC_SITE_URL}/admin/sessions/${sessionId}/register`,
+      }),
+    }))
   )
 }
 
@@ -590,35 +586,33 @@ export async function registerForSession(
   // 호출하면 메일 지연이 잠금을 붙잡고, 실패 시 등록이 롤백된다.
   if (sessionData.author?.email) {
     try {
-      const [{ Resend }, { default: NewParticipant }, { getResendEnv }] =
-        await Promise.all([
-          import('resend'),
-          import('@/emails/new-participant'),
-          import('@/lib/server/env'),
-        ])
+      const { default: NewParticipant } =
+        await import('@/emails/new-participant')
       const userData = await db.query.users.findFirst({
         where: eq(users.id, actor.userId),
       })
-      const resend = new Resend(getResendEnv().RESEND_API_KEY)
-      await resend.emails.send({
-        from: 'GDGoC Yonsei <gdgoc.yonsei@moveto.kr>',
-        to: sessionData.author.email,
-        subject: `[GDGoC Yonsei] 새로운 참가자가 등록했습니다.`,
-        react: NewParticipant({
-          session: {
-            name: sessionData.nameKo,
-            location: sessionData.locationKo!,
-            startAt: sessionData.startAt
-              ? sessionData.startAt?.toISOString()
-              : 'TBD',
-            endAt: sessionData.endAt ? sessionData.endAt?.toISOString() : 'TBD',
-            leftCapacity: sessionData.maxCapacity
-              ? sessionData.maxCapacity - sessionData.userToSession.length - 1
-              : 0,
-          },
-          participantName: userData?.name ? userData?.name : '',
-        }),
-      })
+      await sendEmails([
+        {
+          to: sessionData.author.email,
+          subject: `[GDGoC Yonsei] 새로운 참가자가 등록했습니다.`,
+          react: NewParticipant({
+            session: {
+              name: sessionData.nameKo,
+              location: sessionData.locationKo!,
+              startAt: sessionData.startAt
+                ? sessionData.startAt?.toISOString()
+                : 'TBD',
+              endAt: sessionData.endAt
+                ? sessionData.endAt?.toISOString()
+                : 'TBD',
+              leftCapacity: sessionData.maxCapacity
+                ? sessionData.maxCapacity - sessionData.userToSession.length - 1
+                : 0,
+            },
+            participantName: userData?.name ? userData?.name : '',
+          }),
+        },
+      ])
     } catch (e) {
       // 등록은 이미 성공 — 메일 실패는 로깅만 한다.
       logger.error('admin.sessions.register.email', e, {
@@ -749,12 +743,12 @@ export async function deleteSession(
 
   try {
     const sessionCacheContext = await getSessionCacheContext(sessionId)
-    const sessionImageKeys = [
+    const sessionImageKeys = uniqueStrings([
       ...sessionImageList.images
         .map((image) => normalizeR2ImageObjectKey(image, 'sessions'))
         .filter(Boolean),
       normalizeR2ImageObjectKey(sessionImageList.mainImage, 'sessions'),
-    ].filter(Boolean) as string[]
+    ])
 
     if (!(await deleteImages(sessionImageKeys))) {
       return fail('INTERNAL', 'R2 Image Delete Error')

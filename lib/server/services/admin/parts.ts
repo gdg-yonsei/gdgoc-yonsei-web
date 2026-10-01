@@ -11,6 +11,7 @@ import {
   getParts,
   type AdminPartListItem,
 } from '@/lib/server/fetcher/admin/get-parts'
+import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import {
   authorize,
@@ -271,7 +272,7 @@ export async function updatePart(
     }
 
     invalidatePartPublicCache(
-      [previousGenerationName, nextGeneration?.name].filter(Boolean) as string[]
+      uniqueStrings([previousGenerationName, nextGeneration?.name])
     )
   } catch (e) {
     logger.error('admin.parts.update', e, {
