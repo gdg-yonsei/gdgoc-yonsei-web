@@ -5,7 +5,6 @@ import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { sessions } from '@/db/schema/sessions'
-import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
@@ -70,7 +69,7 @@ const getSessionsForRequest = cache((visibilityBucket: string) =>
   getSharedSessions(visibilityBucket)
 )
 
-export function getSessions(_locale: Locale, visibilityBucket: string) {
+export function getSessions(visibilityBucket: string) {
   return getSessionsForRequest(visibilityBucket)
 }
 
@@ -215,10 +214,7 @@ async function getSharedPublishedSessionsForSitemap(visibilityBucket: string) {
     .orderBy(desc(sessions.endAt))
 }
 
-export function getPublishedSessionsForSitemap(
-  _locale: Locale,
-  visibilityBucket: string
-) {
+export function getPublishedSessionsForSitemap(visibilityBucket: string) {
   return getPublishedSessionsForSitemapForRequest(visibilityBucket)
 }
 
@@ -280,11 +276,7 @@ async function getSharedSessionById(
   })
 }
 
-export function getSessionById(
-  sessionId: string,
-  _locale: Locale,
-  visibilityBucket: string
-) {
+export function getSessionById(sessionId: string, visibilityBucket: string) {
   if (!isUuid(sessionId)) {
     return Promise.resolve(undefined)
   }

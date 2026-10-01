@@ -57,5 +57,3 @@ const twMerge = extendTailwindMerge<AdminClassGroupId>({
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
-export default cn

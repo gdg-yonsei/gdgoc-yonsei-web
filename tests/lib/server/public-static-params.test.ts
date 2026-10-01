@@ -27,7 +27,7 @@ describe('public static params inventory', () => {
     mockGetSessionVisibilityBucket.mockReturnValue('2026-08-14T10:00:00.000Z')
   })
 
-  it('maps every generation and keeps the locale-scoped query', async () => {
+  it('maps every generation from the shared summary query', async () => {
     mockGetGenerationSummaries.mockResolvedValue([
       { id: 1, name: '24-25' },
       { id: 2, name: '25-26' },
@@ -36,11 +36,11 @@ describe('public static params inventory', () => {
     const { getGenerationStaticParams } =
       await import('@/lib/server/queries/public/static-params')
 
-    await expect(getGenerationStaticParams('ko')).resolves.toEqual([
+    await expect(getGenerationStaticParams()).resolves.toEqual([
       { generation: '24-25' },
       { generation: '25-26' },
     ])
-    expect(mockGetGenerationSummaries).toHaveBeenCalledWith('ko')
+    expect(mockGetGenerationSummaries).toHaveBeenCalledWith()
   })
 
   it('returns complete generation and project id pairs without a parent filter', async () => {
@@ -52,11 +52,11 @@ describe('public static params inventory', () => {
     const { getProjectStaticParams } =
       await import('@/lib/server/queries/public/static-params')
 
-    await expect(getProjectStaticParams('en')).resolves.toEqual([
+    await expect(getProjectStaticParams()).resolves.toEqual([
       { generation: '24-25', projectId: 'project-a' },
       { generation: '25-26', projectId: 'project-b' },
     ])
-    expect(mockGetProjects).toHaveBeenCalledWith('en')
+    expect(mockGetProjects).toHaveBeenCalledWith()
   })
 
   it('uses only the publication-filtered session query and drops orphan rows', async () => {
@@ -68,11 +68,10 @@ describe('public static params inventory', () => {
     const { getSessionStaticParams } =
       await import('@/lib/server/queries/public/static-params')
 
-    await expect(getSessionStaticParams('ko')).resolves.toEqual([
+    await expect(getSessionStaticParams()).resolves.toEqual([
       { generation: '25-26', sessionId: 'session-a' },
     ])
     expect(mockGetPublishedSessionsForSitemap).toHaveBeenCalledWith(
-      'ko',
       '2026-08-14T10:00:00.000Z'
     )
   })
@@ -88,8 +87,8 @@ describe('public static params inventory', () => {
       getSessionStaticParams,
     } = await import('@/lib/server/queries/public/static-params')
 
-    await expect(getGenerationStaticParams('en')).resolves.toHaveLength(1)
-    await expect(getProjectStaticParams('en')).resolves.toHaveLength(1)
-    await expect(getSessionStaticParams('en')).resolves.toHaveLength(1)
+    await expect(getGenerationStaticParams()).resolves.toHaveLength(1)
+    await expect(getProjectStaticParams()).resolves.toHaveLength(1)
+    await expect(getSessionStaticParams()).resolves.toHaveLength(1)
   })
 })

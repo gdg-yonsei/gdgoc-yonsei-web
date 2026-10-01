@@ -43,7 +43,7 @@ async function loadProject(
   locale: Locale
 ) {
   const [row, showcase] = await Promise.all([
-    getProjectById(projectId, locale),
+    getProjectById(projectId),
     getProjectShowcase(),
   ])
 

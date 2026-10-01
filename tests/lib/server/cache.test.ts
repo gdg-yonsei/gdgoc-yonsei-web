@@ -44,15 +44,6 @@ describe('cache utilities', () => {
     expect(mockUpdateTag).toHaveBeenCalledTimes(2)
   })
 
-  it('builds localized public paths for every locale', async () => {
-    const { localizedPublicPath } = await import('@/lib/server/cache')
-
-    expect(localizedPublicPath('/project')).toEqual([
-      '/en/project',
-      '/ko/project',
-    ])
-  })
-
   it('invalidates project caches with detail, list, and path updates', async () => {
     const { invalidateProjectPublicCache } = await import('@/lib/server/cache')
 

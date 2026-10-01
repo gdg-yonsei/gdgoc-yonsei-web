@@ -62,9 +62,6 @@ const adminMessages = {
     locationEn: 'Location (English)',
     locationKo: 'Location (Korean)',
     generation: 'Generation',
-    generationScope: 'Generation Scope',
-    generationScopeHint:
-      'This filter applies to parts, members, sessions, and projects.',
     currentGenerationScope: 'Current Scope',
     allGenerations: 'All Generations',
     noAccessibleGenerations:
@@ -119,7 +116,6 @@ const adminMessages = {
       'The main image is also used in social link previews. Once uploaded, a custom image cannot be reset to the default.',
     sessionCreateImageHint:
       'If no main image is uploaded, the default image is used on the website and in social link previews.',
-    sessionLocation: 'Session Location',
     sessionInformation: 'Session Information',
     schedule: 'Schedule',
     start: 'Start',
@@ -199,14 +195,11 @@ const adminMessages = {
 
     // ── Dashboard ──
     dashboard: 'Dashboard',
-    overview: 'Overview',
     totalMembers: 'Members',
     totalSessions: 'Sessions',
     totalProjects: 'Projects',
     totalParts: 'Parts',
-    quickActions: 'Quick actions',
     pendingApprovals: 'Pending approvals',
-    viewAll: 'View all',
     tools: 'Tools',
     mcpConnect: 'Connect AI to GYMS (MCP)',
     mcpConnectHint:
@@ -235,27 +228,15 @@ const adminMessages = {
     columnPart: 'Part',
     columnRole: 'Role',
     columnGeneration: 'Generation',
-    columnStudentId: 'Student ID',
     columnUpdated: 'Updated',
     columnCreated: 'Created',
-    columnAuthor: 'Author',
     columnSchedule: 'Schedule',
-    columnLocation: 'Location',
-    columnCapacity: 'Capacity',
-    columnVisibility: 'Visibility',
     columnPeriod: 'Period',
     columnMembers: 'Members',
-    columnStatus: 'Status',
 
     // ── Bilingual panel ──
     written: 'Done',
     notWritten: 'Missing',
-
-    // ── Sign in ──
-    signInTitle: 'GDGoC Yonsei',
-    signInSubtitle: 'Management System',
-    privacyPolicy: 'Privacy Policy',
-    termsOfService: 'Terms of Service',
   },
   ko: {
     confirm: '확인',
@@ -316,9 +297,6 @@ const adminMessages = {
     locationEn: '영문 장소',
     locationKo: '한글 장소',
     generation: '기수',
-    generationScope: '기수 범위',
-    generationScopeHint:
-      '이 필터는 파트, 멤버, 세션, 프로젝트 목록과 폼에 적용됩니다.',
     currentGenerationScope: '현재 범위',
     allGenerations: '전체 기수',
     noAccessibleGenerations:
@@ -371,7 +349,6 @@ const adminMessages = {
       '메인 이미지는 링크 공유 미리보기에도 사용되며, 한 번 올린 이미지는 기본 이미지로 되돌릴 수 없습니다.',
     sessionCreateImageHint:
       '메인 이미지를 올리지 않으면 웹사이트와 링크 공유 미리보기에 기본 이미지가 사용됩니다.',
-    sessionLocation: '세션 장소',
     sessionInformation: '세션 정보',
     schedule: '일정',
     start: '시작',
@@ -448,14 +425,11 @@ const adminMessages = {
 
     // ── Dashboard ──
     dashboard: '대시보드',
-    overview: '한눈에 보기',
     totalMembers: '멤버',
     totalSessions: '세션',
     totalProjects: '프로젝트',
     totalParts: '파트',
-    quickActions: '빠른 작업',
     pendingApprovals: '승인 대기',
-    viewAll: '전체 보기',
     tools: '도구',
     mcpConnect: 'AI 에 GYMS 연결하기 (MCP)',
     mcpConnectHint:
@@ -484,27 +458,15 @@ const adminMessages = {
     columnPart: '파트',
     columnRole: '권한',
     columnGeneration: '기수',
-    columnStudentId: '학번',
     columnUpdated: '수정일',
     columnCreated: '생성일',
-    columnAuthor: '작성자',
     columnSchedule: '일정',
-    columnLocation: '장소',
-    columnCapacity: '정원',
-    columnVisibility: '공개',
     columnPeriod: '활동 기간',
     columnMembers: '멤버',
-    columnStatus: '상태',
 
     // ── Bilingual panel ──
     written: '작성됨',
     notWritten: '미작성',
-
-    // ── Sign in ──
-    signInTitle: 'GDGoC Yonsei',
-    signInSubtitle: 'Management System',
-    privacyPolicy: '개인정보 처리방침',
-    termsOfService: '이용약관',
   },
 } as const satisfies Record<Locale, Record<string, string>>
 

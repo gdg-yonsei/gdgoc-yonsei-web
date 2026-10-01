@@ -1,28 +1,16 @@
 import { ComponentType, SVGProps } from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import BookSVG from '@/app/components/svg/book-svg'
-import FriendsTree from '@/app/components/svg/friends-tree'
-import Friends from '@/app/components/svg/friends'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Github from '@/app/components/svg/github'
 import Google from '@/app/components/svg/google'
-import Instagram from '@/app/components/svg/instagram'
-import Mail from '@/app/components/svg/mail'
-import Trophy from '@/app/components/svg/trophy'
 
 type SvgComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 const svgComponents: Array<[string, SvgComponent]> = [
-  ['BookSVG', BookSVG],
-  ['FriendsTree', FriendsTree],
-  ['Friends', Friends],
   ['Github', Github],
   ['Google', Google],
-  ['Instagram', Instagram],
-  ['Mail', Mail],
-  ['Trophy', Trophy],
 ]
 
 describe('svg components', () => {

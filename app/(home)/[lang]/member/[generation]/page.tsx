@@ -27,19 +27,15 @@ type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
-export async function generateStaticParams({
-  params,
-}: {
-  params: { lang: string }
-}) {
-  return getGenerationStaticParams(languageParamChecker(params.lang))
+export async function generateStaticParams() {
+  return getGenerationStaticParams()
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
 
-  if (!(await getMembersByGeneration(generation, locale))) {
+  if (!(await getMembersByGeneration(generation))) {
     notFound()
   }
 
@@ -55,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MembersPage({ params }: Props) {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
-  const generations = await getGenerationSummaries(locale)
+  const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 
   if (!current) {
@@ -140,7 +136,7 @@ async function MemberDirectory({
   generation: string
   lang: Locale
 }) {
-  const data = await getMembersByGeneration(generation, lang)
+  const data = await getMembersByGeneration(generation)
   const copy = memberArchiveCopy[lang]
   const parts = data?.parts ?? []
 

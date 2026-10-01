@@ -90,7 +90,7 @@ async function MemberHubContent({ params }: Props) {
   const lang = languageParamChecker((await params).lang)
   const copy = memberArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
-  const generations = [...(await getGenerationSummaries(lang))].sort((a, b) =>
+  const generations = [...(await getGenerationSummaries())].sort((a, b) =>
     b.startDate.localeCompare(a.startDate)
   )
   const url = getLocalizedUrl(lang, '/member')

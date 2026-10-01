@@ -24,7 +24,7 @@ export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   )
 
   const [generations, sessions, projects] = await Promise.all([
-    getGenerationSummaries(i18n.defaultLocale),
+    getGenerationSummaries(),
     getSessionArchive(getSessionVisibilityBucket(sessionWallClockNow())),
     getProjectShowcase(),
   ])

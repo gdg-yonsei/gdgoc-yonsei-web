@@ -5,7 +5,6 @@ import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
-import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
@@ -83,10 +82,6 @@ const getMembersByGenerationForRequest = cache((generationName: string) =>
   getSharedMembersByGeneration(generationName)
 )
 
-export function getMembersByGeneration(
-  generationName: string,
-  _locale: Locale
-) {
-  void _locale
+export function getMembersByGeneration(generationName: string) {
   return getMembersByGenerationForRequest(generationName)
 }

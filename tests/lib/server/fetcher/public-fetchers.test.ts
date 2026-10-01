@@ -80,7 +80,7 @@ describe('public queries', () => {
     const { getGenerationSummaries } =
       await import('@/lib/server/queries/public/generations')
 
-    const result = await getGenerationSummaries('ko')
+    const result = await getGenerationSummaries()
 
     expect(result).toEqual([
       { id: 2, name: '2nd' },
@@ -93,22 +93,6 @@ describe('public queries', () => {
     expect(mockSelect).toHaveBeenCalledTimes(1)
     expect(mockFrom).toHaveBeenCalledTimes(1)
     expect(mockOrderBy).toHaveBeenCalledTimes(1)
-  })
-
-  it('shares the latest generation across locales', async () => {
-    mockGenerationsFindFirst.mockResolvedValue({ id: 3, name: '3rd' })
-
-    const { getLatestGeneration } =
-      await import('@/lib/server/queries/public/generations')
-
-    const result = await getLatestGeneration('en')
-
-    expect(result).toEqual({ id: 3, name: '3rd' })
-    expect(mockCacheQuery).toHaveBeenCalledWith('generationIndex', [
-      'generation:latest:en',
-      'generation:latest:ko',
-    ])
-    expect(mockGenerationsFindFirst).toHaveBeenCalledTimes(1)
   })
 
   it('fetches projects list with generation metadata only', async () => {
@@ -126,7 +110,7 @@ describe('public queries', () => {
 
     const { getProjects } = await import('@/lib/server/queries/public/projects')
 
-    const result = await getProjects('ko')
+    const result = await getProjects()
 
     expect(result).toEqual([
       {
@@ -151,7 +135,7 @@ describe('public queries', () => {
     const { getProjectById } =
       await import('@/lib/server/queries/public/projects')
 
-    const result = await getProjectById(projectId, 'en')
+    const result = await getProjectById(projectId)
 
     expect(result).toEqual({ id: projectId })
     expect(mockCacheQuery).toHaveBeenCalledWith('projectDetail', [
@@ -204,7 +188,7 @@ describe('public queries', () => {
     const { getProjectById } =
       await import('@/lib/server/queries/public/projects')
 
-    await expect(getProjectById('not-a-uuid', 'en')).resolves.toBeUndefined()
+    await expect(getProjectById('not-a-uuid')).resolves.toBeUndefined()
     expect(mockProjectsFindFirst).not.toHaveBeenCalled()
     expect(mockCacheQuery).not.toHaveBeenCalled()
   })
@@ -213,7 +197,7 @@ describe('public queries', () => {
     mockSessionsFindMany.mockResolvedValue([{ id: 'session-1' }])
     const { getSessions } = await import('@/lib/server/queries/public/sessions')
 
-    const result = await getSessions('en', '2026-03-07T00:00:00.000Z')
+    const result = await getSessions('2026-03-07T00:00:00.000Z')
 
     expect(result).toEqual([{ id: 'session-1' }])
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
@@ -255,11 +239,7 @@ describe('public queries', () => {
     const { getSessionById } =
       await import('@/lib/server/queries/public/sessions')
 
-    const result = await getSessionById(
-      sessionId,
-      'ko',
-      '2026-03-07T00:00:00.000Z'
-    )
+    const result = await getSessionById(sessionId, '2026-03-07T00:00:00.000Z')
 
     expect(result).toEqual({ id: sessionId })
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionDetail', [
@@ -295,7 +275,7 @@ describe('public queries', () => {
       await import('@/lib/server/queries/public/sessions')
 
     await expect(
-      getSessionById('not-a-uuid', 'en', '2026-03-07T00:00:00.000Z')
+      getSessionById('not-a-uuid', '2026-03-07T00:00:00.000Z')
     ).resolves.toBeUndefined()
     expect(mockSessionsFindFirst).not.toHaveBeenCalled()
     expect(mockCacheQuery).not.toHaveBeenCalled()
@@ -311,7 +291,6 @@ describe('public queries', () => {
       await import('@/lib/server/queries/public/sessions')
 
     const result = await getPublishedSessionsForSitemap(
-      'ko',
       '2026-03-07T00:00:00.000Z'
     )
 
@@ -329,7 +308,7 @@ describe('public queries', () => {
     const { getMembersByGeneration } =
       await import('@/lib/server/queries/public/members')
 
-    const result = await getMembersByGeneration('7th', 'en')
+    const result = await getMembersByGeneration('7th')
 
     expect(result).toEqual({ name: '7th', parts: [] })
     expect(mockCacheQuery).toHaveBeenCalledWith('memberDirectory', [

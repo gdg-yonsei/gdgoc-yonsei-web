@@ -58,40 +58,6 @@ export async function getGenerationNamesForUserId(userId: string) {
   )
 }
 
-export async function getProjectGenerationName(projectId: string) {
-  const project = await db.query.projects.findFirst({
-    where: eq(projects.id, projectId),
-    with: {
-      generation: {
-        columns: {
-          name: true,
-        },
-      },
-    },
-  })
-
-  return project?.generation?.name ?? null
-}
-
-export async function getSessionGenerationName(sessionId: string) {
-  const session = await db.query.sessions.findFirst({
-    where: eq(sessions.id, sessionId),
-    with: {
-      part: {
-        with: {
-          generation: {
-            columns: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  })
-
-  return session?.part?.generation?.name ?? null
-}
-
 export async function getProjectCacheContext(projectId: string) {
   const project = await db.query.projects.findFirst({
     where: eq(projects.id, projectId),

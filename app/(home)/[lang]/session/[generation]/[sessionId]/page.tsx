@@ -41,14 +41,10 @@ type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
 }
 
-async function loadSession(
-  sessionId: string,
-  generation: string,
-  locale: Locale
-) {
+async function loadSession(sessionId: string, generation: string) {
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const [session, archive] = await Promise.all([
-    getSessionById(sessionId, locale, visibilityBucket),
+    getSessionById(sessionId, visibilityBucket),
     getSessionArchive(visibilityBucket),
   ])
 
@@ -71,7 +67,7 @@ function fallbackDescription(
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, sessionId } = await params
   const locale = languageParamChecker(lang)
-  const loaded = await loadSession(sessionId, generation, locale)
+  const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
     notFound()
@@ -121,7 +117,7 @@ async function SessionDetail({
   sessionId: string
 }) {
   const locale = languageParamChecker(lang)
-  const loaded = await loadSession(sessionId, generation, locale)
+  const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
     notFound()

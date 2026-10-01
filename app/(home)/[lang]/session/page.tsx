@@ -106,7 +106,7 @@ async function SessionHubContent({ params }: Props) {
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const [archive, generations] = await Promise.all([
     getSessionArchive(visibilityBucket),
-    getGenerationSummaries(lang),
+    getGenerationSummaries(),
   ])
   const facets = sessionFacets(archive, lang)
   const url = getLocalizedUrl(lang, '/session')

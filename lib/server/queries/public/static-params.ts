@@ -1,6 +1,5 @@
 import 'server-only'
 
-import type { Locale } from '@/i18n-config'
 import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
@@ -9,15 +8,15 @@ import { sessionWallClockNow } from '@/lib/site/datetime'
 
 const EMPTY_STATIC_PARAM = '__empty__'
 
-export async function getGenerationStaticParams(locale: Locale) {
-  const generations = await getGenerationSummaries(locale)
+export async function getGenerationStaticParams() {
+  const generations = await getGenerationSummaries()
   const params = generations.map(({ name }) => ({ generation: name }))
 
   return params.length > 0 ? params : [{ generation: EMPTY_STATIC_PARAM }]
 }
 
-export async function getProjectStaticParams(locale: Locale) {
-  const projects = await getProjects(locale)
+export async function getProjectStaticParams() {
+  const projects = await getProjects()
   const params = projects.map((project) => ({
     generation: project.generation.name,
     projectId: project.id,
@@ -28,13 +27,10 @@ export async function getProjectStaticParams(locale: Locale) {
     : [{ generation: EMPTY_STATIC_PARAM, projectId: EMPTY_STATIC_PARAM }]
 }
 
-export async function getSessionStaticParams(locale: Locale) {
+export async function getSessionStaticParams() {
   // Same wall-clock bucket as the session pages and the proxy route check.
   const visibilityBucket = getSessionVisibilityBucket(sessionWallClockNow())
-  const sessions = await getPublishedSessionsForSitemap(
-    locale,
-    visibilityBucket
-  )
+  const sessions = await getPublishedSessionsForSitemap(visibilityBucket)
   const params = sessions.flatMap((session) =>
     session.generationName
       ? [{ generation: session.generationName, sessionId: session.id }]

@@ -67,7 +67,7 @@ export async function getSessionSocialImageContent({
     generation
   )
   const visibilityBucket = await getCachedSessionVisibilityBucket()
-  const session = await getSessionById(sessionId, locale, visibilityBucket)
+  const session = await getSessionById(sessionId, visibilityBucket)
 
   if (!session || session.part?.generation?.name !== generation) {
     return fallback
@@ -104,7 +104,7 @@ export async function getProjectSocialImageContent({
     'project',
     generation
   )
-  const project = await getProjectById(projectId, locale)
+  const project = await getProjectById(projectId)
 
   if (!project || project.generation.name !== generation) {
     return fallback

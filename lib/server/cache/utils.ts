@@ -43,10 +43,6 @@ function publicPath(
   return toLocalizedPublicRoute(`/${locale}${pathname}`)
 }
 
-export function localizedPublicPath(pathname: `/${string}`): string[] {
-  return i18n.locales.map((locale) => publicPath(pathname, locale))
-}
-
 export function localizedPublicPaths(
   pathnames: readonly LocalizedPublicRoute[]
 ): string[] {

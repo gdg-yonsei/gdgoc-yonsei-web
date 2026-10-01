@@ -102,7 +102,7 @@ async function ProjectHubContent({ params }: Props) {
   const common = archiveCommonCopy[lang]
   const [showcase, generations] = await Promise.all([
     getProjectShowcase(),
-    getGenerationSummaries(lang),
+    getGenerationSummaries(),
   ])
   const projects = sortShowcase(showcase)
   const facets = projectFacets(projects)

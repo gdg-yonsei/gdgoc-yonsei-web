@@ -4,7 +4,6 @@ import { cache } from 'react'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
 import { projects } from '@/db/schema/projects'
-import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
@@ -53,8 +52,7 @@ async function getSharedProjects() {
 
 const getProjectsForRequest = cache(() => getSharedProjects())
 
-export function getProjects(_locale: Locale) {
-  void _locale
+export function getProjects() {
   return getProjectsForRequest()
 }
 
@@ -155,8 +153,7 @@ async function getSharedProjectById(projectId: string) {
   })
 }
 
-export function getProjectById(projectId: string, _locale: Locale) {
-  void _locale
+export function getProjectById(projectId: string) {
   if (!isUuid(projectId)) {
     return Promise.resolve(undefined)
   }

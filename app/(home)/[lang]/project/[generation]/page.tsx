@@ -37,12 +37,8 @@ type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
-export async function generateStaticParams({
-  params,
-}: {
-  params: { lang: string }
-}) {
-  return getGenerationStaticParams(languageParamChecker(params.lang))
+export async function generateStaticParams() {
+  return getGenerationStaticParams()
 }
 
 async function generationProjects(generation: string) {
@@ -55,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
   const [generations, projects] = await Promise.all([
-    getGenerationSummaries(locale),
+    getGenerationSummaries(),
     generationProjects(generation),
   ])
 
@@ -76,7 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectGenerationPage({ params }: Props) {
   const { lang, generation } = await params
   const locale = languageParamChecker(lang)
-  const generations = await getGenerationSummaries(locale)
+  const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 
   if (!current) {

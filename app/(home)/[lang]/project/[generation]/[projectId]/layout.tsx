@@ -1,13 +1,8 @@
 import type { ReactNode } from 'react'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getProjectStaticParams } from '@/lib/server/queries/public/static-params'
 
-type StaticParamsContext = {
-  params: { lang: string }
-}
-
-export async function generateStaticParams({ params }: StaticParamsContext) {
-  return getProjectStaticParams(languageParamChecker(params.lang))
+export async function generateStaticParams() {
+  return getProjectStaticParams()
 }
 
 export default function ProjectDetailLayout({
