@@ -5,9 +5,12 @@ import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { googleSansCode, googleSansFlex } from '@/app/fonts'
-import { chromeCopy } from '@/lib/contents/site-copy'
+import { chromeCopy, siteMetadataCopy } from '@/lib/contents/site-copy'
 import { cn } from '@/lib/cn'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
+
+/** Google Analytics 4 측정 ID(공개 사이트 전용, 관리자 화면에는 넣지 않는다). */
+const GA_MEASUREMENT_ID = 'G-D77HTXJVT8'
 
 type LangLayoutProps = {
   children: ReactNode
@@ -15,32 +18,20 @@ type LangLayoutProps = {
 }
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export async function generateMetadata({
   params,
 }: LangLayoutProps): Promise<Metadata> {
-  const lang = toLocale((await params).lang)
-
-  if (lang === 'ko') {
-    return {
-      title: {
-        default: 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티',
-        template: '%s | GDGoC Yonsei',
-      },
-      description:
-        '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
-    }
-  }
+  const copy = siteMetadataCopy[toLocale((await params).lang)]
 
   return {
     title: {
-      default: 'GDGoC Yonsei | Yonsei University Developer Community',
+      default: copy.defaultTitle,
       template: '%s | GDGoC Yonsei',
     },
-    description:
-      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, projects, members, events, and activities.",
+    description: copy.defaultDescription,
   }
 }
 
@@ -49,7 +40,7 @@ export const viewport: Viewport = {
   themeColor: '#1e1e1e',
 }
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: LangLayoutProps) {
@@ -71,7 +62,7 @@ export default async function RootLayout({
           {children}
         </main>
         <Footer lang={lang} />
-        <GoogleAnalytics gaId={'G-D77HTXJVT8'} />
+        <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
       </body>
     </html>
   )

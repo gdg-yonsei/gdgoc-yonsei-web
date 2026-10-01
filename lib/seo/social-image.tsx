@@ -14,9 +14,10 @@ import { CAPSULE_HEX } from '@/lib/site/brand'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { logger } from '@/lib/server/logger'
 import type { SocialImageContent } from '@/lib/seo/social-image-data'
-
-export const SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 } as const
-export const SOCIAL_IMAGE_CONTENT_TYPE = 'image/jpeg'
+import {
+  SOCIAL_IMAGE_CONTENT_TYPE,
+  SOCIAL_IMAGE_SIZE,
+} from '@/lib/seo/social-image-config'
 
 const MAX_SOURCE_IMAGE_BYTES = 10 * 1024 * 1024
 const ALLOWED_SOURCE_IMAGE_TYPES = new Set([

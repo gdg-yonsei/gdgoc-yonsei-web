@@ -1,5 +1,6 @@
 import type { Locale } from '@/lib/i18n'
 import { toKstIso } from '@/lib/format/datetime'
+import { CHANNELS } from '@/lib/site/channels'
 
 /* Pure builders: callers pass absolute URLs (see lib/seo/metadata.ts). */
 
@@ -185,4 +186,71 @@ export function projectWork({
     creator: creators.map((creator) => ({ '@type': 'Person', name: creator })),
     publisher: { '@id': publisherId },
   }
+}
+
+/**
+ * 홈 화면 구조화 데이터: 단체(Organization), 사이트(WebSite), 홈 페이지(WebPage).
+ * 다른 페이지의 JSON-LD는 여기서 만든 `#organization`, `#website` ID를 참조한다.
+ */
+export function homeStructuredData({
+  siteRoot,
+  englishHomeUrl,
+  logoUrl,
+  canonical,
+  locale,
+  title,
+  description,
+}: {
+  siteRoot: string
+  englishHomeUrl: string
+  logoUrl: string
+  canonical: string
+  locale: Locale
+  title: string
+  description: string
+}) {
+  const organizationId = `${siteRoot}#organization`
+  const websiteId = `${siteRoot}#website`
+
+  return [
+    {
+      '@context': CONTEXT,
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: 'GDGoC Yonsei',
+      alternateName: [
+        'Google Developer Group on Campus Yonsei University',
+        'GDSC Yonsei',
+      ],
+      url: englishHomeUrl,
+      logo: logoUrl,
+      email: CHANNELS.email,
+      sameAs: [CHANNELS.chapter, CHANNELS.linkedin, CHANNELS.instagram],
+      parentOrganization: {
+        '@type': 'CollegeOrUniversity',
+        name: 'Yonsei University',
+        url: 'https://www.yonsei.ac.kr/',
+      },
+    },
+    {
+      '@context': CONTEXT,
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: 'GDGoC Yonsei',
+      url: siteRoot,
+      inLanguage: ['en', 'ko'],
+      publisher: { '@id': organizationId },
+    },
+    {
+      '@context': CONTEXT,
+      '@type': 'WebPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      inLanguage: locale,
+      isPartOf: { '@id': websiteId },
+      about: { '@id': organizationId },
+    },
+  ]
 }

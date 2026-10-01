@@ -10,7 +10,7 @@ import { getCalendarSessions } from '@/lib/server/queries/public/sessions'
 import { toCalendarEvents } from '@/lib/site/calendar'
 import { toSeoulDateIso } from '@/lib/format/datetime'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export default function CalendarPage({ params }: Props) {

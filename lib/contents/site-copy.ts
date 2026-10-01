@@ -1,5 +1,30 @@
 import type { Locale } from '@/lib/i18n'
 
+/**
+ * 페이지 제목·설명 기본값.
+ * - `defaultTitle`/`defaultDescription`: 개별 설명이 없는 페이지가 물려받는 값(`[lang]/layout.tsx`)
+ * - `homeDescription`: 홈 화면 메타데이터와 구조화 데이터에 쓰는 설명
+ */
+export const siteMetadataCopy: Record<
+  Locale,
+  { defaultTitle: string; defaultDescription: string; homeDescription: string }
+> = {
+  en: {
+    defaultTitle: 'GDGoC Yonsei | Yonsei University Developer Community',
+    defaultDescription:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, projects, members, events, and activities.",
+    homeDescription:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, collaborative projects, members, events, and activities.",
+  },
+  ko: {
+    defaultTitle: 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티',
+    defaultDescription:
+      '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
+    homeDescription:
+      '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 협업 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
+  },
+}
+
 export type ChromeCopy = {
   skipToContent: string
   home: string

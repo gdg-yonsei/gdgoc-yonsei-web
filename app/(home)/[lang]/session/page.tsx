@@ -29,7 +29,7 @@ import {
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
 import { sessionPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
@@ -38,7 +38,7 @@ const en = sessionArchiveCopy.en
 const ko = sessionArchiveCopy.ko
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

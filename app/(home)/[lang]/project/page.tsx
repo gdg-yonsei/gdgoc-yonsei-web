@@ -28,7 +28,7 @@ import {
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
 import { projectPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
@@ -37,7 +37,7 @@ const en = projectArchiveCopy.en
 const ko = projectArchiveCopy.ko
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

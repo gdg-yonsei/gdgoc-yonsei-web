@@ -19,7 +19,7 @@ import {
 } from '@/lib/seo/metadata'
 import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
 import { generationPath, localeHref } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
@@ -28,7 +28,7 @@ const en = memberArchiveCopy.en
 const ko = memberArchiveCopy.ko
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

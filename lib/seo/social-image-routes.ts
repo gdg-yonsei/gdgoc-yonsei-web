@@ -6,6 +6,10 @@ import {
   getSocialImageAlt,
 } from '@/lib/seo/social-image-data'
 import { toLocale } from '@/lib/i18n'
+import {
+  SOCIAL_IMAGE_CONTENT_TYPE,
+  SOCIAL_IMAGE_SIZE,
+} from '@/lib/seo/social-image-config'
 
 export type SessionSocialImageParams = {
   lang: string
@@ -24,8 +28,8 @@ function imageMetadata(version: string, alt: string) {
     {
       id: version,
       alt,
-      size: { width: 1200, height: 630 },
-      contentType: 'image/jpeg',
+      size: SOCIAL_IMAGE_SIZE,
+      contentType: SOCIAL_IMAGE_CONTENT_TYPE,
     },
   ]
 }

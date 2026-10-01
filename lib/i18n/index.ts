@@ -15,6 +15,14 @@ export const i18n = {
 /** 지원 언어 코드 유니온 타입 (`'en' | 'ko'`). */
 export type Locale = (typeof i18n)['locales'][number]
 
+/**
+ * `[lang]` 세그먼트의 `generateStaticParams` 결과. 지원 언어마다 페이지를 미리 만든다.
+ * Cache Components는 정적 파라미터가 하나 이상 있어야 하므로 각 페이지가 이 값을 돌려준다.
+ */
+export function localeStaticParams(): { lang: Locale }[] {
+  return i18n.locales.map((lang) => ({ lang }))
+}
+
 /** 임의의 값이 지원 언어 코드인지 확인하는 타입 가드. */
 export function isLocale(value: unknown): value is Locale {
   return (

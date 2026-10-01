@@ -4,7 +4,7 @@ import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import type { Metadata } from 'next'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import { toLocale } from '@/lib/i18n'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string }>
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
 export default async function TermsOfServicePage({ params }: Props) {
