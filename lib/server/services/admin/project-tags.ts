@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { asc, eq, inArray, sql } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { projectsToTags } from '@/db/schema/projects-to-tags'
 import { tags } from '@/db/schema/tags'
 import { replaceRelationRows } from '@/lib/server/services/admin/shared'

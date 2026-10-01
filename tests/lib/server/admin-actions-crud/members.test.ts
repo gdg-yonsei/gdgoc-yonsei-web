@@ -25,7 +25,7 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
@@ -54,7 +54,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     update: mockUpdate,
     delete: mockDelete,
     query: { users: { findFirst: mockUserFindFirst } },

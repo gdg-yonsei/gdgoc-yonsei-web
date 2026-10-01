@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { eq, lt } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { mcpAuditLog } from '@/db/schema/mcp-audit-log'
 import { oauthClient } from '@/db/schema/oauth'
 import { logger } from '@/lib/server/logger'

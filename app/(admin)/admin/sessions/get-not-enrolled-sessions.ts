@@ -1,4 +1,4 @@
-import db from '@/db'
+import { db } from '@/db'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'

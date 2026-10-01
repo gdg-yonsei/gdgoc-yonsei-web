@@ -2,7 +2,7 @@ import 'server-only'
 
 import { and, eq, inArray } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { invalidatePartPublicCache } from '@/lib/server/cache'

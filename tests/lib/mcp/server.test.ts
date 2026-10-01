@@ -12,7 +12,7 @@ const { withAudit } = vi.hoisted(() => ({
   ),
 }))
 vi.mock('@/lib/mcp/audit', () => ({ withAudit }))
-vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/db', () => ({ db: {} }))
 
 import { defineTool } from '@/lib/mcp/registry'
 import { ALL_TOOLS } from '@/lib/mcp/tools'

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import {
   SCOPES,
   type Actor,

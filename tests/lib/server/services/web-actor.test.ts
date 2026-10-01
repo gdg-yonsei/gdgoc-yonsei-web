@@ -12,7 +12,7 @@ const { mockGetAuthSession, mockGetUserRole, mockForbidden } = vi.hoisted(
 
 vi.mock('@/auth', () => ({ getAuthSession: mockGetAuthSession }))
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 vi.mock('next/navigation', () => ({ forbidden: mockForbidden }))
 

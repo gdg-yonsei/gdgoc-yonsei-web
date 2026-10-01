@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool } from '@/lib/mcp/registry'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'

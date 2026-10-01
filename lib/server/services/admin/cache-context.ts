@@ -1,6 +1,6 @@
 import 'server-only'
 
-import db from '@/db'
+import { db } from '@/db'
 import { parts } from '@/db/schema/parts'
 import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'

@@ -12,7 +12,7 @@ import { AdminCardSkeleton } from '@/app/components/admin/skeleton'
 import Link from 'next/link'
 import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
-import db from '@/db'
+import { db } from '@/db'
 import { getAuthSession } from '@/auth'
 import { redirect } from 'next/navigation'
 import {

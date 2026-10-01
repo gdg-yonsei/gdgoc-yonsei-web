@@ -32,14 +32,14 @@ vi.mock('@/lib/server/storage/r2-client', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     update: mockDbUpdate,
     query: { users: { findFirst: mockUserFindFirst } },
   },
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/cache', () => ({

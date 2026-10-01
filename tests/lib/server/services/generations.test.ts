@@ -8,7 +8,7 @@ const { loadAccessibleGenerations, dbInsert, getGenerations } = vi.hoisted(
   })
 )
 
-vi.mock('@/db', () => ({ default: { insert: dbInsert } }))
+vi.mock('@/db', () => ({ db: { insert: dbInsert } }))
 vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('@/lib/server/services/admin/authorize')

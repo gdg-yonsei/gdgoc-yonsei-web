@@ -1,7 +1,7 @@
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import AdminEmptyState from '@/app/components/admin/empty-state'
-import db from '@/db'
+import { db } from '@/db'
 import { eq } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
 import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
@@ -53,9 +53,7 @@ export default async function AcceptMemberPage() {
                 className={'size-10 shrink-0 rounded-lg object-cover'}
               />
               <div className={'flex min-w-0 flex-col gap-0.5'}>
-                <div
-                  className={'type-body-sm text-ink truncate font-semibold'}
-                >
+                <div className={'type-body-sm text-ink truncate font-semibold'}>
                   {member.name}
                 </div>
                 <div className={'type-caption text-ink-subtle truncate'}>

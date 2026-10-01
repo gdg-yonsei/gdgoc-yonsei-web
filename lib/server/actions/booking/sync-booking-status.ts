@@ -1,7 +1,7 @@
 import 'server-only'
 import { eq, isNotNull } from 'drizzle-orm'
 import { sql } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
 
 export async function syncBookingStatus() {

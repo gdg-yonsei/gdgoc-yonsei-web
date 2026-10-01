@@ -43,7 +43,7 @@ vi.mock('@/lib/server/cache', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     execute: mockDbExecute,
     insert: mockDbInsert,
     delete: mockDbDelete,

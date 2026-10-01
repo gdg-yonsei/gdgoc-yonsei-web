@@ -27,7 +27,7 @@ const mockDb = {
 }
 
 vi.mock('@/db', () => ({
-  default: mockDb,
+  db: mockDb,
 }))
 
 vi.mock('@/lib/server/cache', async () => {

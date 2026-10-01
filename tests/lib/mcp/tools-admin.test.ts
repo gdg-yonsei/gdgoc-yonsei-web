@@ -17,7 +17,7 @@ const services = vi.hoisted(() => ({
   partToInput: vi.fn(),
 }))
 
-vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/db', () => ({ db: {} }))
 vi.mock('@/lib/server/services/admin/members', () => services)
 vi.mock('@/lib/server/services/admin/profile', () => services)
 vi.mock('@/lib/server/services/admin/parts', async (importOriginal) => ({

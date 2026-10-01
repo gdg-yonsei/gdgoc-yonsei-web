@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { CallToolResult } from '@modelcontextprotocol/server'
 import type { ServiceResult } from '@/lib/server/services/admin/types'
 

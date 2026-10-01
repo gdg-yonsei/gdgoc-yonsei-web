@@ -2,7 +2,7 @@ import 'server-only'
 
 import { cache } from 'react'
 import { and, asc, desc, eq, ne, sql } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { users } from '@/db/schema/users'

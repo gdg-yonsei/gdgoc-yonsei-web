@@ -3,7 +3,7 @@
  */
 
 import 'server-only'
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import checkPermission from '@/lib/server/permission/check-permission'
 
 /**

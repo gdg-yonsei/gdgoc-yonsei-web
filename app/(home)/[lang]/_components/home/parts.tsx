@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import SectionTag from '@/app/components/site/section-tag'
-import partsSectionContent from '@/lib/contents/parts-section'
+import { partsSectionContent } from '@/lib/contents/parts-section'
 import { landingCopy } from '@/lib/contents/site-copy'
 import { fillTemplate } from '@/lib/format/text'
 import { partHue } from '@/lib/site/labels'

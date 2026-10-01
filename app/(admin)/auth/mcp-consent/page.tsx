@@ -5,9 +5,9 @@ import { ReactNode } from 'react'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import ConsentForm from '@/app/(admin)/auth/mcp-consent/consent-form'
 import { getAuthSession } from '@/auth'
-import db from '@/db'
+import { db } from '@/db'
 import { oauthClient } from '@/db/schema/oauth'
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import {
   canConnectMcp,
   consentRedirectHost,

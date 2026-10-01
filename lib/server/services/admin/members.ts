@@ -2,7 +2,7 @@ import 'server-only'
 
 import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { invalidateMemberPublicCache } from '@/lib/server/cache'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'

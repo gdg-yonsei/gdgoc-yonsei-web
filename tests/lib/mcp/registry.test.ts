@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/db', () => ({ db: {} }))
 
 import { isToolVisible } from '@/lib/mcp/registry'
 import { ALL_TOOLS } from '@/lib/mcp/tools'

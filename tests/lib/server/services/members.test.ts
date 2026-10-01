@@ -21,7 +21,7 @@ const {
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: { users: { findFirst: findUser, findMany: findUsers } },
     update: dbUpdate,
     delete: dbDelete,

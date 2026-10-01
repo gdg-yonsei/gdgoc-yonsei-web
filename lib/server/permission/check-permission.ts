@@ -1,6 +1,7 @@
 /**
  * @file This file defines the permission structure for different user roles in the application.
  */
+import 'server-only'
 
 import type { Role } from '@/db/schema/users'
 

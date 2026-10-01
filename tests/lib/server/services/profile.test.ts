@@ -9,7 +9,7 @@ const { dbUpdate, updateSet } = vi.hoisted(() => {
   return { updateSet, dbUpdate: vi.fn(() => ({ set: updateSet })) }
 })
 
-vi.mock('@/db', () => ({ default: { update: dbUpdate } }))
+vi.mock('@/db', () => ({ db: { update: dbUpdate } }))
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: vi.fn(),
 }))

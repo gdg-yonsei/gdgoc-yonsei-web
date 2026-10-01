@@ -2,7 +2,7 @@ import 'server-only'
 
 import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { invalidateGenerationPublicCache } from '@/lib/server/cache'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'

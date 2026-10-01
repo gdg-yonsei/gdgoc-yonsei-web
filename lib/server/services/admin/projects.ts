@@ -2,7 +2,7 @@ import 'server-only'
 
 import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { projects } from '@/db/schema/projects'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import {

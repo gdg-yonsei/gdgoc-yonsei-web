@@ -1,6 +1,6 @@
 import 'server-only'
 import { desc, eq } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
 import { users } from '@/db/schema/users'
 

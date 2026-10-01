@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { getUserRole } = vi.hoisted(() => ({ getUserRole: vi.fn() }))
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: getUserRole,
+  getUserRole: getUserRole,
 }))
 
 import { actorFromClaims } from '@/lib/mcp/actor'

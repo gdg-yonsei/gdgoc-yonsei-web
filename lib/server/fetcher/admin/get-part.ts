@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { desc, eq } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
 

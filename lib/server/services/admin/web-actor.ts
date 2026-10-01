@@ -2,7 +2,7 @@ import 'server-only'
 
 import { forbidden } from 'next/navigation'
 import { getAuthSession } from '@/auth'
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import type { Actor, ServiceFailure } from '@/lib/server/services/admin/types'
 
 /** 웹 세션 사용자를 Actor 로. 웹 세션은 OAuth 스코프 제한이 없다. */

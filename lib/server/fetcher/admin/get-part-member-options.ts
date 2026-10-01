@@ -1,6 +1,6 @@
 import 'server-only'
 
-import db from '@/db'
+import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { asc, ne } from 'drizzle-orm'
 

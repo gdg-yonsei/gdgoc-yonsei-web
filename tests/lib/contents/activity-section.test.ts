@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import activitySectionContents from '@/lib/contents/activity-section'
+import { activitySectionContents } from '@/lib/contents/activity-section'
 
 describe('activity section content', () => {
   it.each(activitySectionContents)(

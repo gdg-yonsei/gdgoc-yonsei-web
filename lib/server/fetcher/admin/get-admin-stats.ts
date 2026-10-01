@@ -1,6 +1,6 @@
 import 'server-only'
 import { eq } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'

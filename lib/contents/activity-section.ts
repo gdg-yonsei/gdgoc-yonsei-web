@@ -1,4 +1,4 @@
-const activitySectionContents = [
+export const activitySectionContents = [
   {
     key: 'T19',
     content: {
@@ -42,5 +42,3 @@ const activitySectionContents = [
     },
   },
 ]
-
-export default activitySectionContents

@@ -1,4 +1,4 @@
-const partsSectionContent = [
+export const partsSectionContent = [
   {
     title: 'Front-End',
     content: {
@@ -42,5 +42,3 @@ const partsSectionContent = [
     },
   },
 ]
-
-export default partsSectionContent

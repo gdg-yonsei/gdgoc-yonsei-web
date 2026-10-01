@@ -1,7 +1,7 @@
 'use server'
 
 import { getAuthSession } from '@/auth'
-import db from '@/db'
+import { db } from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
 import handlePermission from '@/lib/server/permission/handle-permission'
 import type { ActionResult } from '@/lib/server/actions/types'

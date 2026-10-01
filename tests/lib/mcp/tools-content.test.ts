@@ -10,7 +10,7 @@ const services = vi.hoisted(() => ({
   createProject: vi.fn(),
 }))
 
-vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/db', () => ({ db: {} }))
 vi.mock('@/lib/server/env', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/server/env')>()),
   getImageEnv: () => ({ NEXT_PUBLIC_IMAGE_URL: 'https://cdn.example/' }),

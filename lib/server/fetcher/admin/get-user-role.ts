@@ -1,11 +1,9 @@
 import 'server-only'
-import db from '@/db'
+import { db } from '@/db'
 import { users, type Role } from '@/db/schema/users'
 import { eq } from 'drizzle-orm'
 
-export default async function getUserRole(
-  userId: string | undefined
-): Promise<Role> {
+export async function getUserRole(userId: string | undefined): Promise<Role> {
   // If no userId is provided, assume the user is unverified.
   if (!userId) {
     return 'UNVERIFIED'

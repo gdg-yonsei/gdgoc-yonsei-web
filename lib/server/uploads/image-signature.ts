@@ -1,3 +1,5 @@
+import 'server-only'
+
 export type DetectedImageType = 'jpeg' | 'png' | 'webp' | 'gif' | 'avif'
 
 export const IMAGE_TYPE_EXTENSIONS: Record<

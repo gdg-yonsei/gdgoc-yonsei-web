@@ -2,7 +2,7 @@ import 'server-only'
 
 import { cache } from 'react'
 import { headers } from 'next/headers'
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 
 export const ADMIN_GENERATION_SCOPE_COOKIE = 'admin-generation-scope'

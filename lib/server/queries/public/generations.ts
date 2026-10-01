@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import {
   cacheQuery,

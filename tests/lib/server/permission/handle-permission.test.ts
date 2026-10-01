@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: vi.fn(),
+  getUserRole: vi.fn(),
 }))
 
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import handlePermission from '@/lib/server/permission/handle-permission'
 
 const mockedGetUserRole = vi.mocked(getUserRole)

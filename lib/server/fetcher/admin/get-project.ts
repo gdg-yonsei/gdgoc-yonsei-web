@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { eq } from 'drizzle-orm'
 import { projects } from '@/db/schema/projects'
 import { isUuid } from '@/lib/server/queries/public/uuid'

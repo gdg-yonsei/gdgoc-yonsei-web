@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { z } from 'zod'
 import { getImageEnv } from '@/lib/server/env'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'

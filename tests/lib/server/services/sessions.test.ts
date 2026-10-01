@@ -10,7 +10,7 @@ const { findSession, findPart, canAccessGeneration, dbDelete, dbUpdate } =
   }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: {
       sessions: { findFirst: findSession },
       parts: { findFirst: findPart },

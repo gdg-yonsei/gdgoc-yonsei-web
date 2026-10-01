@@ -34,7 +34,7 @@ const client = postgres(databaseEnv.AUTH_DRIZZLE_URL, {
   },
 })
 
-const db = drizzle(client, {
+export const db = drizzle(client, {
   schema: {
     ...accountsSchema,
     ...authSessionsSchema,
@@ -57,5 +57,3 @@ const db = drizzle(client, {
     ...mcpImageUploadSchema,
   },
 })
-
-export default db

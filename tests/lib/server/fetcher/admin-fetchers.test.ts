@@ -37,7 +37,7 @@ const mockDb = {
 }
 
 vi.mock('@/db', () => ({
-  default: mockDb,
+  db: mockDb,
 }))
 
 function createSelectChainWithOrderByResult(result: unknown) {

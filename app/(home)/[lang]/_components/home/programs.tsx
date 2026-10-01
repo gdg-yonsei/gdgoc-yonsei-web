@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { Locale } from '@/lib/i18n'
 import SectionTag from '@/app/components/site/section-tag'
-import activitySectionContents from '@/lib/contents/activity-section'
+import { activitySectionContents } from '@/lib/contents/activity-section'
 import { landingCopy, type ProgramKey } from '@/lib/contents/site-copy'
 import type { Hue } from '@/lib/site/labels'
 import BridgeFlags from './bridge-flags'

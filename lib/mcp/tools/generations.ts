@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import { patchWith } from '@/lib/mcp/tools/common'

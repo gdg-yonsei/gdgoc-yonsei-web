@@ -14,7 +14,7 @@ const { insertValues, insert, findClient, deleteWhere, dbDelete } = vi.hoisted(
   }
 )
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     insert,
     delete: dbDelete,
     query: { oauthClient: { findFirst: findClient } },

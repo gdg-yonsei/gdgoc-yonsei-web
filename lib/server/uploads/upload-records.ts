@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { and, count, eq, gt, isNotNull, isNull, lt, or, sql } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { mcpImageUpload } from '@/db/schema/mcp-image-upload'
 
 type UploadKind = 'presigned' | 'import'

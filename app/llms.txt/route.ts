@@ -1,5 +1,5 @@
 import { getSiteUrl } from '@/lib/seo/metadata'
-import partsSectionContent from '@/lib/contents/parts-section'
+import { partsSectionContent } from '@/lib/contents/parts-section'
 import { CHANNELS } from '@/lib/site/channels'
 import { SESSION_CATEGORIES } from '@/lib/site/labels'
 

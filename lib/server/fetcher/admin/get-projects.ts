@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
 export type AdminProjectListItem = {

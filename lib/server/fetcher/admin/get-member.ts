@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { desc, eq, sql } from 'drizzle-orm'
 import { usersToParts } from '@/db/schema/users-to-parts'

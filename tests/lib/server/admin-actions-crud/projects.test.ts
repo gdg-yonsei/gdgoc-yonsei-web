@@ -36,7 +36,7 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/permission/handle-permission', () => ({
@@ -68,7 +68,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
