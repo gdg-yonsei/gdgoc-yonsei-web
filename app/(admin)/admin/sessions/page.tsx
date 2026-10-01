@@ -5,7 +5,7 @@ import {
 } from '@/app/components/admin/skeleton'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import SessionsTable from '@/app/(admin)/admin/sessions/sessions-table'
@@ -32,7 +32,7 @@ export default async function SessionsPage() {
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canCreate, resolvedScope] = await Promise.all([
-    handlePermission(userId, 'post', 'sessions'),
+    hasPermission(userId, 'post', 'sessions'),
     userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
   ])
   const canCreateInCurrentScope =

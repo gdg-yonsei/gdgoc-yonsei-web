@@ -1,6 +1,7 @@
-import handlePermission, {
+import {
+  hasPermission,
   ResourceType,
-} from '@/lib/server/permission/handle-permission'
+} from '@/lib/server/permission/has-permission'
 import Link from 'next/link'
 import type { AuthSession } from '@/auth'
 import {
@@ -38,7 +39,7 @@ export default async function DataEditLink({
   // 사용자가 수정할 수 있는지 확인
   const canEdit =
     allowed ??
-    (await handlePermission(session?.user?.id, 'put', dataType, dataOwnerId))
+    (await hasPermission(session?.user?.id, 'put', dataType, dataOwnerId))
 
   return (
     <>

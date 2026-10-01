@@ -9,7 +9,7 @@ import {
   privateOk,
 } from '@/lib/server/http'
 import { logger } from '@/lib/server/logger'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
@@ -42,7 +42,7 @@ function buildObjectKey(resource: string, fileName: string) {
 export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'post', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }
 
@@ -66,7 +66,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
 
   async function DELETE(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'delete', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'delete', resource))) {
       return privateForbidden()
     }
 
@@ -99,7 +99,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
 export function createMultipleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'post', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }
 

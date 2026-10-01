@@ -2,15 +2,16 @@ import 'server-only'
 
 import { forbidden } from 'next/navigation'
 import { getAuthSession } from '@/auth'
-import handlePermission, {
+import {
+  hasPermission,
   type ActionType,
   type ResourceType,
-} from '@/lib/server/permission/handle-permission'
+} from '@/lib/server/permission/has-permission'
 
 /**
  * 권한이 없으면 `forbidden()` 으로 렌더링을 중단하고, 있으면 세션을 돌려준다.
  *
- * 관리자 레이아웃/페이지 열한 곳이 `getAuthSession()` 와 `handlePermission()` 을 각자 호출하는
+ * 관리자 레이아웃/페이지 열한 곳이 `getAuthSession()` 와 `hasPermission()` 을 각자 호출하는
  * 서른 줄짜리 동일한 가드를 복사해 쓰고 있었다. 리소스 이름만 다른 코드라
  * 주석이 원본 그대로 남아 실제 검사 대상과 어긋난 파일도 있었다.
  */
@@ -22,7 +23,7 @@ export async function requirePermission(
   const session = await getAuthSession()
 
   if (
-    !(await handlePermission(session?.user?.id, action, resource, dataOwnerId))
+    !(await hasPermission(session?.user?.id, action, resource, dataOwnerId))
   ) {
     forbidden()
   }
@@ -41,7 +42,7 @@ export async function requireOwnPermission(
   const session = await getAuthSession()
   const userId = session?.user?.id
 
-  if (!(await handlePermission(userId, action, resource, userId))) {
+  if (!(await hasPermission(userId, action, resource, userId))) {
     forbidden()
   }
 

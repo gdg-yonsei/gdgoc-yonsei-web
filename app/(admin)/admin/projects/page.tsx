@@ -2,7 +2,7 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { Suspense } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
@@ -27,7 +27,7 @@ export default async function ProjectsPage() {
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canCreate, resolvedScope] = await Promise.all([
-    handlePermission(userId, 'post', 'projects'),
+    hasPermission(userId, 'post', 'projects'),
     userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
   ])
   const canCreateInCurrentScope =

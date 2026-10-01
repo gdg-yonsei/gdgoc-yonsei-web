@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { UsersIcon } from '@heroicons/react/24/outline'
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 
 import { Metadata } from 'next'
 import {
@@ -28,7 +28,7 @@ export default async function MembersPage() {
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canAccept, resolvedScope] = await Promise.all([
-    handlePermission(userId, 'put', 'membersRole'),
+    hasPermission(userId, 'put', 'membersRole'),
     userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
   ])
 

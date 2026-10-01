@@ -1,7 +1,6 @@
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
-import checkPermission from '@/lib/server/permission/check-permission'
-import { ResourceType } from '@/lib/server/permission/handle-permission'
-import { Locale } from '@/lib/i18n'
+import { isAllowed, type ResourceType } from '@/lib/server/permission/policy'
+import type { Locale } from '@/lib/i18n'
 import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
 
 /**
@@ -24,7 +23,7 @@ export interface NavigationItem {
   /** 순수 라벨. 아이콘은 렌더 단계에서 `key`로 매핑합니다. */
   name: string
   path: string
-  dataResource: ResourceType | string
+  dataResource: ResourceType
 }
 
 /**
@@ -90,8 +89,7 @@ export default async function getAdminNavigationItems(
     },
   ]
 
-  return adminNavigationItems.filter(
-    (item) =>
-      checkPermission(userId)[userRole]?.get?.[item.dataResource] ?? false
+  return adminNavigationItems.filter((item) =>
+    isAllowed(userRole, 'get', item.dataResource)
   )
 }

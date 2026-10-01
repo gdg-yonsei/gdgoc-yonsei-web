@@ -3,7 +3,7 @@ import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import { Suspense } from 'react'
 import PartsTable from '@/app/(admin)/admin/parts/parts-table'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import Link from 'next/link'
 import { getAuthSession } from '@/auth'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
@@ -24,7 +24,7 @@ export default async function PartsPage() {
   const t = getAdminMessages(locale)
   const session = await getAuthSession()
   // 사용자가 파타를 생성할 권한이 있는지 확인
-  const canCreate = await handlePermission(session?.user?.id, 'post', 'parts')
+  const canCreate = await hasPermission(session?.user?.id, 'post', 'parts')
   const resolvedScope = session?.user?.id
     ? await resolveAdminGenerationScope(session.user.id)
     : null

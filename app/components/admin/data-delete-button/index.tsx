@@ -1,7 +1,8 @@
 import type { AuthSession } from '@/auth'
-import handlePermission, {
+import {
+  hasPermission,
   ResourceType,
-} from '@/lib/server/permission/handle-permission'
+} from '@/lib/server/permission/has-permission'
 import { deleteResourceAction } from '@/app/components/admin/data-delete-button/actions'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
@@ -17,11 +18,7 @@ export default async function DataDeleteButton({
   dataId: string
 }) {
   const t = getAdminMessages(await getAdminLocale())
-  const canDelete = await handlePermission(
-    session?.user?.id,
-    'delete',
-    dataType
-  )
+  const canDelete = await hasPermission(session?.user?.id, 'delete', dataType)
 
   return (
     <>

@@ -3,7 +3,7 @@
 import { getAuthSession } from '@/auth'
 import { db } from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import type { ActionResult } from '@/lib/server/actions/types'
 import { revalidatePath } from 'next/cache'
 import { eq, sql } from 'drizzle-orm'
@@ -27,7 +27,7 @@ export async function deleteBookingAction(
     return { success: false, error: 'Unauthorized' }
   }
 
-  if (!(await handlePermission(session.user.id, 'delete', 'booking'))) {
+  if (!(await hasPermission(session.user.id, 'delete', 'booking'))) {
     return { success: false, error: 'Forbidden' }
   }
 

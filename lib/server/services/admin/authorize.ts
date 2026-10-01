@@ -5,11 +5,11 @@ import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
-import checkPermission from '@/lib/server/permission/check-permission'
-import type {
-  ActionType,
-  ResourceType,
-} from '@/lib/server/permission/handle-permission'
+import {
+  isAllowed,
+  type ActionType,
+  type ResourceType,
+} from '@/lib/server/permission/policy'
 import {
   fail,
   ok,
@@ -35,10 +35,9 @@ export function roleAllows(
   resource: ResourceType,
   ownerId?: string
 ): boolean {
-  return (
-    checkPermission(actor.userId, ownerId)[actor.role]?.[action]?.[resource] ??
-    false
-  )
+  return isAllowed(actor.role, action, resource, {
+    isOwner: actor.userId === ownerId,
+  })
 }
 
 /** 소유권을 무시하고(본인 데이터라고 가정하고) 역할상 가능한지. 도구 목록 필터용. */
@@ -47,7 +46,7 @@ export function roleCouldEver(
   action: ActionType,
   resource: ResourceType
 ): boolean {
-  return checkPermission('self', 'self')[role]?.[action]?.[resource] ?? false
+  return isAllowed(role, action, resource, { isOwner: true })
 }
 
 export function hasScope(actor: Actor, scope: Scope): boolean {

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import type { ResourceType } from '@/lib/server/permission/handle-permission'
+import type { ResourceType } from '@/lib/server/permission/policy'
 import { roleCouldEver } from '@/lib/server/services/admin/authorize'
 import type { Role, Scope } from '@/lib/server/services/admin/types'
 

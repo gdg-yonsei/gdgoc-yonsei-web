@@ -3,7 +3,7 @@ import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import GenerationsTable from '@/app/(admin)/admin/generations/generations-table'
 import { Suspense } from 'react'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { getAuthSession } from '@/auth'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
@@ -23,7 +23,7 @@ export default async function GenerationsPage() {
   const t = getAdminMessages(locale)
   // 사용자가 generation 생성 권한이 있는지 확인
   const session = await getAuthSession()
-  const canCreate = await handlePermission(
+  const canCreate = await hasPermission(
     session?.user?.id,
     'post',
     'generations'

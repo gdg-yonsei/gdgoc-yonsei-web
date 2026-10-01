@@ -16,8 +16,8 @@ vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({

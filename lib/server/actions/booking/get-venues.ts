@@ -1,7 +1,7 @@
 'use server'
 
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { bookingFetch } from './booking-fetch'
 
 export type VenuesResponse = {
@@ -26,7 +26,7 @@ export async function getVenuesAction(): Promise<VenuesResponse> {
     return { success: false, error: 'Unauthorized' }
   }
 
-  if (!(await handlePermission(session.user.id, 'get', 'bookingPage'))) {
+  if (!(await hasPermission(session.user.id, 'get', 'bookingPage'))) {
     return { success: false, error: 'Forbidden' }
   }
 

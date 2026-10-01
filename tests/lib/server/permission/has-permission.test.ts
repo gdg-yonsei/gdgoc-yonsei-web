@@ -5,17 +5,17 @@ vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
 }))
 
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 
 const mockedGetUserRole = vi.mocked(getUserRole)
 
-describe('handlePermission', () => {
+describe('hasPermission', () => {
   beforeEach(() => {
     mockedGetUserRole.mockReset()
   })
 
   it('returns false when userId is not provided', async () => {
-    const result = await handlePermission(undefined, 'get', 'adminPage')
+    const result = await hasPermission(undefined, 'get', 'adminPage')
 
     expect(result).toBe(false)
     expect(mockedGetUserRole).not.toHaveBeenCalled()
@@ -24,7 +24,7 @@ describe('handlePermission', () => {
   it('returns permission by fetched role', async () => {
     mockedGetUserRole.mockResolvedValue('LEAD')
 
-    const result = await handlePermission('lead-1', 'delete', 'parts')
+    const result = await hasPermission('lead-1', 'delete', 'parts')
 
     expect(result).toBe(true)
     expect(mockedGetUserRole).toHaveBeenCalledWith('lead-1')
@@ -33,7 +33,7 @@ describe('handlePermission', () => {
   it('denies restricted resource for member role', async () => {
     mockedGetUserRole.mockResolvedValue('MEMBER')
 
-    const result = await handlePermission('member-1', 'get', 'membersPage')
+    const result = await hasPermission('member-1', 'get', 'membersPage')
 
     expect(result).toBe(false)
   })

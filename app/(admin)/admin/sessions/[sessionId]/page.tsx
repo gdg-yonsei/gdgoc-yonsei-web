@@ -18,7 +18,7 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import {
   RemoveParticipantButton,
   UnregisterButton,
@@ -58,7 +58,7 @@ export default async function SessionPage({
   const session = await getAuthSession()
 
   // 작성자·코어 이상만 참가자 명단을 직접 관리할 수 있다.
-  const canManageParticipants = await handlePermission(
+  const canManageParticipants = await hasPermission(
     session?.user?.id,
     'put',
     'sessions',

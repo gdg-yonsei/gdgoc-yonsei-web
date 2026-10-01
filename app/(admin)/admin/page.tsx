@@ -26,7 +26,7 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 
 const CALENDAR_ICS_URL =
   'https://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics'
@@ -59,8 +59,8 @@ export default async function AdminPage() {
   const [resolvedScope, canCreateSession, canApproveMember] = await Promise.all(
     [
       resolveAdminGenerationScope(session.user.id),
-      handlePermission(session.user.id, 'post', 'sessions'),
-      handlePermission(session.user.id, 'put', 'members'),
+      hasPermission(session.user.id, 'post', 'sessions'),
+      hasPermission(session.user.id, 'put', 'members'),
     ]
   )
   const scope = resolvedScope?.scope ?? null

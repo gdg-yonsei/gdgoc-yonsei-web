@@ -4,7 +4,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { formatUserName } from '@/lib/format/user-name'
 import { updateMemberAction } from '@/app/(admin)/admin/members/[memberId]/edit/actions'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { requirePermission } from '@/lib/server/permission/require-permission'
 import { forbidden, notFound } from 'next/navigation'
 import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
@@ -178,11 +178,9 @@ export default async function EditMemberPage({
             isChecked={memberData.isForeigner}
           />
 
-          {(await handlePermission(
-            session?.user?.id,
-            'put',
-            'membersRole'
-          )) && <MemberRoleManager userRole={memberData.role} />}
+          {(await hasPermission(session?.user?.id, 'put', 'membersRole')) && (
+            <MemberRoleManager userRole={memberData.role} />
+          )}
           <SubmitButton />
         </DataForm>
       </div>

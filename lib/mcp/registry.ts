@@ -5,7 +5,7 @@ import type { z } from 'zod'
 import type {
   ActionType,
   ResourceType,
-} from '@/lib/server/permission/handle-permission'
+} from '@/lib/server/permission/has-permission'
 import { hasScope, roleCouldEver } from '@/lib/server/services/admin/authorize'
 import type {
   Actor,
