@@ -244,4 +244,24 @@ export const en = {
     'Please complete both Korean and English versions: {details}',
   languageNameEn: 'English',
   languageNameKo: 'Korean',
+
+  // ── Part member picker ──
+  selectedMembers: 'Selected members',
+  removeMember: 'Remove',
+  searchName: 'Search name',
+  memberNamePlaceholder: 'Korean or English name',
+  generationFilter: 'Generation filter',
+  partFilter: 'Part filter',
+  anyGeneration: 'All generations',
+  anyPart: 'All parts',
+  noMembership: 'No membership',
+  memberPickerHint:
+    'Search a name or select a generation or part to find members.',
+  noMatchingMembers: 'No matching members.',
+  searchResults: 'Results',
+
+  // ── Editors and part form ──
+  editor: 'Editor',
+  preview: 'Preview',
+  displayOrderHint: 'Parts with smaller numbers appear first.',
 } as const

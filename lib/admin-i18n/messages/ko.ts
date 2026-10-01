@@ -238,4 +238,23 @@ export const ko = {
   bilingualCompleteBoth: '한글/영어 버전을 모두 작성해 주세요: {details}',
   languageNameEn: '영어',
   languageNameKo: '한국어',
+
+  // ── Part member picker ──
+  selectedMembers: '선택된 멤버',
+  removeMember: '제거',
+  searchName: '이름 검색',
+  memberNamePlaceholder: '한글·영문 이름',
+  generationFilter: '기수 필터',
+  partFilter: '파트 필터',
+  anyGeneration: '모든 기수',
+  anyPart: '모든 파트',
+  noMembership: '소속 없음',
+  memberPickerHint: '이름을 검색하거나 기수·파트를 선택해 멤버를 찾으세요.',
+  noMatchingMembers: '검색 결과가 없습니다.',
+  searchResults: '검색 결과',
+
+  // ── Editors and part form ──
+  editor: '에디터',
+  preview: '미리보기',
+  displayOrderHint: '작은 숫자의 파트부터 표시됩니다.',
 } as const satisfies AdminMessages

@@ -69,11 +69,7 @@ export default async function CreatePartPage() {
           defaultValue={10}
           placeholder="10"
         />
-        <p className="text-ink-muted text-sm">
-          {locale === 'ko'
-            ? '작은 숫자의 파트부터 표시됩니다.'
-            : 'Parts with smaller numbers appear first.'}
-        </p>
+        <p className="text-ink-muted text-sm">{t.displayOrderHint}</p>
         <DataTextarea
           defaultValue={''}
           name={'description'}

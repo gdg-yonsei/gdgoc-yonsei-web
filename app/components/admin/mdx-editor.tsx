@@ -15,7 +15,7 @@ export default function MDXEditor({
   placeholder: string
   defaultValue?: string | null
 }) {
-  const { locale } = useAdminI18n()
+  const { t } = useAdminI18n()
   const [content, setContent] = useState<string | null>(defaultValue)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -34,7 +34,7 @@ export default function MDXEditor({
       <div className={'admin-field-label'}>{title}</div>
       <div className={'flex flex-col items-start gap-2 lg:flex-row'}>
         <div className={'w-full'}>
-          <div>{locale === 'ko' ? '에디터' : 'Editor'}</div>
+          <div>{t('editor')}</div>
           <textarea
             ref={textareaRef}
             name={name}
@@ -49,7 +49,7 @@ export default function MDXEditor({
           />
         </div>
         <div className={'w-full'}>
-          <div>{locale === 'ko' ? '미리보기' : 'Preview'}</div>
+          <div>{t('preview')}</div>
           <div
             className={
               'prose border-hairline min-h-96 w-full rounded-lg border-2 p-4'
