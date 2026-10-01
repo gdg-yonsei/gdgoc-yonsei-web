@@ -9,6 +9,10 @@ import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import {
+  SESSION_CATEGORY_OPTIONS,
+  sessionTypeOptions,
+} from '@/app/(admin)/admin/sessions/_lib/session-form-options'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
@@ -120,22 +124,13 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <DataSelectInput
-          data={[
-            { name: t.generalSession, value: 'General Session' },
-            { name: t.partSession, value: 'Part Session' },
-          ]}
+          data={sessionTypeOptions(t)}
           name={'type'}
           title={t.sessionType}
           defaultValue={'Part Session'}
         />
         <DataSelectInput
-          data={[
-            { name: 'Tech Talk (T19)', value: 'tech_talk' },
-            { name: 'Part Session', value: 'part_session' },
-            { name: 'Hackathon', value: 'hackathon' },
-            { name: 'Demo Day', value: 'demo_day' },
-            { name: 'DevRel / Social', value: 'devrel' },
-          ]}
+          data={SESSION_CATEGORY_OPTIONS}
           name={'category'}
           title={'Activity Category'}
           defaultValue={'tech_talk'}

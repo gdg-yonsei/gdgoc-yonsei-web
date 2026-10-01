@@ -183,3 +183,17 @@ export async function normalizeAdminGenerationScopeValueForUser(
 
   return String(options[0]?.id ?? '')
 }
+
+/**
+ * 현재 사용자가 상단 기수 범위를 `generationId`로 바꿀 수 있는지.
+ * 수정 화면이 "다른 기수의 데이터" 안내에 전환 버튼을 보일지 정할 때 쓴다.
+ */
+export function canSwitchToGeneration(
+  resolvedScope: ResolvedAdminGenerationScope | null | undefined,
+  generationId: number
+): boolean {
+  return (
+    resolvedScope?.canAccessAll === true ||
+    resolvedScope?.options.some((option) => option.id === generationId) === true
+  )
+}

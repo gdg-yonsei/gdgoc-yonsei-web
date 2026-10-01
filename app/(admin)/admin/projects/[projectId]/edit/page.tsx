@@ -14,7 +14,10 @@ import { getTagNames } from '@/lib/server/services/admin/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { requirePermission } from '@/lib/server/permission/require-permission'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveAdminGenerationScope,
+  canSwitchToGeneration,
+} from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 import GenerationField from '@/app/components/admin/generation-field'
@@ -75,12 +78,7 @@ export default async function EditProjectPage({
       {actualGeneration && (
         <AdminGenerationScopeMismatchNotice
           actualGeneration={actualGeneration}
-          canSwitch={
-            resolvedScope?.canAccessAll === true ||
-            resolvedScope?.options.some(
-              (option) => option.id === actualGeneration.id
-            ) === true
-          }
+          canSwitch={canSwitchToGeneration(resolvedScope, actualGeneration.id)}
           currentScope={resolvedScope?.scope ?? null}
           locale={locale}
         />

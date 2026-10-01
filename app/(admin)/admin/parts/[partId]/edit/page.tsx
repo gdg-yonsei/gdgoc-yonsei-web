@@ -13,7 +13,10 @@ import PartMembersInput from '@/app/components/admin/part-members-input'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveAdminGenerationScope,
+  canSwitchToGeneration,
+} from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { connection } from 'next/server'
 
@@ -69,12 +72,7 @@ export default async function EditPartPage({
       {actualGeneration && (
         <AdminGenerationScopeMismatchNotice
           actualGeneration={actualGeneration}
-          canSwitch={
-            resolvedScope?.canAccessAll === true ||
-            resolvedScope?.options.some(
-              (option) => option.id === actualGeneration.id
-            ) === true
-          }
+          canSwitch={canSwitchToGeneration(resolvedScope, actualGeneration.id)}
           currentScope={resolvedScope?.scope ?? null}
           locale={locale}
         />
