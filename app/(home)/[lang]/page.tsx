@@ -9,7 +9,6 @@ import LatestLog from '@/app/(home)/[lang]/_components/home/latest-log'
 import Manifesto from '@/app/(home)/[lang]/_components/home/manifesto'
 import Parts from '@/app/(home)/[lang]/_components/home/parts'
 import Programs from '@/app/(home)/[lang]/_components/home/programs'
-import languageParamChecker from '@/lib/language-param-checker'
 import type { Metadata } from 'next'
 import JsonLd from '@/app/components/json-ld'
 import {
@@ -17,6 +16,7 @@ import {
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string }>
@@ -28,7 +28,7 @@ const descriptions = {
 } as const
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const title =
     locale === 'ko'
       ? 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티'
@@ -54,7 +54,7 @@ export function generateStaticParams() {
  */
 export default async function HomePage({ params }: Props) {
   // 사용자 언어
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
 
   const siteRoot = getSiteUrl()
   const canonical = getLocalizedUrl(lang)

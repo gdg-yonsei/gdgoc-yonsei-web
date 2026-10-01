@@ -5,7 +5,7 @@ import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import SidebarContent, {
   AdminBrand,
 } from '@/app/components/admin/sidebar-content'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import type { AdminTheme } from '@/lib/admin-theme'
 

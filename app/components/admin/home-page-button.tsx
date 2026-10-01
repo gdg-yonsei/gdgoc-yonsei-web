@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 export default function HomePageButton({ locale = 'en' }: { locale?: Locale }) {

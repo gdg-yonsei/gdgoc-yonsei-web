@@ -2,7 +2,7 @@ import db from '@/db'
 import { sessions } from '@/db/schema/sessions'
 import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gte } from 'drizzle-orm'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 export default async function getUserUpcomingSessions(userId: string) {
   return db

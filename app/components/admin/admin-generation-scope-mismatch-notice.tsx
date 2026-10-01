@@ -1,6 +1,6 @@
 import AdminGenerationScopeSwitchButton from '@/app/components/admin/admin-generation-scope-switch-button'
 import { getAdminMessages } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import {
   type AdminGenerationOption,
   type AdminGenerationScope,

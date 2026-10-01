@@ -15,7 +15,7 @@ import {
   localizeAdminHref,
   type AdminMessages,
 } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 
 export type AdminGenerationListItem = {
   id: number

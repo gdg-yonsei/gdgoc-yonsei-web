@@ -8,20 +8,20 @@ import GenerationPager from '@/app/components/site/generation-pager'
 import MemberCard from '@/app/components/site/member-card'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   memberArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getMembersByGeneration } from '@/lib/server/queries/public/members'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import { createLocalizedMetadata, getLocalizedUrl } from '@/lib/seo/metadata'
-import { countLabel, fillTemplate } from '@/lib/site/format'
+import { countLabel, fillTemplate } from '@/lib/format/text'
 import { generationNeighbors } from '@/lib/site/generations'
 import { breadcrumbList } from '@/lib/site/json-ld'
 import { partHue } from '@/lib/site/labels'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
 
   if (!(await getMembersByGeneration(generation))) {
     notFound()
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MembersPage({ params }: Props) {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 

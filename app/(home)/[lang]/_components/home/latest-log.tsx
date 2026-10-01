@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import EmptyState from '@/app/components/site/empty-state'
 import RevealSuspense from '@/app/components/site/reveal-suspense'
 import SectionTag from '@/app/components/site/section-tag'

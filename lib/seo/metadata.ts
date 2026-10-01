@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { Metadata } from 'next'
-import { i18n, type Locale } from '@/i18n-config'
+import { i18n, type Locale } from '@/lib/i18n'
 import { getSiteEnv } from '@/lib/server/env'
 
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = {

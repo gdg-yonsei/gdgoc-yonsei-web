@@ -1,4 +1,4 @@
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 
 export type McpClientId =
   | 'claude-code'

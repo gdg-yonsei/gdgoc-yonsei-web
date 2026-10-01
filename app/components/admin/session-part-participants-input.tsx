@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
 import type { MemberMembership } from '@/lib/admin/member-options'

@@ -9,7 +9,7 @@
  * @param isForeigner
  * @param isKorean
  */
-export default function formatUserName(
+export function formatUserName(
   name: string | null | undefined,
   firstName: string | null | undefined,
   lastName: string | null | undefined,

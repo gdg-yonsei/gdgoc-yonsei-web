@@ -6,14 +6,14 @@ import { notFound } from 'next/navigation'
 import DataForm from '@/app/components/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { registerSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/register/actions'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import {
   formatAdminDate,
   getAdminLocale,
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { connection } from 'next/server'
 
 export default async function RegisterSessionPage({

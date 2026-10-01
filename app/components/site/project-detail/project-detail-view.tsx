@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import ImageSliderGallery from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import BracketPoster from '@/app/components/site/bracket-poster'
@@ -14,8 +14,8 @@ import type {
   ArchiveCommonCopy,
   ProjectArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import { formatInstantDate, toSeoulDateIso } from '@/lib/site/datetime'
-import { fillTemplate, initials } from '@/lib/site/format'
+import { formatInstantDate, toSeoulDateIso } from '@/lib/format/datetime'
+import { fillTemplate, initials } from '@/lib/format/text'
 import { isPlaceholderImage } from '@/lib/site/images'
 import {
   contributorName,

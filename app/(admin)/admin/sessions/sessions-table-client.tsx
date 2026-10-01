@@ -13,7 +13,7 @@ import {
   localizeAdminHref,
   type AdminMessages,
 } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
 import {
   ALL_FILTER_VALUE,

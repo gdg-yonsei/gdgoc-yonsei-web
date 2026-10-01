@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useRef, useState, type CSSProperties } from 'react'
 import { Bars2Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import LocaleSwitch from '@/app/components/site/locale-switch'
 import { carryQueryString } from '@/lib/site/carry-query'
 import type {

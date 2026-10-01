@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { carryQueryString } from '@/lib/site/carry-query'
 import LocaleSwitch from './locale-switch'
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 
 describe('formatUserName', () => {
   it('returns foreigner full name as first last', () => {

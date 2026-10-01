@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import type { StripGeneration } from '@/lib/site/generations'
 
 /**

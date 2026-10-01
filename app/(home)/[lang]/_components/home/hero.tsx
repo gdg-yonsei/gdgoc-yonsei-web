@@ -1,12 +1,12 @@
 import type { CSSProperties, ReactNode } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { googleSans } from '@/app/fonts'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink from '@/app/components/site/button-link'
 import { cn } from '@/lib/cn'
 import { heroCopy } from '@/lib/contents/site-copy'
-import { countLabel } from '@/lib/site/format'
+import { countLabel } from '@/lib/format/text'
 import BracketStage from './bracket-stage'
 
 const rise = (delayMs: number) =>

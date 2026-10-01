@@ -4,7 +4,7 @@ import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import ChevronLeftIcon from '@heroicons/react/24/outline/ChevronLeftIcon'
 import ChevronRightIcon from '@heroicons/react/24/outline/ChevronRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import Chip from '@/app/components/site/chip'
 import {
   eventsInMonth,
@@ -18,7 +18,7 @@ import {
   formatMonthKey,
   formatSessionLongDate,
   toSeoulDateIso,
-} from '@/lib/site/datetime'
+} from '@/lib/format/datetime'
 import { partHue } from '@/lib/site/labels'
 
 const copy = {

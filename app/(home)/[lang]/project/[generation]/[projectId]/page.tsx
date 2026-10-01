@@ -4,12 +4,11 @@ import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
 import ProjectDetailView from '@/app/components/site/project-detail/project-detail-view'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   projectArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import {
   getProjectById,
   getProjectShowcase,
@@ -32,6 +31,7 @@ import {
   toShowcaseProject,
 } from '@/lib/site/project-showcase'
 import ProjectDetailLoading from './loading'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
@@ -73,7 +73,7 @@ function fallbackDescription(
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {
@@ -114,7 +114,7 @@ async function ProjectDetail({
   generation: string
   projectId: string
 }) {
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {

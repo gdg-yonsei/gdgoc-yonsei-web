@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from 'react'
 import MagnifyingGlassIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
-import { countLabel } from '@/lib/site/format'
+import { countLabel } from '@/lib/format/text'
 import {
   EMPTY_FILTER,
   isFilterActive,

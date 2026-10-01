@@ -14,7 +14,7 @@ import {
 import { type AdminPartListItem } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { localizeAdminHref, type AdminMessages } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 
 type PartGroup = {
   generationName: string

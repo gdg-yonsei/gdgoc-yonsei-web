@@ -1,6 +1,6 @@
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
+import { toLocale } from '@/lib/i18n'
 
 /**
  * "Home / Sessions". It needs `params`, so hubs render it in its own
@@ -13,7 +13,7 @@ export default async function HubBreadcrumbs({
   params: Promise<{ lang: string }>
   section: 'sessions' | 'projects' | 'members' | 'calendar'
 }) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = archiveCommonCopy[lang]
 
   return (

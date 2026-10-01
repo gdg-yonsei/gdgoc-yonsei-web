@@ -1,5 +1,5 @@
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   GithubIcon,
   InstagramIcon,
@@ -7,7 +7,7 @@ import {
 } from '@/app/components/site/social-icons'
 import StaticImage from '@/app/components/site/static-image'
 import type { MemberArchiveCopy } from '@/lib/contents/archive-copy'
-import { initials } from '@/lib/site/format'
+import { initials } from '@/lib/format/text'
 import {
   memberLinks,
   memberName,

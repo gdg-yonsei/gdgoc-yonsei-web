@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n-config'
+import { toIntlLocale, type Locale } from '@/lib/i18n'
 
 const TITLE_WIDTH_PX = 1_050
 const TITLE_WIDTH_SAFETY_FACTOR = 0.94
@@ -11,7 +11,7 @@ export type SocialTitleLayout = {
 }
 
 function segmentGraphemes(value: string, locale: Locale): string[] {
-  const segmenter = new Intl.Segmenter(locale === 'ko' ? 'ko-KR' : 'en-US', {
+  const segmenter = new Intl.Segmenter(toIntlLocale(locale), {
     granularity: 'grapheme',
   })
 

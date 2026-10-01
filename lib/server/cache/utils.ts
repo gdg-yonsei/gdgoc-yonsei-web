@@ -1,8 +1,8 @@
 import 'server-only'
 
 import { revalidatePath, revalidateTag, updateTag } from 'next/cache'
-import type { Locale } from '@/i18n-config'
-import { i18n } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
+import { i18n } from '@/lib/i18n'
 import { isRouteHandlerInvalidation } from '@/lib/server/cache/invalidation-context'
 
 export type LocalizedPublicRoute = `/${string}`

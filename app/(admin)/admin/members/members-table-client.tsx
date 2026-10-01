@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import UserProfileImage from '@/app/components/user-profile-image'
 import AdminDataTable, {
   type AdminColumn,
@@ -10,7 +10,7 @@ import AdminEmptyState from '@/app/components/admin/empty-state'
 import { type AdminMemberListItem } from '@/lib/server/fetcher/admin/get-members'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { localizeAdminHref, type AdminMessages } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
 import {
   ALL_FILTER_VALUE,

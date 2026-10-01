@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { landingCopy } from '@/lib/contents/site-copy'
 
 /** Pole length and lean; the poles cross this far above their feet. */

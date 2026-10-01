@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import ExternalLink from '@/app/components/site/external-link'
 import SectionTag from '@/app/components/site/section-tag'
 import GDGLogo from '@/app/components/svg/gdg-logo'

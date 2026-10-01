@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { ViewTransition } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import Chip from '@/app/components/site/chip'
 import StaticImage from '@/app/components/site/static-image'
 import ExternalLink from '@/app/components/site/external-link'
 import type { ProjectArchiveCopy } from '@/lib/contents/archive-copy'
 import { joinFacetValues } from '@/lib/site/filter-state'
-import { initials } from '@/lib/site/format'
+import { initials } from '@/lib/format/text'
 import { isPlaceholderImage } from '@/lib/site/images'
 import {
   contributorName,

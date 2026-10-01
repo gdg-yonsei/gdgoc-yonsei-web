@@ -3,7 +3,7 @@ import SidebarContent, {
   AdminBrand,
 } from '@/app/components/admin/sidebar-content'
 import ThemeToggle from '@/app/components/admin/theme-toggle'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import type { AdminTheme } from '@/lib/admin-theme'
 

@@ -1,7 +1,7 @@
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { type AdminMessages } from '@/lib/admin-i18n'
-import { type Locale } from '@/i18n-config'
+import { type Locale } from '@/lib/i18n'
 import SessionsTableClient from './sessions-table-client'
 
 export default async function SessionsTable({

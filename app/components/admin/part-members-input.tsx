@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useAdminI18n } from './admin-i18n-provider'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import type { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 
 type Member = Awaited<ReturnType<typeof getPartMemberOptions>>[number]

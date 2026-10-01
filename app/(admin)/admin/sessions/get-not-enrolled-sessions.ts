@@ -3,7 +3,7 @@ import { userToSession } from '@/db/schema/user-to-session'
 import { and, asc, eq, gt, isNull, sql } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 export default async function getUnenrolledUpcomingSessions(userId: string) {
   const participantsSub = db

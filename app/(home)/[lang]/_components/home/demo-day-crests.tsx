@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import StaticImage from '@/app/components/site/static-image'
 import { landingCopy } from '@/lib/contents/site-copy'
 

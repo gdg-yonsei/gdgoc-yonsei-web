@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { getAuthSession } from '@/auth'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
 import {

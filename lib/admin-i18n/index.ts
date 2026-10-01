@@ -1,4 +1,4 @@
-import { Locale } from '@/i18n-config'
+import { toIntlLocale, type Locale } from '@/lib/i18n'
 
 export const ADMIN_LOCALE_COOKIE = 'admin-locale'
 
@@ -484,16 +484,12 @@ export function localizeAdminHref(href: string, locale: Locale): string {
   return `/${locale}${href}`
 }
 
-export function getAdminIntlLocale(locale: Locale): string {
-  return locale === 'ko' ? 'ko-KR' : 'en-US'
-}
-
 export function formatAdminDate(
   value: string | Date,
   locale: Locale,
   options: Intl.DateTimeFormatOptions
 ): string {
-  return new Intl.DateTimeFormat(getAdminIntlLocale(locale), options).format(
+  return new Intl.DateTimeFormat(toIntlLocale(locale), options).format(
     typeof value === 'string' ? new Date(value) : value
   )
 }

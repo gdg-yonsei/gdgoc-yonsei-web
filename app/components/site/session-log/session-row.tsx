@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import Chip from '@/app/components/site/chip'
 import StaticImage from '@/app/components/site/static-image'
-import { formatLogStamp, toKstIso } from '@/lib/site/datetime'
+import { formatLogStamp, toKstIso } from '@/lib/format/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
 import { categoryHue, categoryLabel, partHue } from '@/lib/site/labels'
 import {

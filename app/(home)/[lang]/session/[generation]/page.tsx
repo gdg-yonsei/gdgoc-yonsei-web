@@ -9,13 +9,12 @@ import GenerationPager from '@/app/components/site/generation-pager'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import SessionLog from '@/app/components/site/session-log/session-log'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   sessionArchiveCopy,
   sessionFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
@@ -25,7 +24,7 @@ import {
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { fillTemplate } from '@/lib/site/format'
+import { fillTemplate } from '@/lib/format/text'
 import { generationNeighbors } from '@/lib/site/generations'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 import {
@@ -33,6 +32,7 @@ import {
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
@@ -50,7 +50,7 @@ async function generationSessions(generation: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const [generations, sessions] = await Promise.all([
     getGenerationSummaries(),
     generationSessions(generation),
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SessionGenerationPage({ params }: Props) {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 

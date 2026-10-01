@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
 

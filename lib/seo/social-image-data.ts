@@ -1,10 +1,13 @@
 import 'server-only'
 
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getProjectById } from '@/lib/server/queries/public/projects'
 import { getSessionById } from '@/lib/server/queries/public/sessions'
-import { formatInstantDate, formatSessionShortDate } from '@/lib/site/datetime'
+import {
+  formatInstantDate,
+  formatSessionShortDate,
+} from '@/lib/format/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
 import { categoryLabel, isSessionCategory } from '@/lib/site/labels'
 

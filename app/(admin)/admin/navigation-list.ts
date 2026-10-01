@@ -1,7 +1,7 @@
 import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
 import checkPermission from '@/lib/server/permission/check-permission'
 import { ResourceType } from '@/lib/server/permission/handle-permission'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
 
 /**

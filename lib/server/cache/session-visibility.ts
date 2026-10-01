@@ -6,7 +6,7 @@ import {
   getSessionVisibilityBucket,
   publicCachePolicy,
 } from '@/lib/server/cache/policy'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 /**
  * Captures the current publication window inside an explicit cache boundary so

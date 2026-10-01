@@ -14,7 +14,6 @@ import {
   projectArchiveCopy,
   projectFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import {
@@ -29,6 +28,7 @@ import {
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
+import { toLocale } from '@/lib/i18n'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -40,7 +40,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = projectArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -97,7 +97,7 @@ function ProjectGridFallback() {
 }
 
 async function ProjectHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = projectArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const [showcase, generations] = await Promise.all([

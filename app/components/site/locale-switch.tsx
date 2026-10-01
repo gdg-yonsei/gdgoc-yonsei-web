@@ -1,6 +1,6 @@
 import type { SyntheticEvent } from 'react'
-import type { Locale } from '@/i18n-config'
-import { localizedPath } from '@/lib/site/localized-path'
+import type { Locale } from '@/lib/i18n'
+import { localizedPath } from '@/lib/i18n'
 
 const LOCALES: ReadonlyArray<{ code: Locale; short: string; name: string }> = [
   { code: 'en', short: 'EN', name: 'English' },

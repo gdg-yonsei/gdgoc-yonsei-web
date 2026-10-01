@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import GDGLogo from '@/app/components/svg/gdg-logo'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import HeaderNavigation, { NavigationFallback } from './navigation'
 import {

@@ -1,5 +1,5 @@
-import type { Locale } from '@/i18n-config'
-import formatUserName from '@/lib/format-user-name'
+import type { Locale } from '@/lib/i18n'
+import { formatUserName } from '@/lib/format/user-name'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
 
 export type ProjectUserRow = {

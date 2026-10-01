@@ -4,7 +4,7 @@ import {
   getAdminMessages,
   localizeAdminHref,
 } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 
 export default function RegisterSessionCard({
   sessionId,

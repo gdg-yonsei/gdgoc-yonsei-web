@@ -1,5 +1,5 @@
 import { formatAdminDate, getAdminLocale } from '@/lib/admin-i18n/server'
-import { type Locale } from '@/i18n-config'
+import { type Locale } from '@/lib/i18n'
 
 /**
  * Generation Activity Period Component

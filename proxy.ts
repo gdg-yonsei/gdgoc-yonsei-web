@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { i18n } from './i18n-config'
+import { i18n, isLocale } from '@/lib/i18n'
 import { ADMIN_LOCALE_COOKIE } from '@/lib/admin-i18n'
 import db from '@/db'
 import { generations } from '@/db/schema/generations'
@@ -8,7 +8,7 @@ import { parts } from '@/db/schema/parts'
 import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'
 import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import {
   BRACKET_VIEWBOX,
@@ -60,8 +60,7 @@ function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {}
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
 
-  // @ts-expect-error - i18n.locales is a readonly array
-  const locales: string[] = i18n.locales
+  const locales = [...i18n.locales]
 
   // Use negotiator and intl-localematcher to get best locale
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
@@ -69,12 +68,6 @@ function getLocale(request: NextRequest): string | undefined {
   )
 
   return matchLocale(languages, locales, i18n.defaultLocale)
-}
-
-function isSupportedLocale(locale: string | undefined): locale is string {
-  return (
-    !!locale && i18n.locales.includes(locale as (typeof i18n.locales)[number])
-  )
 }
 
 type PublicRouteIdentity =
@@ -97,7 +90,7 @@ function getPublicRouteIdentity(
   const segments = request.nextUrl.pathname.split('/').filter(Boolean)
   const [locale, section, generation, id] = segments
 
-  if (!isSupportedLocale(locale) || !generation) {
+  if (!isLocale(locale) || !generation) {
     return null
   }
 
@@ -262,7 +255,7 @@ export async function proxy(request: NextRequest) {
   const pathnameSegments = pathname.split('/')
   const localeFromPath = pathnameSegments[1]
   const isLocalizedAdminPath =
-    isSupportedLocale(localeFromPath) && pathnameSegments[2] === 'admin'
+    isLocale(localeFromPath) && pathnameSegments[2] === 'admin'
 
   if (isLocalizedAdminPath) {
     const requestHeaders = new Headers(request.headers)
@@ -289,7 +282,7 @@ export async function proxy(request: NextRequest) {
 
   if (isAdminPath) {
     const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
-    const locale = isSupportedLocale(localeFromCookie)
+    const locale = isLocale(localeFromCookie)
       ? localeFromCookie
       : (getLocale(request) ?? i18n.defaultLocale)
     const requestHeaders = new Headers(request.headers)

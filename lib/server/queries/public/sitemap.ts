@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { MetadataRoute } from 'next'
-import { i18n } from '@/i18n-config'
+import { i18n } from '@/lib/i18n'
 import { cacheQuery, sitemapTag } from '@/lib/server/cache'
 import {
   getSessionVisibilityBucket,
@@ -10,7 +10,7 @@ import {
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { getAbsoluteUrl } from '@/lib/seo/metadata'
 import { localizeSitemapEntries } from '@/lib/seo/sitemap'
 import { buildSitemapPaths } from '@/lib/site/sitemap-paths'

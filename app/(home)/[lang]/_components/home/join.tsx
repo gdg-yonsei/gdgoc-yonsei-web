@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink, { buttonClasses } from '@/app/components/site/button-link'
 import ExternalLink from '@/app/components/site/external-link'

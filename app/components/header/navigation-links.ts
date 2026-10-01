@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { chromeCopy, type ChromeCopy } from '@/lib/contents/site-copy'
 
 export type HeaderNavigationLink = {

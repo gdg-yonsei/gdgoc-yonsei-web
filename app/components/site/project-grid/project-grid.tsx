@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import type { ProjectArchiveCopy } from '@/lib/contents/archive-copy'
 import type { ShowcaseProject } from '@/lib/site/project-showcase'
 import ProjectCard from './project-card'

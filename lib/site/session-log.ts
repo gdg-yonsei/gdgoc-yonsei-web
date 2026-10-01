@@ -1,5 +1,5 @@
-import type { Locale } from '@/i18n-config'
-import { sessionMonthKey } from '@/lib/site/datetime'
+import { pickLocalized, type Locale } from '@/lib/i18n'
+import { sessionMonthKey } from '@/lib/format/datetime'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
 import {
   SESSION_CATEGORIES,
@@ -42,20 +42,14 @@ export function sessionTitle(
   session: Pick<LogSession, 'name' | 'nameKo'>,
   locale: Locale
 ): string {
-  return locale === 'ko'
-    ? session.nameKo || session.name
-    : session.name || session.nameKo
+  return pickLocalized(locale, { en: session.name, ko: session.nameKo }) ?? ''
 }
 
 export function sessionLocation(
   session: Pick<LogSession, 'location' | 'locationKo'>,
   locale: Locale
 ): string | null {
-  const [primary, fallback] =
-    locale === 'ko'
-      ? [session.locationKo, session.location]
-      : [session.location, session.locationKo]
-  return primary || fallback || null
+  return pickLocalized(locale, { en: session.location, ko: session.locationKo })
 }
 
 function compareNewestFirst(a: LogSession, b: LogSession): number {

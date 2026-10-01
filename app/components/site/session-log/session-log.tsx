@@ -1,7 +1,7 @@
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import type { SessionArchiveCopy } from '@/lib/contents/archive-copy'
-import { formatMonthKey } from '@/lib/site/datetime'
-import { countLabel } from '@/lib/site/format'
+import { formatMonthKey } from '@/lib/format/datetime'
+import { countLabel } from '@/lib/format/text'
 import {
   TBA_MONTH,
   type LogGeneration,

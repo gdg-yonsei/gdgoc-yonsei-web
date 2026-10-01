@@ -14,7 +14,6 @@ import {
   sessionArchiveCopy,
   sessionFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
@@ -30,6 +29,7 @@ import {
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
+import { toLocale } from '@/lib/i18n'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -41,7 +41,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = sessionArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -100,7 +100,7 @@ function SessionHubFallback() {
 }
 
 async function SessionHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = sessionArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const visibilityBucket = await getCachedSessionVisibilityBucket()

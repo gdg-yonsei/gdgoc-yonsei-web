@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ViewTransition } from 'react'
 import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import ImageSliderGallery from '@/app/components/images-slider'
 import SafeMDX from '@/app/components/safe-mdx'
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
@@ -18,7 +18,7 @@ import {
   formatSessionShortDate,
   formatSessionTime,
   toKstIso,
-} from '@/lib/site/datetime'
+} from '@/lib/format/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
 import { categoryHue, categoryLabel, partHue } from '@/lib/site/labels'
 import { sessionTitle, type LogSession } from '@/lib/site/session-log'

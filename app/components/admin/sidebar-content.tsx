@@ -6,7 +6,7 @@ import UserAuthControlPanel from '@/app/components/admin/user-auth-control-panel
 import AdminGenerationScopeBar from '@/app/components/admin/admin-generation-scope-bar'
 import HomePageButton from '@/app/components/admin/home-page-button'
 import RefreshAllDataButton from '@/app/components/admin/refresh-all-data-button'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 

@@ -7,7 +7,7 @@ import { getSession } from '@/lib/server/fetcher/admin/get-session'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
 import SafeMDX from '@/app/components/safe-mdx'
@@ -23,7 +23,7 @@ import {
   RemoveParticipantButton,
   UnregisterButton,
 } from '@/app/(admin)/admin/sessions/[sessionId]/participant-actions'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 export async function generateMetadata({
   params,

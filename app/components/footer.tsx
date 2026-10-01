@@ -1,7 +1,7 @@
 import { Suspense, type ReactNode } from 'react'
 import Link from 'next/link'
 import ArrowUpRightIcon from '@heroicons/react/24/outline/ArrowUpRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import FooterLocaleSwitch from '@/app/components/site/footer-locale-switch'
 import LocaleSwitch from '@/app/components/site/locale-switch'

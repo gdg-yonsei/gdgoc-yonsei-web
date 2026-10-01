@@ -7,7 +7,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getAuthSession } from '@/auth'
 import SafeMDX from '@/app/components/safe-mdx'
 import Image from 'next/image'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import Link from 'next/link'
 import {

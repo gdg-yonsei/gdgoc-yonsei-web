@@ -7,7 +7,7 @@ import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import { getProjects } from '@/lib/server/fetcher/admin/get-projects'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 export type AdminStats = {
   members: number

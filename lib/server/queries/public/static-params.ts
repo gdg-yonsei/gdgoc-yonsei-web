@@ -4,7 +4,7 @@ import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjects } from '@/lib/server/queries/public/projects'
 import { getPublishedSessionsForSitemap } from '@/lib/server/queries/public/sessions'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 const EMPTY_STATIC_PARAM = '__empty__'
 

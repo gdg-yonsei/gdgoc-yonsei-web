@@ -1,5 +1,5 @@
-import type { Locale } from '@/i18n-config'
-import { toKstIso } from '@/lib/site/datetime'
+import type { Locale } from '@/lib/i18n'
+import { toKstIso } from '@/lib/format/datetime'
 
 /* Pure builders: callers pass absolute URLs (see lib/seo/metadata.ts). */
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { countLabel, fillTemplate, initials } from '@/lib/site/format'
+import { countLabel, fillTemplate, initials } from '@/lib/format/text'
 
 describe('copy templates', () => {
   it('replaces known tokens and leaves unknown ones', () => {

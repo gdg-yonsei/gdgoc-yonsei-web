@@ -4,10 +4,10 @@ import '../../globals.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import languageParamChecker from '@/lib/language-param-checker'
 import { googleSansCode, googleSansFlex } from '@/app/fonts'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import { cn } from '@/lib/cn'
+import { toLocale } from '@/lib/i18n'
 
 type LangLayoutProps = {
   children: ReactNode
@@ -21,7 +21,7 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: LangLayoutProps): Promise<Metadata> {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
 
   if (lang === 'ko') {
     return {
@@ -53,7 +53,7 @@ export default async function RootLayout({
   children,
   params,
 }: LangLayoutProps) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
 
   return (
     <html

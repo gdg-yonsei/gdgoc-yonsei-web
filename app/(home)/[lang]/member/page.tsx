@@ -11,15 +11,15 @@ import {
   archiveCommonCopy,
   memberArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import {
   createLocalizedMetadata,
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { fillTemplate } from '@/lib/site/format'
+import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
+import { toLocale } from '@/lib/i18n'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -31,7 +31,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = memberArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -87,7 +87,7 @@ function MemberHubSkeleton() {
 }
 
 async function MemberHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = memberArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const generations = [...(await getGenerationSummaries())].sort((a, b) =>

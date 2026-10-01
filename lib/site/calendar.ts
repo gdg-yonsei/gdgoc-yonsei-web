@@ -1,5 +1,5 @@
-import type { Locale } from '@/i18n-config'
-import { formatSessionTime, toKstIso } from '@/lib/site/datetime'
+import type { Locale } from '@/lib/i18n'
+import { formatSessionTime, toKstIso } from '@/lib/format/datetime'
 import { categoryHue, categoryLabel, type Hue } from '@/lib/site/labels'
 import { sessionLocation, sessionTitle } from '@/lib/site/session-log'
 

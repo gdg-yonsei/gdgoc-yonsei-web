@@ -1,11 +1,11 @@
 import 'server-only'
 
-import languageParamChecker from '@/lib/language-param-checker'
 import {
   getProjectSocialImageContent,
   getSessionSocialImageContent,
   getSocialImageAlt,
 } from '@/lib/seo/social-image-data'
+import { toLocale } from '@/lib/i18n'
 
 export type SessionSocialImageParams = {
   lang: string
@@ -34,7 +34,7 @@ export async function generateSessionSocialImageMetadata(
   params: SessionSocialImageParams
 ) {
   const content = await getSessionSocialImageContent({
-    locale: languageParamChecker(params.lang),
+    locale: toLocale(params.lang),
     generation: params.generation,
     sessionId: params.sessionId,
   })
@@ -48,7 +48,7 @@ export async function renderSessionSocialImage(
 ) {
   const [{ lang, generation, sessionId }] = await Promise.all([params, id])
   const content = await getSessionSocialImageContent({
-    locale: languageParamChecker(lang),
+    locale: toLocale(lang),
     generation,
     sessionId,
   })
@@ -61,7 +61,7 @@ export async function generateProjectSocialImageMetadata(
   params: ProjectSocialImageParams
 ) {
   const content = await getProjectSocialImageContent({
-    locale: languageParamChecker(params.lang),
+    locale: toLocale(params.lang),
     generation: params.generation,
     projectId: params.projectId,
   })
@@ -75,7 +75,7 @@ export async function renderProjectSocialImage(
 ) {
   const [{ lang, generation, projectId }] = await Promise.all([params, id])
   const content = await getProjectSocialImageContent({
-    locale: languageParamChecker(lang),
+    locale: toLocale(lang),
     generation,
     projectId,
   })

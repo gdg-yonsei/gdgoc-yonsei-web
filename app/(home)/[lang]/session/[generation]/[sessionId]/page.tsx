@@ -4,12 +4,11 @@ import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
 import SessionDetailView from '@/app/components/site/session-detail/session-detail-view'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   sessionArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import {
   getSessionArchive,
@@ -22,7 +21,7 @@ import {
   getSiteUrl,
   summarizeForMetadata,
 } from '@/lib/seo/metadata'
-import { formatSessionShortDate } from '@/lib/site/datetime'
+import { formatSessionShortDate } from '@/lib/format/datetime'
 import {
   breadcrumbList,
   sessionEvent,
@@ -36,6 +35,7 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import SessionDetailLoading from './loading'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
@@ -66,7 +66,7 @@ function fallbackDescription(
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, sessionId } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
@@ -116,7 +116,7 @@ async function SessionDetail({
   generation: string
   sessionId: string
 }) {
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {

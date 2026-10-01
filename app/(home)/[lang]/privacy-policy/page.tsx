@@ -2,9 +2,9 @@ import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import PageTransition from '@/app/components/site/page-transition'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { chromeCopy } from '@/lib/contents/site-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { Metadata } from 'next'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
+import { toLocale } from '@/lib/i18n'
 
 type Props = {
   params: Promise<{ lang: string }>
@@ -15,7 +15,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
 
   if (lang === 'ko') {
     return createLocalizedMetadata({
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PrivacyPolicyPage({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const common = archiveCommonCopy[lang]
   const isKorean = lang === 'ko'
 

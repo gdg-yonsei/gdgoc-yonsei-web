@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { revalidatePath } from 'next/cache'
-import { i18n } from '@/i18n-config'
+import { i18n } from '@/lib/i18n'
 import {
   generationLatestTag,
   generationListTag,

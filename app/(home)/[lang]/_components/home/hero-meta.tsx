@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'

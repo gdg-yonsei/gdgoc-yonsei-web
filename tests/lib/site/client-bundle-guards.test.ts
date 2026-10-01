@@ -92,8 +92,8 @@ describe('public client bundles', () => {
     expect(
       resolveImport(
         'app/components/site/filter-bar.tsx',
-        '../../../lib/site/format'
+        '../../../lib/format/text'
       )
-    ).toBe('lib/site/format.ts')
+    ).toBe('lib/format/text.ts')
   })
 })

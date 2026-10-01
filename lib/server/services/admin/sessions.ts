@@ -42,7 +42,7 @@ import {
   getGenerationNameForPartId,
   getSessionCacheContext,
 } from '@/lib/server/services/cache-context'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { sessionValidation } from '@/lib/validations/session'
 
 export type SessionInput = z.input<typeof sessionValidation>

@@ -9,7 +9,7 @@ import {
   sessionMonthKey,
   toKstIso,
   toSeoulDateIso,
-} from '@/lib/site/datetime'
+} from '@/lib/format/datetime'
 
 // The admin form stores a 19:00 KST session as 19:00 with a UTC label.
 const sixthT19 = new Date('2025-11-04T19:00:00.000Z')

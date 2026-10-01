@@ -20,7 +20,7 @@ import {
   updateSession,
 } from '@/lib/server/services/admin/sessions'
 import { fail, ok } from '@/lib/server/services/admin/types'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 const sessionId = z.string().uuid().describe('Session id.')
 const dateTime = z

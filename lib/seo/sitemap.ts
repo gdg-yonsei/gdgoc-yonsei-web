@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { MetadataRoute } from 'next'
-import { i18n } from '@/i18n-config'
+import { i18n } from '@/lib/i18n'
 import { getLanguageAlternates, getLocalizedUrl } from '@/lib/seo/metadata'
 
 export type SitemapPathEntry = Omit<

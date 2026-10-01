@@ -1,7 +1,7 @@
 import AdminGenerationScopeSelect from '@/app/components/admin/admin-generation-scope-select'
 import { cn } from '@/lib/cn'
 import { getAdminMessages } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { Locale } from '@/lib/i18n'
 import {
   type ResolvedAdminGenerationScope,
   serializeAdminGenerationScope,

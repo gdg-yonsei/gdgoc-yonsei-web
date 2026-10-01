@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { landingCopy } from '@/lib/contents/site-copy'
 
 /** The 2023 Solution Challenge as narrowing brackets: every step is a

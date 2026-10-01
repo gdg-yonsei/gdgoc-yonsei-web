@@ -15,7 +15,7 @@ import {
 import type { ComponentType, SVGProps } from 'react'
 import { useSetAtom } from 'jotai'
 import { menuBarState } from '@/lib/atoms'
-import { i18n } from '@/i18n-config'
+import { isLocale } from '@/lib/i18n'
 import type {
   NavigationItem,
   NavigationKey,
@@ -47,7 +47,7 @@ const NAV_ICONS: Record<NavigationKey, IconComponent> = {
 function stripLocale(pathname: string) {
   const segments = pathname.split('/')
   const maybeLocale = segments[1] ?? ''
-  if ((i18n.locales as readonly string[]).includes(maybeLocale)) {
+  if (isLocale(maybeLocale)) {
     return '/' + segments.slice(2).join('/')
   }
   return pathname

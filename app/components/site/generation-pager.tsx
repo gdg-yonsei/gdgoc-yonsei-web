@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import type { GenerationRef } from '@/lib/site/generations'
 
 /* Same page, another generation: links crossfade (PAGE_TRANSITIONS). Arrows

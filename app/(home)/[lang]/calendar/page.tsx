@@ -5,12 +5,12 @@ import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import SessionCalendar from '@/app/(home)/[lang]/calendar/session-calendar'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getCalendarSessions } from '@/lib/server/queries/public/sessions'
 import { toCalendarEvents } from '@/lib/site/calendar'
-import { toSeoulDateIso } from '@/lib/site/datetime'
+import { toSeoulDateIso } from '@/lib/format/datetime'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
+import { toLocale } from '@/lib/i18n'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -32,7 +32,7 @@ const copy = {
 } as const
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
 
   return createLocalizedMetadata({
     locale,
@@ -86,7 +86,7 @@ function CalendarFallback() {
 }
 
 async function CalendarContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const sessions = await getCalendarSessions()
 
