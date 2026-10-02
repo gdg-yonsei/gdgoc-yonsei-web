@@ -52,7 +52,10 @@ function generationScopedPaths(
   ])
 }
 
-/** 공개 사이트의 모든 주요 캐시를 지운다(관리자 사이드바의 전체 새로고침 버튼). */
+/**
+ * 공개 사이트의 목록 캐시를 지운다(관리자 사이드바의 새로고침 버튼): 홈, 허브(세션·프로젝트·멤버·캘린더), 기수 목록, 사이트맵.
+ * 세션·프로젝트·멤버 상세(`*:item:*` 태그)는 포함하지 않는다.
+ */
 export function invalidateAllPublicCache() {
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [

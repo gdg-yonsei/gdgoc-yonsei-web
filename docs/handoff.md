@@ -18,19 +18,20 @@
 
 브랜치 `refactor/handoff-clean-code`의 `fix:` 커밋들이다. 나머지 `refactor:`·`docs:` 커밋은 동작을 바꾸지 않는다.
 
-| 커밋                                                                              | 바뀐 점                                                                                              |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `fix(admin): stop part pages from showing parts of other generations`             | 파트 상세·수정 화면이 기수 접근 권한을 확인한다(URL을 알아도 다른 기수 파트는 403)                   |
-| `fix(admin): limit the public cache refresh to CORE and LEAD`                     | 공개 캐시 전체 새로고침이 MEMBER에게도 열려 있던 것을 CORE·LEAD로 제한                               |
-| `fix(cache): expire Redis cache entries when Next.js expires them`                | Redis 캐시 항목에 TTL을 걸어 쓰이지 않는 키가 쌓이지 않게 함                                         |
-| `fix(admin): save parts, projects and sessions atomically, clean R2 after commit` | 행 + 관계 행 쓰기를 트랜잭션으로 묶고, R2 정리는 커밋 뒤에                                           |
-| `fix(booking): stop writing to the database while rendering the booking page`     | 대관 화면 렌더링 중 DB 쓰기를 없앰. 최신 상태는 화면에 덧씌우고 저장은 응답 뒤에                     |
-| `fix(admin): explain why a session unregister or participant removal failed`      | 참가 취소·참가자 제거 실패가 모두 403이던 것을 원인별로(없음/끝난 세션 → CONFLICT 등)                |
-| `fix(site): fall back to the other language the same way for every text`          | 한쪽 언어가 비었을 때 모든 콘텐츠가 같은 방식(양방향)으로 다른 언어를 보여 줌                        |
-| `fix(admin): join profile image keys to the image domain with one slash`          | 프로필 이미지 URL의 이중 슬래시 수정                                                                 |
-| `fix(booking): stop returning raw database errors to the browser`                 | 대관 오류 응답에 DB 오류 원문(테이블·제약 이름)을 싣지 않음                                          |
-| `fix(admin): show session names in the admin language on session cards`           | 세션 화면의 두 카드가 관리자 언어로 세션 이름을 보여 줌(전에는 한쪽은 항상 한국어, 한쪽은 항상 영어) |
-| `fix(seed): store dev-seed session times as Seoul wall clock`                     | 개발용 시드 세션이 9시간 이르게 표시되던 문제(개발 데이터만 해당)                                    |
+| 커밋                                                                              | 바뀐 점                                                                                                      |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `fix(admin): stop part pages from showing parts of other generations`             | 파트 상세·수정 화면이 기수 접근 권한을 확인한다(URL을 알아도 다른 기수 파트는 403)                           |
+| `fix(admin): limit the public cache refresh to CORE and LEAD`                     | 공개 캐시 전체 새로고침이 MEMBER에게도 열려 있던 것을 CORE·LEAD로 제한                                       |
+| `fix(cache): expire Redis cache entries when Next.js expires them`                | Redis 캐시 항목에 TTL을 걸어 쓰이지 않는 키가 쌓이지 않게 함                                                 |
+| `fix(admin): save parts, projects and sessions atomically, clean R2 after commit` | 행 + 관계 행 쓰기를 트랜잭션으로 묶고, R2 정리는 커밋 뒤에                                                   |
+| `fix(booking): stop writing to the database while rendering the booking page`     | 대관 화면 렌더링 중 DB 쓰기를 없앰. 최신 상태는 화면에 덧씌우고 저장은 응답 뒤에                             |
+| `fix(admin): explain why a session unregister or participant removal failed`      | 참가 취소·참가자 제거 실패가 모두 403이던 것을 원인별로(없음/끝난 세션 → CONFLICT 등)                        |
+| `fix(site): fall back to the other language the same way for every text`          | 한쪽 언어가 비었을 때 모든 콘텐츠가 같은 방식(양방향)으로 다른 언어를 보여 줌                                |
+| `fix(admin): join profile image keys to the image domain with one slash`          | 프로필 이미지 URL의 이중 슬래시 수정                                                                         |
+| `fix(booking): stop returning raw database errors to the browser`                 | 대관 오류 응답에 DB 오류 원문(테이블·제약 이름)을 싣지 않음                                                  |
+| `fix(admin): show session names in the admin language on session cards`           | 세션 화면의 두 카드가 관리자 언어로 세션 이름을 보여 줌(전에는 한쪽은 항상 한국어, 한쪽은 항상 영어)         |
+| `fix(admin): render the admin 404 inside the admin shell`                         | 관리자 화면에서 없는 항목을 열면 `<html>`이 중첩되어 hydration 오류가 나던 것을, 관리자 셸 안의 404 화면으로 |
+| `fix(seed): store dev-seed session times as Seoul wall clock`                     | 개발용 시드 세션이 9시간 이르게 표시되던 문제(개발 데이터만 해당)                                            |
 
 삭제한 것: 2026 신입생 OT 페이지, 쓰이지 않던 SVG·헬퍼·검증 스키마, 대관 장소 API(`AUTO_BOOKER_URL`), 공개
 `getSessions` 쿼리, 중첩된(Next가 읽지 않는) manifest 파일, 쓰이지 않는 관리자 사전 키, `SaveImageButton`.
@@ -38,8 +39,14 @@
 ## 3. 검증 상태
 
 - `pnpm test:types`, `pnpm lint --max-warnings=0`, `pnpm test`: 통과(커밋마다 실행).
-- **e2e(`test:e2e:prod`)는 로컬에서 실행하지 않았다.** 로컬에 일회용 Postgres가 없었다. PR을 올리면 CI가 실행한다.
-- `next build`는 운영 DB 접근이 필요해 로컬에서 실행하지 않았다(최종 보고 참고). CI의 E2E 작업이 운영 빌드를 만든다.
+- `pnpm exec next build`: Dev DB(마이그레이션 + `pnpm db:seed --force`로 채움)에 연결해 통과. 모든 공개 경로가 prerender된다.
+- 브라우저 확인(Playwright Chromium, 개발 서버 + Dev DB, 임시 LEAD 계정): 공개 페이지(홈, 허브, 상세, 캘린더, 404),
+  로그인 화면, 관리자 화면(대시보드, 세션, 멤버, 가입 승인, 파트 수정, 프로젝트 상세, 대관, 프로필), 세션 카드 언어,
+  갤러리 라벨(영어/한국어), 삭제 확인 모달과 모바일 메뉴의 포커스 처리. 실제 삭제·저장 같은 쓰기 동작은 하지 않았다.
+- 개발 모드 콘솔에는 Next 16.3의 "즉시 이동" 검증 경고가 남아 있다(`/[lang]` 루트 레이아웃과 홈이 `params`를,
+  관리자 레이아웃이 `connection()`을 Suspense 밖에서 읽음). `main`에서도 똑같이 나오는 기존 구조이며, 후속 작업
+  "root-params 전환"과 "권한 레이아웃 정리"에서 함께 해결한다.
+- **e2e(`test:e2e:prod`)는 로컬에서 실행하지 않았다.** PR을 올리면 CI가 일회용 Postgres로 실행한다.
 
 ## 4. 후속 작업 (이번에 하지 않은 것)
 
@@ -67,6 +74,11 @@
 13. **삭제 시 R2 정리 순서 재검토.** 지금은 이미지를 먼저 지우고 행을 지운다(R2 실패 시 삭제 중단). 행을 먼저 지우고
     이미지는 커밋 뒤 정리하면 "행은 남았는데 이미지가 없는" 상태를 피할 수 있다. 대신 고아 객체가 남을 수 있다.
 14. **MCP 연결 관리 UI.** 연결된 클라이언트 목록·해지, 감사 로그 열람.
+15. **새로고침 버튼이 상세 페이지 캐시도 지우게 할지 결정.** 지금은 목록 캐시만 지운다. DB를 직접 고쳤을 때 상세
+    페이지는 수명(프로젝트 상세는 최대 30일)이 끝날 때까지 이전 내용이 보인다. 항목 태그 전체를 지우려면 모든 id를
+    읽어야 하므로 `revalidateTag(..., 'max')` 방식과 비용을 함께 검토한다.
+16. **관리자 404의 HTTP 상태 코드.** 관리자 페이지의 `notFound()`는 스트리밍이 시작된 뒤라 화면은 404지만 상태
+    코드는 200이다(공개 사이트는 proxy가 미리 확인해 진짜 404를 돌려준다). 관리자 화면은 색인되지 않아 영향은 작다.
 
 ## 5. 의도적으로 그대로 둔 것
 

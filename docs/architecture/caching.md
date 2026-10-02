@@ -100,7 +100,8 @@ Redis에 저장하는 항목에는 위 `expire`를 Redis TTL(`EX`)로 함께 건
 - `invalidateMemberPublicCache`
 - `invalidateProjectPublicCache`
 - `invalidateSessionPublicCache`
-- `invalidateAllPublicCache` (사이드바의 전체 새로고침 버튼, CORE·LEAD)
+- `invalidateAllPublicCache` (사이드바의 새로고침 버튼, CORE·LEAD). 목록 캐시(홈, 허브(세션·프로젝트·멤버·캘린더), 기수 목록, 사이트맵)만 지우고
+  상세 페이지(`*:item:*`)는 지우지 않는다.
 
 쓰기의 기본 순서:
 

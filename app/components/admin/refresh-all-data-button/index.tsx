@@ -8,7 +8,7 @@ import RefreshDataSubmitButton from '@/app/components/admin/refresh-all-data-but
 import { hasPermission } from '@/lib/server/permission/has-permission'
 
 /**
- * 공개 사이트 전체 캐시 새로고침 버튼(사이드바).
+ * 공개 사이트 목록 캐시 새로고침 버튼(사이드바). 상세 페이지 캐시는 지우지 않는다(`actions.ts` 참고).
  * 새로고침 권한(CORE·LEAD)이 있을 때만 보인다. 세션·역할 조회는 요청 단위로 캐시된다.
  */
 export default async function RefreshAllDataButton() {
