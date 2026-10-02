@@ -1,3 +1,10 @@
+/**
+ * 공개 캐시 수명 프로필과 세션 공개 기준 시각(버킷).
+ *
+ * `next.config.ts`가 import하므로 `server-only`를 붙이지 않는다. 캐시 계약 전체는
+ * `docs/architecture/caching.md` 참고.
+ */
+
 /** 프로필별 수명(초). `next.config.ts`의 `cacheLife`로 등록된다. */
 export const cacheLifeConfig = {
   home: {

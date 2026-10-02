@@ -1,3 +1,7 @@
+/**
+ * 홈 프로그램(활동) 섹션 문구(두 언어).
+ */
+
 /** 활동별 소개. `key`는 프로그램 카드와 짝을 맞추는 식별자다. */
 export const activitySectionContents = [
   {

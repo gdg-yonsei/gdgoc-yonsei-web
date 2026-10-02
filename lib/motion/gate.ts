@@ -1,3 +1,7 @@
+/**
+ * 방문자의 움직임 줄이기·데이터 절약 설정을 읽어, 연출 청크를 내려받을지 정한다(클라이언트 전용).
+ */
+
 /** 방문자 설정: 움직임 줄이기, 데이터 절약. */
 export type MotionEnvironment = {
   reducedMotion: boolean

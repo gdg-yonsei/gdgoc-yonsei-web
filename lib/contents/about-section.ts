@@ -1,3 +1,7 @@
+/**
+ * 홈 소개(about) 섹션 문구(두 언어).
+ */
+
 /** GDG 소개, GDGoC Yonsei 소개, 세 가지 가치(커뮤니티·기술·지속 성장) 문구. */
 export const aboutSectionContents = {
   gdg: {

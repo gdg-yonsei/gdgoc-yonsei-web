@@ -1,3 +1,7 @@
+/**
+ * 소개 섹션 세 기둥(커뮤니티·기술·성장)의 장식 아이콘(SVG).
+ */
+
 /** 소개 섹션 기둥 종류. */
 export type PillarKind = 'community' | 'tech' | 'growth'
 

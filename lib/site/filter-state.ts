@@ -1,3 +1,10 @@
+/**
+ * 세션 로그·프로젝트 허브의 필터 상태(순수 함수).
+ *
+ * 서버는 각 행의 필터 값을 `data-f-<key>` 속성(값은 `|`로 이어 붙임)과 정규화한 `data-search` 문자열로
+ * 적어 두고, 클라이언트 `FilterBar`가 이를 읽어 상태를 쿼리 문자열에 반영한다.
+ */
+
 /** 필터 선택지(값, 표시 이름, 해당 개수). */
 export type FacetOption = { value: string; label: string; count: number }
 

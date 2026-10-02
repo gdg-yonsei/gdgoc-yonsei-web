@@ -1,3 +1,7 @@
+/**
+ * 시드 세션 일정 생성 헬퍼(순수 함수, `tests/lib/seed-helpers.test.ts`가 검증한다).
+ */
+
 /** 시드 세션 분류(세션 `category` 컬럼 값). */
 export type SeedCategory =
   'tech_talk' | 'part_session' | 'hackathon' | 'demo_day' | 'devrel'

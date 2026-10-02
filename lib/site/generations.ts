@@ -1,3 +1,7 @@
+/**
+ * 기수 목록 가공(순수 함수): 기수별 개수, 기수 띠, 이전/다음 기수.
+ */
+
 /** 기수 이름과 시작일. */
 export type GenerationRef = { name: string; startDate: string }
 
