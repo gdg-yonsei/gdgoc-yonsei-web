@@ -9,7 +9,7 @@ import { requirePermission } from '@/lib/server/permission/require-permission'
  * DB를 직접 고친 뒤 화면에 반영되지 않을 때 쓰는 비상용 기능이다.
  */
 export async function revalidateAllDataAction() {
-  await requirePermission('get', 'adminPage')
+  await requirePermission('put', 'publicCache')
 
   logger.info('admin.refresh-all', 'Refreshing public cache surfaces')
   invalidateAllPublicCache()

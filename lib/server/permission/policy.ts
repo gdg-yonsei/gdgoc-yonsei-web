@@ -20,6 +20,7 @@ export type ActionType = 'get' | 'post' | 'put' | 'delete'
 /**
  * 권한 검사 대상 리소스.
  * `*Page`는 관리자 화면 접근, 나머지는 데이터 쓰기 권한이다.
+ * `publicCache`는 공개 사이트 전체 캐시 새로고침(`put`) 권한이다.
  */
 export type ResourceType =
   | 'members'
@@ -29,6 +30,7 @@ export type ResourceType =
   | 'generations'
   | 'parts'
   | 'booking'
+  | 'publicCache'
   | 'adminPage'
   | 'membersPage'
   | 'profilePage'
@@ -69,7 +71,13 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
   CORE: {
     get: { ...BASE_PAGES, membersPage: true, partsPage: true },
     post: { members: true, projects: true, sessions: true, parts: true },
-    put: { members: true, projects: true, sessions: true, parts: true },
+    put: {
+      members: true,
+      projects: true,
+      sessions: true,
+      parts: true,
+      publicCache: true,
+    },
     delete: { members: 'own', projects: true, sessions: true },
   },
   /** 리드: 모든 작업 허용. */
@@ -98,6 +106,7 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       sessions: true,
       parts: true,
       booking: true,
+      publicCache: true,
     },
     delete: {
       members: true,

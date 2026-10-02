@@ -49,4 +49,13 @@ describe('permission policy', () => {
       expect(isAllowed(role, 'get', 'profilePage')).toBe(true)
     }
   })
+
+  it('limits the public cache refresh to core and lead', () => {
+    expect(isAllowed('LEAD', 'put', 'publicCache')).toBe(true)
+    expect(isAllowed('CORE', 'put', 'publicCache')).toBe(true)
+    expect(isAllowed('MEMBER', 'put', 'publicCache', { isOwner: true })).toBe(
+      false
+    )
+    expect(isAllowed('ALUMNUS', 'put', 'publicCache')).toBe(false)
+  })
 })
