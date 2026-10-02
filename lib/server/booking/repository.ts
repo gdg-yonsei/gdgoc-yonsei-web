@@ -9,11 +9,11 @@
  *    누가 신청했는지 등 웹 쪽 정보를 함께 둔다.
  *
  * 일관성 모델: 원본(1)이 기준이고 미러(2)는 최선 노력(best-effort)이다. 미러 저장이
- * 실패해도 예약 자체는 성공으로 보며, 상태는 `syncBookingStatus`가 원본에서 다시 읽어 맞춘다.
+ * 실패해도 예약 자체는 성공으로 보며, 상태는 `getBookingsWithLiveStatus`(sync.ts)가 원본에서 다시 읽어 맞춘다.
  */
 import 'server-only'
 
-import { eq, isNotNull, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
 import { bookingRequests } from '@/db/schema/booking-requests'
@@ -108,18 +108,6 @@ export async function getMirrorExternalId(
 /** 웹 미러 행을 지운다. */
 export async function deleteBookingMirror(bookingId: string): Promise<void> {
   await db.delete(bookingRequests).where(eq(bookingRequests.id, bookingId))
-}
-
-/** auto-booker 예약과 연결된 웹 미러 행 목록. */
-export function listLinkedMirrors() {
-  return db
-    .select({
-      id: bookingRequests.id,
-      externalId: bookingRequests.externalId,
-      status: bookingRequests.status,
-    })
-    .from(bookingRequests)
-    .where(isNotNull(bookingRequests.externalId))
 }
 
 /** 웹 미러 행의 상태를 바꾼다. */

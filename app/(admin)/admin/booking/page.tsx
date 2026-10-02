@@ -6,8 +6,7 @@ import { getAuthSession } from '@/auth'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { redirect, forbidden } from 'next/navigation'
 import { Metadata } from 'next'
-import { syncBookingStatus } from '@/lib/server/booking/sync'
-import { getBookingRequests } from '@/lib/server/fetcher/admin/get-booking-requests'
+import { getBookingsWithLiveStatus } from '@/lib/server/booking/sync'
 
 export const metadata: Metadata = {
   title: 'Venue Booking',
@@ -26,9 +25,8 @@ export default async function BookingPage() {
     forbidden()
   }
 
-  // Sync booking statuses from auto-booker API, then fetch local records
-  await syncBookingStatus()
-  const bookings = await getBookingRequests()
+  // auto-booker 원본 상태를 반영한 목록. 미러 테이블 갱신은 응답 뒤에 한다.
+  const bookings = await getBookingsWithLiveStatus()
 
   return (
     <AdminDefaultLayout>
