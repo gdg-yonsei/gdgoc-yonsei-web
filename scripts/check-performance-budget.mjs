@@ -1,3 +1,9 @@
+/**
+ * 성능 예산 검사(`pnpm perf:budget <report.json> [baseline.json]`).
+ *
+ * `measure-next-performance.mjs`가 만든 측정 보고서를 읽어 라우트별 절대 상한(JS·RSC 전송량, 요청 수,
+ * LCP·CLS·INP·TBT)과 기준선 대비 JS 증가율(5%)을 넘으면 실패한다. CI(`ci.yml`)의 성능 단계에서 실행된다.
+ */
 import { readFile } from 'node:fs/promises'
 
 const [reportPath, baselinePath] = process.argv.slice(2)
@@ -14,12 +20,10 @@ const baseline = baselinePath
   : null
 const failures = []
 
-// Approved 2026-09-25: the anime.js engine and the landing scenes
-// (docs/superpowers/specs/2026-09-25-landing-motion-design.md) load on the
-// home routes only, after first paint. Measured at 37,674 encoded bytes
-// (home 195,911 B), so the home cap is that total plus under 5 KB, and the
-// first comparison against a baseline without them may grow by the chunk on
-// top of the usual 5%.
+// 2026-09-25 승인: anime.js 엔진과 랜딩 장면(docs/superpowers/specs/2026-09-25-landing-motion-design.md)은
+// 홈 라우트에서만, 첫 페인트 이후에 불러온다. 측정값은 인코딩 기준 37,674바이트(홈 전체 195,911B)라
+// 홈 상한은 그 합계에 5KB 미만을 더한 값이다. 이 청크가 없던 기준선과 처음 비교할 때는 평소의 5%에
+// 더해 청크 크기만큼 늘어날 수 있다.
 const HOME_ROUTES = new Set(['/en', '/ko'])
 const HOME_JS_CAP = 200_000
 const HOME_MOTION_ALLOWANCE = 37_000
@@ -75,8 +79,8 @@ for (const result of report.results) {
     )
   }
 
-  // Pretendard's unicode-range subsets for Korean text are an approved cost
-  // (2026-09-24); they still count toward the absolute 75-request cap above.
+  // 한국어 글자용 Pretendard unicode-range 서브셋은 승인된 비용이다(2026-09-24). 그래도 위의 요청 수
+  // 절대 상한(75개)에는 포함된다.
   const withoutPretendard = (sample) =>
     sample.requestCount - (sample.pretendardRequestCount ?? 0)
   const requestRegressionBudget = withoutPretendard(before) + 4

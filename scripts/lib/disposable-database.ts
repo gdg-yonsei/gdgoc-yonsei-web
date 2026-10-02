@@ -1,15 +1,12 @@
 /**
- * Guard for scripts that wipe or seed a database: the Playwright e2e reset
- * and `pnpm db:seed`.
+ * DB를 지우거나 시드하는 스크립트(Playwright e2e 초기화, `pnpm db:seed`)의 안전장치.
  *
- * On 2026-09-25 the e2e reset truncated the production database. The
- * Playwright process loaded `.env`, which pointed at production, and nothing
- * checked the target before `TRUNCATE`. Every destructive script calls
- * `assertDisposableDatabase` before its first query, so a remote database is
- * only touched when someone names it explicitly.
+ * 2026-09-25에 e2e 초기화가 운영 DB를 TRUNCATE한 사고가 있었다. Playwright 프로세스가 운영을 가리키는
+ * `.env`를 읽었고, `TRUNCATE` 전에 대상을 확인하는 곳이 없었다. 이제 파괴적인 스크립트는 모두 첫 쿼리
+ * 전에 `assertDisposableDatabase`를 호출하므로, 원격 DB는 누군가 명시적으로 지정했을 때만 건드린다.
  */
 
-/** Hostnames that resolve to this machine or to a local compose network. */
+/** 이 컴퓨터나 로컬 compose 네트워크를 가리키는 호스트 이름. */
 export const LOCAL_DATABASE_HOSTS: readonly string[] = [
   'localhost',
   '127.0.0.1',
@@ -20,15 +17,14 @@ export const LOCAL_DATABASE_HOSTS: readonly string[] = [
 ]
 
 /**
- * Opt-in for one remote database that may be wiped, such as a throwaway CI
- * instance. It must equal `AUTH_DRIZZLE_URL` exactly, so allowing one
- * database never allows another on the same host.
+ * 지워도 되는 원격 DB 하나를 명시적으로 허용한다(예: 일회용 CI 인스턴스). `AUTH_DRIZZLE_URL`과 정확히
+ * 같아야 하므로, 한 DB를 허용해도 같은 호스트의 다른 DB까지 허용되지는 않는다.
  */
 export const DISPOSABLE_DATABASE_URL_ENV = 'E2E_DISPOSABLE_DATABASE_URL'
 
 type Env = Readonly<Record<string, string | undefined>>
 
-/** `user@host:port/database`, without the password, for error messages. */
+/** 오류 메시지용 `user@host:port/database`(비밀번호 제외). */
 export function describeDatabaseTarget(url: string): string {
   try {
     const parsed = new URL(url)
@@ -42,6 +38,10 @@ export function describeDatabaseTarget(url: string): string {
   }
 }
 
+/**
+ * `url`이 지워도 되는 DB인지. 로컬 호스트이거나, 명시적 허용 환경 변수 값과 정확히 같으면 true.
+ * URL로 해석할 수 없으면 false(안전한 쪽으로 판단).
+ */
 export function isDisposableDatabaseUrl(
   url: string,
   env: Env = process.env
@@ -62,8 +62,8 @@ export function isDisposableDatabaseUrl(
 }
 
 /**
- * Throws unless `url` points at a disposable database. `purpose` names the
- * caller in the error, for example "e2e database reset".
+ * `url`이 일회용 DB를 가리키지 않으면 예외를 던진다. `purpose`는 오류 메시지에 들어갈 호출자 이름
+ * (예: "e2e database reset").
  */
 export function assertDisposableDatabase(
   url: string | undefined,

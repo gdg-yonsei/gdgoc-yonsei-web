@@ -1,3 +1,10 @@
+/**
+ * 로컬 개발용 시드 데이터(`pnpm db:seed`).
+ *
+ * 기수 하나, 파트, 멤버, 태그, 프로젝트, 1년치 세션을 넣는다. 시드 행은 `dev-seed-` 접두사로 표시해
+ * 다시 실행할 때 이전 시드만 지운다(TRUNCATE하지 않음). 일회용 DB가 아니면 실행을 거부한다
+ * (`scripts/lib/disposable-database.ts`).
+ */
 import 'dotenv/config'
 import { eq, inArray, like } from 'drizzle-orm'
 import { db } from '../db'
@@ -134,8 +141,9 @@ const SEED_PROJECTS = [
   },
 ]
 
+/** 대상 DB가 지워도 되는 DB인지 확인한다. */
 function assertLocalDatabase() {
-  // `--force` is the deliberate escape hatch for a database chosen by hand.
+  // `--force`는 사람이 직접 고른 DB에 시드하기 위한 의도적인 우회 수단이다.
   if (process.argv.includes('--force')) {
     return
   }

@@ -1,11 +1,10 @@
 /**
- * Post-deploy smoke test: read-only GET requests against a running site.
+ * 배포 후 스모크 테스트: 실행 중인 사이트에 읽기 전용 GET 요청만 보낸다.
  *
- * Covers what unit and e2e tests cannot see on the real deployment: the
- * build's runtime dependencies (e.g. satori's wasm for social images), the
- * production database behind public pages, redirects and response headers.
+ * 단위·e2e 테스트가 실제 배포에서 볼 수 없는 것을 확인한다: 빌드의 런타임 의존성(예: 소셜 이미지용
+ * satori의 wasm), 공개 페이지 뒤의 운영 DB, redirect와 응답 헤더.
  *
- * Usage: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
+ * 사용법: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
  */
 import { appendFileSync } from 'node:fs'
 

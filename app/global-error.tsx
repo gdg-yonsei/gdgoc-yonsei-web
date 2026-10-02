@@ -1,5 +1,8 @@
 'use client' // 오류 경계는 클라이언트 컴포넌트여야 한다
 
+/**
+ * 앱 전체의 마지막 오류 경계(Next 특수 파일). 루트 레이아웃까지 실패했을 때 `<html>`부터 직접 그린다.
+ */
 import './globals.css'
 import { useEffect } from 'react'
 

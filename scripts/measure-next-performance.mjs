@@ -1,3 +1,10 @@
+/**
+ * 운영 빌드의 대표 라우트 성능 측정(`pnpm perf:measure`).
+ *
+ * Playwright로 데스크톱·모바일 프로필(CPU 4배 감속)에서 홈, 허브, 기수, 상세 페이지를 열고 전송량,
+ * 요청 수, LCP·CLS·INP·TBT를 JSON으로 남긴다. 환경 변수: PERF_BASE_URL(기본 http://127.0.0.1:3100),
+ * PERF_OUTPUT(결과 파일), PERF_SETTLE_MS(측정 전 대기).
+ */
 import { writeFile } from 'node:fs/promises'
 import { chromium, devices } from '@playwright/test'
 
@@ -206,7 +213,7 @@ async function measureRoute(browser, pathname, profileName, profile) {
       rscTransferredBytes: sum(resources.filter(isRsc), 'transferSize'),
       rscEncodedBodyBytes: sum(resources.filter(isRsc), 'encodedBodySize'),
       resourceCount: resources.length + 1,
-      // The landing's motion chunk arrived and armed (home-motion.tsx).
+      // 랜딩 연출 청크가 도착해 준비를 마쳤다(home-motion.tsx).
       homeMotion: document.documentElement.dataset.homeMotion === 'ready',
     }
   })
@@ -225,8 +232,8 @@ async function measureRoute(browser, pathname, profileName, profile) {
     scriptRequestCount: settledRequests.filter(
       (request) => request.resourceType === 'script'
     ).length,
-    // Korean text subsets (app/pretendard.css), approved as a deliberate
-    // cost on 2026-09-24; the budget exempts them from the regression rule.
+    // 한국어 글자 서브셋(app/pretendard.css). 2026-09-24에 의도된 비용으로 승인했고, 예산 검사는 이것을
+    // 회귀 규칙에서 뺀다.
     pretendardRequestCount: settledRequests.filter((request) =>
       new URL(request.url).pathname.startsWith('/fonts/pretendard/')
     ).length,
