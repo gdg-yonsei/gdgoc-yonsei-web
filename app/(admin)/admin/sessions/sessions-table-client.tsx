@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 세션 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
+ */
 import { useState } from 'react'
 import Image from 'next/image'
 import type { AdminColumn } from '@/app/components/admin/data-table'

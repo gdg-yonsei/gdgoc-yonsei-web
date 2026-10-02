@@ -1,12 +1,16 @@
+/**
+ * 관리자 메뉴 목록(서버 전용). 사이드바·드로어·하단 탭이 같은 목록을 쓴다.
+ *
+ * 각 메뉴는 페이지 리소스(`*Page`)와 연결되어, 사용자 역할로 `get` 권한이 있는 메뉴만 남긴다.
+ */
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import { isAllowed, type ResourceType } from '@/lib/server/permission/policy'
 import type { Locale } from '@/lib/i18n'
 import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
 
 /**
- * 네비게이션 항목을 식별하는 안정적인 키.
- * 아이콘 매핑(`nav-item.tsx`)과 React key에 사용되며, 로케일이나 라벨이 바뀌어도
- * 변하지 않습니다.
+ * 메뉴 항목을 식별하는 고정 키.
+ * 아이콘 표(`nav-item.tsx`)와 React key에 쓰며, 언어나 라벨이 바뀌어도 변하지 않는다.
  */
 export type NavigationKey =
   | 'home'
@@ -18,16 +22,19 @@ export type NavigationKey =
   | 'projects'
   | 'profile'
 
+/** 메뉴 항목 하나. */
 export interface NavigationItem {
   key: NavigationKey
-  /** 순수 라벨. 아이콘은 렌더 단계에서 `key`로 매핑합니다. */
+  /** 라벨 문자열. 아이콘은 렌더링할 때 `key`로 찾는다. */
   name: string
   path: string
   dataResource: ResourceType
 }
 
 /**
- * 사이드 바 및 상단 바에서 표시할 관리자 페이지 목록
+ * 사용자가 볼 수 있는 관리자 메뉴 목록. 로그인하지 않았으면 빈 배열.
+ * @param userId 로그인 사용자 id
+ * @param locale 라벨과 링크에 쓸 관리자 언어
  */
 export default async function getAdminNavigationItems(
   userId: string | undefined,

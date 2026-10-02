@@ -1,5 +1,11 @@
 'use server'
 
+/**
+ * 강의실 대관 예약 Server Action(신청, 삭제). 한국어 전용 화면에서만 쓴다.
+ *
+ * 예약은 외부 auto-booker가 읽는 테이블에 기록하고, 화면 표시용 미러 테이블에도 같이 쓴다.
+ * 시간 규칙·입력 스키마·DB 접근은 `lib/server/booking/*`에 있다.
+ */
 import { revalidatePath } from 'next/cache'
 import { getAuthSession } from '@/auth'
 import {
@@ -108,7 +114,11 @@ export async function requestBookingAction(
   }
 }
 
-/** 예약 삭제: auto-booker 원본과 웹 미러를 함께 지운다. */
+/**
+ * 예약 삭제. auto-booker 원본 행(있으면)과 미러 행을 함께 지운다.
+ *
+ * @param bookingId 미러 테이블의 예약 id
+ */
 export async function deleteBookingAction(
   bookingId: string
 ): Promise<BookingActionResult> {

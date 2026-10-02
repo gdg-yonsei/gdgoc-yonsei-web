@@ -1,3 +1,9 @@
+/**
+ * 관리자 로그인 화면(`/auth/sign-in`).
+ *
+ * MCP 클라이언트의 OAuth 요청으로 왔다면 쿼리를 보존해 로그인 후 그 요청을 이어 간다.
+ * 이미 로그인했으면 바로 관리자 홈(또는 이어 갈 OAuth 요청)으로 보낸다.
+ */
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 import { Metadata } from 'next'
@@ -9,16 +15,14 @@ import { getAdminLocale } from '@/lib/admin-i18n/server'
 import { localizeAdminHref } from '@/lib/admin-i18n'
 import { oauthQueryString, postLoginPath } from '@/lib/mcp/consent'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Sign In',
 }
 
 /**
- * Sing In Page
- *
- * DESIGN.md `ex-auth-form-card`: canvas 위에 hairline + soft shadow 카드.
- * 고정 높이(`h-1/2`)를 제거해 작은 화면에서 내용이 잘리지 않게 하고,
- * 셸과 동일하게 `lg:` 브레이크포인트로 통일했습니다.
+ * 로그인 카드(DESIGN.md `ex-auth-form-card`: canvas 위 hairline + soft shadow 카드).
+ * 높이를 고정하지 않아 작은 화면에서도 내용이 잘리지 않는다.
  */
 export default async function SignInPage({
   searchParams,
@@ -30,7 +34,7 @@ export default async function SignInPage({
   const callbackURL = postLoginPath(query)
 
   const session = await getAuthSession()
-  // 만약 로그인 되어 있다면 어드민 페이지(또는 이어 갈 OAuth 요청)로 이동
+  // 이미 로그인했으면 관리자 홈(또는 이어 갈 OAuth 요청)으로 보낸다.
   if (session) {
     return redirect(
       callbackURL === '/admin'

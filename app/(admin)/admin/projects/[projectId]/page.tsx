@@ -1,3 +1,6 @@
+/**
+ * 프로젝트 상세 화면(`/admin/projects/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
@@ -17,13 +20,13 @@ import {
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
+/** 탭 제목에 프로젝트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  // Project 데이터 가져오기
   const projectData = await getProject(projectId)
 
   return {
@@ -31,6 +34,7 @@ export async function generateMetadata({
   }
 }
 
+/** 프로젝트 상세. */
 export default async function ProjectPage({
   params,
 }: {
@@ -39,10 +43,8 @@ export default async function ProjectPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { projectId } = await params
-  // Project 데이터 가져오기
   const projectData = await getProject(projectId)
 
-  // Project 데이터가 없으면 404 페이지 표시
   if (!projectData) {
     notFound()
   }

@@ -1,3 +1,6 @@
+/**
+ * 세션 목록 서버 래퍼. 데이터를 읽어 클라이언트 표에 넘긴다.
+ */
 import SessionsTableClient from '@/app/(admin)/admin/sessions/sessions-table-client'
 import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'

@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 멤버 정보 수정 Server Action.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

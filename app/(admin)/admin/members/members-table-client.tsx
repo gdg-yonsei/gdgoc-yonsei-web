@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 멤버 목록 표(클라이언트 컴포넌트). 검색·필터·정렬은 브라우저에서 한다(목록 규모가 작아 서버 왕복이 필요 없다).
+ */
 import { useState } from 'react'
 import UserProfileImage from '@/app/components/admin/user-profile-image'
 import type { AdminColumn } from '@/app/components/admin/data-table'
@@ -51,6 +54,7 @@ function memberMatchesSearch(member: AdminMemberListItem, query: string) {
   ].some((text) => text.toLowerCase().includes(query))
 }
 
+/** 정렬 기준(`part`·`role`·이름)에 따라 두 멤버를 비교한다. */
 function compareMembers(
   left: AdminMemberListItem,
   right: AdminMemberListItem,

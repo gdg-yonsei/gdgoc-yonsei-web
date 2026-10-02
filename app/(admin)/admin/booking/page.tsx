@@ -1,4 +1,10 @@
+/**
+ * 강의실 대관 예약 화면(`/admin/booking`). 예약 현황 목록과 신청 폼을 보여 준다.
+ *
+ * 대관 대상이 연세대 공간 대관 시스템이라 화면은 한국어로만 제공한다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
+import AdminPageHeader from '@/app/components/admin/page-header'
 import BookingForm from '@/app/components/admin/booking/booking-form'
 import BookingList from '@/app/components/admin/booking/booking-list'
 import { hasPermission } from '@/lib/server/permission/has-permission'
@@ -8,10 +14,12 @@ import { redirect, forbidden } from 'next/navigation'
 import { Metadata } from 'next'
 import { getBookingsWithLiveStatus } from '@/lib/server/booking/sync'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Venue Booking',
 }
 
+/** 권한(`bookingPage` 조회)을 확인하고, auto-booker 최신 상태를 덧씌운 예약 목록과 신청 폼을 그린다. */
 export default async function BookingPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -31,9 +39,7 @@ export default async function BookingPage() {
   return (
     <AdminDefaultLayout>
       <div className={'flex flex-col gap-4 p-2'}>
-        <div className={'flex items-center gap-2 pb-2'}>
-          <div className={'admin-title'}>{t.booking}</div>
-        </div>
+        <AdminPageHeader title={t.booking} />
         <div className="flex w-full flex-col gap-4">
           <h2 className="text-xl font-bold">예약 현황</h2>
           <BookingList bookings={bookings} />

@@ -25,8 +25,7 @@ import { authClient } from '@/lib/auth-client'
 import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
 import PasskeySignInButton from '@/app/(admin)/auth/sign-in/sign-in-options/passkey'
-import GithubSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/github/github-submit-button'
-import GoogleSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/google/google-submit-button'
+import SocialSubmitButton from '@/app/(admin)/auth/sign-in/sign-in-options/social-submit-button'
 
 const mockedAddPasskey = vi.mocked(authClient.passkey.addPasskey)
 const mockedPasskeySignIn = vi.mocked(authClient.signIn.passkey)
@@ -181,7 +180,7 @@ describe('auth components', () => {
           event.preventDefault()
         }}
       >
-        <GithubSubmitButton />
+        <SocialSubmitButton provider="github" />
       </form>
     )
 
@@ -199,7 +198,7 @@ describe('auth components', () => {
           event.preventDefault()
         }}
       >
-        <GoogleSubmitButton />
+        <SocialSubmitButton provider="google" />
       </form>
     )
 

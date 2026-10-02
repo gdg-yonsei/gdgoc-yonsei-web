@@ -1,3 +1,6 @@
+/**
+ * 파트 목록 서버 래퍼. 데이터를 읽어 클라이언트 표에 넘긴다.
+ */
 import PartsTableClient from '@/app/(admin)/admin/parts/parts-table-client'
 import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'

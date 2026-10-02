@@ -1,3 +1,6 @@
+/**
+ * 파트 수정 화면(`/admin/parts/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -21,10 +24,12 @@ import {
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Part',
 }
 
+/** 기존 값을 채운 파트 수정 폼. */
 export default async function EditPartPage({
   params,
 }: {
@@ -34,9 +39,7 @@ export default async function EditPartPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params
-  // Part 정보 가져오기
   const partData = await getPart(Number(partId))
-  // 파트에 속한 멤버 정보 리스트
   const membersIdList = partData
     ? partData.usersToParts
         .filter((userToPart) => userToPart.userType === 'Primary')
@@ -49,14 +52,12 @@ export default async function EditPartPage({
         .map((user) => user.user.id)
     : []
 
-  // 파트 정보가 없다면 404 페이지로 이동
   if (!partData) {
     notFound()
   }
   // 다른 기수의 파트는 URL을 알아도 볼 수 없다.
   await requireGenerationAccess(partData.generationsId)
 
-  // Part 정보 업데이트 Action
   const updatePartActionWithPartId = updatePartAction.bind(null, partId)
   const session = await getAuthSession()
   const resolvedScope = session?.user?.id

@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 기수별 묶음 표(클라이언트 컴포넌트). 묶기·검색·정렬은 `_lib/admin-table-client.ts`가 한다.
+ */
 import AdminDataTable, {
   type AdminColumn,
 } from '@/app/components/admin/data-table'

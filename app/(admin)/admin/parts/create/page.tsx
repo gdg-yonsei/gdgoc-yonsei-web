@@ -1,3 +1,6 @@
+/**
+ * 파트 생성 화면(`/admin/parts/create`). 권한은 레이아웃이 확인한다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
@@ -11,10 +14,12 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Create Part',
 }
 
+/** 파트 생성 폼. */
 export default async function CreatePartPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

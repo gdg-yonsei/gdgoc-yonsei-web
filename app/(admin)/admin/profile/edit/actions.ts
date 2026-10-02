@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 내 프로필 수정 Server Action.
+ */
 import { forbidden } from 'next/navigation'
 import {
   runAdminFormAction,

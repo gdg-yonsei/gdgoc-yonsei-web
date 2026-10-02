@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 기수 수정 Server Action. 항목 id는 `bind`로 고정해 넘긴다.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

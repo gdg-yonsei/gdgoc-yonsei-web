@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 세션 상세 화면의 참가자 관련 버튼(클라이언트 컴포넌트). 둘 다 확인 모달을 거친다.
+ */
 import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/data-delete-button/submit-button'
 import {

@@ -1,3 +1,6 @@
+/**
+ * 세션 상세 화면(`/admin/sessions/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -25,13 +28,13 @@ import {
 } from '@/app/(admin)/admin/sessions/[sessionId]/participant-actions'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 
+/** 탭 제목에 세션 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ sessionId: string }>
 }): Promise<Metadata> {
   const { sessionId } = await params
-  // Session 데이터 가져오기
   const sessionData = await getSession(sessionId)
 
   return {
@@ -39,6 +42,7 @@ export async function generateMetadata({
   }
 }
 
+/** 세션 상세. */
 export default async function SessionPage({
   params,
 }: {
@@ -47,10 +51,8 @@ export default async function SessionPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { sessionId } = await params
-  // Session 데이터 가져오기
   const sessionData = await getSession(sessionId)
 
-  // Session 데이터가 없으면 404 페이지 표시
   if (!sessionData) {
     notFound()
   }

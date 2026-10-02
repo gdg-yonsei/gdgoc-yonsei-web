@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 세션 참가 신청 Server Action.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

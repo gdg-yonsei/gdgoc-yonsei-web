@@ -1,3 +1,9 @@
+/**
+ * 관리자 앱 셸(서버 레이아웃): 로그인·승인 확인, 번역 사전·Jotai 제공, 앱 바·사이드바·하단 탭, 전역 모달.
+ *
+ * 모든 `/admin/*` 페이지가 이 레이아웃 아래에서 렌더링된다. 로그인하지 않았으면 로그인
+ * 화면으로 보내고, 가입 승인 전(`UNVERIFIED`)이면 403을 보여 준다.
+ */
 import { ReactNode } from 'react'
 import { getAuthSession } from '@/auth'
 import { Metadata } from 'next'
@@ -16,6 +22,7 @@ import { cookies } from 'next/headers'
 import { ADMIN_THEME_COOKIE, normalizeAdminTheme } from '@/lib/admin-theme'
 import { cn } from '@/lib/cn'
 
+/** 관리자 페이지 제목 형식(`페이지 | GYMS`). */
 export const metadata: Metadata = {
   title: {
     default: 'GYMS',
@@ -25,6 +32,7 @@ export const metadata: Metadata = {
     'Google Developer Group on Campus Yonsei University Management System',
 }
 
+/** 관리자 앱 셸. */
 export default async function AdminLayout({
   children,
 }: {
@@ -57,10 +65,10 @@ export default async function AdminLayout({
     <AdminI18nProvider locale={locale} messages={messages}>
       <JotaiProvider>
         {/*
-            테마와 로케일은 관리자 서브트리에만 적용합니다. `<html>`에 올리려면
-            공유 루트 레이아웃에서 쿠키를 읽어야 하는데, 그러면 로그인 페이지까지
-            blocking route가 됩니다. `@custom-variant dark`는 조상 어디에 `.dark`가
-            있어도 매칭되므로 이 래퍼로 충분합니다.
+            테마와 언어는 관리자 영역 래퍼에만 적용한다. `<html>`에 올리려면 공유 루트
+            레이아웃에서 쿠키를 읽어야 하는데, 그러면 로그인 페이지까지 blocking route가
+            된다. `@custom-variant dark`는 조상 어디에 `.dark`가 있어도 맞으므로 이
+            래퍼로 충분하다.
           */}
         <div
           id={'admin-theme-root'}
@@ -86,9 +94,8 @@ export default async function AdminLayout({
             theme={theme}
           />
           {/*
-            셸 오프셋은 여기서 한 번만 계산합니다. 이전에는 각 페이지가
-            `AdminDefaultLayout`을 통해 `pt-20 lg:pl-64`를 직접 들고 있었고,
-            사이드바 실제 폭(w-60)과도 어긋나 있었습니다.
+            앱 바·사이드바·하단 탭만큼의 여백은 여기서 한 번만 준다. 사이드바 폭
+            (`sidebar.tsx`의 `w-64`)과 `lg:pl-64`는 반드시 같아야 한다.
           */}
           <main
             id={'admin-main'}

@@ -1,3 +1,6 @@
+/**
+ * 기수 수정 화면(`/admin/generations/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -11,10 +14,12 @@ import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Generation',
 }
 
+/** 기존 값을 채운 기수 수정 폼. */
 export default async function EditGenerationPage({
   params,
 }: {
@@ -24,15 +29,12 @@ export default async function EditGenerationPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { generationId } = await params
-  // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
 
-  // generation 데이터가 없을 경우 404 페이지로 이동
   if (!generationData) {
     notFound()
   }
 
-  // updateGenerationAction 에 generationId 를 넣어서 새로운 함수 생성
   const updateGenerationActionWithGenerationId = updateGenerationAction.bind(
     null,
     generationId

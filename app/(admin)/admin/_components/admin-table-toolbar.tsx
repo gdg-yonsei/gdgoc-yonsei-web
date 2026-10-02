@@ -1,10 +1,14 @@
 'use client'
 
+/**
+ * 관리자 목록 표 위의 도구 막대: 검색, 필터·정렬 드롭다운, CSV 내보내기. 상태는 호출부(`*-table-client.tsx`)가 가진다.
+ */
 import {
   ArrowDownTrayIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 
+/** 필터·정렬 `<select>` 하나의 정의. */
 export type AdminTableSelectControl = {
   id: string
   label?: string
@@ -16,6 +20,13 @@ export type AdminTableSelectControl = {
   onChange: (value: string) => void
 }
 
+/**
+ * 검색 입력, 필터 드롭다운들, 정렬 드롭다운, CSV 내보내기 버튼.
+ *
+ * @param sortControl 정렬 기준 선택
+ * @param filterControls 추가 필터(역할, 파트 등)
+ * @param onExportCsv 현재 보이는 행을 CSV로 내려받는 함수
+ */
 export default function AdminTableToolbar({
   searchValue,
   searchPlaceholder,

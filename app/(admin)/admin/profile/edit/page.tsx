@@ -1,3 +1,6 @@
+/**
+ * 내 프로필 수정 화면(`/admin/profile/edit`). 이름을 입력하지 않은 신규 멤버는 관리자 홈에서 이곳으로 보내진다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -13,10 +16,12 @@ import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Profile',
 }
 
+/** 본인 프로필 수정 폼. 역할 변경은 없고, 이미지·이름·연락처 등을 고친다. */
 export default async function EditProfilePage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -27,13 +32,11 @@ export default async function EditProfilePage() {
   if (!memberId) {
     return forbidden()
   }
-  // Member 정보 가져오기
   const memberData = await getMember(memberId)
   if (!memberData) {
     notFound()
   }
 
-  // Member 정보 업데이트 Action
   const updateProfileActionWithMemberId = updateProfileAction.bind(
     null,
     memberId

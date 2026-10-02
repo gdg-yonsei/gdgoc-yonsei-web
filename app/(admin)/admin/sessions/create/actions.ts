@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 세션 생성 Server Action. 성공하면 목록 또는 상세로 이동하고, 실패하면 폼에 오류 문구를 돌려준다.
+ */
 import {
   requireCreationScope,
   runAdminFormAction,

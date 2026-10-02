@@ -1,3 +1,8 @@
+/**
+ * 세션 참가 신청 화면(`/admin/sessions/{id}/register`): 세션 정보, 현재 참가자, 남은 자리, 신청 버튼.
+ *
+ * 신청 가능 여부 판단은 화면 표시용이며, 실제 신청 시 서비스(`registerForSession`)가 같은 조건을 다시 확인한다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -16,6 +21,7 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 import { connection } from 'next/server'
 
+/** 신청이 닫혔거나 끝난 세션이면 마감 안내만, 아니면 세션 정보와 신청 버튼을 보여 준다(자리가 없으면 "정원 마감"). */
 export default async function RegisterSessionPage({
   params,
 }: {
@@ -40,8 +46,8 @@ export default async function RegisterSessionPage({
     sessionId
   )
 
-  // 등록 동작과 같은 조건: internalOpen 또는 publicOpen 이 열려 있고,
-  // endAt 은 Seoul 벽시계(UTC 라벨)로 저장된 값이므로 벽시계 기준으로 비교한다.
+  // 등록 서비스와 같은 조건: internalOpen 또는 publicOpen이 열려 있어야 하고,
+  // endAt은 서울 벽시계 시각(UTC 라벨)으로 저장되므로 같은 기준의 현재 시각과 비교한다.
   if (
     !(sessionData.internalOpen || sessionData.publicOpen) ||
     (sessionData.endAt && sessionData.endAt < sessionWallClockNow())

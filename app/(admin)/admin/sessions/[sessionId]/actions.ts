@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 세션 참가 취소(본인)·참가자 제거(관리자) Server Action.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

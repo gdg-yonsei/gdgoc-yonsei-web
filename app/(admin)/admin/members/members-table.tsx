@@ -1,3 +1,6 @@
+/**
+ * 멤버 목록 서버 래퍼.
+ */
 import MembersTableClient from '@/app/(admin)/admin/members/members-table-client'
 import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'

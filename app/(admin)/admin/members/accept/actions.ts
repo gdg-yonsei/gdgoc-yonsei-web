@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 가입 승인·거절 Server Action. 둘 다 끝나면 승인 화면으로 돌아온다.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

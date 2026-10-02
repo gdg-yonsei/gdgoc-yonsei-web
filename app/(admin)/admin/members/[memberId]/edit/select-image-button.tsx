@@ -1,10 +1,13 @@
+/**
+ * 이미지 선택 버튼(클라이언트 컴포넌트). 숨은 파일 입력을 대신 열어 준다.
+ */
 import { PhotoIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
- * 이미지 선택 버튼
- * @param disabled - 비활성화 여부
- * @param onClick - 클릭 이벤트 함수
+ * 이미지 선택 버튼.
+ * @param disabled 업로드 중 비활성화
+ * @param onClick 파일 선택 창을 여는 함수
  */
 export default function SelectImageButton({
   disabled,
