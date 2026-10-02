@@ -5,7 +5,7 @@ import GlobalError from '@/app/global-error'
 describe('GlobalError', () => {
   it('offers a bilingual retry on the stage without the heavy logo', () => {
     const html = renderToStaticMarkup(
-      <GlobalError error={new Error('boom')} reset={() => {}} />
+      <GlobalError error={new Error('boom')} retry={() => {}} />
     )
 
     expect(html).toContain('<h1')

@@ -10,10 +10,11 @@ import { useEffect } from 'react'
  */
 export default function GlobalError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  /** 오류 경계 안쪽을 서버에서 다시 받아 그린다(Next 16.3 권장 복구 방식). */
+  retry: () => void
 }) {
   useEffect(() => {
     console.error(error)
@@ -40,7 +41,7 @@ export default function GlobalError({
         </p>
         <button
           type="button"
-          onClick={reset}
+          onClick={() => retry()}
           className="pressable bg-on-stage text-stage inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
         >
           Try again · <span lang="ko">다시 시도</span>

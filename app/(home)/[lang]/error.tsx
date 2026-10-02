@@ -1,15 +1,20 @@
 'use client'
 
+import { useEffect } from 'react'
 import LocalizedText from '@/app/components/localized-text'
 
 export default function PublicError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  /** 오류 경계 안쪽을 서버에서 다시 받아 그린다(Next 16.3 권장 복구 방식). */
+  retry: () => void
 }) {
-  console.error(error)
+  // 렌더 중 부수 효과를 피하려고 effect에서 브라우저 콘솔에 남긴다.
+  useEffect(() => {
+    console.error(error)
+  }, [error])
 
   return (
     <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 pt-28 pb-20 text-center">
@@ -30,7 +35,7 @@ export default function PublicError({
       </p>
       <button
         type="button"
-        onClick={reset}
+        onClick={() => retry()}
         className="pressable bg-fg text-paper inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
       >
         <LocalizedText en="Try again" ko="다시 시도" />
