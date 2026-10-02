@@ -54,6 +54,31 @@ function parseRequestedGenerationScope(
   }
 }
 
+/**
+ * 요청된 기수 범위 값(쿠키 값, MCP 인자 등)을 접근 가능한 기수 목록에 맞춰 해석한다.
+ *
+ * 규칙: LEAD만 `all`을 고를 수 있고, 값이 없거나 권한 밖이면 가장 최근의 접근 가능
+ * 기수로 대체한다. 접근 가능한 기수가 없으면 `null`. 웹(쿠키)과 서비스(MCP)가 같은
+ * 규칙을 쓰도록 이 함수 하나에 둔다.
+ */
+export function resolveScopeFromOptions(
+  options: AdminGenerationOption[],
+  canAccessAll: boolean,
+  requestedValue: string | undefined
+): AdminGenerationScope | null {
+  const fallback = options[0]
+  if (!fallback) {
+    return null
+  }
+
+  return (
+    parseRequestedGenerationScope(requestedValue, options, canAccessAll) ?? {
+      kind: 'generation',
+      generationId: fallback.id,
+    }
+  )
+}
+
 function getCookieFromHeader(
   cookieHeader: string | null,
   cookieName: string
@@ -104,84 +129,43 @@ export const resolveAdminGenerationScope = cache(async function (
   const options = await loadAccessibleGenerationOptions(userId, role)
 
   if (options.length === 0) {
-    return {
-      canAccessAll,
-      options,
-      scope: null,
-      selectedGeneration: null,
-    }
+    return { canAccessAll, options, scope: null, selectedGeneration: null }
   }
 
   const headerStore = await headers()
-  const requestedScope = parseRequestedGenerationScope(
+  const scope = resolveScopeFromOptions(
+    options,
+    canAccessAll,
     getCookieFromHeader(
       headerStore.get('cookie'),
       ADMIN_GENERATION_SCOPE_COOKIE
-    ),
-    options,
-    canAccessAll
+    )
   )
+  const selectedGeneration =
+    scope?.kind === 'generation'
+      ? (options.find((option) => option.id === scope.generationId) ?? null)
+      : null
 
-  if (requestedScope?.kind === 'all') {
-    return {
-      canAccessAll,
-      options,
-      scope: requestedScope,
-      selectedGeneration: null,
-    }
-  }
-
-  if (requestedScope?.kind === 'generation') {
-    const selectedGeneration =
-      options.find((option) => option.id === requestedScope.generationId) ??
-      null
-
-    return {
-      canAccessAll,
-      options,
-      scope: requestedScope,
-      selectedGeneration,
-    }
-  }
-
-  const fallback = options[0] ?? null
-
-  return {
-    canAccessAll,
-    options,
-    scope: fallback
-      ? {
-          kind: 'generation',
-          generationId: fallback.id,
-        }
-      : null,
-    selectedGeneration: fallback,
-  }
+  return { canAccessAll, options, scope, selectedGeneration }
 })
 
+/**
+ * 기수 범위 전환 요청 값을 사용자 권한에 맞게 정규화해 쿠키에 저장할 문자열로 만든다.
+ * 접근 가능한 기수가 없으면 `null`.
+ */
 export async function normalizeAdminGenerationScopeValueForUser(
   userId: string,
   requestedValue: string
 ): Promise<string | null> {
   const role = await getUserRole(userId)
-  const canAccessAll = role === 'LEAD'
   const options = await loadAccessibleGenerationOptions(userId, role)
-
-  if (options.length === 0) {
-    return null
-  }
-
-  const normalizedScope = parseRequestedGenerationScope(
-    requestedValue,
+  const scope = resolveScopeFromOptions(
     options,
-    canAccessAll
+    role === 'LEAD',
+    requestedValue
   )
 
-  if (normalizedScope) {
-    return serializeAdminGenerationScope(normalizedScope)
-  }
-
-  return String(options[0]?.id ?? '')
+  return scope ? serializeAdminGenerationScope(scope) : null
 }
 
 /**

@@ -1,6 +1,9 @@
 import 'server-only'
 
-import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveScopeFromOptions,
+  type AdminGenerationScope,
+} from '@/lib/server/admin-generation-scope'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 import {
   fail,
@@ -18,16 +21,11 @@ export async function resolveGenerationScope(
   requested?: number | 'all'
 ): Promise<AdminGenerationScope | null> {
   const options = await loadAccessibleGenerations(actor)
-  if (options.length === 0) return null
-
-  if (requested === 'all' && actor.role === 'LEAD') return { kind: 'all' }
-  if (typeof requested === 'number') {
-    const matched = options.find((option) => option.id === requested)
-    if (matched) return { kind: 'generation', generationId: matched.id }
-  }
-
-  const fallback = options[0]
-  return fallback ? { kind: 'generation', generationId: fallback.id } : null
+  return resolveScopeFromOptions(
+    options,
+    actor.role === 'LEAD',
+    requested === undefined ? undefined : String(requested)
+  )
 }
 
 /**
