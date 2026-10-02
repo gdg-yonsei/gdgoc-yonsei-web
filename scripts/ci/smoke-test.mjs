@@ -97,8 +97,8 @@ function ogImage(body) {
   )
 }
 
-// A fresh container can take a while to accept traffic after the deploy
-// reports done; wait until the home page answers before judging anything.
+// 배포가 끝났다고 보고된 뒤에도 새 컨테이너가 트래픽을 받기까지 시간이 걸릴 수 있다.
+// 홈 페이지가 응답할 때까지 기다린 뒤에 검사를 시작한다.
 async function waitForSite() {
   for (let attempt = 1; attempt <= WARMUP_ATTEMPTS; attempt += 1) {
     try {
@@ -164,7 +164,7 @@ await check('site social image', async () => {
   return expectImage(ogImage(body))
 })
 
-// Detail pages and their generated (satori) social images, one per kind.
+// 상세 페이지와 그 소셜 이미지(satori로 생성), 종류별로 하나씩.
 for (const [kind, pattern] of [
   ['session', /href="(\/ko\/session\/[^"/]+\/[0-9a-f-]{36})"/],
   ['project', /href="(\/ko\/project\/[^"/]+\/[0-9a-f-]{36})"/],

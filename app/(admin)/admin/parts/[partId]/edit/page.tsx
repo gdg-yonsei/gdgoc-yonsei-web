@@ -88,8 +88,8 @@ export default async function EditPartPage({
       <div className={'admin-title py-4'}>
         {t.edit} {partData.name}
       </div>
-      {/* Next keeps visited pages mounted; a new key per saved version resets
-          the uncontrolled fields instead of showing the previous edit's input. */}
+      {/* Next는 방문한 페이지를 마운트된 채 유지한다. 저장된 버전마다 key를 바꿔, 비제어 입력이
+          이전 편집 내용 대신 저장된 값으로 다시 채워지게 한다. */}
       <DataForm
         key={partData.updatedAt?.toISOString() ?? 'new'}
         action={updatePartActionWithPartId}
