@@ -5,6 +5,7 @@
  */
 import type { AdminMessages } from '@/lib/admin-i18n'
 
+/** 한국어 관리자 문구 사전. */
 export const ko = {
   confirm: '확인',
   cancel: '취소',

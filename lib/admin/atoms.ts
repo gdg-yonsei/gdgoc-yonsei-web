@@ -1,28 +1,15 @@
 /**
- * @file This file defines global application states using Jotai atoms.
- * These atoms are used to manage and share state across different components.
+ * 관리자 화면 전역 클라이언트 상태(Jotai atom): 메뉴, 업로드 진행 여부, 확인 모달.
  */
-
 import { atom } from 'jotai'
 
-/**
- * Atom to track whether a user authentication process is currently in progress.
- * @returns {boolean} - True if authentication is in progress, otherwise false.
- */
+/** 로그인 버튼을 누른 뒤 인증이 진행 중인지(중복 클릭 방지). */
 export const isAuthenticatingState = atom(false)
 
-/**
- * Atom to manage the visibility of the main menu bar.
- * @returns {boolean} - True if the menu bar is open, otherwise false.
- */
+/** 모바일 메뉴 드로어가 열려 있는지. */
 export const menuBarState = atom(false)
 
-/**
- * A derived atom that represents the global loading state of the application.
- * It is true if any of the specific upload processes (single image, multiple images, profile image) are active.
- * This is useful for disabling UI elements like submit buttons during critical background tasks.
- * @returns {boolean} - True if any upload is in progress, otherwise false.
- */
+/** 이미지 업로드가 하나라도 진행 중인지. 업로드 중에는 제출 버튼을 막는다. */
 export const isLoadingState = atom(
   (get) =>
     get(uploadSingleImageState) ||
@@ -30,29 +17,16 @@ export const isLoadingState = atom(
     get(uploadProfileImageState)
 )
 
-/**
- * Atom to track the status of a single image upload.
- * @returns {boolean} - True if a single image is being uploaded, otherwise false.
- */
+/** 대표 이미지(한 장) 업로드 중인지. */
 export const uploadSingleImageState = atom(false)
 
-/**
- * Atom to track the status of multiple image uploads.
- * @returns {boolean} - True if multiple images are being uploaded, otherwise false.
- */
+/** 본문 이미지(여러 장) 업로드 중인지. */
 export const uploadMultipleImagesState = atom(false)
 
-/**
- * Atom to track the status of a user profile image upload.
- * @returns {boolean} - True if a profile image is being uploaded, otherwise false.
- */
+/** 프로필 이미지 업로드 중인지. */
 export const uploadProfileImageState = atom(false)
 
-/**
- * Atom to manage the state of a generic modal dialog.
- * It holds the text to be displayed and the action to be executed on confirmation.
- * @returns {{text: string, action: () => void}} - An object with the modal's text and action.
- */
+/** 확인 모달 상태: 보여 줄 문구와 확인을 눌렀을 때 실행할 동작. 문구가 비어 있으면 닫힌 상태다. */
 export const modalState = atom({
   text: '',
   action: () => {},
