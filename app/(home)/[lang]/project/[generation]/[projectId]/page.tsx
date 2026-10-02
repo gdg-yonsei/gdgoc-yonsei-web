@@ -31,7 +31,7 @@ import {
   toShowcaseProject,
 } from '@/lib/site/project-showcase'
 import ProjectDetailLoading from './loading'
-import { toLocale } from '@/lib/i18n'
+import { pickLocalized, toLocale } from '@/lib/i18n'
 import { generationPath, projectPath } from '@/lib/site/routes'
 
 type Props = {
@@ -55,7 +55,8 @@ async function loadProject(
   return {
     project: {
       ...toShowcaseProject(row),
-      content: locale === 'ko' ? row.contentKo || row.content : row.content,
+      content:
+        pickLocalized(locale, { en: row.content, ko: row.contentKo }) ?? '',
       images: row.images,
     },
     showcase: sortShowcase(showcase),

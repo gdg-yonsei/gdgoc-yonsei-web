@@ -1,4 +1,4 @@
-import type { Locale } from '@/lib/i18n'
+import { type Locale, pickLocalized } from '@/lib/i18n'
 import { formatUserName } from '@/lib/format/user-name'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
 
@@ -98,16 +98,19 @@ export function projectTitle(
   project: Pick<ShowcaseProject, 'name' | 'nameKo'>,
   locale: Locale
 ): string {
-  return locale === 'ko' ? project.nameKo || project.name : project.name
+  return pickLocalized(locale, { en: project.name, ko: project.nameKo }) ?? ''
 }
 
 export function projectSummary(
   project: Pick<ShowcaseProject, 'description' | 'descriptionKo'>,
   locale: Locale
 ): string {
-  return locale === 'ko'
-    ? project.descriptionKo || project.description
-    : project.description
+  return (
+    pickLocalized(locale, {
+      en: project.description,
+      ko: project.descriptionKo,
+    }) ?? ''
+  )
 }
 
 export function contributorName(

@@ -35,7 +35,7 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import SessionDetailLoading from './loading'
-import { toLocale } from '@/lib/i18n'
+import { pickLocalized, toLocale } from '@/lib/i18n'
 import { generationPath, sessionPath } from '@/lib/site/routes'
 
 type Props = {
@@ -89,7 +89,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         : []),
     ].join(' · '),
     description: summarizeForMetadata(
-      locale === 'ko' ? session.descriptionKo : session.description,
+      pickLocalized(locale, {
+        en: session.description,
+        ko: session.descriptionKo,
+      }),
       fallbackDescription(locale, title, generation)
     ),
     generatedSocialImage: true,
@@ -128,8 +131,10 @@ async function SessionDetail({
   const copy = sessionArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
   const title = sessionTitle(session, locale)
-  const description =
-    locale === 'ko' ? session.descriptionKo : session.description
+  const description = pickLocalized(locale, {
+    en: session.description,
+    ko: session.descriptionKo,
+  })
   const location = sessionLocation(session, locale)
   const url = getLocalizedUrl(locale, sessionPath(generation, sessionId))
   const summary = summarizeForMetadata(

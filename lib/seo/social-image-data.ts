@@ -9,6 +9,8 @@ import {
   formatSessionShortDate,
 } from '@/lib/format/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
+import { projectTitle } from '@/lib/site/project-showcase'
+import { sessionTitle } from '@/lib/site/session-log'
 import { categoryLabel, isSessionCategory } from '@/lib/site/labels'
 
 export type SocialImageContent = {
@@ -77,7 +79,7 @@ export async function getSessionSocialImageContent({
   }
 
   return {
-    title: locale === 'ko' ? session.nameKo || session.name : session.name,
+    title: sessionTitle(session, locale),
     generation,
     category: isSessionCategory(session.category)
       ? categoryLabel(session.category, locale)
@@ -114,7 +116,7 @@ export async function getProjectSocialImageContent({
   }
 
   return {
-    title: locale === 'ko' ? project.nameKo || project.name : project.name,
+    title: projectTitle(project, locale),
     generation,
     category: locale === 'ko' ? '프로젝트' : 'Project',
     date: formatInstantDate(project.updatedAt, locale),
