@@ -1,3 +1,6 @@
+/**
+ * MCP 세션 도구(목록, 상세, 생성, 수정, 삭제, 참가 신청·취소, 참가자 제거).
+ */
 import 'server-only'
 
 import { z } from 'zod'
@@ -87,6 +90,7 @@ function toServiceFields(input: Record<string, unknown>) {
   return { fields: converted }
 }
 
+/** 세션 도구 목록. */
 export const sessionTools = [
   defineTool({
     name: 'list_sessions',

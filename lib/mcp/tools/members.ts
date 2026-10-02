@@ -1,3 +1,6 @@
+/**
+ * MCP 멤버·내 프로필 도구.
+ */
 import 'server-only'
 
 import { z } from 'zod'
@@ -53,6 +56,7 @@ export const memberPatchFields = {
   profileImage: r2ImageUrl('users').nullable().optional(),
 }
 
+/** 멤버 관리 도구 목록(목록, 상세, 수정, 가입 승인, 역할 변경, 삭제). */
 export const memberTools = [
   defineTool({
     name: 'list_members',
@@ -156,6 +160,7 @@ export const memberTools = [
   }),
 ]
 
+/** 내 프로필 도구 목록. */
 export const profileTools = [
   defineTool({
     name: 'get_my_profile',

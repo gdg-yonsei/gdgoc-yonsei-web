@@ -1,3 +1,6 @@
+/**
+ * MCP 동의 화면(`/auth/mcp-consent`) 규칙: 연결할 수 있는 역할과 고를 수 있는 스코프.
+ */
 import 'server-only'
 
 import type { ResourceType } from '@/lib/server/permission/policy'
@@ -43,6 +46,7 @@ export function selectableScopesFor(role: Role): Scope[] {
   return scopes
 }
 
+/** MCP 연결이 가능한 역할인지. 가입 승인 전(UNVERIFIED) 사용자만 연결할 수 없다. */
 export function canConnectMcp(role: Role): boolean {
   return role !== 'UNVERIFIED'
 }

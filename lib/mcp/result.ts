@@ -1,3 +1,6 @@
+/**
+ * 서비스 결과를 MCP 도구 결과(`CallToolResult`)로 바꾼다.
+ */
 import 'server-only'
 
 import type { CallToolResult } from '@modelcontextprotocol/server'

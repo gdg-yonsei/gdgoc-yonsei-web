@@ -1,3 +1,6 @@
+/**
+ * MCP 프로젝트 도구(목록, 상세, 생성, 수정, 삭제).
+ */
 import 'server-only'
 
 import { z } from 'zod'
@@ -38,6 +41,7 @@ const projectFields = {
   tags: z.array(z.string()).describe('Tech tags, e.g. ["Next.js"].'),
 }
 
+/** 프로젝트 도구 목록. */
 export const projectTools = [
   defineTool({
     name: 'list_projects',
