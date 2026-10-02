@@ -1,163 +1,125 @@
 # GYMS MCP
 
-GYMS (the `/admin` management system) is also exposed as a remote
-[Model Context Protocol](https://modelcontextprotocol.io) server, so MCP
-clients (Claude.ai / Claude Desktop connectors, Claude Code, Cursor, ...) can
-do what the admin pages do, limited by the signed-in user's role.
+GYMS(`/admin` 관리자 시스템)는 원격 [Model Context Protocol](https://modelcontextprotocol.io) 서버로도 열려 있다.
+MCP 클라이언트(Claude.ai·Claude Desktop 커넥터, Claude Code, Codex, ChatGPT, Cursor …)는 로그인한 사용자의 역할
+범위 안에서 관리자 화면이 하는 일을 할 수 있다.
 
-- Endpoint: `https://gdgoc.yonsei.ac.kr/api/mcp` (Streamable HTTP, stateless)
-- Design spec: [`docs/superpowers/specs/2026-09-27-gyms-mcp-design.md`](../superpowers/specs/2026-09-27-gyms-mcp-design.md)
+- 엔드포인트: `https://gdgoc.yonsei.ac.kr/api/mcp` (Streamable HTTP, stateless)
+- 설계 기록: [`docs/superpowers/specs/2026-09-27-gyms-mcp-design.md`](../superpowers/specs/2026-09-27-gyms-mcp-design.md)
 
-## Connecting
+## 연결
 
-Members see a per-client install guide on the GYMS dashboard (`/admin`,
-[`mcp-install-guide.tsx`](../../app/components/admin/mcp-install-guide.tsx)).
-Update [`mcp-install-guides.ts`](../../app/components/admin/mcp-install-guides.ts)
-when a client renames its menus.
+멤버는 GYMS 대시보드(`/admin`)에서 클라이언트별 설치 안내를 볼 수 있다
+([`mcp-install-guide.tsx`](../../app/components/admin/mcp-install-guide.tsx)). 클라이언트의 메뉴 이름이 바뀌면
+[`mcp-install-guides.ts`](../../app/components/admin/mcp-install-guides.ts)를 고친다.
 
-| Client                  | How                                                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------------------------------ |
-| Claude Code             | `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp`, then `/mcp` → Authenticate  |
-| Codex (CLI / IDE / app) | `codex mcp add gyms --url https://gdgoc.yonsei.ac.kr/api/mcp`, then `codex mcp login gyms`             |
-| Claude web / Desktop    | Customize → Connectors → + → Add custom connector → paste the endpoint URL                             |
-| ChatGPT web             | Settings → Security and login → Developer mode, then chatgpt.com/plugins → + → Connection URL (`/mcp`) |
-| ChatGPT Desktop         | Create the connection on the web first, then add it from the tools menu in a new chat                  |
-| Cursor                  | `mcp.json`: `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }`            |
+| 클라이언트             | 방법                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| Claude Code            | `claude mcp add --transport http gyms https://gdgoc.yonsei.ac.kr/api/mcp` 후 `/mcp` → Authenticate      |
+| Codex (CLI / IDE / 앱) | `codex mcp add gyms --url https://gdgoc.yonsei.ac.kr/api/mcp` 후 `codex mcp login gyms`                 |
+| Claude 웹 / Desktop    | Customize → Connectors → + → Add custom connector → 엔드포인트 URL                                      |
+| ChatGPT 웹             | Settings → Security and login → Developer mode 켜기, chatgpt.com/plugins → + → 연결 URL(`/api/mcp`까지) |
+| ChatGPT Desktop        | 웹에서 연결을 먼저 만든 뒤, 새 대화의 도구 메뉴에서 추가                                                |
+| Cursor                 | `mcp.json`: `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }`             |
 
-The client opens a browser, you sign in with the usual GitHub / Google /
-passkey login, and a consent screen (`/auth/mcp-consent`) lets you pick the
-scopes for that connection. UNVERIFIED accounts cannot connect.
+클라이언트가 브라우저를 열면 평소처럼 GitHub·Google·패스키로 로그인하고, 동의 화면(`/auth/mcp-consent`)에서
+그 연결에 줄 스코프를 고른다. `UNVERIFIED` 계정은 연결할 수 없다.
 
-## Architecture
+## 구조
 
-```
-MCP client ──► POST /api/mcp (no token) ─► 401 + WWW-Authenticate: resource_metadata=…
-          ──► GET /.well-known/oauth-protected-resource/api/mcp        (RFC 9728)
-          ──► GET /.well-known/oauth-authorization-server/api/auth     (RFC 8414)
-          ──► CIMD client_id URL, or POST /api/auth/oauth2/register    (DCR)
-          ──► browser: /api/auth/oauth2/authorize → /auth/sign-in → /auth/mcp-consent
-          ──► POST /api/auth/oauth2/token (PKCE S256) → JWT access token
-          ──► POST /api/mcp (Bearer)
-                 app/api/mcp/route.ts      requireMcpAuth (JWKS) → actorFromClaims (role from DB)
-                 lib/mcp/server.ts         one McpServer per request, only the actor's tools
-                 lib/mcp/tools/*.ts        zod input → service → CallToolResult
-                 lib/server/services/admin/*.ts   shared with the web Server Actions
+```text
+MCP 클라이언트 ──► POST /api/mcp (토큰 없음) ─► 401 + WWW-Authenticate: resource_metadata=…
+             ──► GET /.well-known/oauth-protected-resource/api/mcp        (RFC 9728)
+             ──► GET /.well-known/oauth-authorization-server/api/auth     (RFC 8414)
+             ──► CIMD client_id URL 또는 POST /api/auth/oauth2/register   (DCR)
+             ──► 브라우저: /api/auth/oauth2/authorize → /auth/sign-in → /auth/mcp-consent
+             ──► POST /api/auth/oauth2/token (PKCE S256) → JWT 액세스 토큰
+             ──► POST /api/mcp (Bearer)
+                    app/api/mcp/route.ts      requireMcpAuth(JWKS) → actorFromClaims(역할은 DB에서)
+                    lib/mcp/server.ts         요청마다 McpServer 하나, 이 행위자가 쓸 수 있는 도구만 등록
+                    lib/mcp/tools/*.ts        zod 입력 → 서비스 → CallToolResult
+                    lib/server/services/admin/*.ts   웹 Server Action과 공유
 ```
 
-- **Authorization server**: Better Auth with `jwt()`, `@better-auth/mcp` and
-  `@better-auth/cimd` ([`auth.ts`](../../auth.ts)). Tokens are audience-bound
-  to `/api/mcp`.
-- **Service layer**: every admin mutation lives in
-  `lib/server/services/admin/*`, takes an explicit `Actor`
-  (`{ userId, role, scopes, via }`) and returns a `ServiceResult`. The web
-  Server Actions and the MCP tools are thin adapters over the same functions,
-  so permission checks, validation and cache invalidation cannot drift apart.
-- **Cache invalidation**: `updateTag` only works in Server Actions. The MCP
-  route runs tools inside `runWithRouteHandlerInvalidation`, where
-  `updateCacheTags` switches to `revalidateTag(tag, { expire: 0 })`
-  ([`invalidation-context.ts`](../../lib/server/cache/invalidation-context.ts)).
+- **인가 서버**: Better Auth + `jwt()`, `@better-auth/mcp`, `@better-auth/cimd`([`auth.ts`](../../auth.ts)).
+  토큰의 audience는 `/api/mcp`로 묶인다.
+- **서비스 계층**: 모든 관리자 쓰기는 `lib/server/services/admin/*`에 있고, 명시적인 `Actor`
+  (`{ userId, role, scopes, via }`)를 받아 `ServiceResult`를 돌려준다. 웹 Server Action과 MCP 도구는 같은 함수를
+  감싼 얇은 어댑터라서 권한 검사·검증·캐시 무효화가 서로 어긋날 수 없다.
+- **캐시 무효화**: `updateTag`는 Server Action에서만 동작한다. MCP 라우트는 도구를
+  `runWithRouteHandlerInvalidation` 안에서 실행하고, 그 안에서는 `updateCacheTags`가
+  `revalidateTag(tag, { expire: 0 })`로 바뀐다([`invalidation-context.ts`](../../lib/server/cache/invalidation-context.ts)).
+- **감사 로그**: 쓰기·관리 도구 호출은 `lib/mcp/audit.ts`가 기록한다(아래).
 
-## Permissions
+## 권한
 
-A tool call is allowed only when all three hold:
+도구 호출은 다음 세 가지를 모두 만족할 때만 허용된다.
 
-1. the access token carries the tool's scope,
-2. the role matrix in [`check-permission.ts`](../../lib/server/permission/check-permission.ts)
-   allows the action (including ownership, e.g. a MEMBER edits only their own projects),
-3. non-LEAD users act only inside the generations of parts they belong to.
+1. 액세스 토큰에 도구의 스코프가 있다.
+2. 역할 권한 표([`policy.ts`](../../lib/server/permission/policy.ts))가 그 작업을 허용한다(소유권 포함: MEMBER는
+   본인 프로젝트만 수정).
+3. LEAD가 아니면 자신이 속한 파트의 기수 안에서만 작업한다.
 
-`tools/list` only returns tools the role could ever use with the granted
-scopes; ownership is checked when the tool runs.
+`tools/list`는 그 역할이 받은 스코프로 쓸 가능성이 있는 도구만 돌려준다. 소유권은 도구를 실행할 때 확인한다.
+전체 규칙은 [`auth-and-permissions.md`](./auth-and-permissions.md).
 
-Rules for member data (web and MCP alike):
+멤버 데이터 규칙(웹과 MCP 공통):
 
-- **Contact details** (email, telephone, student id) are visible only to the
-  member, a LEAD, or someone who shares a generation with them. Other callers
-  get `null` for those fields. Names, parts and generations stay visible.
-- **Editing members:** anyone can edit their own profile. A LEAD can edit
-  anyone. A CORE can edit only MEMBER, ALUMNUS and UNVERIFIED members who share
-  a generation with them.
-- **Email changes:** only the member themselves or a LEAD can change an email
-  (sign-in links accounts by email, so changing someone else's would hand over
-  their account).
+- **연락처**(이메일, 전화, 학번)는 본인, LEAD, 같은 기수 멤버에게만 보인다. 그 외에는 해당 필드가 `null`. 이름·파트·기수는 보인다.
+- **멤버 수정**: 누구나 본인 프로필을 고칠 수 있다. LEAD는 누구나 고칠 수 있다. CORE는 같은 기수의 MEMBER·ALUMNUS·UNVERIFIED만 고칠 수 있다.
+- **이메일 변경**: 본인 또는 LEAD만(로그인이 이메일로 계정을 연결하므로, 남의 이메일을 바꾸면 그 계정을 넘겨주는 셈이다).
 
-| Scope        | Unlocks                                                                              |
-| ------------ | ------------------------------------------------------------------------------------ |
-| `gyms:read`  | All read tools                                                                       |
-| `gyms:write` | Create/update, session registration, participant removal, image uploads, own profile |
-| `gyms:admin` | Deletes, pending sign-ups, approvals, role changes                                   |
+| 스코프       | 열리는 것                                                          |
+| ------------ | ------------------------------------------------------------------ |
+| `gyms:read`  | 모든 조회 도구                                                     |
+| `gyms:write` | 생성·수정, 세션 참가 신청, 참가자 제거, 이미지 업로드, 본인 프로필 |
+| `gyms:admin` | 삭제, 가입 대기 목록, 승인, 역할 변경                              |
 
-| Role       | What MCP can do                                                                                             |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| LEAD       | Everything                                                                                                  |
-| CORE       | Sessions, projects, parts and members CRUD; delete sessions and projects. No role or generation management. |
-| MEMBER     | Read sessions and projects, create projects, edit own projects, register for sessions, own profile          |
-| ALUMNUS    | Read sessions and projects, register for sessions, own profile                                              |
-| UNVERIFIED | Cannot connect                                                                                              |
+| 역할       | MCP로 할 수 있는 일                                                                |
+| ---------- | ---------------------------------------------------------------------------------- |
+| LEAD       | 전부                                                                               |
+| CORE       | 세션·프로젝트·파트·멤버 CRUD, 세션·프로젝트 삭제. 역할·기수 관리는 불가            |
+| MEMBER     | 세션·프로젝트 조회, 프로젝트 생성, 본인 프로젝트 수정, 세션 참가 신청, 본인 프로필 |
+| ALUMNUS    | 세션·프로젝트 조회, 세션 참가 신청, 본인 프로필                                    |
+| UNVERIFIED | 연결 불가                                                                          |
 
-The role is read from the database on every request, so demoting or deleting
-a user cuts off MCP access immediately. Tokens are JWTs: access tokens live
-1 hour (15 minutes when `gyms:admin` is granted), refresh tokens 30 days.
+역할은 요청마다 DB에서 읽으므로, 강등하거나 계정을 지우면 MCP 접근이 바로 끊긴다. 토큰은 JWT이며 액세스 토큰은
+1시간(`gyms:admin` 포함 시 15분), 리프레시 토큰은 30일이다(`lib/mcp/config.ts`).
 
-## Tools
+## 도구
 
-| Area        | Tools                                                                                                                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Context     | `whoami`                                                                                                                                                     |
-| Generations | `list_generations`, `get_generation`, `create_generation`, `update_generation`, `delete_generation`                                                          |
-| Parts       | `list_parts`, `get_part`, `create_part`, `update_part`, `delete_part`                                                                                        |
-| Members     | `list_members`, `get_member`, `update_member`, `list_pending_members`, `approve_member`, `update_member_role`, `delete_member`                               |
-| Profile     | `get_my_profile`, `update_my_profile`                                                                                                                        |
-| Projects    | `list_projects`, `get_project`, `create_project`, `update_project`, `delete_project`                                                                         |
-| Sessions    | `list_sessions`, `get_session`, `create_session`, `update_session`, `register_session`, `unregister_session`, `remove_session_participant`, `delete_session` |
-| Images      | `create_image_upload`, `complete_image_upload`, `import_image_from_url`                                                                                      |
+| 영역     | 도구                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 컨텍스트 | `whoami`                                                                                                                                                     |
+| 기수     | `list_generations`, `get_generation`, `create_generation`, `update_generation`, `delete_generation`                                                          |
+| 파트     | `list_parts`, `get_part`, `create_part`, `update_part`, `delete_part`                                                                                        |
+| 멤버     | `list_members`, `get_member`, `update_member`, `list_pending_members`, `approve_member`, `update_member_role`, `delete_member`                               |
+| 프로필   | `get_my_profile`, `update_my_profile`                                                                                                                        |
+| 프로젝트 | `list_projects`, `get_project`, `create_project`, `update_project`, `delete_project`                                                                         |
+| 세션     | `list_sessions`, `get_session`, `create_session`, `update_session`, `register_session`, `unregister_session`, `remove_session_participant`, `delete_session` |
+| 이미지   | `create_image_upload`, `complete_image_upload`, `import_image_from_url`                                                                                      |
 
-- Update tools are partial: omitted fields keep their current values.
-- Session times without an offset are Seoul wall-clock time; offsets are
-  converted to Seoul time.
-- `create_session` with `internalOpen` emails the generation's members, as on
-  the web.
-- An explicit `generationId` you cannot access returns `FORBIDDEN` (omit it
-  for your default generation).
-- `list_sessions` with `openForRegistration` leaves out ended and full
-  sessions; each row carries `participantCount`.
-- `update_session` on an older session without dates needs both `startAt` and
-  `endAt` in the same update.
+- 수정 도구는 부분 수정이다. 빠진 필드는 현재 값을 유지한다.
+- 오프셋 없는 세션 시각은 서울 벽시계 시각으로 본다. 오프셋이 있으면 서울 시각으로 바꾼다.
+- `internalOpen`으로 `create_session`을 하면 웹과 마찬가지로 그 기수 멤버에게 메일을 보낸다.
+- 접근할 수 없는 `generationId`를 명시하면 `FORBIDDEN`이다(생략하면 기본 기수).
+- `list_sessions`에 `openForRegistration`을 주면 끝난 세션과 정원이 찬 세션을 뺀다. 각 행에 `participantCount`가 있다.
+- 날짜가 없는 오래된 세션을 `update_session`할 때는 `startAt`과 `endAt`을 함께 넣어야 한다.
 
-### Images (up to 200MB, Cloudflare R2)
+### 이미지 (최대 200MB, Cloudflare R2)
 
-- Clients with a shell: `create_image_upload` returns a presigned PUT URL
-  whose signature covers `Content-Type` and `Content-Length`; upload with
-  `curl`, then `complete_image_upload` (with the returned `uploadToken`, which
-  binds the key to your own upload for one hour) checks size and magic bytes and
-  returns the public URL. Invalid files are deleted.
-- Clients without a shell: `import_image_from_url` streams a public https
-  image into an R2 multipart upload (no buffering). Private, loopback and
-  link-local addresses are refused on every redirect hop and again at
-  connect time (DNS rebinding).
-- Accepted: jpg, jpeg, png, webp, gif, avif. SVG is refused.
-- Image fields in create/update tools accept only URLs returned by these
-  tools, under the matching prefix (`sessions/`, `projects/`, `users/`).
-- Limit: 100 upload attempts (direct + imports) per user per hour, counted
-  atomically; failed and rejected attempts count too. Past that the tools
-  return `RATE_LIMITED`. Attempts are recorded in `mcp_image_upload`; each new
-  upload request leases up to 20 that expired without completing, deletes
-  their R2 objects and only then settles their records, which keep counting
-  toward the hour (a failed delete is retried
-  after the lease ends). An upload that cleanup already claimed can no longer
-  be completed.
-- Remote imports block private, loopback, link-local, IPv4-compatible,
-  6to4, local NAT64 and discard-only ranges. They wait up to 30 seconds for
-  response headers and 10 minutes for the whole transfer.
+자세한 흐름과 SSRF 방어는 [`uploads.md`](./uploads.md#2-mcp-업로드-최대-200mb).
 
-## Audit log
+- 셸이 있는 클라이언트: `create_image_upload` → `curl`로 PUT → `complete_image_upload`(크기·매직 바이트 확인 후 공개 URL).
+- 셸이 없는 클라이언트: `import_image_from_url`이 공개 https 이미지를 R2로 스트리밍한다.
+- 허용 형식: jpg, jpeg, png, webp, gif, avif. SVG는 거부.
+- 한도: 사용자당 시간당 100회(실패·거절 포함). 넘으면 `RATE_LIMITED`.
 
-Every write/admin tool call, successful or not, is stored in
-`mcp_audit_log` with the user, role, OAuth client id and name, tool,
-sanitized input, outcome and target id (taken from the input when the call
-failed). Sanitizing redacts secret-like keys and email, telephone and student
-id values, drops URL query strings (signed URLs) and truncates long strings.
-Rows older than one year are deleted automatically.
+## 감사 로그
+
+쓰기·관리 도구 호출은 성공 여부와 관계없이 `mcp_audit_log`에 남는다: 사용자, 역할, OAuth 클라이언트 id와 이름,
+도구, 정리된 입력, 결과, 대상 id(실패했으면 입력에서 추출). 정리 과정에서 비밀처럼 보이는 키와 이메일·전화·학번
+값을 가리고, URL 쿼리 문자열(서명 URL)을 지우고, 긴 문자열을 자른다. 1년 지난 행은 자동으로 지운다.
 
 ```sql
 select "createdAt", tool, outcome, "errorCode", "targetId", "clientId"
@@ -167,11 +129,8 @@ order by "createdAt" desc
 limit 50;
 ```
 
-## Known limits
+## 알려진 한계
 
-- Access tokens are stateless JWTs. Revoking a connection without changing
-  the user's role takes effect when the access token expires (≤ 1 hour).
-- Very large originals are served through `next/image`; the first optimized
-  request for a 200MB image is slow.
-- There is no UI yet for listing or revoking connected clients, or for
-  browsing the audit log.
+- 액세스 토큰은 stateless JWT다. 역할을 바꾸지 않고 연결만 끊으면 액세스 토큰이 만료될 때(최대 1시간) 반영된다.
+- 아주 큰 원본 이미지도 `next/image`로 제공하므로, 200MB 이미지의 첫 최적화 요청은 느리다.
+- 연결된 클라이언트 목록·해지, 감사 로그 열람 UI는 아직 없다.
