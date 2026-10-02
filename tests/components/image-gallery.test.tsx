@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ImageSliderGallery from '@/app/components/images-slider'
+import ImageGallery from '@/app/components/site/gallery/image-gallery'
 
-describe('ImageSliderGallery', () => {
+describe('ImageGallery', () => {
   it('counts images and moves with buttons, thumbnails and arrow keys', async () => {
     const user = userEvent.setup()
     render(
-      <ImageSliderGallery
+      <ImageGallery
+        lang="en"
         images={['/a.webp', '/b.webp', '/c.webp']}
         alt="Sixth T19"
       />
@@ -31,9 +32,21 @@ describe('ImageSliderGallery', () => {
   })
 
   it('shows a single image without controls', () => {
-    render(<ImageSliderGallery images={['/a.webp']} alt="Poster" />)
+    render(<ImageGallery lang="en" images={['/a.webp']} alt="Poster" />)
 
     expect(screen.queryByRole('button', { name: 'Next image' })).toBeNull()
     expect(screen.getByAltText('Poster — image 1 of 1')).toBeInTheDocument()
+  })
+
+  it('labels controls in Korean', () => {
+    render(
+      <ImageGallery lang="ko" images={['/a.webp', '/b.webp']} alt="포스터" />
+    )
+
+    expect(screen.getByRole('button', { name: '다음 이미지' })).toBeEnabled()
+    expect(
+      screen.getByRole('button', { name: '포스터 이미지 2 보기' })
+    ).toBeInTheDocument()
+    expect(screen.getByAltText('포스터 — 이미지 1/2')).toBeInTheDocument()
   })
 })

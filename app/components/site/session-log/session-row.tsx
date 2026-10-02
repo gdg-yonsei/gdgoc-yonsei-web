@@ -1,3 +1,6 @@
+/**
+ * 세션 로그의 한 줄(서버 컴포넌트).
+ */
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import Chip from '@/app/components/site/chip'
@@ -13,7 +16,12 @@ import {
 } from '@/lib/site/session-log'
 import { sessionPath, localeHref } from '@/lib/site/routes'
 
-/** One commit on the log. The title link stretches over the whole row. */
+/**
+ * 커밋 로그 모양의 세션 한 줄. 제목 링크가 행 전체를 덮는다. `data-*` 속성은
+ * `FilterBar`가 검색·필터에 쓴다.
+ * @param titleLevel 제목 태그 수준
+ * @param tbaLabel 일시 미정일 때 문구
+ */
 export default function SessionRow({
   session,
   lang,

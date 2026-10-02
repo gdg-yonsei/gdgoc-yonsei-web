@@ -12,8 +12,15 @@ import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
 
+/** 두 언어 문구 쌍. */
 type Bilingual = { en: string; ko: string }
 
+/**
+ * 허브 공통 골격: 경로 표시, 두 언어 제목·설명, 본문 Suspense 경계.
+ *
+ * @param params 페이지 `params`(언어). 본문과 경로 표시에서만 읽는다.
+ * @param section 허브 종류(경로 표시 라벨)
+ */
 export default function ArchiveHubShell({
   params,
   section,

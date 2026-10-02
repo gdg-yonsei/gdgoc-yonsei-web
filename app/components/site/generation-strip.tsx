@@ -1,11 +1,16 @@
+/**
+ * 허브 상단의 기수 목록 알약 띠(서버 컴포넌트).
+ */
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import type { StripGeneration } from '@/lib/site/generations'
 import { generationPath, localeHref } from '@/lib/site/routes'
 
 /**
- * Every generation as a pill. Ones with public records link to their page
- * (prefetched, so the click is instant); empty ones stay visible but muted.
+ * 모든 기수를 알약 모양으로 보여 준다. 공개 기록이 있는 기수는 해당 기수 페이지로
+ * 연결하고(prefetch해 즉시 열림), 기록이 없는 기수는 흐리게 남겨 둔다.
+ * @param current 현재 보고 있는 기수 이름(`aria-current` 표시)
+ * @param emptyLabel 기록 없는 기수에 붙는 스크린리더 문구
  */
 export default function GenerationStrip({
   basePath,

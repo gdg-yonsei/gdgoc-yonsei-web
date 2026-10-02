@@ -20,6 +20,11 @@ const SECTION_LABEL = {
   member: 'members',
 } as const satisfies Record<ArchiveSection, string>
 
+/**
+ * 기수 페이지 상단: 경로 표시, 제목·설명, 활동 기간, 이전·다음 기수 링크.
+ *
+ * @param section 어느 기록의 기수 페이지인지
+ */
 export default function GenerationPageHeader({
   lang,
   section,

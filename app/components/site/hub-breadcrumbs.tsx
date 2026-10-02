@@ -1,10 +1,14 @@
+/**
+ * 허브 페이지(세션·프로젝트·멤버·캘린더)의 "홈 / 섹션" 경로 표시(서버 컴포넌트).
+ */
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { toLocale } from '@/lib/i18n'
 
 /**
- * "Home / Sessions". It needs `params`, so hubs render it in its own
- * Suspense leaf and keep their shared shell URL-free.
+ * "홈 / 세션" 같은 경로 표시. `params`(언어)가 필요하므로 허브는 이 컴포넌트를 별도
+ * Suspense 영역에 두어, 공유 셸이 URL에 의존하지 않고 미리 렌더링되게 한다.
+ * @param section 현재 허브
  */
 export default async function HubBreadcrumbs({
   params,
