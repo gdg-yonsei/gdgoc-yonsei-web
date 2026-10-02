@@ -246,6 +246,13 @@
       "when": 1790765594620,
       "tag": "0034_lively_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1790978734630,
+      "tag": "0035_drop_web_booking_requests",
+      "breakpoints": true
     }
   ]
 }
