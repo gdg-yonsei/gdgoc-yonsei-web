@@ -1,3 +1,9 @@
+/**
+ * 관리자 화면(레이아웃·페이지)용 권한 가드.
+ *
+ * 조건을 만족하지 않으면 Next.js `forbidden()`으로 렌더링을 멈추고 403 화면을 보여 준다.
+ * 쓰기 권한은 서비스 계층(`authorize`)이 다시 확인하므로, 이 가드는 화면 접근만 막는다.
+ */
 import 'server-only'
 
 import { forbidden } from 'next/navigation'
@@ -11,11 +17,9 @@ import {
 } from '@/lib/server/permission/has-permission'
 
 /**
- * 권한이 없으면 `forbidden()` 으로 렌더링을 중단하고, 있으면 세션을 돌려준다.
+ * 권한이 없으면 `forbidden()`으로 렌더링을 중단하고, 있으면 로그인 세션을 돌려준다.
  *
- * 관리자 레이아웃/페이지 열한 곳이 `getAuthSession()` 와 `hasPermission()` 을 각자 호출하는
- * 서른 줄짜리 동일한 가드를 복사해 쓰고 있었다. 리소스 이름만 다른 코드라
- * 주석이 원본 그대로 남아 실제 검사 대상과 어긋난 파일도 있었다.
+ * @param dataOwnerId - 데이터 소유자 ID. 본인 데이터만 허용하는 규칙(`'own'`)에 쓴다.
  */
 export async function requirePermission(
   action: ActionType,

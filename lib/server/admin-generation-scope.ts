@@ -1,3 +1,10 @@
+/**
+ * 관리자 화면 기수 범위(generation scope).
+ *
+ * 관리자 화면 상단에서 기수를 고르면 목록·폼이 그 기수의 데이터만 다룬다. 선택값은
+ * 쿠키(`admin-generation-scope`)에 저장하고, 매 요청마다 사용자 권한에 맞게 다시 해석한다.
+ * LEAD는 "전체 기수"를 고를 수 있고, 다른 역할은 자신이 속한 기수만 고를 수 있다.
+ */
 import 'server-only'
 
 import { cache } from 'react'
@@ -5,14 +12,18 @@ import { headers } from 'next/headers'
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 
+/** 선택한 기수 범위를 기억하는 쿠키 이름. */
 export const ADMIN_GENERATION_SCOPE_COOKIE = 'admin-generation-scope'
+/** "전체 기수"를 뜻하는 쿠키 값(LEAD 전용). */
 export const ADMIN_GENERATION_SCOPE_ALL = 'all'
 
+/** 기수 선택지(ID와 이름). */
 export type AdminGenerationOption = {
   id: number
   name: string
 }
 
+/** 해석된 범위: 특정 기수 하나 또는 전체 기수. */
 export type AdminGenerationScope =
   | {
       kind: 'generation'
@@ -22,6 +33,12 @@ export type AdminGenerationScope =
       kind: 'all'
     }
 
+/**
+ * 요청 하나에 대해 해석한 범위 정보.
+ * - canAccessAll: 전체 기수를 고를 수 있는지(LEAD)
+ * - options: 고를 수 있는 기수 목록(최신순)
+ * - scope / selectedGeneration: 현재 적용된 범위와 그 기수
+ */
 export type ResolvedAdminGenerationScope = {
   canAccessAll: boolean
   options: AdminGenerationOption[]
@@ -29,6 +46,7 @@ export type ResolvedAdminGenerationScope = {
   selectedGeneration: AdminGenerationOption | null
 }
 
+/** 요청 값(쿠키 값 등)이 고를 수 있는 기수나 "전체"를 가리키면 범위로 바꾼다. 아니면 `null`. */
 function parseRequestedGenerationScope(
   rawValue: string | undefined,
   options: AdminGenerationOption[],
@@ -79,6 +97,7 @@ export function resolveScopeFromOptions(
   )
 }
 
+/** `Cookie` 헤더에서 쿠키 하나의 값을 꺼낸다. */
 function getCookieFromHeader(
   cookieHeader: string | null,
   cookieName: string
@@ -100,6 +119,7 @@ function getCookieFromHeader(
   return decodeURIComponent(cookie.slice(encodedCookieName.length))
 }
 
+/** 사용자가 접근할 수 있는 기수 목록(LEAD는 전체). */
 async function loadAccessibleGenerationOptions(
   userId: string,
   role: Awaited<ReturnType<typeof getUserRole>>
@@ -107,6 +127,7 @@ async function loadAccessibleGenerationOptions(
   return loadAccessibleGenerations({ userId, role })
 }
 
+/** 범위를 쿠키에 저장할 문자열로 바꾼다(`all` 또는 기수 ID). */
 export function serializeAdminGenerationScope(
   scope: AdminGenerationScope | null
 ): string {
@@ -119,8 +140,12 @@ export function serializeAdminGenerationScope(
     : String(scope.generationId)
 }
 
-// 요청 단위 메모이즈: 같은 요청 안의 모든 호출이 같은 scope 객체를 받아
-// 아래 fetcher 들의 cache() 가 객체 동일성으로 쿼리를 디듀프할 수 있다.
+/**
+ * 현재 요청 사용자의 기수 범위를 쿠키에서 읽어 해석한다.
+ *
+ * 요청 단위로 메모이즈한다. 같은 요청 안의 모든 호출이 같은 scope 객체를 받아야
+ * fetcher들의 `cache()`가 객체 동일성으로 중복 쿼리를 걸러 낼 수 있다.
+ */
 export const resolveAdminGenerationScope = cache(async function (
   userId: string
 ): Promise<ResolvedAdminGenerationScope> {

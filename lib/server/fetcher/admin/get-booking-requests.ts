@@ -1,3 +1,9 @@
+/**
+ * 관리자 예약 목록 조회(웹 미러 테이블 + 신청자 이름).
+ *
+ * 캐시하지 않는 관리자 조회다(권한·기수 범위에 따라 결과가 달라 공유 캐시를 쓰지 않는다).
+ * 권한 확인은 호출부(레이아웃 가드, 서비스)가 먼저 한다.
+ */
 import 'server-only'
 import { desc, eq } from 'drizzle-orm'
 import { db } from '@/db'
@@ -22,6 +28,7 @@ export type BookingRequestListItem = {
   createdAt: Date
 }
 
+/** 예약 목록을 최근 신청 순으로 읽는다. */
 export async function getBookingRequests(): Promise<BookingRequestListItem[]> {
   const rows = await db
     .select({
