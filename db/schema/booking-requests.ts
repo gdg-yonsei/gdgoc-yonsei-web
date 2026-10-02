@@ -1,3 +1,9 @@
+/**
+ * 강의실 예약 웹 미러 테이블(`web_booking_requests`).
+ *
+ * 예약의 원본은 auto-booker 서비스가 소유한 `booking_requests` 테이블이고, 이 테이블은
+ * 관리자 화면 표시용 미러다(`lib/server/booking/repository.ts` 참고).
+ */
 import {
   integer,
   pgEnum,
@@ -9,6 +15,7 @@ import {
 import { relations } from 'drizzle-orm'
 import { users } from '@/db/schema/users'
 
+/** 예약 진행 상태: 접수 → 예약 예정 → 완료/실패. */
 export const bookingStatusEnum = pgEnum('bookingStatus', [
   'PENDING',
   'SCHEDULED',
@@ -16,6 +23,7 @@ export const bookingStatusEnum = pgEnum('bookingStatus', [
   'FAILED',
 ])
 
+/** 관리자 화면의 예약 목록. `externalId`는 auto-booker 원본 행 ID(숫자 문자열)다. */
 export const bookingRequests = pgTable('web_booking_requests', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   externalId: text('externalId'),
@@ -38,6 +46,7 @@ export const bookingRequests = pgTable('web_booking_requests', {
   errorMessage: text('errorMessage'),
 })
 
+/** 예약 신청자(user) 관계. */
 export const bookingRequestsRelations = relations(
   bookingRequests,
   ({ one }) => ({

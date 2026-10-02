@@ -1,3 +1,6 @@
+/**
+ * MCP 이미지 업로드 기록 테이블(`mcp_image_upload`). 업로드 한도와 미완료 객체 정리에 쓴다.
+ */
 import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { users } from '@/db/schema/users'
 

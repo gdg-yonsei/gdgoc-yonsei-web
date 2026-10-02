@@ -1,3 +1,6 @@
+/**
+ * MCP 도구 호출 감사 로그 테이블(`mcp_audit_log`).
+ */
 import {
   index,
   integer,

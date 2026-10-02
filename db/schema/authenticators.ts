@@ -1,3 +1,8 @@
+/**
+ * 패스키(WebAuthn) 인증 수단 테이블(`authenticator`).
+ *
+ * Better Auth passkey 플러그인이 쓰는 모델이며, 테이블 이름은 Auth.js 시절 이름을 유지한다.
+ */
 import {
   boolean,
   index,
@@ -8,6 +13,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { users } from '@/db/schema/users'
 
+/** 사용자가 등록한 패스키. 한 사용자가 여러 기기의 패스키를 가질 수 있다. */
 export const passkeys = pgTable(
   'authenticator',
   {
@@ -27,8 +33,8 @@ export const passkeys = pgTable(
     createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow(),
     aaguid: text('aaguid'),
 
-    // No longer used by Better Auth. It is kept nullable so migrated Auth.js
-    // credentials can be rolled back without losing their account reference.
+    // Better Auth는 더 이상 쓰지 않는다. Auth.js에서 옮긴 자격 증명을 되돌릴 때
+    // 계정 참조를 잃지 않도록 nullable로 남겨 둔다.
     authjsProviderAccountId: text('providerAccountId'),
   },
   (passkey) => [index('authenticator_userId_idx').on(passkey.userId)]
