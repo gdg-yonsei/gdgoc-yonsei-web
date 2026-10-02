@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
+import {
+  ArchiveListSkeleton,
+  SkeletonBars,
+} from '@/app/components/site/skeletons'
 import JsonLd from '@/app/components/json-ld'
-import LocalizedText from '@/app/components/localized-text'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
 import GenerationStrip from '@/app/components/site/generation-strip'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
 import SessionLog from '@/app/components/site/session-log/session-log'
 import {
   archiveCommonCopy,
@@ -53,50 +53,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/*
- * The shell (header, H1, description) never reads params, so every link to
- * this route shares one instant App Shell; LocalizedText picks the language
- * with CSS. Everything URL- or data-dependent streams in below.
- */
 export default function SessionHubPage({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page" data-testid="session-log-shell">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
-        >
-          <HubBreadcrumbs params={params} section="sessions" />
-        </Suspense>
-        <PageHeader
-          tag={en.tag}
-          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
-          description={
-            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
-          }
-        />
-        <Suspense fallback={<SessionHubFallback />}>
-          <SessionHubContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function SessionHubFallback() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading sessions"
-      className="archive-skeleton"
+    <ArchiveHubShell
+      params={params}
+      section="sessions"
+      testId="session-log-shell"
+      tag={en.tag}
+      title={{ en: en.hubTitle, ko: ko.hubTitle }}
+      description={{ en: en.hubDescription, ko: ko.hubDescription }}
+      fallback={
+        <ArchiveListSkeleton label="Loading sessions">
+          <SkeletonBars count={4} className="h-20 w-full" />
+        </ArchiveListSkeleton>
+      }
     >
-      <span className="skeleton-bar h-10 w-72 max-w-full" />
-      <span className="skeleton-bar h-36 w-full rounded-3xl" />
-      {Array.from({ length: 4 }, (_, index) => (
-        <span key={index} className="skeleton-bar h-20 w-full" />
-      ))}
-    </div>
+      <SessionHubContent params={params} />
+    </ArchiveHubShell>
   )
 }
 

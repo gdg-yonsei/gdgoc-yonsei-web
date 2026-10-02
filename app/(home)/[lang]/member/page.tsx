@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
+import {
+  ArchiveListSkeleton,
+  SkeletonBars,
+} from '@/app/components/site/skeletons'
 import JsonLd from '@/app/components/json-ld'
-import LocalizedText from '@/app/components/localized-text'
 import EmptyState from '@/app/components/site/empty-state'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
 import {
   archiveCommonCopy,
   memberArchiveCopy,
@@ -43,47 +43,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/*
- * The shell never reads params, so every link here shares one instant App
- * Shell; LocalizedText picks the language with CSS.
- */
 export default function MemberIndex({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page" data-testid="member-directory-shell">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
-        >
-          <HubBreadcrumbs params={params} section="members" />
-        </Suspense>
-        <PageHeader
-          tag={en.tag}
-          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
-          description={
-            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
-          }
-        />
-        <Suspense fallback={<MemberHubSkeleton />}>
-          <MemberHubContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function MemberHubSkeleton() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading generations"
-      className="archive-skeleton"
+    <ArchiveHubShell
+      params={params}
+      section="members"
+      testId="member-directory-shell"
+      tag={en.tag}
+      title={{ en: en.hubTitle, ko: ko.hubTitle }}
+      description={{ en: en.hubDescription, ko: ko.hubDescription }}
+      fallback={
+        <ArchiveListSkeleton label="Loading generations" showFilters={false}>
+          <SkeletonBars count={4} className="h-28 w-full rounded-3xl" />
+        </ArchiveListSkeleton>
+      }
     >
-      {Array.from({ length: 4 }, (_, index) => (
-        <span key={index} className="skeleton-bar h-28 w-full rounded-3xl" />
-      ))}
-    </div>
+      <MemberHubContent params={params} />
+    </ArchiveHubShell>
   )
 }
 

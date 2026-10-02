@@ -1,9 +1,5 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
-import LocalizedText from '@/app/components/localized-text'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
 import SessionCalendar from '@/app/(home)/[lang]/calendar/session-calendar'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getCalendarSessions } from '@/lib/server/queries/public/sessions'
@@ -48,40 +44,25 @@ export function generateStaticParams() {
 
 export default function CalendarPage({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
+    <ArchiveHubShell
+      params={params}
+      section="calendar"
+      tag="<calendar />"
+      title={{ en: copy.en.title, ko: copy.ko.title }}
+      description={{ en: copy.en.description, ko: copy.ko.description }}
+      fallback={
+        <div
+          role="status"
+          aria-label="Loading calendar"
+          className="calendar calendar-skeleton"
         >
-          <HubBreadcrumbs params={params} section="calendar" />
-        </Suspense>
-        <PageHeader
-          tag="<calendar />"
-          title={<LocalizedText en={copy.en.title} ko={copy.ko.title} />}
-          description={
-            <LocalizedText en={copy.en.description} ko={copy.ko.description} />
-          }
-        />
-        <Suspense fallback={<CalendarFallback />}>
-          <CalendarContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function CalendarFallback() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading calendar"
-      className="calendar calendar-skeleton"
+          <span className="skeleton-bar h-10 w-56 max-w-full" />
+          <span className="skeleton-bar h-96 w-full rounded-3xl" />
+        </div>
+      }
     >
-      <span className="skeleton-bar h-10 w-56 max-w-full" />
-      <span className="skeleton-bar h-96 w-full rounded-3xl" />
-    </div>
+      <CalendarContent params={params} />
+    </ArchiveHubShell>
   )
 }
 
