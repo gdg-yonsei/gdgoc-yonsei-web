@@ -1,3 +1,6 @@
+/**
+ * 홈의 대표 프로젝트 섹션(서버 컴포넌트). 데이터 부분만 Suspense로 스트리밍한다.
+ */
 import Link from 'next/link'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/lib/i18n'
@@ -9,8 +12,9 @@ import { projectArchiveCopy } from '@/lib/contents/archive-copy'
 import { landingCopy } from '@/lib/contents/site-copy'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import { sortShowcase } from '@/lib/site/project-showcase'
+import { localeHref } from '@/lib/site/routes'
 
-/** The three most recent releases; the first one is featured. */
+/** 가장 최근 프로젝트 세 개. 첫 번째는 대표 카드로 크게 그린다. */
 export async function FeaturedReleasesList({ lang }: { lang: Locale }) {
   const projects = sortShowcase(await getProjectShowcase()).slice(0, 3)
   const copy = projectArchiveCopy[lang]
@@ -48,7 +52,7 @@ function ReleasesSkeleton() {
   )
 }
 
-/** `<releases>`: a static header; the cards stream in from the showcase. */
+/** `<releases>` 섹션. 머리글은 정적이고, 카드는 프로젝트 쇼케이스 데이터에서 스트리밍된다. */
 export default function FeaturedReleases({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].releases
 
@@ -66,7 +70,7 @@ export default function FeaturedReleases({ lang }: { lang: Locale }) {
           </h2>
         </div>
         <Link
-          href={`/${lang}/project`}
+          href={localeHref(lang, '/project')}
           transitionTypes={['nav-forward']}
           className="home-more"
         >

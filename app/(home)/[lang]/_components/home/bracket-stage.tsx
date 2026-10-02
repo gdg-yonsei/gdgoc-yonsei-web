@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 히어로 배경 WebGL 캔버스와 지연 로더(클라이언트 컴포넌트).
+ */
 import { useEffect, useRef } from 'react'
 import { readMotionEnvironment, shouldLoadMotion } from '@/lib/motion/gate'
 import { mountWhenIdle } from '@/lib/motion/idle'

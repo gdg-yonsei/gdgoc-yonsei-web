@@ -1,5 +1,9 @@
+/**
+ * 파트별 장식 선 그림 아이콘(서버 컴포넌트, SVG).
+ */
 import type { CSSProperties, ReactNode } from 'react'
 
+/** 아이콘 종류(파트별). */
 export type PartGlyphKind =
   'layout' | 'layers' | 'graph' | 'mesh' | 'curve' | 'rings'
 
@@ -82,7 +86,7 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
       />
       <circle cx="12" cy="60" r="5" className="pg-accent" />
       <circle cx="108" cy="12" r="5" className="pg-accent" />
-      {/* Rides the curve on hover (parts scene). */}
+      {/* 마우스를 올리면 곡선을 따라 움직인다(parts 장면). */}
       <circle cx="0" cy="0" r="4" className="pg-rider" />
     </>
   ),
@@ -104,9 +108,8 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
 }
 
 /**
- * Generated line art per part: layout boxes, layers, a node graph, a mesh,
- * a bézier curve and broadcast rings. Animated on hover or focus
- * (site-home.css).
+ * 파트별 선 그림: 레이아웃 상자, 레이어, 노드 그래프, 메시, 베지어 곡선, 방송 동심원. 마우스를 올리거나
+ * 포커스하면 움직인다(site-home.css).
  */
 export default function PartGlyph({ kind }: { kind: PartGlyphKind }) {
   return (

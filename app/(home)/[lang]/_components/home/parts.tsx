@@ -1,3 +1,6 @@
+/**
+ * 홈의 파트 소개 섹션(서버 컴포넌트). 파트 문구는 `lib/contents/parts-section.ts`에 있다.
+ */
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import SectionTag from '@/app/components/site/section-tag'
@@ -6,6 +9,7 @@ import { landingCopy } from '@/lib/contents/site-copy'
 import { fillTemplate } from '@/lib/format/text'
 import { partHue } from '@/lib/site/labels'
 import PartGlyph, { type PartGlyphKind } from './part-glyph'
+import { localeHref } from '@/lib/site/routes'
 
 const GLYPHS: Record<string, PartGlyphKind> = {
   'Front-End': 'layout',
@@ -17,9 +21,8 @@ const GLYPHS: Record<string, PartGlyphKind> = {
 }
 
 /**
- * `<parts>`: one module per part with its description in the HTML and a
- * link into the Session Log filtered by that part (no prefetch: six query
- * variants of one route would spend the prefetch budget).
+ * `<parts>` 섹션. 파트마다 모듈 하나를 두고, 설명은 HTML에 그대로 넣으며, 그 파트로 필터링한 세션 로그
+ * 링크를 단다(prefetch 안 함: 한 라우트의 쿼리 변형 여섯 개가 prefetch 예산을 낭비한다).
  */
 export default function Parts({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].parts
@@ -48,7 +51,7 @@ export default function Parts({ lang }: { lang: Locale }) {
             <h3 className="part-title">{part.title}</h3>
             <p className="part-body">{part.content[lang]}</p>
             <Link
-              href={`/${lang}/session?part=${encodeURIComponent(part.title)}`}
+              href={`${localeHref(lang, '/session')}?part=${encodeURIComponent(part.title)}`}
               prefetch={false}
               className="part-link"
             >

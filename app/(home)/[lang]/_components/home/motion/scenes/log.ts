@@ -1,3 +1,8 @@
+/**
+ * 최근 세션 로그 섹션의 연출: 커밋 레인 그리기와 행 등장.
+ *
+ * 장면 함수 규칙은 `../scene.ts` 참고.
+ */
 import { spring, stagger } from 'animejs'
 import { whenPresent } from '@/lib/motion/present'
 import { SPRINGS } from '@/lib/motion/springs'
@@ -7,10 +12,9 @@ import { scrub } from '../scrub'
 import { sceneTimeline } from '../timeline'
 
 /**
- * `<log>`: the commit lane draws itself down as the log scrolls by, with a
- * blue HEAD marker riding its tip; the rows slide in one after another as
- * the list arrives and their commit nodes pop. The rows stream in from the
- * server, so the scene waits for them.
+ * `<log>` 장면. 로그가 스크롤되는 동안 커밋 레인이 아래로 그려지고, 파란 HEAD 표시가 레인 끝을
+ * 따라간다. 목록이 들어오면 행이 차례로 미끄러져 들어오고 커밋 점이 튀어 오른다. 행은 서버에서
+ * 스트리밍되어 들어오므로 장면은 행이 도착할 때까지 기다린다.
  */
 const log: Scene = ({ root, scope, belowFold }) => {
   const cleanups: Array<() => void> = []
@@ -18,9 +22,8 @@ const log: Scene = ({ root, scope, belowFold }) => {
   scope.add('arm', (rows: HTMLElement) => {
     if (!belowFold(rows)) return
 
-    // The scene draws a lane of its own in place of the static one: scaling
-    // it restyles one element, where a variable on the list restyled every
-    // row.
+    // 정적 레인 대신 장면 전용 레인을 그린다. 이 요소 하나의 크기만 바꾸면 스타일 재계산이 한 요소에
+    // 그친다. 목록의 CSS 변수를 바꾸면 모든 행의 스타일이 다시 계산됐다.
     const mark = (className: string) => {
       const span = document.createElement('span')
       span.className = className
@@ -36,7 +39,7 @@ const log: Scene = ({ root, scope, belowFold }) => {
       head.remove()
       delete rows.dataset.lane
     })
-    // The lane runs 0.75rem in from either end of the list.
+    // 레인은 목록 양 끝에서 0.75rem 안쪽까지 이어진다.
     const length =
       rows.offsetHeight - parseFloat(getComputedStyle(rows).fontSize) * 1.5
 
@@ -55,8 +58,7 @@ const log: Scene = ({ root, scope, belowFold }) => {
       }
     )
 
-    // One observer for the whole list: its rows slide in one after another
-    // and their commit nodes pop.
+    // 목록 전체에 observer 하나: 행이 차례로 미끄러져 들어오고 커밋 점이 튀어 오른다.
     sceneTimeline({ autoplay: arrival(rows, '88% top') })
       .add(
         rows.querySelectorAll('.log-entry'),

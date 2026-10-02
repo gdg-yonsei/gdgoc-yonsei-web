@@ -1,3 +1,6 @@
+/**
+ * 홈의 소개(about) 섹션(서버 컴포넌트).
+ */
 import type { CSSProperties } from 'react'
 import type { Locale } from '@/lib/i18n'
 import ExternalLink from '@/app/components/site/external-link'
@@ -15,9 +18,8 @@ const PILLAR_BODY = {
 }
 
 /**
- * `<about>`: the chapter's statement at display size, lit word by word as it
- * crosses the viewport (site-home.css), the longer introduction, a "What is
- * GDG on Campus?" aside and the three pillars.
+ * `<about>` 섹션. 동아리 소개 문장을 큰 글씨로 보여 주고 화면을 지날 때 단어별로 밝힌다(site-home.css).
+ * 이어서 긴 소개 문단, "GDG on Campus란?" 보조 설명, 세 기둥(pillar)을 둔다.
  */
 export default function Manifesto({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].manifesto

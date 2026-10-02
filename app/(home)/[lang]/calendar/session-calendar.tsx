@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 공개 세션 월 달력(클라이언트 컴포넌트). 문구는 현재 언어 것만 prop으로 받는다(`lib/contents/calendar-copy.ts`).
+ */
 import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import ChevronLeftIcon from '@heroicons/react/24/outline/ChevronLeftIcon'
@@ -30,7 +33,7 @@ function sessionCount(copy: CalendarWidgetCopy, count: number) {
     : countLabel(count, copy.countOne, copy.countMany)
 }
 
-/** How many entries a day cell lists before collapsing into "+n more". */
+/** 날짜 칸 하나에 보일 최대 일정 수. 넘치면 "+n개 더"로 접는다. */
 const CELL_LIMIT = 2
 
 const subscribeNever = () => () => {}
@@ -40,9 +43,8 @@ const longDate = (day: string, lang: Locale) =>
   formatSessionLongDate(new Date(`${day}T00:00:00Z`), lang)
 
 /*
- * The server renders the month of `serverToday` (the hourly publication
- * bucket, so the shell stays cacheable); after hydration "today" becomes the
- * visitor's actual Seoul date.
+ * 서버는 `serverToday`(한 시간 단위 공개 기준 시각, 그래야 셸을 캐시할 수 있다)의 달을 그린다.
+ * 하이드레이션 후에는 "오늘"이 방문자의 실제 서울 날짜로 바뀐다.
  */
 export default function SessionCalendar({
   lang,

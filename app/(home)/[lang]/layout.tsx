@@ -1,3 +1,9 @@
+/**
+ * 공개 사이트의 루트 레이아웃(`<html lang>` 문서 셸): 헤더, 본문, 푸터, Google Analytics.
+ *
+ * 언어는 URL의 `[lang]` 세그먼트로 정해지며, 두 언어 모두 빌드 시 미리 렌더링한다.
+ * 관리자 영역(`app/(admin)`)과 루트 레이아웃을 분리해 CSS·스크립트가 섞이지 않는다.
+ */
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import '../../globals.css'
@@ -17,10 +23,12 @@ type LangLayoutProps = {
   params: Promise<{ lang: string }>
 }
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({
   params,
 }: LangLayoutProps): Promise<Metadata> {
@@ -35,11 +43,13 @@ export async function generateMetadata({
   }
 }
 
+/** 브라우저 UI 색(모바일 주소창 등). */
 export const viewport: Viewport = {
-  // The header capsule and hero stage are GDG black in every scheme.
+  // 헤더 캡슐과 히어로 무대는 어떤 색 모드에서도 GDG 검정이다.
   themeColor: '#1e1e1e',
 }
 
+/** 문서 셸. 본문 바로가기 링크, 헤더, `<main>`, 푸터를 그린다. */
 export default async function LocaleLayout({
   children,
   params,

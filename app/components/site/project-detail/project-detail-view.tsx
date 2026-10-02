@@ -82,7 +82,7 @@ export default function ProjectDetailView({
       <Breadcrumbs
         label={common.breadcrumb}
         items={[
-          { label: common.home, href: `/${lang}` },
+          { label: common.home, href: localeHref(lang) },
           { label: common.projects, href: hubHref },
           { label: project.generationName, href: generationHref },
           { label: title },

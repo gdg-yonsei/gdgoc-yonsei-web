@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 홈 화면 스크롤 연출 로더(클라이언트 컴포넌트). 화면에는 아무것도 그리지 않는다.
+ */
 import { useEffect } from 'react'
 import { readMotionEnvironment, shouldLoadMotion } from '@/lib/motion/gate'
 import { mountWhenIdle } from '@/lib/motion/idle'

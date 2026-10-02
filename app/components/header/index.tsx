@@ -14,6 +14,7 @@ import {
   getHeaderNavigationCopy,
   getHeaderNavigationLinks,
 } from './navigation-links'
+import { localeHref } from '@/lib/site/routes'
 
 /** 떠 있는 검은 캡슐 모양 헤더. 어두운 무대 배경과 밝은 종이 배경 모두에서 읽히도록 디자인했다. */
 export default function Header({ lang }: { lang: Locale }) {
@@ -24,7 +25,7 @@ export default function Header({ lang }: { lang: Locale }) {
     <header className="site-header">
       <div className="site-header-bar">
         <Link
-          href={`/${lang}`}
+          href={localeHref(lang)}
           aria-label={chromeCopy[lang].home}
           className="site-header-logo pressable"
         >

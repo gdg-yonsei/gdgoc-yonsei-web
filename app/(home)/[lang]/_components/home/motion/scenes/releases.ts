@@ -1,3 +1,8 @@
+/**
+ * 대표 프로젝트 섹션의 연출: 표지 망점 인쇄, 카드 등장, 포인터 기울기.
+ *
+ * 장면 함수 규칙은 `../scene.ts` 참고.
+ */
 import { createAnimatable, spring, stagger, utils } from 'animejs'
 import { whenPresent } from '@/lib/motion/present'
 import { SPRINGS } from '@/lib/motion/springs'
@@ -7,10 +12,9 @@ import type { Scene } from '../scene'
 import { sceneTimeline } from '../timeline'
 
 /**
- * `<releases>`: the featured cover prints in as growing halftone dots, the
- * cards rise and their stack chips pop. Fine pointers tilt a card toward
- * them with its cover drifting the other way; a press levels the card at
- * once, so the shared cover transition into the project starts flat.
+ * `<releases>` 장면. 대표 프로젝트 표지가 커지는 망점으로 인쇄되듯 나타나고, 카드가 떠오르며 기술 스택
+ * 칩이 튀어 오른다. 정밀 포인터에서는 카드가 포인터 쪽으로 기울고 표지는 반대로 살짝 밀린다. 누르는
+ * 순간 카드를 바로 평평하게 되돌려, 프로젝트 상세로 넘어가는 공유 표지 전환이 평평한 상태에서 시작된다.
  */
 const releases: Scene = ({ root, scope, matches, belowFold }) => {
   const cleanups: Array<() => void> = []
@@ -21,8 +25,7 @@ const releases: Scene = ({ root, scope, matches, belowFold }) => {
     if (belowFold(grid)) {
       const timeline = sceneTimeline({
         autoplay: arrival(grid, '85% top'),
-        // Hand the cards back to CSS, whose tilt transform an inline
-        // identity transform would otherwise override.
+        // 카드를 CSS에 돌려준다. 인라인 identity transform이 남으면 CSS의 기울기 transform을 덮어쓴다.
         onComplete: (self) => utils.cleanInlineStyles(self),
       })
         .add(
@@ -64,8 +67,8 @@ const releases: Scene = ({ root, scope, matches, belowFold }) => {
     }
 
     if (!matches.fine) return
-    // A card's tilt is made when a pointer first reaches it, keeping its
-    // measuring out of the scroll frame that arms the section.
+    // 카드의 기울기 효과는 포인터가 처음 닿을 때 만들어, 측정 작업이 섹션을 준비하는 스크롤 프레임에
+    // 끼지 않게 한다.
     scope.add('lean', (item: HTMLElement) => {
       const lean = createAnimatable(item, {
         '--tilt-x': { unit: 'deg' },

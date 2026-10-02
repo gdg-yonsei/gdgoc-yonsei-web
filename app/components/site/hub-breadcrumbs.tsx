@@ -4,6 +4,7 @@
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { toLocale } from '@/lib/i18n'
+import { localeHref } from '@/lib/site/routes'
 
 /**
  * "홈 / 세션" 같은 경로 표시. `params`(언어)가 필요하므로 허브는 이 컴포넌트를 별도
@@ -23,7 +24,10 @@ export default async function HubBreadcrumbs({
   return (
     <Breadcrumbs
       label={copy.breadcrumb}
-      items={[{ label: copy.home, href: `/${lang}` }, { label: copy[section] }]}
+      items={[
+        { label: copy.home, href: localeHref(lang) },
+        { label: copy[section] },
+      ]}
     />
   )
 }

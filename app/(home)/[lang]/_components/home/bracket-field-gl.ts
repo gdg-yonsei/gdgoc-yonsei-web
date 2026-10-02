@@ -1,3 +1,12 @@
+/**
+ * 히어로 배경의 WebGL2 망점(halftone) 필드(클라이언트 전용, 별도 청크).
+ *
+ * `bracket-stage.tsx`가 브라우저 유휴 시간에 동적 import한다. GPU가 없거나 느리면 스스로 물러나
+ * 서버가 그린 SVG 포스터가 남는다. 괄호 모양 계산은 `lib/site/bracket-geometry.ts`와 공유한다.
+ *
+ * 셰이더 소스(GLSL 문자열) 안의 주석은 영어로 둔다. 일부 GPU 드라이버는 ASCII가 아닌 셰이더
+ * 소스를 컴파일하지 못한다.
+ */
 import {
   capsulesFromBracketRects,
   partingOffset,
@@ -12,13 +21,14 @@ const CAPSULE_RGB = Object.fromEntries(
   Object.entries(CAPSULE_HEX).map(([hue, hex]) => [hue, hexToUnitRgb(hex)])
 ) as Record<CapsuleHue, readonly [number, number, number]>
 
+/** 셰이더 uniform으로 넘길 캡슐 데이터(기기 픽셀). */
 export type PackedCapsules = {
   positions: Float32Array
   colors: Float32Array
   radius: number
 }
 
-/** Writes the capsules into `into` (allocated when omitted) in device pixels. */
+/** 캡슐들을 기기 픽셀 단위로 `into`에 쓴다(생략하면 새로 할당한다). */
 export function packCapsules(
   capsules: readonly Capsule[],
   dpr: number,
@@ -43,14 +53,16 @@ export function packCapsules(
   return into
 }
 
-/** A tap on the stage, `age` seconds ago, at a point in CSS pixels. */
+/** `age`초 전에 CSS 픽셀 좌표의 한 점에서 일어난 무대 탭. */
 export type Ripple = { x: number; y: number; age: number }
 
-/** Seconds a shockwave takes to cross the stage and fade. */
+/** 충격파가 무대를 가로질러 사라지는 데 걸리는 시간(초). */
 export const RIPPLE_LIFE = 1.6
 
-/** Writes the three newest ripples into `into` in device pixels; unused
-    slots stay zero, which the shader reads as "no ripple". */
+/**
+ * 가장 최근 물결 세 개를 기기 픽셀 단위로 `into`에 쓴다. 남는 자리는 0으로 두며, 셰이더는 이를
+ * "물결 없음"으로 읽는다.
+ */
 export function packRipples(
   ripples: readonly Ripple[],
   dpr: number,
@@ -63,8 +75,7 @@ export function packRipples(
   return into
 }
 
-/** CSS-pixel shift that leans the brackets toward the pointer, zero at the
-    centre of the stage. */
+/** 괄호를 포인터 쪽으로 기울이는 CSS 픽셀 이동량. 무대 가운데에서는 0이다. */
 export function parallaxTarget(
   pointer: { x: number; y: number },
   width: number,
@@ -80,9 +91,10 @@ const VERTEX_SHADER = `#version 300 es
 in vec2 a_position;
 void main() { gl_Position = vec4(a_position, 0.0, 1.0); }`
 
-/* Halftone: every cell draws one dot whose radius comes from the capsule
-   signed-distance fields, slow value noise, the pointer lens and the intro
-   sweep. Output is premultiplied so the CSS stage colour shows through. */
+/*
+ * 망점: 칸마다 점 하나를 그리며, 반지름은 캡슐 부호 거리장(SDF), 느린 값 노이즈, 포인터 렌즈,
+ * 등장 스윕으로 정한다. 결과는 premultiplied alpha라 CSS 무대 배경색이 비쳐 보인다.
+ */
 const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 uniform vec2 u_resolution;
@@ -170,6 +182,7 @@ void main() {
   outColor = vec4(color * a, a);
 }`
 
+/** 한 프레임을 그리는 데 필요한 값(시간, 등장 진행도, 포인터, 캡슐, 칸 크기, 렌즈, 물결). */
 export type FieldFrame = {
   time: number
   reveal: number
@@ -180,8 +193,10 @@ export type FieldFrame = {
   ripples: readonly Ripple[]
 }
 
+/** 셰이더 준비 상태. 비동기 컴파일 중이면 `pending`. */
 export type FieldStatus = 'pending' | 'ready' | 'failed'
 
+/** WebGL 필드 핸들. */
 export type BracketField = {
   status(): FieldStatus
   resize(width: number, height: number, dpr: number): void
@@ -206,9 +221,10 @@ type Uniforms = Record<
 
 const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i
 
-/** Some browsers hand software GL out without flagging a performance caveat.
-    Browsers that hide the unmasked renderer still name software rasterisers
-    in the plain one. */
+/**
+ * 일부 브라우저는 성능 경고 없이 소프트웨어 GL을 내준다. 실제 렌더러 이름을 숨기는 브라우저도
+ * 일반 렌더러 이름에는 소프트웨어 래스터라이저 이름을 남긴다.
+ */
 function isSoftwareRenderer(gl: WebGL2RenderingContext) {
   const info = gl.getExtension('WEBGL_debug_renderer_info')
   const renderer = gl.getParameter(
@@ -217,7 +233,7 @@ function isSoftwareRenderer(gl: WebGL2RenderingContext) {
   return SOFTWARE_RENDERER.test(String(renderer))
 }
 
-/** Dev-only escape hatch so the field can be reviewed on GPU-less machines. */
+/** GPU 없는 기기에서도 필드를 검토할 수 있게 하는 개발 전용 우회(`?gl-software`). */
 function allowSoftwareRendering() {
   return (
     process.env.NODE_ENV !== 'production' &&
@@ -226,6 +242,11 @@ function allowSoftwareRendering() {
   )
 }
 
+/**
+ * 캔버스에 WebGL2 필드를 만든다. WebGL2가 없거나 소프트웨어 렌더러면 null(포스터를 유지).
+ *
+ * @param canvas 그릴 캔버스
+ */
 export function createBracketField(
   canvas: HTMLCanvasElement
 ): BracketField | null {
@@ -236,8 +257,8 @@ export function createBracketField(
     stencil: false,
     premultipliedAlpha: true,
     powerPreference: 'low-power',
-    // Software rasterisers (SwiftShader, llvmpipe) would run the shader on the
-    // CPU and block the main thread; those visitors keep the SVG poster.
+    // 소프트웨어 래스터라이저(SwiftShader, llvmpipe)는 셰이더를 CPU에서 돌려 메인 스레드를 막는다.
+    // 이런 방문자에게는 SVG 포스터를 그대로 보여 준다.
     failIfMajorPerformanceCaveat: !allowSoftwareRendering(),
   })
   if (!gl) return null
@@ -259,7 +280,7 @@ export function createBracketField(
   gl.attachShader(program, fragment)
   gl.linkProgram(program)
 
-  // Lets the driver compile off the main thread; we poll instead of blocking.
+  // 드라이버가 메인 스레드 밖에서 컴파일하게 한다. 기다리며 막는 대신 상태를 확인(polling)한다.
   const parallel = gl.getExtension('KHR_parallel_shader_compile')
   const buffer = gl.createBuffer()
   const vao = gl.createVertexArray()
@@ -343,7 +364,7 @@ export function createBracketField(
       gl.uniform3fv(uniforms.colors, packed.colors)
       gl.uniform1f(uniforms.reveal, reveal)
       gl.uniform4fv(uniforms.ripples, packRipples(ripples, dpr, packedRipples))
-      // Fast enough to cross a wide stage well within RIPPLE_LIFE.
+      // 넓은 무대도 RIPPLE_LIFE 안에 넉넉히 가로지를 만큼 빠르다.
       gl.uniform1f(uniforms.rippleSpeed, 900 * dpr)
       gl.clearColor(0, 0, 0, 0)
       gl.clear(gl.COLOR_BUFFER_BIT)
@@ -355,9 +376,8 @@ export function createBracketField(
       gl.deleteProgram(program)
       gl.deleteShader(vertex)
       gl.deleteShader(fragment)
-      // Hand the full-viewport drawing buffer back. The context itself stays:
-      // a route hidden in <Activity> keeps this canvas and mounts the field
-      // again when shown, and a lost context would never come back.
+      // 화면 전체 크기의 그리기 버퍼를 반납한다. 컨텍스트 자체는 유지한다. <Activity>로 숨겨진 라우트는
+      // 이 캔버스를 남겨 두었다가 다시 보일 때 필드를 다시 붙이는데, 잃어버린 컨텍스트는 돌아오지 않는다.
       canvas.width = 1
       canvas.height = 1
     },
@@ -367,9 +387,9 @@ export function createBracketField(
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
 
 /**
- * Wires the field to the hero: sizing, bracket anchors, pointer lens and
- * parallax, tap shockwaves, scroll parting, visibility and GPU-context loss.
- * Returns a teardown that restores the SVG poster.
+ * 필드를 히어로에 연결한다: 크기 조절, 괄호 기준점, 포인터 렌즈와 시차, 탭 충격파, 스크롤로 벌어지기,
+ * 화면 표시 여부, GPU 컨텍스트 손실 처리.
+ * @returns SVG 포스터로 되돌리는 정리 함수
  */
 export function mountBracketField(
   canvas: HTMLCanvasElement,
@@ -382,20 +402,19 @@ export function mountBracketField(
   const right = hero.querySelector<HTMLElement>('[data-bracket="right"]')
   const created = left && right ? create(canvas) : null
   if (!created || !left || !right) return () => {}
-  // Re-bound so the hoisted teardown below sees a non-null field.
+  // 아래로 끌어올려진 정리 함수가 null이 아닌 필드를 보도록 다시 묶는다.
   const field: BracketField = created
 
   const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false
-  // The dev-only software review keeps the field however slowly it renders.
+  // 개발용 소프트웨어 검토 모드에서는 아무리 느려도 필드를 유지한다.
   const reviewing = allowSoftwareRendering()
   const dprCap = coarse ? 1.5 : 2
-  // Finest dot pitch the eye still reads as halftone at hero scale.
+  // 히어로 크기에서 눈이 여전히 망점으로 읽는 가장 촘촘한 점 간격.
   const cellFor = (radius: number) => Math.min(11, Math.max(5, radius / 4))
   const lens = coarse ? 150 : 190
   const pointer = { x: 0, y: 0, strength: 0, target: 0 }
   const parallax = { x: 0, y: 0 }
-  // Taps waiting for their first frame have no `born` time yet, so ages
-  // follow the render clock.
+  // 첫 프레임을 기다리는 탭은 아직 `born` 시각이 없으므로 나이는 렌더 시계를 따른다.
   let taps: { x: number; y: number; born?: number }[] = []
   let anchors: { left: Rect; right: Rect } | null = null
   let width = 0
@@ -437,8 +456,7 @@ export function mountBracketField(
   const frame = (now: number) => {
     frameHandle = 0
     if (!running() || !anchors) return
-    // A shader that failed to link gives the stage back to the poster
-    // instead of polling every frame forever.
+    // 링크에 실패한 셰이더는 매 프레임 상태를 확인하는 대신 무대를 포스터에 돌려준다.
     const status = field.status()
     if (status === 'failed') {
       teardown()
@@ -454,7 +472,7 @@ export function mountBracketField(
       hero.dataset.gl = 'on'
     }
 
-    // Watchdog: hardware that cannot hold ~15 fps gets the static poster back.
+    // 감시: 약 15fps를 유지하지 못하는 하드웨어는 정적 포스터로 되돌린다.
     slowFrames = delta > 66 && !reviewing ? slowFrames + 1 : 0
     if (slowFrames >= 6) {
       teardown()
@@ -470,7 +488,7 @@ export function mountBracketField(
       pointer.strength += (pointer.target - pointer.strength) * 0.1
     }
 
-    // The brackets lean a little toward the pointer, easing back as it goes.
+    // 괄호가 포인터 쪽으로 살짝 기울고, 포인터가 떠나면 천천히 돌아온다.
     const lean = parallaxTarget(pointer, width, hero.offsetHeight)
     parallax.x += (lean.x * pointer.strength - parallax.x) * 0.08
     parallax.y += (lean.y * pointer.strength - parallax.y) * 0.08
@@ -522,8 +540,7 @@ export function mountBracketField(
   const onPointerLeave = () => {
     pointer.target = 0
   }
-  // Links and buttons keep their clicks to themselves; the rest of the stage
-  // answers a tap with a shockwave through the halftone.
+  // 링크와 버튼의 클릭은 그대로 두고, 무대의 나머지 부분을 탭하면 망점에 충격파가 퍼진다.
   const onPointerDown = (event: PointerEvent) => {
     if ((event.target as Element | null)?.closest?.('a, button')) return
     const origin = canvas.getBoundingClientRect()

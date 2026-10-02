@@ -1,14 +1,17 @@
+/**
+ * 프로그램 카드(Bridge Hackathon)의 교차 국기 그림(서버 컴포넌트, 장식용 SVG).
+ */
 import type { ReactNode } from 'react'
 import type { Locale } from '@/lib/i18n'
 import { landingCopy } from '@/lib/contents/site-copy'
 
-/** Pole length and lean; the poles cross this far above their feet. */
+/** 깃대 길이와 기울기. 두 깃대는 밑동에서 이만큼 위에서 교차한다. */
 const POLE = 150
 const LEAN = 24
 const CROSS = 38
 const FOOT = CROSS * Math.tan((LEAN * Math.PI) / 180)
 
-/** Flags are 3:2, hoisted just under the finial. */
+/** 깃발 비율은 3:2이고, 깃대 꼭대기 장식 바로 아래에 단다. */
 const FLAG_W = 84
 const FLAG_H = 56
 const HOIST = POLE - 5
@@ -29,7 +32,7 @@ function Pole() {
   )
 }
 
-/** The Taegukgi (a 144 × 96 drawing, centred on the origin). */
+/** 태극기(원점을 중심으로 한 144 × 96 그림). */
 function Taegukgi() {
   return (
     <g
@@ -57,7 +60,7 @@ function Taegukgi() {
   )
 }
 
-/** The Hinomaru: a disc three-fifths of the flag's height. */
+/** 일장기: 지름이 깃발 높이의 3/5인 원. */
 function Hinomaru() {
   return (
     <>
@@ -82,10 +85,9 @@ function Cloth({ x, children }: { x: number; children: ReactNode }) {
 }
 
 /**
- * The Bridge Hackathon's two countries as crossed flags, each flying
- * outward from its own pole. As the Korean flag code has it for a crossing
- * with a foreign flag, the Taegukgi is on the left with its pole in front.
- * It is drawn unmirrored: mirrored, its trigrams would swap corners.
+ * Bridge Hackathon의 두 나라를 교차한 깃발로 그린다. 각 깃발은 자기 깃대에서 바깥쪽으로 휘날린다.
+ * 외국기와 교차 게양할 때의 국기 규정에 따라 태극기를 왼쪽에, 깃대를 앞쪽에 둔다. 태극기는 좌우 반전하지
+ * 않고 그린다(반전하면 괘의 위치가 바뀐다).
  */
 export default function BridgeFlags({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].programArt

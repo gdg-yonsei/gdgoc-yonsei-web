@@ -14,6 +14,7 @@ import LocaleSwitch from '@/app/components/site/locale-switch'
 import SeoulClock from '@/app/components/site/seoul-clock'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import { CHANNELS } from '@/lib/site/channels'
+import { localeHref } from '@/lib/site/routes'
 
 /** 저작권 표기 연도. 렌더링 시점의 연도를 쓰면 정적 셸 캐시와 어긋나므로 상수로 둔다. */
 const COPYRIGHT_YEAR = 2026
@@ -70,7 +71,7 @@ export default function Footer({ lang }: { lang: Locale }) {
           <FooterColumn title={copy.footerExplore}>
             <li>
               <Link
-                href={`/${lang}/session`}
+                href={localeHref(lang, '/session')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -79,7 +80,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/project`}
+                href={localeHref(lang, '/project')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -88,7 +89,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/calendar`}
+                href={localeHref(lang, '/calendar')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -97,7 +98,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/member`}
+                href={localeHref(lang, '/member')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -152,7 +153,7 @@ export default function Footer({ lang }: { lang: Locale }) {
           <FooterColumn title={copy.footerSite}>
             <li>
               <Link
-                href={`/${lang}/privacy-policy`}
+                href={localeHref(lang, '/privacy-policy')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -161,7 +162,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/terms-of-service`}
+                href={localeHref(lang, '/terms-of-service')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -180,7 +181,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/admin`}
+                href={localeHref(lang, '/admin')}
                 prefetch={false}
                 className="site-footer-link"
               >

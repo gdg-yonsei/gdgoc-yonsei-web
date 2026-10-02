@@ -1,3 +1,6 @@
+/**
+ * 홈의 프로그램 섹션(서버 컴포넌트): 정기 세션, 해커톤, Solution Challenge 등.
+ */
 import type { CSSProperties } from 'react'
 import type { Locale } from '@/lib/i18n'
 import SectionTag from '@/app/components/site/section-tag'
@@ -9,7 +12,7 @@ import DemoDayCrests from './demo-day-crests'
 import ProgramStackFit from './program-stack-fit'
 import ScFunnel from './sc-funnel'
 
-/** Spec order, each program with its GDG hue. */
+/** 명세 순서대로, 프로그램마다 GDG 색 하나. */
 const PROGRAMS: ReadonlyArray<{ key: ProgramKey; hue: Hue }> = [
   { key: 'T19', hue: 'red' },
   { key: 'Part Session', hue: 'green' },
@@ -24,9 +27,8 @@ const DESCRIPTIONS = new Map(
 )
 
 /**
- * `<programs>`: outlined sticker cards that stack as they scroll on wide,
- * tall-enough screens (site-home.css), every card in its own slot; a plain
- * list on phones and under reduced motion.
+ * `<programs>` 섹션. 넓고 충분히 높은 화면에서는 테두리 스티커 카드가 스크롤에 따라 쌓이고(site-home.css)
+ * 카드마다 자기 자리가 있다. 휴대폰과 움직임 줄이기에서는 일반 목록이다.
  */
 export default function Programs({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].programs

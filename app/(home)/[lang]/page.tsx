@@ -1,3 +1,6 @@
+/**
+ * 공개 사이트 홈(`/{lang}`).
+ */
 import { Suspense } from 'react'
 import '@/app/styles/site-home.css'
 import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
@@ -24,6 +27,7 @@ type Props = {
   params: Promise<{ lang: string }>
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).lang)
   const copy = siteMetadataCopy[locale]
@@ -36,6 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }

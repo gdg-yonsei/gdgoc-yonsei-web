@@ -1,3 +1,6 @@
+/**
+ * 홈의 최근 세션 로그 섹션(서버 컴포넌트). 데이터 부분만 Suspense로 스트리밍한다.
+ */
 import Link from 'next/link'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/lib/i18n'
@@ -10,10 +13,11 @@ import { landingCopy } from '@/lib/contents/site-copy'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
 import { latestSessions } from '@/lib/site/session-log'
+import { localeHref } from '@/lib/site/routes'
 
 const LATEST_COUNT = 6
 
-/** The six newest public sessions, drawn with the Session Log's row. */
+/** 가장 최근 공개 세션 여섯 개. 세션 로그와 같은 행 컴포넌트로 그린다. */
 export async function LatestLogList({ lang }: { lang: Locale }) {
   const archive = await getSessionArchive(
     await getCachedSessionVisibilityBucket()
@@ -21,7 +25,7 @@ export async function LatestLogList({ lang }: { lang: Locale }) {
   const sessions = latestSessions(archive, LATEST_COUNT)
   const copy = sessionArchiveCopy[lang]
 
-  // Title only: the archive's empty body talks about "this generation".
+  // 제목만 보여 준다. 아카이브의 빈 상태 본문은 "이 기수"를 기준으로 쓰여 있어 홈에는 맞지 않는다.
   if (sessions.length === 0) {
     return <EmptyState title={copy.emptyTitle} />
   }
@@ -55,7 +59,7 @@ function LatestLogSkeleton() {
   )
 }
 
-/** `<log>`: a static header; the rows stream in from the session archive. */
+/** `<log>` 섹션. 머리글은 정적이고, 행은 세션 아카이브에서 스트리밍된다. */
 export default function LatestLog({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].log
 
@@ -73,7 +77,7 @@ export default function LatestLog({ lang }: { lang: Locale }) {
           </h2>
         </div>
         <Link
-          href={`/${lang}/session`}
+          href={localeHref(lang, '/session')}
           transitionTypes={['nav-forward']}
           className="home-more"
         >

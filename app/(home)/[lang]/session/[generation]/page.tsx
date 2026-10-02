@@ -1,3 +1,6 @@
+/**
+ * 기수별 세션 페이지(`/{lang}/session/{기수}`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -36,6 +39,7 @@ type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
+/** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
 export async function generateStaticParams() {
   return getGenerationStaticParams()
 }
@@ -46,6 +50,7 @@ async function generationSessions(generation: string) {
   return archive.filter((session) => session.generationName === generation)
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = toLocale(lang)
@@ -64,11 +69,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: generationPath('session', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
-    // Reachable, linked from nowhere, and not worth an index slot.
+    // 기록이 없는 기수 페이지는 접근은 되지만 어디서도 링크하지 않으므로(기수 띠에서 흐리게 표시) 색인할 가치가 없다.
     noindex: sessions.length === 0,
   })
 }
 
+/** 페이지 본문. */
 export default async function SessionGenerationPage({ params }: Props) {
   const { lang, generation } = await params
   const locale = toLocale(lang)

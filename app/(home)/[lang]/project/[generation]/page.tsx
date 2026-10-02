@@ -1,3 +1,6 @@
+/**
+ * 기수별 프로젝트 페이지(`/{lang}/project/{기수}`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -35,6 +38,7 @@ type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
+/** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
 export async function generateStaticParams() {
   return getGenerationStaticParams()
 }
@@ -45,6 +49,7 @@ async function generationProjects(generation: string) {
   )
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
   const locale = toLocale(lang)
@@ -67,6 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** 페이지 본문. */
 export default async function ProjectGenerationPage({ params }: Props) {
   const { lang, generation } = await params
   const locale = toLocale(lang)

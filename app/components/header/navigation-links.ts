@@ -3,6 +3,7 @@
  */
 import type { Locale } from '@/lib/i18n'
 import { chromeCopy, type ChromeCopy } from '@/lib/contents/site-copy'
+import { localeHref } from '@/lib/site/routes'
 
 /** 헤더 링크 하나. */
 export type HeaderNavigationLink = {
@@ -22,11 +23,28 @@ export function getHeaderNavigationLinks(lang: Locale): HeaderNavigationLink[] {
   const copy = chromeCopy[lang]
 
   return [
-    { href: `/${lang}/session`, label: copy.sessions, prefetch: true },
-    { href: `/${lang}/project`, label: copy.projects, prefetch: true },
-    { href: `/${lang}/calendar`, label: copy.calendar, prefetch: true },
-    { href: `/${lang}/member`, label: copy.members, prefetch: true },
-    { href: `/${lang}/admin`, label: 'GYMS', prefetch: false, utility: true },
+    {
+      href: localeHref(lang, '/session'),
+      label: copy.sessions,
+      prefetch: true,
+    },
+    {
+      href: localeHref(lang, '/project'),
+      label: copy.projects,
+      prefetch: true,
+    },
+    {
+      href: localeHref(lang, '/calendar'),
+      label: copy.calendar,
+      prefetch: true,
+    },
+    { href: localeHref(lang, '/member'), label: copy.members, prefetch: true },
+    {
+      href: localeHref(lang, '/admin'),
+      label: 'GYMS',
+      prefetch: false,
+      utility: true,
+    },
   ]
 }
 

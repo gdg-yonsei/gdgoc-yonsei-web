@@ -92,7 +92,7 @@ export default function SessionDetailView({
       <Breadcrumbs
         label={common.breadcrumb}
         items={[
-          { label: common.home, href: `/${lang}` },
+          { label: common.home, href: localeHref(lang) },
           { label: common.sessions, href: hubHref },
           { label: session.generationName, href: generationHref },
           { label: session.title },

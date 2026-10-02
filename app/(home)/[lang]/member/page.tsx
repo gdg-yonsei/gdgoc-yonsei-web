@@ -1,3 +1,6 @@
+/**
+ * 멤버 허브(`/{lang}/member`): 기수 목록과 최신 기수 멤버.
+ */
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
@@ -27,10 +30,12 @@ type Props = { params: Promise<{ lang: string }> }
 const en = memberArchiveCopy.en
 const ko = memberArchiveCopy.ko
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).lang)
   const copy = memberArchiveCopy[locale]
@@ -43,6 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** 페이지 본문. */
 export default function MemberIndex({ params }: Props) {
   return (
     <ArchiveHubShell
