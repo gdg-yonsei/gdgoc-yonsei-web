@@ -1,3 +1,6 @@
+/**
+ * 관리자 API: 멤버 프로필 이미지 업로드용 사전 서명 URL 발급.
+ */
 import {
   parseRequestBody,
   privateError,

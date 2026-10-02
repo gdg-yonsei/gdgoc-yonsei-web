@@ -1,5 +1,9 @@
+/**
+ * 웹 앱 매니페스트(`/manifest.webmanifest`). 홈 화면에 추가했을 때의 이름·아이콘·색.
+ */
 import type { MetadataRoute } from 'next'
 
+/** 매니페스트 내용. */
 export default function generateManifest(): MetadataRoute.Manifest {
   return {
     name: 'GDGoC Yonsei',

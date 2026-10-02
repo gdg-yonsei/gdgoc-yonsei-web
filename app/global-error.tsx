@@ -1,12 +1,11 @@
-'use client' // Error boundaries must be Client Components
+'use client' // 오류 경계는 클라이언트 컴포넌트여야 한다
 
 import './globals.css'
 import { useEffect } from 'react'
 
 /**
- * Last-resort boundary for errors in the root layout. Every page loads it, so
- * it stays small: text on the stage, no logo artwork. Bilingual because no
- * locale is known here.
+ * 루트 레이아웃에서 난 오류를 받는 최후의 오류 경계. 모든 페이지가 불러오므로 작게 유지한다
+ * (로고 그림 없이 글자만). 여기서는 언어를 알 수 없어 두 언어로 함께 보여 준다.
  */
 export default function GlobalError({
   error,
