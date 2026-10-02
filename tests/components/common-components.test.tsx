@@ -41,6 +41,21 @@ describe('common components', () => {
       'https://cdn.example.com/users/a.png'
     )
 
+    // 키 앞에 슬래시가 없어도 공개 도메인과 슬래시 하나로 이어진다.
+    rerender(
+      <UserProfileImage
+        src={'users/b.png'}
+        alt={'profile'}
+        width={100}
+        height={100}
+        className={'rounded'}
+      />
+    )
+    expect(screen.getByAltText('profile')).toHaveAttribute(
+      'src',
+      'https://cdn.example.com/users/b.png'
+    )
+
     rerender(
       <UserProfileImage
         src={'https://images.example.com/a.png'}

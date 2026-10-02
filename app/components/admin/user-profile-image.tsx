@@ -1,13 +1,14 @@
 import Image from 'next/image'
+import { toPublicImageUrl } from '@/lib/image-url'
+
+/** 프로필 이미지가 없을 때 쓰는 기본 이미지. */
+const DEFAULT_PROFILE_IMAGE = '/default-user-profile.png'
 
 /**
- * User Profile Image
- * @param src - image source
- * @param alt - image alt
- * @param width - image width
- * @param height - image height
- * @param className - Image Component ClassName
- * @constructor
+ * 사용자 프로필 이미지.
+ *
+ * `src`는 외부 URL(GitHub·Google 아바타)이거나 R2 객체 키다. 객체 키는 공개 이미지
+ * 도메인과 슬래시 하나로 이어 붙인다. 이미지가 없으면 기본 이미지를 보여 준다.
  */
 export default function UserProfileImage({
   src,
@@ -22,21 +23,21 @@ export default function UserProfileImage({
   height: number
   className: string
 }) {
+  const imageUrl = !src
+    ? DEFAULT_PROFILE_IMAGE
+    : /^https?:\/\//.test(src)
+      ? src
+      : toPublicImageUrl(src)
+
   return (
     <Image
-      src={
-        src
-          ? src.startsWith('http://') || src.startsWith('https://')
-            ? src
-            : process.env.NEXT_PUBLIC_IMAGE_URL + src
-          : '/default-user-profile.png'
-      }
+      src={imageUrl}
       alt={alt}
       width={width}
       height={height}
       className={`${className} object-cover`}
       placeholder={'blur'}
-      blurDataURL={'/default-user-profile.png'}
+      blurDataURL={DEFAULT_PROFILE_IMAGE}
     />
   )
 }
