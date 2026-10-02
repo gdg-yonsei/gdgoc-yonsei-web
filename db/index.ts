@@ -57,3 +57,12 @@ export const db = drizzle(client, {
     ...mcpImageUploadSchema,
   },
 })
+
+/** Drizzle 데이터베이스 클라이언트 타입. */
+export type Database = typeof db
+
+/** `db.transaction()` 콜백이 받는 트랜잭션 객체 타입. */
+export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0]
+
+/** 트랜잭션 안팎 어디서든 쿼리를 실행할 수 있는 객체(`db` 또는 트랜잭션). */
+export type DbExecutor = Database | Transaction

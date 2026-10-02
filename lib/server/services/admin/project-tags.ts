@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { asc, eq, inArray, sql } from 'drizzle-orm'
-import { db } from '@/db'
+import { db, type DbExecutor } from '@/db'
 import { projectsToTags } from '@/db/schema/projects-to-tags'
 import { tags } from '@/db/schema/tags'
 import { replaceRelationRows } from '@/lib/server/services/admin/shared'
@@ -18,11 +18,14 @@ export async function getTagNames(): Promise<string[]> {
 const keyOf = (name: string) => name.toLowerCase()
 
 /** Existing tags are matched case-insensitively ("next.js" reuses "Next.js"). */
-async function resolveTagIds(names: readonly string[]): Promise<number[]> {
+async function resolveTagIds(
+  names: readonly string[],
+  executor: DbExecutor
+): Promise<number[]> {
   if (names.length === 0) return []
 
   const lookup = () =>
-    db
+    executor
       .select({ id: tags.id, name: tags.name })
       .from(tags)
       .where(inArray(sql`lower(${tags.name})`, names.map(keyOf)))
@@ -35,7 +38,7 @@ async function resolveTagIds(names: readonly string[]): Promise<number[]> {
   if (missing.length > 0) {
     // A concurrent insert of the same name is fine: conflicts are skipped
     // and the second lookup picks up whichever row won.
-    await db
+    await executor
       .insert(tags)
       .values(missing.map((name) => ({ name })))
       .onConflictDoNothing()
@@ -48,16 +51,23 @@ async function resolveTagIds(names: readonly string[]): Promise<number[]> {
   })
 }
 
-/** Points a project at exactly `names` (already deduped and validated). */
+/**
+ * 프로젝트의 태그를 정확히 `names`로 맞춘다(이미 중복 제거·검증된 목록).
+ *
+ * @param executor - 프로젝트 저장과 같은 트랜잭션에서 실행하려면 트랜잭션 객체를 넘긴다.
+ */
 export async function syncProjectTags(
   projectId: string,
-  names: readonly string[]
+  names: readonly string[],
+  executor: DbExecutor = db
 ) {
-  const tagIds = await resolveTagIds(names)
+  const tagIds = await resolveTagIds(names, executor)
   await replaceRelationRows({
     deleteRows: () =>
-      db.delete(projectsToTags).where(eq(projectsToTags.projectId, projectId)),
+      executor
+        .delete(projectsToTags)
+        .where(eq(projectsToTags.projectId, projectId)),
     rows: tagIds.map((tagId) => ({ projectId, tagId })),
-    insertRows: (rows) => db.insert(projectsToTags).values(rows),
+    insertRows: (rows) => executor.insert(projectsToTags).values(rows),
   })
 }

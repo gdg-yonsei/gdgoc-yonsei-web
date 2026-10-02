@@ -154,38 +154,43 @@ export async function createProject(
   try {
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
-    const createdProject = (
-      await db
-        .insert(projects)
-        .values({
-          name,
-          nameKo,
-          description,
-          descriptionKo,
-          authorId: actor.userId,
-          generationId: Number(generationId),
-          images: contentImages,
-          mainImage,
-          content: stripHtmlCharacters(content),
-          contentKo: stripHtmlCharacters(contentKo),
-          repoUrl,
-          demoUrl,
-        })
-        .returning({ id: projects.id })
-    )[0]
+    // 프로젝트 행, 참가자, 태그는 함께 저장되거나 함께 실패해야 한다.
+    const createdProject = await db.transaction(async (tx) => {
+      const created = (
+        await tx
+          .insert(projects)
+          .values({
+            name,
+            nameKo,
+            description,
+            descriptionKo,
+            authorId: actor.userId,
+            generationId: Number(generationId),
+            images: contentImages,
+            mainImage,
+            content: stripHtmlCharacters(content),
+            contentKo: stripHtmlCharacters(contentKo),
+            repoUrl,
+            demoUrl,
+          })
+          .returning({ id: projects.id })
+      )[0]
+      if (!created) return undefined
+
+      await insertRowsIfAny(
+        participants.map((participant) => ({
+          projectId: created.id,
+          userId: participant,
+        })),
+        (rows) => tx.insert(usersToProjects).values(rows)
+      )
+      await syncProjectTags(created.id, tags, tx)
+      return created
+    })
 
     if (!createdProject) {
       return fail('INTERNAL', 'Failed to create project')
     }
-
-    await insertRowsIfAny(
-      participants.map((participant) => ({
-        projectId: createdProject.id,
-        userId: participant,
-      })),
-      (rows) => db.insert(usersToProjects).values(rows)
-    )
-    await syncProjectTags(createdProject.id, tags)
 
     projectId = createdProject.id
 
@@ -271,44 +276,51 @@ export async function updateProject(
       return fail('NOT_FOUND', NOT_FOUND)
     }
 
+    // 프로젝트 행과 참가자·태그 관계는 하나의 트랜잭션으로 바꾼다.
+    await db.transaction(async (tx) => {
+      await tx
+        .update(projects)
+        .set({
+          name,
+          nameKo,
+          description,
+          descriptionKo,
+          content: stripHtmlCharacters(content),
+          contentKo: stripHtmlCharacters(contentKo),
+          images: contentImages,
+          mainImage,
+          generationId: Number(generationId),
+          repoUrl,
+          demoUrl,
+          updatedAt: new Date(),
+        })
+        .where(eq(projects.id, projectId))
+
+      await replaceRelationRows({
+        deleteRows: () =>
+          tx
+            .delete(usersToProjects)
+            .where(eq(usersToProjects.projectId, projectId)),
+        rows: participants.map((user) => ({
+          projectId,
+          userId: user,
+        })),
+        insertRows: (rows) => tx.insert(usersToProjects).values(rows),
+      })
+      await syncProjectTags(projectId, tags, tx)
+    })
+
+    // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
+    // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
     await deleteRemovedImages({
       previousImages: prevImages.images,
       nextImages: contentImages,
       previousMainImage: prevImages.mainImage,
       nextMainImage: mainImage,
       prefix: 'projects',
-    })
-
-    await db
-      .update(projects)
-      .set({
-        name,
-        nameKo,
-        description,
-        descriptionKo,
-        content: stripHtmlCharacters(content),
-        contentKo: stripHtmlCharacters(contentKo),
-        images: contentImages,
-        mainImage,
-        generationId: Number(generationId),
-        repoUrl,
-        demoUrl,
-        updatedAt: new Date(),
-      })
-      .where(eq(projects.id, projectId))
-
-    await replaceRelationRows({
-      deleteRows: () =>
-        db
-          .delete(usersToProjects)
-          .where(eq(usersToProjects.projectId, projectId)),
-      rows: participants.map((user) => ({
-        projectId,
-        userId: user,
-      })),
-      insertRows: (rows) => db.insert(usersToProjects).values(rows),
-    })
-    await syncProjectTags(projectId, tags)
+    }).catch((error: unknown) =>
+      logger.error('admin.projects.update.r2-cleanup', error, { projectId })
+    )
 
     const nextGeneration = await getGenerationNameById(Number(generationId))
 

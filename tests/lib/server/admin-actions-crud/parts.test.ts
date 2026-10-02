@@ -58,14 +58,21 @@ vi.mock('next/navigation', () => ({
   forbidden: mockForbidden,
 }))
 
-vi.mock('@/db', () => ({
-  db: {
+vi.mock('@/db', () => {
+  const db = {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
     query: mockQuery,
-  },
-}))
+  }
+  // 트랜잭션 콜백은 같은 목 객체로 바로 실행한다.
+  return {
+    db: {
+      ...db,
+      transaction: (callback: (tx: typeof db) => unknown) => callback(db),
+    },
+  }
+})
 
 function createFormData(entries: Record<string, string>) {
   const formData = new FormData()

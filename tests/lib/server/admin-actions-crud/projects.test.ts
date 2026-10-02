@@ -67,15 +67,22 @@ vi.mock('next/navigation', () => ({
   forbidden: mockForbidden,
 }))
 
-vi.mock('@/db', () => ({
-  db: {
+vi.mock('@/db', () => {
+  const db = {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
     select: mockSelect,
     query: mockQuery,
-  },
-}))
+  }
+  // 트랜잭션 콜백은 같은 목 객체로 바로 실행한다.
+  return {
+    db: {
+      ...db,
+      transaction: (callback: (tx: typeof db) => unknown) => callback(db),
+    },
+  }
+})
 
 vi.mock('@/lib/server/storage/r2-client', () => ({
   r2Client: {
@@ -240,6 +247,52 @@ describe('projects CRUD server actions', () => {
       nextGenerationName: 'seed-gen',
     })
     expect(mockRedirect).toHaveBeenCalledWith('/admin/projects')
+  })
+
+  it('keeps a saved update when removing old images from R2 fails', async () => {
+    mockSelectLimit.mockResolvedValue([
+      {
+        images: [
+          'https://cdn.example/projects/keep.png',
+          'https://cdn.example/projects/remove.png',
+        ],
+        mainImage: 'https://cdn.example/projects/main.png',
+      },
+    ])
+    mockGetGenerationNameById.mockResolvedValue({ name: '3rd' })
+    mockQuery.projects.findFirst.mockResolvedValue({ generationId: 3 })
+    mockInsert.mockReturnValue({ values: vi.fn().mockResolvedValue(undefined) })
+    mockR2Send.mockRejectedValue(new Error('R2 down'))
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { updateProjectAction } =
+      await import('@/app/(admin)/admin/projects/[projectId]/edit/actions')
+
+    await updateProjectAction(
+      '00000000-0000-4000-8000-000000000222',
+      { error: '' },
+      createFormData({
+        name: 'Updated Project',
+        nameKo: '업데이트 프로젝트',
+        description: 'Updated Description',
+        descriptionKo: '업데이트 설명',
+        content: 'Updated',
+        contentKo: '업데이트',
+        mainImage: 'https://cdn.example/projects/main.png',
+        contentImages: JSON.stringify([
+          'https://cdn.example/projects/keep.png',
+        ]),
+        participants: JSON.stringify(['user-a']),
+        generationId: '3',
+      })
+    )
+
+    // DB 커밋 뒤에 R2를 정리하므로, 정리 실패는 저장 결과를 되돌리지 않는다.
+    expect(mockUpdateSet).toHaveBeenCalled()
+    expect(mockRedirect).toHaveBeenCalledWith(
+      '/admin/projects/00000000-0000-4000-8000-000000000222'
+    )
+    errorSpy.mockRestore()
   })
 
   it('updates project and deletes removed images from R2', async () => {

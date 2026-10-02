@@ -113,44 +113,48 @@ export async function createSession(
       )
     }
 
-    const createSessionRows = await db
-      .insert(sessions)
-      .values({
-        name,
-        nameKo,
-        description: stripHtmlCharacters(description),
-        descriptionKo: stripHtmlCharacters(descriptionKo),
-        authorId: actor.userId,
-        images: contentImages,
-        // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
-        // 값이 없으면 넘기지 않고 컬럼 기본값을 그대로 쓴다.
-        ...(mainImage ? { mainImage } : {}),
-        startAt,
-        endAt,
-        location,
-        locationKo,
-        maxCapacity,
-        internalOpen,
-        publicOpen,
-        partId: Number(partId),
-        displayOnWebsite,
-        type,
-        category,
-      })
-      .returning({ id: sessions.id })
+    // 세션 행과 참가자 목록은 함께 저장되거나 함께 실패해야 한다.
+    const createdSession = await db.transaction(async (tx) => {
+      const created = (
+        await tx
+          .insert(sessions)
+          .values({
+            name,
+            nameKo,
+            description: stripHtmlCharacters(description),
+            descriptionKo: stripHtmlCharacters(descriptionKo),
+            authorId: actor.userId,
+            images: contentImages,
+            // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
+            // 값이 없으면 넘기지 않고 컬럼 기본값을 그대로 쓴다.
+            ...(mainImage ? { mainImage } : {}),
+            startAt,
+            endAt,
+            location,
+            locationKo,
+            maxCapacity,
+            internalOpen,
+            publicOpen,
+            partId: Number(partId),
+            displayOnWebsite,
+            type,
+            category,
+          })
+          .returning({ id: sessions.id })
+      )[0]
+      if (!created) {
+        throw new Error('Failed to create session')
+      }
 
-    const createdSession = createSessionRows[0]
-    if (!createdSession) {
-      throw new Error('Failed to create session')
-    }
-
-    await insertRowsIfAny(
-      participantId.map((id) => ({
-        userId: id,
-        sessionId: createdSession.id,
-      })),
-      (rows) => db.insert(userToSession).values(rows)
-    )
+      await insertRowsIfAny(
+        participantId.map((id) => ({
+          userId: id,
+          sessionId: created.id,
+        })),
+        (rows) => tx.insert(userToSession).values(rows)
+      )
+      return created
+    })
 
     sessionId = createdSession.id
 
@@ -275,49 +279,58 @@ export async function updateSession(
       return fail('NOT_FOUND', NOT_FOUND)
     }
 
+    // 세션 행과 참가자 교체는 하나의 트랜잭션으로 처리한다.
+    await db.transaction(async (tx) => {
+      await tx
+        .update(sessions)
+        .set({
+          name,
+          nameKo,
+          description: stripHtmlCharacters(description),
+          descriptionKo: stripHtmlCharacters(descriptionKo),
+          images: contentImages,
+          // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
+          // 값이 없으면 넘기지 않고 기존 값을 유지한다.
+          ...(mainImage ? { mainImage } : {}),
+          updatedAt: new Date(),
+          location,
+          locationKo,
+          maxCapacity,
+          internalOpen,
+          publicOpen,
+          partId: Number(partId),
+          startAt,
+          endAt,
+          type,
+          category,
+          displayOnWebsite,
+        })
+        .where(eq(sessions.id, sessionId))
+
+      await replaceRelationRows({
+        deleteRows: () =>
+          tx
+            .delete(userToSession)
+            .where(eq(userToSession.sessionId, sessionId)),
+        rows: participantId.map((participant) => ({
+          userId: participant,
+          sessionId,
+        })),
+        insertRows: (rows) => tx.insert(userToSession).values(rows),
+      })
+    })
+
+    // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
+    // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
     await deleteRemovedImages({
       previousImages: prevImages.images,
       nextImages: contentImages,
       previousMainImage: prevImages.mainImage,
       nextMainImage: mainImage,
       prefix: 'sessions',
-    })
-
-    await db
-      .update(sessions)
-      .set({
-        name,
-        nameKo,
-        description: stripHtmlCharacters(description),
-        descriptionKo: stripHtmlCharacters(descriptionKo),
-        images: contentImages,
-        // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
-        // 값이 없으면 넘기지 않고 기존 값을 유지한다.
-        ...(mainImage ? { mainImage } : {}),
-        updatedAt: new Date(),
-        location,
-        locationKo,
-        maxCapacity,
-        internalOpen,
-        publicOpen,
-        partId: Number(partId),
-        startAt,
-        endAt,
-        type,
-        category,
-        displayOnWebsite,
-      })
-      .where(eq(sessions.id, sessionId))
-
-    await replaceRelationRows({
-      deleteRows: () =>
-        db.delete(userToSession).where(eq(userToSession.sessionId, sessionId)),
-      rows: participantId.map((participant) => ({
-        userId: participant,
-        sessionId,
-      })),
-      insertRows: (rows) => db.insert(userToSession).values(rows),
-    })
+    }).catch((error: unknown) =>
+      logger.error('admin.sessions.update.r2-cleanup', error, { sessionId })
+    )
 
     const nextGenerationName = await getGenerationNameForPartId(Number(partId))
 
