@@ -2,11 +2,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
-import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
-import GenerationPager from '@/app/components/site/generation-pager'
 import MemberCard from '@/app/components/site/member-card'
-import PageHeader from '@/app/components/site/page-header'
+import GenerationPageHeader from '@/app/components/site/generation-page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import type { Locale } from '@/lib/i18n'
 import {
@@ -18,7 +16,6 @@ import { getMembersByGeneration } from '@/lib/server/queries/public/members'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import { createLocalizedMetadata, getLocalizedUrl } from '@/lib/seo/metadata'
 import { countLabel, fillTemplate } from '@/lib/format/text'
-import { generationNeighbors } from '@/lib/site/generations'
 import { breadcrumbList } from '@/lib/site/json-ld'
 import { partHue } from '@/lib/site/labels'
 import { toLocale } from '@/lib/i18n'
@@ -49,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-export default async function MembersPage({ params }: Props) {
+export default async function MemberGenerationPage({ params }: Props) {
   const { lang, generation } = await params
   const locale = toLocale(lang)
   const generations = await getGenerationSummaries()
@@ -61,7 +58,6 @@ export default async function MembersPage({ params }: Props) {
 
   const copy = memberArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
-  const { older, newer } = generationNeighbors(generations, generation)
 
   return (
     <PageTransition>
@@ -80,35 +76,14 @@ export default async function MembersPage({ params }: Props) {
             },
           ])}
         />
-        <Breadcrumbs
-          label={common.breadcrumb}
-          items={[
-            { label: common.home, href: `/${locale}` },
-            { label: common.members, href: `/${locale}/member` },
-            { label: generation },
-          ]}
-        />
-        <PageHeader
+        <GenerationPageHeader
+          lang={locale}
+          section="member"
+          current={current}
+          generations={generations}
           tag={copy.tag}
-          title={fillTemplate(copy.generationTitle, { generation })}
-          description={fillTemplate(copy.generationDescription, { generation })}
-          meta={
-            <>
-              <span>
-                {current.startDate}
-                {current.endDate ? ` – ${current.endDate}` : ''}
-              </span>
-              <GenerationPager
-                basePath="member"
-                lang={locale}
-                older={older}
-                newer={newer}
-                label={common.generations}
-                olderLabel={common.olderGeneration}
-                newerLabel={common.newerGeneration}
-              />
-            </>
-          }
+          titleTemplate={copy.generationTitle}
+          descriptionTemplate={copy.generationDescription}
         />
         <Suspense fallback={<MemberDirectorySkeleton />}>
           <MemberDirectory generation={generation} lang={locale} />

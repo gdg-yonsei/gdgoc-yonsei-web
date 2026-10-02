@@ -2,11 +2,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
-import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
-import GenerationPager from '@/app/components/site/generation-pager'
-import PageHeader from '@/app/components/site/page-header'
+import GenerationPageHeader from '@/app/components/site/generation-page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import ProjectGrid from '@/app/components/site/project-grid/project-grid'
 import type { Locale } from '@/lib/i18n'
@@ -24,7 +22,6 @@ import {
   getSiteUrl,
 } from '@/lib/seo/metadata'
 import { fillTemplate } from '@/lib/format/text'
-import { generationNeighbors } from '@/lib/site/generations'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 import {
   projectFacets,
@@ -81,41 +78,18 @@ export default async function ProjectGenerationPage({ params }: Props) {
   }
 
   const copy = projectArchiveCopy[locale]
-  const common = archiveCommonCopy[locale]
-  const { older, newer } = generationNeighbors(generations, generation)
 
   return (
     <PageTransition>
       <div className="site-page">
-        <Breadcrumbs
-          label={common.breadcrumb}
-          items={[
-            { label: common.home, href: `/${locale}` },
-            { label: common.projects, href: `/${locale}/project` },
-            { label: generation },
-          ]}
-        />
-        <PageHeader
+        <GenerationPageHeader
+          lang={locale}
+          section="project"
+          current={current}
+          generations={generations}
           tag={copy.tag}
-          title={fillTemplate(copy.generationTitle, { generation })}
-          description={fillTemplate(copy.generationDescription, { generation })}
-          meta={
-            <>
-              <span>
-                {current.startDate}
-                {current.endDate ? ` – ${current.endDate}` : ''}
-              </span>
-              <GenerationPager
-                basePath="project"
-                lang={locale}
-                older={older}
-                newer={newer}
-                label={common.generations}
-                olderLabel={common.olderGeneration}
-                newerLabel={common.newerGeneration}
-              />
-            </>
-          }
+          titleTemplate={copy.generationTitle}
+          descriptionTemplate={copy.generationDescription}
         />
         <Suspense fallback={<GenerationGridFallback />}>
           <ProjectGenerationContent generation={generation} lang={locale} />
