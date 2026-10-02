@@ -1,3 +1,10 @@
+/**
+ * 기수 이름을 표시하고, 필요하면 기수 id를 숨은 필드로 함께 제출한다.
+ *
+ * @param title 라벨
+ * @param value 화면에 보일 값(기수 이름)
+ * @param inputName/inputValue 둘 다 있으면 숨은 `<input>`으로 폼에 싣는다
+ */
 export default function GenerationField({
   title,
   value,

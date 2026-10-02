@@ -1,11 +1,11 @@
+/**
+ * 관리자 화면의 Suspense 대체 UI(스켈레톤) 모음. 실제 표·카드 모양을 흉내 내 데이터 도착 시 레이아웃이 튀지 않게 한다.
+ */
 import { cn } from '@/lib/cn'
 
 /**
- * 목록 로딩용 스켈레톤.
- *
- * 이전에는 모든 `<Suspense fallback>`이 `h-28`짜리 회색 막대 하나여서,
- * 데이터가 도착하는 순간 레이아웃이 크게 튀었습니다. 실제 표 모양을 흉내 내
- * 점프를 줄입니다.
+ * 목록 표 로딩용 스켈레톤. 헤더 줄과 `rows`개의 행을 그린다.
+ * @param rows 행 개수(기본 6)
  */
 export function AdminTableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
@@ -40,6 +40,7 @@ export function AdminTableSkeleton({ rows = 6 }: { rows?: number }) {
   )
 }
 
+/** 대시보드 카드 로딩용 스켈레톤. */
 export function AdminCardSkeleton({ className }: { className?: string }) {
   return (
     <div
@@ -51,5 +52,3 @@ export function AdminCardSkeleton({ className }: { className?: string }) {
     />
   )
 }
-
-export default AdminTableSkeleton

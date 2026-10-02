@@ -19,7 +19,6 @@ export const metadata: Metadata = {
  * DESIGN.md `ex-auth-form-card`: canvas 위에 hairline + soft shadow 카드.
  * 고정 높이(`h-1/2`)를 제거해 작은 화면에서 내용이 잘리지 않게 하고,
  * 셸과 동일하게 `lg:` 브레이크포인트로 통일했습니다.
- * @constructor
  */
 export default async function SignInPage({
   searchParams,

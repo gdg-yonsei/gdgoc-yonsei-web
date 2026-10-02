@@ -1,16 +1,18 @@
+/**
+ * 관리자 페이지 본문 컨테이너. 각 관리자 page가 최상위 래퍼로 쓴다(서버 컴포넌트).
+ */
 import { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
 /**
- * 관리자 페이지 콘텐츠 컨테이너
+ * 페이지 콘텐츠의 세로 간격만 맡는 컨테이너.
  *
- * 사이드바/앱바/하단 탭 바에 대한 오프셋은 `app/(admin)/admin/layout.tsx`의
- * `<main>`이 소유합니다. 이 컴포넌트는 페이지 콘텐츠의 세로 리듬만 담당합니다.
- * @param children - 레이아웃에 포함될 컴포넌트
- * @param className - 추가 CSS 클래스
- * @constructor
+ * 사이드바·앱바·하단 탭 바만큼의 여백은 `app/(admin)/admin/layout.tsx`의 `<main>`이
+ * 이미 처리하므로 여기서는 다루지 않는다.
+ * @param children 페이지 본문
+ * @param className 추가 CSS 클래스
  */
-export default async function AdminDefaultLayout({
+export default function AdminDefaultLayout({
   children,
   className,
 }: {

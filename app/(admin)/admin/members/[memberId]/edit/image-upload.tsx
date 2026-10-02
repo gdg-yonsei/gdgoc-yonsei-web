@@ -13,7 +13,6 @@ import SelectImageButton from '@/app/(admin)/admin/members/[memberId]/edit/selec
  * @param image - 사용자 기존 프로필 이미지 URL
  * @param memberId - 멤버 ID
  * @param name - input name
- * @constructor
  */
 export default function ImageUpload({
   image,

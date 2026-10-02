@@ -1,5 +1,13 @@
 'use client'
 
+/**
+ * 연세대 공간 대관 예약 신청 폼(클라이언트 컴포넌트, 한국어 전용 화면).
+ *
+ * 신청은 `requestBookingAction`으로 DB에 쌓이고, 실제 대관 신청은 외부 auto-booker가
+ * 2주 전에 자동으로 넣는다. 장소 목록은 같은 폴더의 `venues.json`(정적 데이터)에서 읽는다.
+ * 날짜·시간 규칙(리드타임, 10분 단위, 길이 제한)의 최종 검증은 서버의
+ * `lib/server/booking/policy.ts`가 하며, 여기서는 입력 편의만 돕는다.
+ */
 import { useState } from 'react'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
@@ -7,7 +15,7 @@ import { requestBookingAction } from '@/app/(admin)/admin/booking/actions'
 import venuesDataRaw from './venues.json'
 import Link from 'next/link'
 
-// Type cast the imported json
+// JSON import는 넓은 타입으로 추론되므로 캠퍼스별 건물·공간 구조로 좁혀 둔다.
 const venuesData = venuesDataRaw as {
   [campus: string]: {
     buildings: string[]
@@ -20,6 +28,7 @@ const venuesData = venuesDataRaw as {
   }
 }
 
+/** 08:00~22:00 사이 10분 간격 시작 시각 선택지. */
 function generateTimeOptions(): { label: string; value: string }[] {
   const options: { label: string; value: string }[] = []
   for (let hour = 8; hour <= 22; hour++) {
@@ -35,6 +44,12 @@ function generateTimeOptions(): { label: string; value: string }[] {
 
 const timeOptions = generateTimeOptions()
 
+/**
+ * 대관 예약 신청 폼.
+ *
+ * 시작 날짜·시각과 대관 시간(분)을 받아 종료 시각을 계산해 보여 주고, 제출 시
+ * `startTime`/`endTime`(`YYYY-MM-DDTHH:mm`)을 FormData에 채워 Server Action을 호출한다.
+ */
 export default function BookingForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)

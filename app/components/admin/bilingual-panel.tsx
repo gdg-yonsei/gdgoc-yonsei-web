@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 영어·한국어 입력 패널(클라이언트 컴포넌트). 관리자 폼의 모든 이중 언어 필드가 이 패널 안에 들어간다.
+ */
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { getLanguageCompletion } from '@/app/components/admin/bilingual-completion'

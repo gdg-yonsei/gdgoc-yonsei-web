@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 관리자 모바일 메뉴 드로어(클라이언트 컴포넌트). 열림 상태는 `menuBarState` atom으로 앱 바 버튼·하단 탭과 공유한다.
+ */
 import { useAtom } from 'jotai'
 import { menuBarState } from '@/lib/admin/atoms'
 import { AnimatePresence, motion } from 'motion/react'
@@ -7,29 +10,25 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+import { useDialogFocus } from '@/lib/hooks/use-dialog-focus'
 
 /**
  * 모바일 내비게이션 드로어.
  *
- * 이전 구현은 상단 바의 높이를 `h-0 ↔ h-[70vh]`로 늘리는 방식이라 ESC · 포커스
- * 트랩 · 스크롤 락이 전혀 없었고, 열리면 페이지가 아래로 밀려났습니다.
- * 지금은 좌측에서 슬라이드하는 실제 dialog로, `modal.tsx`와 동일한 감속 곡선과
- * `prefers-reduced-motion` 대응을 공유합니다.
+ * 왼쪽에서 밀려 들어오는 modal dialog로, ESC·포커스 가두기·배경 스크롤 잠금을 갖춘다.
+ * `modal.tsx`와 같은 감속 곡선과 `prefers-reduced-motion` 대응을 쓴다.
  *
- * `children`으로 서버에서 렌더한 사이드바 본문을 그대로 받아, 데스크탑 사이드바와
- * 완전히 같은 마크업을 재사용합니다.
+ * `children`으로 서버에서 렌더링한 사이드바 본문을 받아, 데스크톱 사이드바와 같은
+ * 마크업을 그대로 재사용한다.
+ * @param children 드로어에 넣을 사이드바 본문
  */
 export default function MenuBar({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useAtom(menuBarState)
   const { t } = useAdminI18n()
   const reduceMotion = useReducedMotion()
   const panelRef = useRef<HTMLDivElement>(null)
-  const restoreFocusRef = useRef<HTMLElement | null>(null)
 
-  // 열릴 때 배경 스크롤을 잠그고, 닫을 때 되돌립니다.
+  // 열릴 때 배경 스크롤을 잠그고, 닫을 때 되돌린다.
   useEffect(() => {
     if (!isOpen) return
     const previous = document.body.style.overflow
@@ -39,43 +38,7 @@ export default function MenuBar({ children }: { children: ReactNode }) {
     }
   }, [isOpen])
 
-  // ESC로 닫기 + 포커스 트랩 + 닫을 때 트리거로 포커스 복귀
-  useEffect(() => {
-    if (!isOpen) {
-      restoreFocusRef.current?.focus()
-      restoreFocusRef.current = null
-      return
-    }
-
-    restoreFocusRef.current = document.activeElement as HTMLElement | null
-    panelRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus()
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        setIsOpen(false)
-        return
-      }
-      if (event.key !== 'Tab') return
-
-      const nodes = panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
-      if (!nodes || nodes.length === 0) return
-      const first = nodes[0]
-      const last = nodes[nodes.length - 1]
-      if (!first || !last) return
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [isOpen, setIsOpen])
+  useDialogFocus({ isOpen, panelRef, onClose: () => setIsOpen(false) })
 
   return (
     <AnimatePresence>

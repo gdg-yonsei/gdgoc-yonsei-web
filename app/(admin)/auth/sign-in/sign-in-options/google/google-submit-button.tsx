@@ -9,7 +9,6 @@ import Google from '@/app/components/svg/google'
 
 /**
  * Google 로그인 버튼
- * @constructor
  */
 export default function GoogleSubmitButton() {
   const { pending } = useFormStatus()

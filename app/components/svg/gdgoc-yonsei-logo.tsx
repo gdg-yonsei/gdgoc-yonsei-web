@@ -3,7 +3,6 @@ import GDGLogo from '@/app/components/svg/gdg-logo'
 /**
  * GDGoC Yonsei Logo 컴포넌트
  * @param className
- * @constructor
  */
 export default function GDGoCYonseiLogo({ className }: { className?: string }) {
   return (

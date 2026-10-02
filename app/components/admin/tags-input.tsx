@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 프로젝트 기술 스택 태그 입력(클라이언트 컴포넌트). 개수·길이 제한과 중복 제거 규칙은 서버와 같은 `lib/validations/project-tags`를 쓴다.
+ */
 import { useId, useState, type KeyboardEvent } from 'react'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
@@ -9,7 +12,13 @@ import {
   dedupeTags,
 } from '@/lib/validations/project-tags'
 
-/** Chip input for a project's tech stack; submits a JSON `tags` field. */
+/**
+ * 칩 형태의 태그 입력. 결과는 JSON 배열로 `tags` 필드에 싣는다.
+ *
+ * Enter·쉼표로 추가하고, 빈 입력에서 Backspace를 누르면 마지막 태그를 지운다.
+ * @param defaultValue 기존 태그
+ * @param suggestions 자동완성 후보(이미 고른 태그는 빼고 보여 준다)
+ */
 export default function TagsInput({
   defaultValue,
   suggestions,

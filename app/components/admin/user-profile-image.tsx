@@ -1,3 +1,6 @@
+/**
+ * 사용자 프로필 이미지(서버/클라이언트 공용). 외부 아바타 URL과 R2 객체 키를 모두 받는다.
+ */
 import Image from 'next/image'
 import { toPublicImageUrl } from '@/lib/image-url'
 

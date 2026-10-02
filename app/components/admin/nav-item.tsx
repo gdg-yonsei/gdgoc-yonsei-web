@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 관리자 사이드바·드로어·하단 탭이 공유하는 내비게이션 항목, 아이콘 표, 활성 판정(클라이언트 컴포넌트).
+ */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -25,10 +28,10 @@ import { cn } from '@/lib/cn'
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 /**
- * 이전에는 이모지가 `item.name` 문자열 안에 박혀 있어 라벨과 분리할 수 없었고,
- * 접근 가능한 이름에도 `"🗓️ Generations"`처럼 섞여 들어갔습니다.
+ * 메뉴 키별 아이콘. 아이콘을 라벨 문자열과 분리해 두어야 접근 가능한 이름에
+ * 장식 기호가 섞이지 않는다.
  */
-const NAV_ICONS: Record<NavigationKey, IconComponent> = {
+export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   home: HomeIcon,
   members: UsersIcon,
   sessions: BookOpenIcon,
@@ -40,9 +43,9 @@ const NAV_ICONS: Record<NavigationKey, IconComponent> = {
 }
 
 /**
- * 경로 앞의 로케일 세그먼트를 제거합니다.
+ * 경로 앞의 언어 세그먼트를 제거한다.
  * `proxy.ts`가 `/ko/admin/*`를 `/admin/*`로 rewrite하지만 브라우저 URL은 로케일이
- * 붙은 채 남아 있으므로, 두 형태를 모두 같은 값으로 정규화해 비교합니다.
+ * 붙은 채 남아 있으므로, 두 형태를 같은 값으로 정규화해 비교한다.
  */
 function stripLocale(pathname: string) {
   const segments = pathname.split('/')
@@ -53,11 +56,17 @@ function stripLocale(pathname: string) {
   return pathname
 }
 
+/**
+ * 현재 경로에서 메뉴 항목이 활성인지. 언어 접두사 유무와 끝 슬래시를 무시하고 비교한다.
+ *
+ * @param pathname 브라우저의 현재 경로
+ * @param href 메뉴 항목 경로
+ */
 export function isNavItemActive(pathname: string, href: string) {
   const current = stripLocale(pathname).replace(/\/$/, '') || '/'
   const target = stripLocale(href).replace(/\/$/, '') || '/'
 
-  // `/admin`은 정확히 일치할 때만 활성. 그렇지 않으면 모든 하위 페이지에서 켜집니다.
+  // `/admin`은 정확히 일치할 때만 활성이다. 접두사로 비교하면 모든 하위 페이지에서 켜진다.
   if (target === '/admin') return current === '/admin'
   return current === target || current.startsWith(`${target}/`)
 }
@@ -65,7 +74,7 @@ export function isNavItemActive(pathname: string, href: string) {
 /**
  * 사이드바 · 드로어의 네비게이션 행.
  *
- * DESIGN.md `ex-app-shell-row`: 활성 표시는 브랜드 primary 인디케이터를 씁니다.
+ * DESIGN.md `ex-app-shell-row`: 활성 표시는 브랜드 primary 인디케이터를 쓴다.
  */
 export default function NavItem({ item }: { item: NavigationItem }) {
   const pathname = usePathname()
@@ -76,7 +85,7 @@ export default function NavItem({ item }: { item: NavigationItem }) {
   return (
     <Link
       href={item.path}
-      // 모바일 드로어 안에서 눌렀을 때 스스로 닫습니다. 데스크탑에서는 무해합니다.
+      // 모바일 드로어 안에서 눌렀을 때 드로어를 닫는다. 데스크톱에서는 영향이 없다.
       onClick={() => setMenuOpen(false)}
       aria-current={active ? 'page' : undefined}
       className={cn(
@@ -100,5 +109,3 @@ export default function NavItem({ item }: { item: NavigationItem }) {
     </Link>
   )
 }
-
-export { NAV_ICONS }

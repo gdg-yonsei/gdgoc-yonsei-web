@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 공개 사이트 캐시 전체 무효화 Server Action. 권한은 CORE·LEAD(`publicCache` 리소스의 `put`).
+ */
 import { invalidateAllPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { requirePermission } from '@/lib/server/permission/require-permission'

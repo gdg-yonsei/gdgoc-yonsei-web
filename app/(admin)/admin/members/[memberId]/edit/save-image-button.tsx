@@ -8,7 +8,6 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
  * @param isLoading - 로딩 상태
  * @param imgFile - 이미지 경로 URL
  * @param onClick - 클릭 이벤트 함수
- * @constructor
  */
 export default function SaveImageButton({
   isLoading,

@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 버튼 모양 단일 선택 입력(클라이언트 컴포넌트). 선택지가 적을 때 `<select>` 대신 쓴다.
+ */
 import { useState } from 'react'
 import { cn } from '@/lib/cn'
 

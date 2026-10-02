@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 모바일 앱 바의 메뉴 열기 버튼(클라이언트 컴포넌트).
+ */
 import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
 import { menuBarState } from '@/lib/admin/atoms'
@@ -8,8 +11,8 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 /**
  * 모바일 앱 바의 드로어 토글 버튼.
  *
- * 드로어가 열리면 드로어 자신이 닫기 버튼을 갖고 배경을 덮으므로, 이 버튼은
- * 항상 '열기' 의미만 갖습니다(아이콘도 바뀌지 않습니다).
+ * 드로어가 열리면 드로어가 자체 닫기 버튼을 갖고 배경을 덮으므로, 이 버튼은
+ * 항상 '열기'만 한다(아이콘도 바뀌지 않는다).
  */
 export default function ToggleMenubarButton() {
   const [, setIsOpen] = useAtom(menuBarState)

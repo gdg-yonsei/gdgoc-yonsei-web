@@ -9,7 +9,6 @@ import Github from '@/app/components/svg/github'
 
 /**
  * Github 로그인 버튼
- * @constructor
  */
 export default function GithubSubmitButton() {
   const { pending } = useFormStatus()

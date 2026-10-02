@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 세션 생성/수정 폼의 담당 파트·참가자 선택(클라이언트 컴포넌트). 순수 필터 로직은 `lib/admin/member-options.ts`에 있다.
+ */
 import { useState } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
@@ -14,6 +17,7 @@ import {
 } from '@/lib/admin/member-options'
 import { cn } from '@/lib/cn'
 
+/** 파트 선택지와 그 구성원. */
 type PartOption = {
   id: number
   name: string
@@ -29,6 +33,7 @@ type PartOption = {
   }>
 }
 
+/** 참가자 후보 멤버와 소속(기수·파트) 목록. */
 type MemberOption = {
   id: string
   name: string | null
@@ -224,7 +229,7 @@ export default function SessionPartParticipantsInput({
             onChange={(event) => {
               const generation = event.target.value
               setGenerationFilter(generation)
-              // 새 기수에 없는 파트가 선택되어 있으면 결과가 비므로 초기화합니다.
+              // 새 기수에 없는 파트가 선택되어 있으면 결과가 비므로 초기화한다.
               if (
                 partFilter &&
                 !members.some((member) =>

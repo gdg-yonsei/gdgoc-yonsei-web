@@ -9,7 +9,6 @@ import { cn } from '@/lib/cn'
  * @param role
  * @param value
  * @param setRole
- * @constructor
  */
 function RoleButton({
   role,
@@ -39,7 +38,6 @@ function RoleButton({
 /**
  * 멤버 Role 을 관리하는 컴포넌트
  * @param userRole - 기존 사용자 Role
- * @constructor
  */
 export default function MemberRoleManager({ userRole }: { userRole: string }) {
   const { t } = useAdminI18n()

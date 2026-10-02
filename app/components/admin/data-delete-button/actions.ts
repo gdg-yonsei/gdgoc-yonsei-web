@@ -1,5 +1,8 @@
 'use server'
 
+/**
+ * 상세 화면의 공용 삭제 버튼이 호출하는 Server Action. 리소스 종류에 맞는 삭제 서비스로 넘긴다.
+ */
 import {
   runAdminFormAction,
   type AdminFormState,

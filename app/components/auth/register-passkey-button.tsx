@@ -6,7 +6,6 @@ import { authClient } from '@/lib/auth-client'
 
 /**
  * Passkey 등록 버튼
- * @constructor
  */
 export default function RegisterPasskeyButton() {
   const { t } = useAdminI18n()

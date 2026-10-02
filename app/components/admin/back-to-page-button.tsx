@@ -1,11 +1,11 @@
 'use client'
 
+/**
+ * 브라우저 기록상 이전 페이지로 돌아가는 버튼(클라이언트 컴포넌트).
+ */
 import { useRouter } from 'next/navigation'
 
-/**
- * 이전 페이지 이동 버튼
- * @constructor
- */
+/** `router.back()`을 호출하는 버튼. */
 export default function BackToPageButton() {
   const router = useRouter()
   return (

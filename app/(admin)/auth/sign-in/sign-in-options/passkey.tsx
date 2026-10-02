@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation'
 
 /**
  * Passkey 로그인 버튼
- * @constructor
  */
 export default function PasskeySignInButton({
   callbackURL,

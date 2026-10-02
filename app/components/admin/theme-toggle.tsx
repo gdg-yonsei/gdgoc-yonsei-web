@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * 관리자 라이트/다크 테마 전환 버튼(클라이언트 컴포넌트).
+ */
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'
@@ -11,8 +14,9 @@ import { cn } from '@/lib/cn'
 /**
  * 라이트/다크 테마 토글.
  *
- * 낙관적으로 `<html>`의 `.dark`를 즉시 토글해 반응을 체감시키고, 서버 액션으로
- * 쿠키를 저장한 뒤 `router.refresh()`로 서버 렌더 결과와 동기화합니다.
+ * 관리자 루트 요소의 `.dark`를 먼저 바꿔 즉시 반영하고, Server Action으로 쿠키를
+ * 저장한 뒤 `router.refresh()`로 서버 렌더링 결과와 맞춘다.
+ * @param theme 서버가 쿠키에서 읽은 현재 테마
  */
 export default function ThemeToggle({
   theme,
@@ -31,7 +35,7 @@ export default function ThemeToggle({
 
   function handleToggle() {
     setCurrent(next)
-    // `.dark`는 `<html>`이 아니라 관리자 서브트리 래퍼에 있습니다
+    // `.dark`는 `<html>`이 아니라 관리자 영역 래퍼에 붙는다
     // (`app/(admin)/admin/layout.tsx` 참고).
     document
       .getElementById('admin-theme-root')

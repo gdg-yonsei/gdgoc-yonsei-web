@@ -9,7 +9,6 @@ import LoadingSpinner from '@/app/components/admin/loading-spinner'
  * @param className
  * @param spinnerClassName
  * @param label
- * @constructor
  */
 function SubmitButton({
   className,
@@ -48,7 +47,6 @@ function SubmitButton({
  * @param className
  * @param spinnerClassName
  * @param label
- * @constructor
  */
 export function SignOutButton({
   className,

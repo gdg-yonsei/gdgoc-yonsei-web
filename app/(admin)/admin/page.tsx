@@ -33,7 +33,6 @@ const CALENDAR_ICS_URL =
 
 /**
  * 관리자 홈페이지
- * @constructor
  */
 export default async function AdminPage() {
   const locale = await getAdminLocale()

@@ -1,21 +1,28 @@
 'use client'
 
+/**
+ * 관리자 전역 확인 모달(클라이언트 컴포넌트).
+ *
+ * `modalState` atom에 문구와 확인 동작을 넣으면 열린다(삭제 버튼 등). 레이아웃에 한 번만
+ * 렌더링해 두고 어디서든 atom으로 띄운다.
+ */
 import { useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { modalState } from '@/lib/admin/atoms'
 import { AnimatePresence, motion } from 'motion/react'
 import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
+import { useDialogFocus } from '@/lib/hooks/use-dialog-focus'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
+/** 확인/취소 모달. 문구가 비어 있으면 닫힌 상태다. */
 export default function Modal() {
   const [modal, setModal] = useAtom(modalState)
   const { t } = useAdminI18n()
   const shouldReduce = useReducedMotion()
   const panelRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
-  const restoreFocusRef = useRef<HTMLElement | null>(null)
 
-  // 모션을 줄이는 사용자에게는 확대/축소 없이 페이드만 남깁니다.
+  // 모션을 줄이는 사용자에게는 확대/축소 없이 페이드만 남긴다.
   const panelMotion = shouldReduce
     ? {
         initial: { opacity: 0 },
@@ -36,49 +43,14 @@ export default function Modal() {
 
   const isOpen = Boolean(modal.text)
 
-  // ESC 닫기 · 포커스 트랩 · 열기 전 포커스 복귀.
-  // 확인 모달은 파괴적 동작(삭제)을 감싸므로 키보드만으로도 안전하게 취소할 수
-  // 있어야 합니다.
-  useEffect(() => {
-    if (!isOpen) {
-      restoreFocusRef.current?.focus()
-      restoreFocusRef.current = null
-      return
-    }
-
-    restoreFocusRef.current = document.activeElement as HTMLElement | null
-    // 파괴적 확인이 기본 포커스를 가져가지 않도록 취소 버튼에 먼저 포커스합니다.
-    cancelRef.current?.focus()
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        closeModal()
-        return
-      }
-      if (event.key !== 'Tab') return
-
-      const nodes = panelRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled])'
-      )
-      if (!nodes || nodes.length === 0) return
-      const first = nodes[0]
-      const last = nodes[nodes.length - 1]
-      if (!first || !last) return
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen])
+  // 확인 모달은 파괴적 동작(삭제)을 감싸므로 키보드만으로도 안전하게 취소할 수 있어야 한다.
+  // 기본 포커스는 "취소"에 두어 Enter 한 번에 삭제되지 않게 한다.
+  useDialogFocus({
+    isOpen,
+    panelRef,
+    onClose: closeModal,
+    initialFocusRef: cancelRef,
+  })
 
   return (
     <AnimatePresence>

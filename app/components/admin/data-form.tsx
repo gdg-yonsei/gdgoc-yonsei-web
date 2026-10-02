@@ -1,5 +1,11 @@
 'use client'
 
+/**
+ * 관리자 생성·수정·삭제 폼의 공용 래퍼(클라이언트 컴포넌트).
+ *
+ * 모든 관리자 폼 Server Action은 `AdminFormState`(`{ error }`)를 돌려주고, 이 컴포넌트가
+ * 그 오류를 표시한다. 성공하면 액션이 redirect하므로 여기서 따로 처리하지 않는다.
+ */
 import { useActionState, useState, type FormEvent, type ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import {
@@ -9,6 +15,7 @@ import {
 } from '@/app/components/admin/bilingual-completion'
 import { fillTemplate } from '@/lib/format/text'
 
+/** `useActionState` 초기 상태(오류 없음). */
 const initialState = {
   error: '',
 }

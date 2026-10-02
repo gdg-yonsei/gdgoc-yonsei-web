@@ -1,12 +1,26 @@
 'use client'
 
+/**
+ * 파트 멤버 선택 입력(클라이언트 컴포넌트).
+ *
+ * 이름 검색과 기수·파트 필터로 후보를 좁혀 추가하고, 선택된 멤버는 칩으로 보여 준다.
+ * 후보는 필터를 하나라도 입력해야 나타난다(멤버 수가 많아 전체 목록을 바로 그리지 않음).
+ */
 import { useState } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { formatUserName } from '@/lib/format/user-name'
 import type { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 
+/** `getPartMemberOptions`가 돌려주는 멤버 한 명(소속 파트 포함). */
 type Member = Awaited<ReturnType<typeof getPartMemberOptions>>[number]
 
+/**
+ * 선택한 멤버 id 목록을 JSON으로 `name` 필드에 싣는다.
+ *
+ * 기수/파트 필터의 `none`은 "어느 파트에도 속하지 않은 멤버"를 뜻한다.
+ * @param members 선택지(전체 멤버)
+ * @param defaultValue 처음부터 선택된 멤버 id
+ */
 export default function PartMembersInput({
   members,
   name,

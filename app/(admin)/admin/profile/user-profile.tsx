@@ -7,7 +7,6 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
 /**
  * 사용자 정보 표시 패널
- * @constructor
  */
 export default async function UserProfile() {
   const locale = await getAdminLocale()

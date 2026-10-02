@@ -1,3 +1,6 @@
+/**
+ * 사이드바의 공개 캐시 새로고침 버튼(서버 컴포넌트).
+ */
 import Form from 'next/form'
 import { getAuthSession } from '@/auth'
 import { revalidateAllDataAction } from '@/app/components/admin/refresh-all-data-button/actions'

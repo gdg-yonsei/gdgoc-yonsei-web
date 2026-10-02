@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 
 /**
  * Github 로그인 버튼
- * @constructor
  */
 export default function SignInWithGoogle({
   callbackURL,

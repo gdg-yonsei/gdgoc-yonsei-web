@@ -1,9 +1,13 @@
 'use client'
 
+/**
+ * 대관 예약 신청 목록(클라이언트 컴포넌트, 한국어 전용 화면). 카드마다 상태 배지와 삭제 버튼을 둔다.
+ */
 import { useState } from 'react'
 import type { BookingRequestListItem } from '@/lib/server/fetcher/admin/get-booking-requests'
 import { deleteBookingAction } from '@/app/(admin)/admin/booking/actions'
 
+/** auto-booker 상태별 배지 색. */
 const statusColors: Record<string, string> = {
   PENDING: 'bg-warning-soft text-warning',
   SCHEDULED: 'bg-primary-soft text-primary',
@@ -11,6 +15,7 @@ const statusColors: Record<string, string> = {
   FAILED: 'bg-danger-soft text-danger',
 }
 
+/** auto-booker 상태별 한국어 라벨. */
 const statusLabels: Record<string, string> = {
   PENDING: '대기중',
   SCHEDULED: '예약 예정',
@@ -18,6 +23,7 @@ const statusLabels: Record<string, string> = {
   FAILED: '예약 실패',
 }
 
+/** 브라우저 시간대 기준 `YYYY. MM. DD. HH:mm` 형식. */
 function formatDateTime(date: Date): string {
   return new Date(date).toLocaleString('ko-KR', {
     year: 'numeric',
@@ -29,6 +35,7 @@ function formatDateTime(date: Date): string {
   })
 }
 
+/** 예약 한 건. 삭제를 확인받은 뒤 `deleteBookingAction`을 호출한다(성공 시 서버가 목록을 다시 그린다). */
 function BookingCard({ booking }: { booking: BookingRequestListItem }) {
   const [deleting, setDeleting] = useState(false)
 
@@ -102,6 +109,11 @@ function BookingCard({ booking }: { booking: BookingRequestListItem }) {
   )
 }
 
+/**
+ * 예약 목록. 비어 있으면 안내 문구를 보여 준다.
+ *
+ * @param bookings 서버에서 auto-booker 상태를 덧씌운 목록(`getBookingsWithLiveStatus`)
+ */
 export default function BookingList({
   bookings,
 }: {
