@@ -1,3 +1,6 @@
+/**
+ * 웹 요청(Server Action, 관리자 API)의 로그인 사용자를 서비스 Actor로 바꾸는 어댑터.
+ */
 import 'server-only'
 
 import { forbidden } from 'next/navigation'

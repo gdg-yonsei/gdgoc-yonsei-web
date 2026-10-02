@@ -1,3 +1,14 @@
+/**
+ * MCP 이미지 업로드 서비스.
+ *
+ * MCP 클라이언트(AI 도구)가 세션·프로젝트·프로필 이미지를 R2에 올리는 세 가지 방법을 제공한다.
+ * 1. `createImageUpload`: 크기·형식을 서명한 사전 서명 URL 발급 → 클라이언트가 직접 PUT
+ * 2. `completeImageUpload`: 업로드된 객체의 실제 형식(매직 바이트)을 확인하고 공개 URL 반환
+ * 3. `importImageFromUrl`: 공개 URL의 이미지를 서버가 내려받아 R2로 스트리밍(SSRF 방어)
+ *
+ * 사용자당 시간당 업로드 수를 제한하고, 완료되지 않은 업로드는 다음 요청 때 조금씩 정리한다.
+ * 업로드 기록 테이블의 수명 주기는 `db/schema/mcp-image-upload.ts`에 설명돼 있다.
+ */
 import 'server-only'
 
 import { logger } from '@/lib/server/logger'
@@ -62,7 +73,9 @@ const CLEANUP_LEASE_MS = 10 * 60 * 1000
 const SETTLED_RETENTION_MS = 2 * 24 * 60 * 60 * 1000
 const HOUR_MS = 60 * 60 * 1000
 
+/** 이미지를 올릴 수 있는 대상. R2 객체 키 접두사로도 쓴다. */
 export const IMAGE_TARGETS = ['sessions', 'projects', 'users'] as const
+/** 이미지 업로드 대상 유니온. */
 export type ImageTarget = (typeof IMAGE_TARGETS)[number]
 
 type UploadedImage = {
@@ -85,6 +98,7 @@ const TYPE_BY_MIME = new Map<string, DetectedImageType>(
   )
 )
 
+/** 대상별 업로드 권한: 프로필은 본인 정보 수정 권한, 세션·프로젝트는 생성 권한. */
 function authorizeTarget(
   actor: Actor,
   target: ImageTarget
@@ -94,6 +108,7 @@ function authorizeTarget(
     : authorize(actor, 'post', target)
 }
 
+/** `{대상}/{UUID}.{확장자}` 형식의 새 객체 키. */
 function newObjectKey(target: ImageTarget, type: DetectedImageType) {
   return `${target}/${crypto.randomUUID()}.${IMAGE_TYPE_EXTENSIONS[type][0]}`
 }

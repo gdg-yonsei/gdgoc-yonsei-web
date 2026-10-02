@@ -29,6 +29,10 @@ import { NOT_FOUND } from '@/lib/server/services/admin/sessions/shared'
 
 class SessionFullError extends Error {}
 
+/**
+ * 세션 참가를 신청한다. 신청이 열려 있고 아직 끝나지 않은 세션이어야 한다.
+ * 정원 확인과 등록은 세션 행을 잠근 트랜잭션 안에서 해 동시 신청이 정원을 넘지 않게 한다.
+ */
 export async function registerForSession(
   actor: Actor,
   sessionId: string

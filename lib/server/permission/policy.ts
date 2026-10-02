@@ -59,6 +59,7 @@ const BASE_PAGES = {
   sessionsPage: true,
 } as const
 
+/** 역할별 허용 표. 키가 없는 작업은 거부된다. */
 export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
   /** 일반 멤버: 본인 프로필과 프로젝트 위주. */
   MEMBER: {

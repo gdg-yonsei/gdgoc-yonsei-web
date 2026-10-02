@@ -1,3 +1,10 @@
+/**
+ * 프로젝트 관리 서비스(목록, 상세, 생성, 수정, 삭제).
+ *
+ * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
+ * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
+ * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
+ */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -41,6 +48,7 @@ import {
 import { syncProjectTags } from '@/lib/server/services/admin/project-tags'
 import { projectValidation } from '@/lib/validations/project'
 
+/** 프로젝트 입력(검증 전) 타입. */
 export type ProjectInput = z.input<typeof projectValidation>
 
 const NOT_FOUND = 'Project not found'
@@ -50,6 +58,7 @@ function parseProjectInput(input: unknown) {
   return parsed.success ? ok(parsed.data) : fromZodError(parsed.error)
 }
 
+/** 범위(기수)의 프로젝트 목록. */
 export async function listProjects(
   actor: Actor,
   { generation }: { generation?: number | 'all' } = {}
@@ -83,10 +92,12 @@ async function loadProjectDetail(projectId: string) {
   }
 }
 
+/** 프로젝트 상세(참가자, 태그, 기수). */
 export type ProjectDetail = NonNullable<
   Awaited<ReturnType<typeof loadProjectDetail>>
 >
 
+/** 프로젝트 상세. */
 export async function getProjectDetail(
   actor: Actor,
   projectId: string
@@ -120,6 +131,7 @@ export function projectToInput(detail: ProjectDetail): ProjectInput {
   }
 }
 
+/** 프로젝트와 참가자·태그를 한 트랜잭션으로 만든다. 선택한 기수에 접근할 수 있어야 한다. */
 export async function createProject(
   actor: Actor,
   input: unknown
@@ -206,6 +218,10 @@ export async function createProject(
   return ok({ id: projectId })
 }
 
+/**
+ * 프로젝트를 고친다. 작성자는 기수와 무관하게 자기 프로젝트를 고칠 수 있다.
+ * DB를 커밋한 뒤 더는 쓰지 않는 이미지를 R2에서 지운다.
+ */
 export async function updateProject(
   actor: Actor,
   projectId: string,
@@ -339,6 +355,10 @@ export async function updateProject(
   return ok({ id: projectId })
 }
 
+/**
+ * 프로젝트를 지운다. 이미지를 R2에서 먼저 지우고, 실패하면 DB도 지우지 않는다
+ * (R2가 실패했을 때 다시 시도할 수 있게 레코드를 남긴다).
+ */
 export async function deleteProject(
   actor: Actor,
   projectId: string

@@ -1,3 +1,9 @@
+/**
+ * 관리자 서비스 권한 판단.
+ *
+ * 역할 정책 표(`permission/policy.ts`)에 더해, MCP 토큰 스코프, 기수 단위 접근, 멤버 수정
+ * 대상 제한 같은 서비스 계층 규칙을 함께 본다.
+ */
 import 'server-only'
 
 import { desc, eq } from 'drizzle-orm'
@@ -29,6 +35,7 @@ export function requiredScopeFor(
   return 'gyms:write'
 }
 
+/** 역할 정책 표상 작업이 허용되는지. `ownerId`가 요청자와 같으면 본인 데이터 규칙이 적용된다. */
 export function roleAllows(
   actor: Pick<Actor, 'userId' | 'role'>,
   action: ActionType,
@@ -49,10 +56,16 @@ export function roleCouldEver(
   return isAllowed(role, action, resource, { isOwner: true })
 }
 
+/** Actor가 해당 스코프를 가졌는지. 웹 세션은 스코프 제한이 없다. */
 export function hasScope(actor: Actor, scope: Scope): boolean {
   return actor.scopes === 'session' || actor.scopes.includes(scope)
 }
 
+/**
+ * 스코프와 역할을 모두 확인한다. 둘 중 하나라도 부족하면 FORBIDDEN.
+ *
+ * @param ownerId - 데이터 소유자 ID(본인 데이터만 허용하는 규칙에 쓴다)
+ */
 export function authorize(
   actor: Actor,
   action: ActionType,
@@ -88,6 +101,7 @@ export async function loadAccessibleGenerations(
     .orderBy(desc(generations.id))
 }
 
+/** 해당 기수의 데이터를 다룰 수 있는지. LEAD는 모든 기수, 그 외는 자신이 속한 기수만. */
 export async function canAccessGeneration(
   actor: Pick<Actor, 'userId' | 'role'>,
   generationId: number | null | undefined

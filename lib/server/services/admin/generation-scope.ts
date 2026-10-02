@@ -1,3 +1,6 @@
+/**
+ * MCP 목록 도구용 기수 범위 해석. 규칙은 웹 쿠키 해석(`admin-generation-scope.ts`)과 같다.
+ */
 import 'server-only'
 
 import {

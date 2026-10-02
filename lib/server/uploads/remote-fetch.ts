@@ -1,12 +1,22 @@
+/**
+ * 외부 URL 이미지 가져오기(SSRF 방어).
+ *
+ * MCP `import_image_from_url` 도구가 쓴다. 서버가 임의의 URL에 접속하므로 내부망 공격(SSRF)을
+ * 막기 위해 다음을 지킨다.
+ * - DNS 조회 결과가 사설·루프백·링크 로컬 등 막힌 대역이면 연결하지 않는다(리다이렉트마다 다시 확인)
+ * - 응답 크기와 전송 시간을 제한한다
+ */
 import 'server-only'
 
 import { lookup as dnsLookup } from 'node:dns'
 import { BlockList, isIP } from 'node:net'
 import { Agent, fetch as undiciFetch } from 'undici'
 
+/** 외부 이미지 가져오기 실패 종류. */
 export type UploadErrorCode =
   'BLOCKED_URL' | 'TOO_LARGE' | 'NOT_IMAGE' | 'FETCH_FAILED'
 
+/** 가져오기 실패. `code`로 원인을 구분해 사용자에게 알맞은 메시지를 보여 준다. */
 export class UploadError extends Error {
   constructor(
     readonly code: UploadErrorCode,
@@ -16,6 +26,7 @@ export class UploadError extends Error {
   }
 }
 
+/** 연결을 거부할 IP 대역(사설망, 루프백, 문서용, 멀티캐스트 등). */
 const blocked = new BlockList()
 for (const [network, prefix] of [
   ['0.0.0.0', 8],

@@ -32,6 +32,7 @@ export const requestBookingSchema = z.object({
     ),
 })
 
+/** 검증을 통과한 예약 신청 입력. */
 export type RequestBookingInput = z.output<typeof requestBookingSchema>
 
 /** 삭제 대상 예약(웹 미러 행) ID. */
@@ -45,4 +46,5 @@ export const BOOKING_STATUSES = [
   'FAILED',
 ] as const
 
+/** 예약 상태 유니온. */
 export type BookingStatus = (typeof BOOKING_STATUSES)[number]

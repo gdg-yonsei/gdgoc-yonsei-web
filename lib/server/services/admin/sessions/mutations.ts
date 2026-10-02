@@ -44,6 +44,12 @@ import {
 } from '@/lib/server/services/admin/sessions/shared'
 import { sendNewSessionEmails } from '@/lib/server/services/admin/sessions/notifications'
 
+/**
+ * 세션과 참가자를 한 트랜잭션으로 만든다. 고른 파트의 기수에 접근할 수 있어야 한다.
+ * 멤버 내부 신청이 열린 미래 세션이면 응답 뒤에 같은 기수 멤버에게 안내 메일을 보낸다.
+ *
+ * @param options.expectedGenerationId - 웹 폼이 선택한 기수. 파트가 다른 기수면 거절한다.
+ */
 export async function createSession(
   actor: Actor,
   input: unknown,
@@ -191,6 +197,10 @@ export async function createSession(
   return ok({ id: sessionId })
 }
 
+/**
+ * 세션을 고친다. 기수(파트의 기수)는 바꿀 수 없다.
+ * 작성자는 기수와 무관하게 자기 세션을 고칠 수 있다. 커밋 뒤에 쓰지 않는 이미지를 지운다.
+ */
 export async function updateSession(
   actor: Actor,
   sessionId: string,
@@ -349,6 +359,7 @@ export async function updateSession(
   return ok({ id: sessionId })
 }
 
+/** 세션을 지운다. 이미지를 R2에서 먼저 지우고, 실패하면 DB도 지우지 않는다. */
 export async function deleteSession(
   actor: Actor,
   sessionId: string

@@ -13,6 +13,7 @@ import {
   type ResourceType,
 } from '@/lib/server/permission/policy'
 
+/** 호출부가 정책 모듈을 따로 import하지 않도록 권한 타입을 다시 내보낸다. */
 export type { ActionType, ResourceType }
 
 /**

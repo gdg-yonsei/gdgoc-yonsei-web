@@ -1,3 +1,6 @@
+/**
+ * 다른 사용자에게 보여도 되는 사용자 필드만 고르는 헬퍼.
+ */
 import 'server-only'
 
 type UserRow = {

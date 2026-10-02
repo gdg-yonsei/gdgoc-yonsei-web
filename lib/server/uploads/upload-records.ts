@@ -1,3 +1,6 @@
+/**
+ * MCP 이미지 업로드 기록 저장소(시간당 한도 예약, 완료·거절 표시, 만료 정리).
+ */
 import 'server-only'
 
 import { and, count, eq, gt, isNotNull, isNull, lt, or, sql } from 'drizzle-orm'

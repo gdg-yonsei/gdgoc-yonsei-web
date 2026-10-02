@@ -24,6 +24,7 @@ import {
   type SessionInput,
 } from '@/lib/server/services/admin/sessions/shared'
 
+/** 범위(기수)의 세션 목록. */
 export async function listSessions(
   actor: Actor,
   { generation }: { generation?: number | 'all' } = {}
@@ -59,10 +60,12 @@ async function loadSessionDetail(sessionId: string) {
   }
 }
 
+/** 세션 상세(파트·기수, 작성자, 참가자). */
 export type SessionDetail = NonNullable<
   Awaited<ReturnType<typeof loadSessionDetail>>
 >
 
+/** 세션 상세. */
 export async function getSessionDetail(
   actor: Actor,
   sessionId: string

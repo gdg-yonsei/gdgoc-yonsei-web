@@ -1,3 +1,6 @@
+/**
+ * 프로젝트 태그 서비스(태그 목록, 프로젝트 태그 동기화).
+ */
 import 'server-only'
 
 import { asc, eq, inArray, sql } from 'drizzle-orm'
@@ -6,7 +9,7 @@ import { projectsToTags } from '@/db/schema/projects-to-tags'
 import { tags } from '@/db/schema/tags'
 import { replaceRelationRows } from '@/lib/server/services/admin/shared'
 
-/** Every tag name, for the admin chip input's suggestions. */
+/** 모든 태그 이름. 관리자 태그 입력의 자동 완성 후보로 쓴다. */
 export async function getTagNames(): Promise<string[]> {
   const rows = await db
     .select({ name: tags.name })
@@ -17,7 +20,7 @@ export async function getTagNames(): Promise<string[]> {
 
 const keyOf = (name: string) => name.toLowerCase()
 
-/** Existing tags are matched case-insensitively ("next.js" reuses "Next.js"). */
+/** 태그 이름을 ID로 바꾸고 없는 태그는 만든다. 대소문자를 구분하지 않는다("next.js"는 "Next.js"를 재사용). */
 async function resolveTagIds(
   names: readonly string[],
   executor: DbExecutor
@@ -36,8 +39,7 @@ async function resolveTagIds(
   const missing = names.filter((name) => !byKey.has(keyOf(name)))
 
   if (missing.length > 0) {
-    // A concurrent insert of the same name is fine: conflicts are skipped
-    // and the second lookup picks up whichever row won.
+    // 같은 이름을 동시에 넣어도 괜찮다: 충돌은 건너뛰고, 다시 조회해 먼저 들어간 행을 쓴다.
     await executor
       .insert(tags)
       .values(missing.map((name) => ({ name })))

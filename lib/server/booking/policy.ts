@@ -8,8 +8,9 @@
 /** 오늘(서울 기준 자정)부터 며칠 뒤부터 예약할 수 있는지. 학교 규정상 약 2주. */
 export const MIN_BOOKING_LEAD_DAYS = 15
 
-/** 예약 가능한 최소·최대 사용 시간(분). */
+/** 예약 가능한 최소 사용 시간(분). */
 export const MIN_BOOKING_DURATION_MINUTES = 30
+/** 예약 가능한 최대 사용 시간(분). */
 export const MAX_BOOKING_DURATION_MINUTES = 360
 
 /**
