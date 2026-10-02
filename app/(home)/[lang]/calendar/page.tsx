@@ -7,25 +7,14 @@ import { toCalendarEvents } from '@/lib/site/calendar'
 import { toSeoulDateIso } from '@/lib/format/datetime'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
 import { localeStaticParams, toLocale } from '@/lib/i18n'
+import {
+  calendarPageCopy,
+  calendarWidgetCopy,
+} from '@/lib/contents/calendar-copy'
 
 type Props = { params: Promise<{ lang: string }> }
 
-const copy = {
-  en: {
-    title: 'Calendar',
-    description:
-      'Upcoming and past sessions, workshops, hackathons and community events, in Seoul time.',
-    metaDescription:
-      'Check upcoming GDGoC Yonsei technical sessions, workshops, project events, and community activities on the chapter calendar.',
-  },
-  ko: {
-    title: '캘린더',
-    description:
-      '예정된 세션과 지난 세션, 워크숍, 해커톤과 커뮤니티 행사 일정을 서울 시간으로 확인하세요.',
-    metaDescription:
-      'GDGoC Yonsei의 기술 세션, 워크숍, 프로젝트 행사와 커뮤니티 활동 일정을 챕터 캘린더에서 확인하세요.',
-  },
-} as const
+const copy = calendarPageCopy
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = toLocale((await params).lang)
@@ -74,6 +63,7 @@ async function CalendarContent({ params }: Props) {
   return (
     <SessionCalendar
       lang={lang}
+      copy={calendarWidgetCopy[lang]}
       events={toCalendarEvents(sessions, lang, visibilityBucket)}
       serverToday={toSeoulDateIso(new Date(visibilityBucket))}
     />
