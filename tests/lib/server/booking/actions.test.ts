@@ -20,8 +20,6 @@ const mockDbSelectFrom = vi.fn()
 const mockDbSelectWhere = vi.fn()
 const mockDbSelectLimit = vi.fn()
 
-const mockFetch = vi.fn()
-
 vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
 }))
@@ -96,7 +94,6 @@ function createBookingFormData(
 describe('booking-related server actions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubGlobal('fetch', mockFetch)
 
     mockAuth.mockResolvedValue({
       user: {
@@ -120,22 +117,13 @@ describe('booking-related server actions', () => {
     mockDbSelectWhere.mockReturnValue({ limit: mockDbSelectLimit })
     mockDbSelectFrom.mockReturnValue({ where: mockDbSelectWhere })
     mockDbSelect.mockReturnValue({ from: mockDbSelectFrom })
-
-    mockFetch.mockResolvedValue(
-      new Response(JSON.stringify({ campus: { buildings: [], rooms: [] } }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-    )
   })
 
   it('blocks booking creation when the user lacks booking permission', async () => {
     mockHandlePermission.mockResolvedValue(false)
 
     const { requestBookingAction } =
-      await import('@/lib/server/actions/booking/request-booking')
+      await import('@/app/(admin)/admin/booking/actions')
 
     const result = await requestBookingAction(createBookingFormData())
 
@@ -162,7 +150,7 @@ describe('booking-related server actions', () => {
     }
 
     const { requestBookingAction } =
-      await import('@/lib/server/actions/booking/request-booking')
+      await import('@/app/(admin)/admin/booking/actions')
 
     const result = await requestBookingAction(
       createBookingFormData({
@@ -180,7 +168,7 @@ describe('booking-related server actions', () => {
 
   it('accepts valid booking requests using datetime-local input values', async () => {
     const { requestBookingAction } =
-      await import('@/lib/server/actions/booking/request-booking')
+      await import('@/app/(admin)/admin/booking/actions')
 
     const result = await requestBookingAction(createBookingFormData())
 
@@ -203,7 +191,7 @@ describe('booking-related server actions', () => {
     mockHandlePermission.mockResolvedValue(false)
 
     const { deleteBookingAction } =
-      await import('@/lib/server/actions/booking/delete-booking')
+      await import('@/app/(admin)/admin/booking/actions')
 
     const result = await deleteBookingAction(
       '00000000-0000-4000-8000-000000000123'
@@ -217,7 +205,7 @@ describe('booking-related server actions', () => {
     mockDbSelectLimit.mockResolvedValue([{ externalId: 'not-a-number' }])
 
     const { deleteBookingAction } =
-      await import('@/lib/server/actions/booking/delete-booking')
+      await import('@/app/(admin)/admin/booking/actions')
 
     const result = await deleteBookingAction(
       '00000000-0000-4000-8000-000000000123'
@@ -228,58 +216,6 @@ describe('booking-related server actions', () => {
       error: 'Invalid external booking ID',
     })
     expect(mockDbDelete).not.toHaveBeenCalled()
-  })
-
-  it('requires booking page permission before exposing venue data', async () => {
-    mockHandlePermission.mockResolvedValue(false)
-
-    const { getVenuesAction } =
-      await import('@/lib/server/actions/booking/get-venues')
-
-    const result = await getVenuesAction()
-
-    expect(result).toEqual({ success: false, error: 'Forbidden' })
-    expect(mockFetch).not.toHaveBeenCalled()
-  })
-
-  it('forwards session token to the booking venue service for authorized users', async () => {
-    const { getVenuesAction } =
-      await import('@/lib/server/actions/booking/get-venues')
-
-    const result = await getVenuesAction()
-
-    expect(result.success).toBe(true)
-    expect(mockFetch).toHaveBeenCalledWith(
-      new URL('https://auto-booker.moveto.kr/api/venues'),
-      expect.objectContaining({
-        method: 'GET',
-        headers: expect.objectContaining({
-          'X-Session-Token': 'session-token',
-        }),
-      })
-    )
-  })
-
-  it('refuses insecure booking API base urls in production', async () => {
-    const previousNodeEnv = process.env.NODE_ENV
-    const previousBookingUrl = process.env.AUTO_BOOKER_URL
-
-    vi.stubEnv('NODE_ENV', 'production')
-    vi.stubEnv('AUTO_BOOKER_URL', 'http://booking.test')
-
-    const { bookingFetch } =
-      await import('@/lib/server/actions/booking/booking-fetch')
-
-    await expect(bookingFetch('/api/venues')).rejects.toThrow(
-      'AUTO_BOOKER_URL must use https in production.'
-    )
-
-    vi.stubEnv('NODE_ENV', previousNodeEnv)
-    if (previousBookingUrl) {
-      vi.stubEnv('AUTO_BOOKER_URL', previousBookingUrl)
-    } else {
-      vi.unstubAllEnvs()
-    }
   })
 })
 

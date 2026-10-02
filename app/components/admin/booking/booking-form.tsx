@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
-import { requestBookingAction } from '@/lib/server/actions/booking/request-booking'
+import { requestBookingAction } from '@/app/(admin)/admin/booking/actions'
 import venuesDataRaw from './venues.json'
 import Link from 'next/link'
 

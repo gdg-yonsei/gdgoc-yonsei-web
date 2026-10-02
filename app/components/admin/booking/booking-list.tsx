@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { BookingRequestListItem } from '@/lib/server/fetcher/admin/get-booking-requests'
-import { deleteBookingAction } from '@/lib/server/actions/booking/delete-booking'
+import { deleteBookingAction } from '@/app/(admin)/admin/booking/actions'
 
 const statusColors: Record<string, string> = {
   PENDING: 'bg-warning-soft text-warning',

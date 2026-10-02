@@ -6,7 +6,7 @@ import { getAuthSession } from '@/auth'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { redirect, forbidden } from 'next/navigation'
 import { Metadata } from 'next'
-import { syncBookingStatus } from '@/lib/server/actions/booking/sync-booking-status'
+import { syncBookingStatus } from '@/lib/server/booking/sync'
 import { getBookingRequests } from '@/lib/server/fetcher/admin/get-booking-requests'
 
 export const metadata: Metadata = {

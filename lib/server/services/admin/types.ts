@@ -53,15 +53,25 @@ export function fail(
     : { ok: false, code, message }
 }
 
-export function fromZodError(error: z.ZodError): ServiceFailure {
+/**
+ * zod 오류를 필드별 오류 문구 목록으로 바꾼다. 경로가 없는 오류는 `_` 키에 모은다.
+ */
+export function fieldErrorsFromZod(
+  error: z.ZodError
+): Record<string, string[]> {
   const fieldErrors: Record<string, string[]> = {}
   for (const issue of error.issues) {
     const key = issue.path.join('.') || '_'
     ;(fieldErrors[key] ??= []).push(issue.message)
   }
+  return fieldErrors
+}
+
+/** zod 검증 실패를 서비스 실패(VALIDATION)로 바꾼다. 첫 오류 문구를 대표 메시지로 쓴다. */
+export function fromZodError(error: z.ZodError): ServiceFailure {
   return fail(
     'VALIDATION',
     error.issues[0]?.message ?? 'Validation error',
-    fieldErrors
+    fieldErrorsFromZod(error)
   )
 }
