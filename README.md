@@ -3,7 +3,7 @@
 연세대학교 Google Developer Groups on Campus(GDGoC Yonsei)의 공식 웹사이트와 동아리 관리 시스템(GYMS)이다.
 
 - 공개 사이트: https://gdgoc.yonsei.ac.kr — 세션·프로젝트·멤버 기록, 세션 캘린더(한국어/영어)
-- GYMS(`/admin`): 멤버·기수·파트·세션·프로젝트 관리, 세션 참가 신청, 강의실 대관
+- GYMS(`/admin`): 멤버·기수·파트·세션·프로젝트 관리, 세션 참가 신청
 - GYMS MCP(`/api/mcp`): MCP 클라이언트(Claude, Codex, ChatGPT 등)에서 GYMS 기능 사용
 
 ## 기술 스택

@@ -14,7 +14,6 @@ import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
  */
 export type NavigationKey =
   | 'home'
-  | 'booking'
   | 'generations'
   | 'parts'
   | 'members'
@@ -81,12 +80,6 @@ export default async function getAdminNavigationItems(
       name: t.parts,
       path: localizeAdminHref('/admin/parts', locale),
       dataResource: 'partsPage',
-    },
-    {
-      key: 'booking',
-      name: t.booking,
-      path: localizeAdminHref('/admin/booking', locale),
-      dataResource: 'bookingPage',
     },
     {
       key: 'profile',

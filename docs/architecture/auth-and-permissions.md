@@ -21,7 +21,7 @@
 
 | 역할         | 할 수 있는 일(요약)                                                                                 |
 | ------------ | --------------------------------------------------------------------------------------------------- |
-| `LEAD`       | 모든 작업. 모든 기수 접근. 역할 변경, 기수 관리, 강의실 대관                                        |
+| `LEAD`       | 모든 작업. 모든 기수 접근. 역할 변경, 기수 관리                                                     |
 | `CORE`       | 멤버·파트·세션·프로젝트 운영(생성·수정), 세션·프로젝트 삭제, 공개 캐시 새로고침. 자신이 속한 기수만 |
 | `MEMBER`     | 세션·프로젝트 조회, 프로젝트 생성, 본인 프로젝트·프로필 수정, 세션 참가 신청                        |
 | `ALUMNUS`    | 조회, 본인 프로필 수정, 세션 참가 신청                                                              |
@@ -36,8 +36,8 @@
 
 - 규칙 값: `true`(허용) 또는 `'own'`(본인 데이터일 때만 허용). 표에 없는 조합은 거부.
 - 리소스 종류
-  - 데이터: `members`, `membersRole`, `projects`, `sessions`, `generations`, `parts`, `booking`, `publicCache`
-  - 화면: `adminPage`, `membersPage`, `profilePage`, `projectsPage`, `sessionsPage`, `generationsPage`, `partsPage`, `bookingPage`
+  - 데이터: `members`, `membersRole`, `projects`, `sessions`, `generations`, `parts`, `publicCache`
+  - 화면: `adminPage`, `membersPage`, `profilePage`, `projectsPage`, `sessionsPage`, `generationsPage`, `partsPage`
 - 표를 쓰는 곳
   - `hasPermission(userId, action, resource, ownerId?)` — 버튼·메뉴 노출
   - `requirePermission(...)` / `requireOwnPermission(...)` — 레이아웃·페이지 가드(없으면 `forbidden()`)

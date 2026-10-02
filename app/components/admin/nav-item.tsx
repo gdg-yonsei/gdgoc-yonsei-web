@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   BookOpenIcon,
-  BuildingOffice2Icon,
   CalendarDaysIcon,
   CodeBracketIcon,
   DocumentTextIcon,
@@ -38,7 +37,6 @@ export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   projects: DocumentTextIcon,
   generations: CalendarDaysIcon,
   parts: CodeBracketIcon,
-  booking: BuildingOffice2Icon,
   profile: UserCircleIcon,
 }
 

@@ -29,7 +29,6 @@ export type ResourceType =
   | 'sessions'
   | 'generations'
   | 'parts'
-  | 'booking'
   | 'publicCache'
   | 'adminPage'
   | 'membersPage'
@@ -38,7 +37,6 @@ export type ResourceType =
   | 'sessionsPage'
   | 'generationsPage'
   | 'partsPage'
-  | 'bookingPage'
 
 /**
  * 허용 규칙.
@@ -88,7 +86,6 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       membersPage: true,
       generationsPage: true,
       partsPage: true,
-      bookingPage: true,
     },
     post: {
       members: true,
@@ -97,7 +94,6 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       projects: true,
       sessions: true,
       parts: true,
-      booking: true,
     },
     put: {
       members: true,
@@ -106,7 +102,6 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       projects: true,
       sessions: true,
       parts: true,
-      booking: true,
       publicCache: true,
     },
     delete: {
@@ -116,7 +111,6 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       projects: true,
       sessions: true,
       parts: true,
-      booking: true,
     },
   },
   /** 졸업생: 조회와 본인 프로필 수정만. */

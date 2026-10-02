@@ -38,7 +38,6 @@ flowchart LR
   R[("Redis<br/>공유 캐시")]
   R2[("Cloudflare R2<br/>이미지")]
   RS["Resend<br/>메일 발송"]
-  AB["auto-booker<br/>(별도 서비스)"]
   GH["GitHub / Google<br/>OAuth 로그인"]
 
   B -->|HTML · RSC · Server Action| N
@@ -49,14 +48,12 @@ flowchart LR
   N --> R2
   N --> RS
   N --> GH
-  AB -->|booking_requests 읽기·갱신| PG
 ```
 
 - **PostgreSQL**: 모든 데이터. 스키마는 `db/schema/*`, 마이그레이션은 `drizzle/`.
 - **Redis**: `REDIS_URL`이 있으면 Next 캐시(`use cache: remote`, ISR)를 인스턴스 간에 공유한다. 없으면 메모리 캐시.
 - **Cloudflare R2**: 세션·프로젝트·프로필 이미지. 브라우저가 presigned URL로 직접 올린다.
 - **Resend**: 세션 생성 알림 메일(응답 뒤 `after()`로 보냄).
-- **auto-booker**: 연세대 공간 대관을 자동으로 신청하는 별도 서비스. 같은 DB의 `booking_requests` 테이블을 함께 쓴다.
 
 ## 2. 계층 구조
 
@@ -229,7 +226,6 @@ lib/
     permission/          역할별 권한 표(policy.ts)와 가드
     storage/             R2 접근(이 폴더만 R2를 직접 만진다)
     uploads/             MCP 업로드(매직 바이트, SSRF 방어, 한도, 토큰)
-    booking/             강의실 대관(정책, 저장소, 상태 동기화)
     actions/, form-data/ Server Action 공통 실행기와 FormData 파서
     env.ts, env-core.ts  환경 변수 검증
   mcp/                   MCP 서버, 도구, 감사 로그, 동의 화면 로직

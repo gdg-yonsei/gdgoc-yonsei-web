@@ -21,7 +21,7 @@
 | 쓰기, 권한, 비즈니스 규칙           | `lib/server/services/admin/`               | `Actor`를 받고 `ServiceResult`를 돌려준다                                    |
 | 관리자 폼 Server Action             | 라우트의 `actions.ts`                      | `runAdminFormAction` + 서비스 호출만. 5~10줄                                 |
 | FormData → 서비스 입력 변환         | `lib/server/form-data/`                    | 검증은 서비스(zod)가 한다                                                    |
-| 외부 입력 스키마(zod)               | `lib/validations/`                         | 도메인 전용이면 도메인 폴더에 둔다(예: `lib/server/booking/schema.ts`)       |
+| 외부 입력 스키마(zod)               | `lib/validations/`                         | 도메인 전용이면 도메인 폴더에 둔다(예: `lib/mcp/tools/*`의 도구 입력 스키마) |
 | 권한 규칙                           | `lib/server/permission/policy.ts`          | 역할 × 작업 × 리소스 표. 기수·대상 역할 규칙은 `services/admin/authorize.ts` |
 | 캐시 태그·수명·무효화               | `lib/server/cache/`                        | 서비스는 `invalidation.ts`의 함수만 부른다                                   |
 | R2 접근                             | `lib/server/storage/r2.ts`                 | 다른 곳에서 S3 클라이언트를 만들지 않는다                                    |

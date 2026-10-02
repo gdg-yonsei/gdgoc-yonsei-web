@@ -160,7 +160,6 @@ export const ko = {
   roleMember: '멤버',
   roleCore: '코어',
   roleAlumni: '알럼나이',
-  booking: '대관 예약',
   searchPlaceholder: '검색...',
   searchSessionPlaceholder: '세션 검색...',
   searchProjectPlaceholder: '프로젝트 검색...',

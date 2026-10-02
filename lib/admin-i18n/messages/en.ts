@@ -164,7 +164,6 @@ export const en = {
   roleMember: 'Member',
   roleCore: 'Core',
   roleAlumni: 'Alumni',
-  booking: 'Venue Booking',
   searchPlaceholder: 'Search...',
   searchSessionPlaceholder: 'Search sessions...',
   searchProjectPlaceholder: 'Search projects...',
