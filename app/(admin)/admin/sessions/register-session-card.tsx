@@ -7,10 +7,10 @@ import {
   getAdminMessages,
   localizeAdminHref,
 } from '@/lib/admin-i18n'
-import { Locale } from '@/lib/i18n'
+import { pickLocalized, type Locale } from '@/lib/i18n'
 
 /**
- * 세션 이름, 파트, 일시, 신청 인원/정원을 보여 주는 링크 카드.
+ * 세션 이름(관리자 언어, 없으면 다른 언어), 파트, 일시, 신청 인원/정원을 보여 주는 링크 카드.
  *
  * @param participants 현재 신청자 수
  * @param maxCapacity 정원(null이면 제한 없음)
@@ -18,6 +18,7 @@ import { Locale } from '@/lib/i18n'
 export default function RegisterSessionCard({
   sessionId,
   sessionName,
+  sessionNameKo,
   part,
   startAt,
   endAt,
@@ -27,6 +28,7 @@ export default function RegisterSessionCard({
 }: {
   sessionId: string
   sessionName: string
+  sessionNameKo: string | null
   part: string
   startAt: Date | null
   endAt: Date | null
@@ -43,7 +45,9 @@ export default function RegisterSessionCard({
       }
     >
       <div className={'flex items-start justify-between gap-2'}>
-        <h3 className={'type-title text-ink min-w-0'}>{sessionName}</h3>
+        <h3 className={'type-title text-ink min-w-0'}>
+          {pickLocalized(locale, { en: sessionName, ko: sessionNameKo })}
+        </h3>
         <span className={'admin-badge-primary shrink-0'}>{part}</span>
       </div>
       <div className={'flex items-end justify-between gap-2'}>

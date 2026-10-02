@@ -29,6 +29,7 @@ export default async function RegisterSession() {
             key={session.id}
             sessionId={session.id}
             sessionName={session.name}
+            sessionNameKo={session.nameKo}
             part={session.part}
             startAt={session.startAt}
             endAt={session.endAt}

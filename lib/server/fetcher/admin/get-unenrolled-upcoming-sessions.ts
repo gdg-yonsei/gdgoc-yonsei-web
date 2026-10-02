@@ -14,7 +14,8 @@ import { sessionWallClockNow } from '@/lib/format/datetime'
 
 /**
  * 멤버 신청이 열려 있고(`internalOpen`) 아직 시작하지 않았으며, 사용자가 신청하지 않은 세션을
- * 시작 순으로 읽는다. 세션마다 현재 신청자 수(`participantCount`)를 함께 센다.
+ * 시작 순으로 읽는다. 세션마다 현재 신청자 수(`participantCount`)를 함께 센다. 카드에 보이는
+ * 열(두 언어 이름, 파트, 일시, 정원)만 고른다.
  * @param userId 로그인 사용자 id
  */
 export async function getUnenrolledUpcomingSessions(userId: string) {
@@ -35,15 +36,12 @@ export async function getUnenrolledUpcomingSessions(userId: string) {
   return db
     .select({
       id: sessions.id,
-      name: sessions.nameKo,
+      name: sessions.name,
+      nameKo: sessions.nameKo,
       startAt: sessions.startAt,
       endAt: sessions.endAt,
-      location: sessions.locationKo,
       maxCapacity: sessions.maxCapacity,
-      partId: sessions.partId,
       part: parts.name,
-      mainImage: sessions.mainImage,
-      images: sessions.images,
       participantCount: participantsSub.participantCount,
     })
     .from(sessions)
