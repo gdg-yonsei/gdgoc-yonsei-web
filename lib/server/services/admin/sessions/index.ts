@@ -20,4 +20,5 @@ export {
   removeSessionParticipant,
   unregisterFromSession,
 } from '@/lib/server/services/admin/sessions/registration'
+/** 세션 입력(검증 전) 타입. */
 export type { SessionInput } from '@/lib/server/services/admin/sessions/shared'

@@ -1,6 +1,10 @@
+/**
+ * 사이트맵 경로 목록 생성(순수 함수). 정적 페이지, 허브, 기수 페이지, 상세 페이지와 최종 수정 시각을 만든다.
+ */
 import { countByGeneration, type GenerationRef } from '@/lib/site/generations'
 import { isPlaceholderImage } from '@/lib/site/images'
 
+/** 사이트맵 항목(언어 없는 경로, 최종 수정 시각, 이미지). */
 export type SitemapPath = {
   path: string
   lastModified?: Date
@@ -15,6 +19,7 @@ type ListedItem = Dated & {
   mainImage: string
 }
 
+/** 데이터와 무관한 고정 페이지. */
 export const STATIC_SITEMAP_PATHS: readonly SitemapPath[] = [
   { path: '' },
   { path: '/calendar' },
@@ -34,6 +39,7 @@ function dated(path: string, items: readonly Dated[]): SitemapPath {
   return newest ? { path, lastModified: newest } : { path }
 }
 
+/** 데이터로 사이트맵 경로를 만든다. 공개 항목이 있는 기수 페이지만 넣는다. */
 export function buildSitemapPaths({
   generations,
   sessions,

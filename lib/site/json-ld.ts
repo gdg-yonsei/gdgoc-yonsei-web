@@ -1,15 +1,22 @@
+/**
+ * 구조화 데이터(JSON-LD, schema.org) 생성기(순수 함수).
+ *
+ * 검색 엔진이 페이지 내용을 이해하도록 `<script type="application/ld+json">`에 넣을 객체를
+ * 만든다. 호출부가 절대 URL을 넘긴다(`lib/seo/metadata.ts`).
+ */
 import type { Locale } from '@/lib/i18n'
 import { toKstIso } from '@/lib/format/datetime'
 import { CHANNELS } from '@/lib/site/channels'
 
-/* Pure builders: callers pass absolute URLs (see lib/seo/metadata.ts). */
-
 const CONTEXT = 'https://schema.org'
 
+/** 브레드크럼 한 칸(이름, 절대 URL). */
 export type JsonLdCrumb = { name: string; url: string }
 
+/** 주최 단체 참조. */
 export type JsonLdOrganization = { id: string; name: string; url: string }
 
+/** 브레드크럼 목록(BreadcrumbList). */
 export function breadcrumbList(crumbs: readonly JsonLdCrumb[]) {
   return {
     '@context': CONTEXT,
@@ -23,6 +30,7 @@ export function breadcrumbList(crumbs: readonly JsonLdCrumb[]) {
   }
 }
 
+/** 목록 페이지(CollectionPage)와 항목 목록(ItemList). */
 export function collectionPage({
   url,
   name,
@@ -65,7 +73,7 @@ export function collectionPage({
   ] as const
 }
 
-/** Sessions meet on Yonsei University's Sinchon campus. */
+/** 세션 장소 주소(연세대학교 신촌캠퍼스). */
 export const YONSEI_ADDRESS = {
   '@type': 'PostalAddress',
   streetAddress: '50 Yonsei-ro',
@@ -83,6 +91,7 @@ type CommonWork = {
   locale: Locale
 }
 
+/** 세션을 행사(Event)로 표현한다. */
 export function sessionEvent({
   url,
   name,
@@ -110,8 +119,8 @@ export function sessionEvent({
     inLanguage: locale,
     startDate: toKstIso(startAt),
     ...(endAt ? { endDate: toKstIso(endAt) } : {}),
-    // Google reads EventScheduled as "happened as planned"; EventCompleted is
-    // not a valid EventStatusType.
+    // Google은 EventScheduled를 "예정대로 열림"으로 해석한다. EventCompleted는
+    // 유효한 EventStatusType이 아니다.
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     isAccessibleForFree: true,
@@ -129,6 +138,7 @@ export function sessionEvent({
   }
 }
 
+/** 세션 자료를 학습 자료(LearningResource)로 표현한다. */
 export function sessionLearningResource({
   url,
   name,
@@ -150,6 +160,7 @@ export function sessionLearningResource({
   }
 }
 
+/** 프로젝트를 창작물(CreativeWork)로 표현한다. */
 export function projectWork({
   url,
   name,

@@ -8,6 +8,7 @@
  */
 import { toPublicImageUrl } from '@/lib/image-url'
 
+/** 업로드 실패. `status`가 있으면 업로드 API가 돌려준 HTTP 상태다. */
 export class ImageUploadError extends Error {
   readonly status?: number
 

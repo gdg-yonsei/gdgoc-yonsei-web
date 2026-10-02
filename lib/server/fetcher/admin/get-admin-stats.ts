@@ -15,6 +15,7 @@ import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 
+/** 대시보드 숫자 타일 값. */
 export type AdminStats = {
   members: number
   sessions: number

@@ -26,6 +26,7 @@ export const externalParticipants = pgTable('external_participants', {
     }),
 })
 
+/** 외부 참가자가 속한 세션 관계. */
 export const externalParticipantsRelation = relations(
   externalParticipants,
   ({ one }) => ({
