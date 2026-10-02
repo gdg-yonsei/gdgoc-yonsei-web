@@ -1,9 +1,13 @@
+/**
+ * 소셜 카드 제목 줄바꿈·글자 크기 계산(Satori는 브라우저의 줄 자르기 규칙을 모두 지원하지 않는다).
+ */
 import { toIntlLocale, type Locale } from '@/lib/i18n'
 
 const TITLE_WIDTH_PX = 1_050
 const TITLE_WIDTH_SAFETY_FACTOR = 0.94
 const ELLIPSIS = '…'
 
+/** 제목 배치: 글자 크기, 최대 두 줄, 잘렸는지. */
 export type SocialTitleLayout = {
   fontSize: 48 | 58 | 70
   lines: readonly [string] | readonly [string, string]
@@ -27,7 +31,7 @@ function graphemeWidth(grapheme: string): number {
   if (/^[0-9]$/u.test(grapheme)) return 0.6
   if (/^[\-–—_/+()[\]{}]$/u.test(grapheme)) return 0.48
 
-  // Hangul, CJK and emoji are approximately square in Pretendard.
+  // Pretendard에서 한글, 한자, 이모지는 대략 정사각형 폭이다.
   return 1
 }
 
@@ -82,9 +86,8 @@ function takeLine(
 }
 
 /**
- * Creates at most two explicit no-wrap lines. Satori does not implement every
- * browser line-clamp rule, so doing the line breaking here prevents long Korean,
- * English, or emoji titles from overflowing the 1200×630 social card.
+ * 제목을 최대 두 줄로 직접 나눈다. Satori가 브라우저의 줄 자르기 규칙을 모두 구현하지
+ * 않으므로, 여기서 줄을 나눠야 긴 한글·영어·이모지 제목이 1200×630 카드를 넘치지 않는다.
  */
 export function layoutSocialTitle(
   title: string,

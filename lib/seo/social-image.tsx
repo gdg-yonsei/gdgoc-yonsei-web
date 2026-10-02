@@ -1,3 +1,9 @@
+/**
+ * 소셜 미리보기 이미지 렌더러(Satori로 SVG를 만들고 sharp로 JPEG 변환).
+ *
+ * sharp·satori가 무거워 `social-image-routes.ts`가 이미지 요청 때만 동적으로 불러온다.
+ * 결과는 `'use cache'`로 캐시하고, 원본이 바뀌면 `version`이 달라져 새로 그린다.
+ */
 import 'server-only'
 
 import { readFile } from 'node:fs/promises'
@@ -152,9 +158,9 @@ async function fetchRemoteImage(source: string): Promise<string | null> {
     return toDataUrl(transformedImage.bytes, transformedImage.contentType)
   }
 
-  // Some custom-domain/R2 setups do not enable Cloudflare Image Resizing.
-  // Fall back only to the already allowlisted origin and resize locally before
-  // embedding it, so a multi-megabyte source does not inflate the Satori SVG.
+  // 사용자 도메인·R2 설정에 따라 Cloudflare Image Resizing이 꺼져 있을 수 있다. 그때는
+  // 허용 목록에 있는 원본에서만 받아 로컬에서 줄인 뒤 넣는다. 수 MB 원본이 Satori SVG를
+  // 부풀리지 않게 하기 위해서다.
   if (transformedUrl.href === sourceUrl.href) {
     return null
   }
@@ -206,13 +212,13 @@ const ON_STAGE_MUTED = '#b4b4b4'
 
 const SIDES = ['left', 'right'] as const
 
-/** Both GDG brackets side by side, `gap` bracket-widths apart. */
+/** GDG 괄호 두 개를 괄호 폭의 `gap`배 간격으로 나란히 그린다. */
 function bracketsViewBox(gap: number) {
   const width = BRACKET_VIEWBOX.width * (2 + gap)
   return { width, height: BRACKET_VIEWBOX.height }
 }
 
-/** The solid `< >` mark for the chip. */
+/** 칩에 들어가는 꽉 찬 `< >` 마크. */
 function BracketsMark({ height }: { height: number }) {
   const box = bracketsViewBox(0.18)
   return (
@@ -239,7 +245,7 @@ function BracketsMark({ height }: { height: number }) {
   )
 }
 
-/** Cards without a photo: the halftone brackets, as the hero draws them. */
+/** 사진이 없는 카드: 히어로와 같은 하프톤 괄호 그림. */
 function HalftoneBrackets() {
   const box = bracketsViewBox(0.22)
   const width = 760
@@ -288,10 +294,9 @@ function HalftoneBrackets() {
 }
 
 /*
- * Everything that touches the file system or the network runs inside this
- * cache scope: under Cache Components an image route that awaits uncached IO
- * fails with "used IO that was not cached" (HTTP 500). The JPEG is keyed by
- * the content, whose `version` changes whenever the source row does.
+ * 파일 시스템이나 네트워크에 닿는 작업은 모두 이 캐시 범위 안에서 실행한다. Cache Components
+ * 아래에서 이미지 라우트가 캐시되지 않은 IO를 기다리면 "used IO that was not cached"(500)로
+ * 실패하기 때문이다. JPEG는 내용으로 캐시되며, 원본 행이 바뀌면 `version`이 바뀐다.
  */
 async function renderSocialImageJpeg(
   content: SocialImageContent
@@ -306,9 +311,9 @@ async function renderSocialImageJpeg(
   ])
   const title = layoutSocialTitle(content.title, content.locale)
 
-  // Satori fetches its layout engine when first imported. Importing it here
-  // keeps that fetch inside this cache scope; imported from a prerendering
-  // route it is uncached IO that never settles, and the image request 500s.
+  // Satori는 처음 import될 때 레이아웃 엔진을 불러온다. 여기서 import해야 그 작업이 이
+  // 캐시 범위 안에 들어간다. 미리 렌더링하는 라우트에서 import하면 끝나지 않는 비캐시 IO가
+  // 되어 이미지 요청이 500으로 실패한다.
   const { default: satori } = await import('satori')
   const svg = await satori(
     <div
@@ -326,7 +331,7 @@ async function renderSocialImageJpeg(
       }}
     >
       {representativeImage ? (
-        // next/image is not available inside Satori; it requires a plain img.
+        // Satori 안에서는 next/image를 쓸 수 없어 일반 img를 쓴다.
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={representativeImage}
@@ -458,6 +463,10 @@ async function renderSocialImageJpeg(
   return new Uint8Array(jpeg)
 }
 
+/**
+ * 소셜 카드 JPEG 응답을 만든다. 실제 내용이면 1년 동안 캐시하고(내용이 바뀌면 버전이 바뀌어
+ * 이미지 주소도 바뀐다), 기본 카드면 데이터가 생길 수 있으니 짧게 캐시한다.
+ */
 export async function createSocialImageResponse(
   content: SocialImageContent
 ): Promise<Response> {

@@ -178,7 +178,7 @@ export const ko = {
   sortByUpdated: '최근 수정순',
   sortByCreated: '최근 생성순',
 
-  // ── Shell / chrome ──
+  // ── 화면 틀(헤더·사이드바) ──
   skipToContent: '본문으로 건너뛰기',
   mainNavigation: '주요 메뉴',
   openMenu: '메뉴 열기',
@@ -190,7 +190,7 @@ export const ko = {
   darkMode: '다크 모드로 전환',
   account: '계정',
 
-  // ── Dashboard ──
+  // ── 대시보드 ──
   dashboard: '대시보드',
   totalMembers: '멤버',
   totalSessions: '세션',
@@ -208,7 +208,7 @@ export const ko = {
   copy: '복사',
   copied: '복사됨',
 
-  // ── States ──
+  // ── 빈 상태·로딩 상태 ──
   errorOccurred: '문제가 발생했습니다',
   errorOccurredHint:
     '페이지를 불러오지 못했습니다. 다시 시도해 보고, 계속 발생하면 리드에게 알려주세요.',
@@ -220,7 +220,7 @@ export const ko = {
   required: '필수',
   optional: '선택',
 
-  // ── Table headers ──
+  // ── 목록 표 헤더 ──
   columnName: '이름',
   columnPart: '파트',
   columnRole: '권한',
@@ -231,7 +231,7 @@ export const ko = {
   columnPeriod: '활동 기간',
   columnMembers: '멤버',
 
-  // ── Bilingual panel ──
+  // ── 영어·한국어 입력 패널 ──
   written: '작성됨',
   notWritten: '미작성',
   bilingualThisField: '이 항목',
@@ -240,7 +240,7 @@ export const ko = {
   languageNameEn: '영어',
   languageNameKo: '한국어',
 
-  // ── Part member picker ──
+  // ── 파트 구성원 선택기 ──
   selectedMembers: '선택된 멤버',
   removeMember: '제거',
   searchName: '이름 검색',
@@ -254,7 +254,7 @@ export const ko = {
   noMatchingMembers: '검색 결과가 없습니다.',
   searchResults: '검색 결과',
 
-  // ── Editors and part form ──
+  // ── 에디터·파트 폼 ──
   editor: '에디터',
   preview: '미리보기',
   displayOrderHint: '작은 숫자의 파트부터 표시됩니다.',

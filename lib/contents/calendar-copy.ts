@@ -8,6 +8,7 @@
  */
 import type { Locale } from '@/lib/i18n'
 
+/** 캘린더 페이지 제목·설명(서버 전용). */
 export const calendarPageCopy = {
   en: {
     title: 'Calendar',
@@ -43,6 +44,7 @@ export type CalendarWidgetCopy = {
   more: string
 }
 
+/** 달력 위젯 문구(언어별). 페이지가 현재 언어 것만 골라 넘긴다. */
 export const calendarWidgetCopy: Record<Locale, CalendarWidgetCopy> = {
   en: {
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],

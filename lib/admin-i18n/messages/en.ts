@@ -182,7 +182,7 @@ export const en = {
   sortByUpdated: 'Last Updated',
   sortByCreated: 'Last Created',
 
-  // ── Shell / chrome ──
+  // ── 화면 틀(헤더·사이드바) ──
   skipToContent: 'Skip to content',
   mainNavigation: 'Main navigation',
   openMenu: 'Open menu',
@@ -194,7 +194,7 @@ export const en = {
   darkMode: 'Switch to dark mode',
   account: 'Account',
 
-  // ── Dashboard ──
+  // ── 대시보드 ──
   dashboard: 'Dashboard',
   totalMembers: 'Members',
   totalSessions: 'Sessions',
@@ -212,7 +212,7 @@ export const en = {
   copy: 'Copy',
   copied: 'Copied',
 
-  // ── States ──
+  // ── 빈 상태·로딩 상태 ──
   errorOccurred: 'Something went wrong',
   errorOccurredHint:
     'The page could not be loaded. Try again, and contact a lead if it keeps happening.',
@@ -224,7 +224,7 @@ export const en = {
   required: 'Required',
   optional: 'Optional',
 
-  // ── Table headers ──
+  // ── 목록 표 헤더 ──
   columnName: 'Name',
   columnPart: 'Part',
   columnRole: 'Role',
@@ -235,7 +235,7 @@ export const en = {
   columnPeriod: 'Period',
   columnMembers: 'Members',
 
-  // ── Bilingual panel ──
+  // ── 영어·한국어 입력 패널 ──
   written: 'Done',
   notWritten: 'Missing',
   bilingualThisField: 'This field',
@@ -245,7 +245,7 @@ export const en = {
   languageNameEn: 'English',
   languageNameKo: 'Korean',
 
-  // ── Part member picker ──
+  // ── 파트 구성원 선택기 ──
   selectedMembers: 'Selected members',
   removeMember: 'Remove',
   searchName: 'Search name',
@@ -260,7 +260,7 @@ export const en = {
   noMatchingMembers: 'No matching members.',
   searchResults: 'Results',
 
-  // ── Editors and part form ──
+  // ── 에디터·파트 폼 ──
   editor: 'Editor',
   preview: 'Preview',
   displayOrderHint: 'Parts with smaller numbers appear first.',

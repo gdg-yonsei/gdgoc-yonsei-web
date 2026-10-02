@@ -1,3 +1,4 @@
+/** 활동별 소개. `key`는 프로그램 카드와 짝을 맞추는 식별자다. */
 export const activitySectionContents = [
   {
     key: 'T19',
