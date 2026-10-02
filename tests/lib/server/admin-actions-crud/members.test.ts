@@ -25,7 +25,7 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
@@ -36,15 +36,15 @@ vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
   sharesGenerationWith: vi.fn(async () => true),
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: mockInvalidateMemberPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: mockGetGenerationNamesForUserId,
 }))
 
@@ -54,7 +54,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     update: mockUpdate,
     delete: mockDelete,
     query: { users: { findFirst: mockUserFindFirst } },
@@ -222,7 +222,7 @@ describe('members CRUD server actions', () => {
   })
 
   it('approves pending member and maps role value', async () => {
-    const { default: acceptMemberAction } =
+    const { acceptMemberAction } =
       await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
@@ -241,14 +241,14 @@ describe('members CRUD server actions', () => {
   })
 
   it('deletes pending user from accept page', async () => {
-    const { deleteUserAction } =
+    const { deleteMemberAction } =
       await import('@/app/(admin)/admin/members/accept/actions')
 
     const formData = createFormData({
       userId: 'pending-2',
     })
 
-    await deleteUserAction({ error: '' }, formData)
+    await deleteMemberAction({ error: '' }, formData)
 
     expect(mockDelete).toHaveBeenCalled()
     expect(mockInvalidateMemberPublicCache).toHaveBeenCalledWith({

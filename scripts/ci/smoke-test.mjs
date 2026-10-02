@@ -1,11 +1,10 @@
 /**
- * Post-deploy smoke test: read-only GET requests against a running site.
+ * 배포 후 스모크 테스트: 실행 중인 사이트에 읽기 전용 GET 요청만 보낸다.
  *
- * Covers what unit and e2e tests cannot see on the real deployment: the
- * build's runtime dependencies (e.g. satori's wasm for social images), the
- * production database behind public pages, redirects and response headers.
+ * 단위·e2e 테스트가 실제 배포에서 볼 수 없는 것을 확인한다: 빌드의 런타임 의존성(예: 소셜 이미지용
+ * satori의 wasm), 공개 페이지 뒤의 운영 DB, redirect와 응답 헤더.
  *
- * Usage: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
+ * 사용법: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
  */
 import { appendFileSync } from 'node:fs'
 
@@ -98,8 +97,8 @@ function ogImage(body) {
   )
 }
 
-// A fresh container can take a while to accept traffic after the deploy
-// reports done; wait until the home page answers before judging anything.
+// 배포가 끝났다고 보고된 뒤에도 새 컨테이너가 트래픽을 받기까지 시간이 걸릴 수 있다.
+// 홈 페이지가 응답할 때까지 기다린 뒤에 검사를 시작한다.
 async function waitForSite() {
   for (let attempt = 1; attempt <= WARMUP_ATTEMPTS; attempt += 1) {
     try {
@@ -165,7 +164,7 @@ await check('site social image', async () => {
   return expectImage(ogImage(body))
 })
 
-// Detail pages and their generated (satori) social images, one per kind.
+// 상세 페이지와 그 소셜 이미지(satori로 생성), 종류별로 하나씩.
 for (const [kind, pattern] of [
   ['session', /href="(\/ko\/session\/[^"/]+\/[0-9a-f-]{36})"/],
   ['project', /href="(\/ko\/project\/[^"/]+\/[0-9a-f-]{36})"/],

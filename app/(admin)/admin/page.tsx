@@ -1,3 +1,6 @@
+/**
+ * 관리자 홈(`/admin`) 페이지.
+ */
 import { Suspense } from 'react'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
@@ -10,9 +13,8 @@ import DashboardStats, {
 import UpcomingSessions from '@/app/(admin)/admin/sessions/upcoming-sessions'
 import { AdminCardSkeleton } from '@/app/components/admin/skeleton'
 import Link from 'next/link'
-import { eq } from 'drizzle-orm'
-import { users } from '@/db/schema/users'
-import db from '@/db'
+import { getMember } from '@/lib/server/fetcher/admin/get-member'
+import { GOOGLE_CALENDAR } from '@/lib/site/channels'
 import { getAuthSession } from '@/auth'
 import { redirect } from 'next/navigation'
 import {
@@ -26,14 +28,12 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import handlePermission from '@/lib/server/permission/handle-permission'
-
-const CALENDAR_ICS_URL =
-  'https://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 
 /**
- * 관리자 홈페이지
- * @constructor
+ * 관리자 홈(대시보드): 통계 타일, 다가오는 세션, 도구(QR 생성, 캘린더 구독, MCP 연결 안내).
+ *
+ * 범위가 특정 기수일 때만 "세션 만들기" 버튼을 보인다(세션은 기수에 속해야 하므로).
  */
 export default async function AdminPage() {
   const locale = await getAdminLocale()
@@ -43,15 +43,10 @@ export default async function AdminPage() {
     redirect('/auth/sign-in')
   }
 
-  // 사용자의 이름 정보가 업데이트 되어 있는지 확인
-  const userInfo = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-    columns: {
-      firstName: true,
-      lastName: true,
-    },
-  })
-  // 만약 사용자 이름 정보가 없다면 프로필 수정 페이지로 리다이렉트
+  // 사이드바 사용자 카드도 같은 인자로 getMember를 부르므로(React cache) 조회는 한 번만 일어난다.
+  const userInfo = await getMember(session.user.id)
+
+  // 이름을 아직 입력하지 않은 신규 멤버는 프로필 입력부터 하게 한다.
   if (!userInfo?.firstName || !userInfo?.lastName) {
     redirect(localizeAdminHref('/admin/profile/edit', locale))
   }
@@ -59,8 +54,8 @@ export default async function AdminPage() {
   const [resolvedScope, canCreateSession, canApproveMember] = await Promise.all(
     [
       resolveAdminGenerationScope(session.user.id),
-      handlePermission(session.user.id, 'post', 'sessions'),
-      handlePermission(session.user.id, 'put', 'members'),
+      hasPermission(session.user.id, 'post', 'sessions'),
+      hasPermission(session.user.id, 'put', 'members'),
     ]
   )
   const scope = resolvedScope?.scope ?? null
@@ -130,24 +125,20 @@ export default async function AdminPage() {
               {t.subscribeToCalendar}
             </h3>
             <div className={'flex flex-col gap-2 sm:flex-row'}>
-              <Link
+              <a
                 className={'admin-btn-secondary flex-1'}
-                href={
-                  'https://calendar.google.com/calendar/u/0?cid=Njc3NjI4ZDUyODM0Mjk5NjViZTE3MmMxMzVmZjBjNjc4MzA3OTVlNWFkZmIzYmMxMTc4MmIzMDVkMTRiMzkyY0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t'
-                }
+                href={GOOGLE_CALENDAR.googleSubscribe}
                 target={'_blank'}
                 rel={'noreferrer noopener'}
               >
                 {t.googleCalendar}
-              </Link>
-              <Link
+              </a>
+              <a
                 className={'admin-btn-secondary flex-1'}
-                href={
-                  'webcal://calendar.google.com/calendar/ical/677628d5283429965be172c135ff0c67830795e5adfb3bc11782b305d14b392c%40group.calendar.google.com/public/basic.ics'
-                }
+                href={GOOGLE_CALENDAR.webcal}
               >
                 {t.appleCalendar}
-              </Link>
+              </a>
             </div>
             <div className={'flex flex-col gap-1.5'}>
               <p className={'admin-field-label'}>{t.calendarUrl}</p>
@@ -156,7 +147,7 @@ export default async function AdminPage() {
                   'bg-surface-sunken text-ink-muted type-caption rounded-md p-2 break-all'
                 }
               >
-                {CALENDAR_ICS_URL}
+                {GOOGLE_CALENDAR.ics}
               </code>
               <ol
                 className={

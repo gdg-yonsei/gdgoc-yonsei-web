@@ -1,10 +1,19 @@
+/**
+ * 공개 프로젝트 쇼케이스 조회.
+ *
+ * 공개 사이트 조회는 모두 같은 구조다.
+ * - `getShared*`: `'use cache: remote'` 함수. 결과를 Redis(또는 메모리)에 공유 캐시한다.
+ *   행에 영어·한국어 필드가 모두 있으므로 언어와 무관하게 캐시 항목 하나를 쓰고, 기존 무효화
+ *   규칙을 지키려고 두 언어의 태그를 모두 단다.
+ * - `get*ForRequest`: React `cache()`로 같은 요청 안의 중복 호출을 합친다.
+ * - 공개 함수(`get*`): 입력 검증(UUID 등) 후 위 함수를 부른다.
+ */
 import 'server-only'
 
 import { cache } from 'react'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { projects } from '@/db/schema/projects'
-import type { Locale } from '@/i18n-config'
 import {
   cacheQuery,
   forEachPublicLocale,
@@ -23,6 +32,7 @@ import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { desc, eq } from 'drizzle-orm'
 
+/** 정적 파라미터용 가벼운 프로젝트 목록(ID·기수 이름). */
 async function getSharedProjects() {
   'use cache: remote'
 
@@ -53,12 +63,12 @@ async function getSharedProjects() {
 
 const getProjectsForRequest = cache(() => getSharedProjects())
 
-export function getProjects(_locale: Locale) {
-  void _locale
+/** 정적 파라미터 생성용 프로젝트 ID·기수 목록. */
+export function getProjects() {
   return getProjectsForRequest()
 }
 
-/** Relations both project read models load; matches `ProjectRow`. */
+/** 카드와 상세가 함께 읽는 관계(기수, 태그, 참가자). `ProjectRow` 타입과 맞춰야 한다. */
 const PROJECT_RELATIONS = {
   generation: { columns: { id: true, name: true, startDate: true } },
   projectsToTags: {
@@ -85,6 +95,7 @@ const PROJECT_RELATIONS = {
   },
 } as const
 
+/** 프로젝트 카드에 필요한 컬럼(상세 본문 제외). */
 const PROJECT_CARD_COLUMNS = {
   id: true,
   name: true,
@@ -112,7 +123,7 @@ async function getSharedProjectShowcase(): Promise<ShowcaseProject[]> {
     orderBy: desc(projects.updatedAt),
   })
 
-  // Generation pages read this entry too (see sessions.ts for the reason).
+  // 기수 페이지도 이 항목을 읽으므로 기수 태그도 단다(이유는 sessions.ts 참고).
   const generationNames = uniqueStrings(rows.map((row) => row.generation.name))
   tagQuery(
     forEachPublicLocale((locale) => [
@@ -126,7 +137,7 @@ async function getSharedProjectShowcase(): Promise<ShowcaseProject[]> {
 
 const getProjectShowcaseForRequest = cache(() => getSharedProjectShowcase())
 
-/** Every project with tags and contributors, for hubs, pages and counters. */
+/** 태그·참가자를 포함한 모든 프로젝트. 허브, 기수 페이지, 개수 표시가 함께 쓴다. */
 export function getProjectShowcase() {
   return getProjectShowcaseForRequest()
 }
@@ -155,8 +166,8 @@ async function getSharedProjectById(projectId: string) {
   })
 }
 
-export function getProjectById(projectId: string, _locale: Locale) {
-  void _locale
+/** 프로젝트 상세(본문·이미지 포함). UUID가 아니면 DB를 조회하지 않고 `undefined`. */
+export function getProjectById(projectId: string) {
   if (!isUuid(projectId)) {
     return Promise.resolve(undefined)
   }

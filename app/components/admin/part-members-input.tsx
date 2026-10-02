@@ -1,12 +1,26 @@
 'use client'
 
+/**
+ * 파트 멤버 선택 입력(클라이언트 컴포넌트).
+ *
+ * 이름 검색과 기수·파트 필터로 후보를 좁혀 추가하고, 선택된 멤버는 칩으로 보여 준다.
+ * 후보는 필터를 하나라도 입력해야 나타난다(멤버 수가 많아 전체 목록을 바로 그리지 않음).
+ */
 import { useState } from 'react'
-import { useAdminI18n } from './admin-i18n-provider'
-import formatUserName from '@/lib/format-user-name'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import { formatUserName } from '@/lib/format/user-name'
 import type { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 
+/** `getPartMemberOptions`가 돌려주는 멤버 한 명(소속 파트 포함). */
 type Member = Awaited<ReturnType<typeof getPartMemberOptions>>[number]
 
+/**
+ * 선택한 멤버 id 목록을 JSON으로 `name` 필드에 싣는다.
+ *
+ * 기수/파트 필터의 `none`은 "어느 파트에도 속하지 않은 멤버"를 뜻한다.
+ * @param members 선택지(전체 멤버)
+ * @param defaultValue 처음부터 선택된 멤버 id
+ */
 export default function PartMembersInput({
   members,
   name,
@@ -18,7 +32,7 @@ export default function PartMembersInput({
   title: string
   defaultValue: string[]
 }) {
-  const { locale } = useAdminI18n()
+  const { locale, messages: t } = useAdminI18n()
   const ko = locale === 'ko'
   const [selected, setSelected] = useState(defaultValue)
   const [search, setSearch] = useState('')
@@ -94,7 +108,7 @@ export default function PartMembersInput({
       <legend className="admin-field-label mb-2">{title}</legend>
       <input type="hidden" name={name} value={JSON.stringify(selected)} />
       <div className="admin-field-label">
-        {ko ? '선택된 멤버' : 'Selected members'} ({selected.length})
+        {t.selectedMembers} ({selected.length})
       </div>
       <div className="flex flex-wrap gap-2">
         {selected.map((id) => {
@@ -104,7 +118,7 @@ export default function PartMembersInput({
               key={id}
               type="button"
               className="admin-btn"
-              aria-label={`${member ? label(member) : id} ${ko ? '제거' : 'Remove'}`}
+              aria-label={`${member ? label(member) : id} ${t.removeMember}`}
               onClick={() =>
                 setSelected((current) =>
                   current.filter((value) => value !== id)
@@ -118,16 +132,16 @@ export default function PartMembersInput({
       </div>
       <div className="admin-form-grid gap-2">
         <label className="flex flex-col gap-1">
-          {ko ? '이름 검색' : 'Search name'}
+          {t.searchName}
           <input
             className="admin-input"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder={ko ? '한글·영문 이름' : 'Korean or English name'}
+            placeholder={t.memberNamePlaceholder}
           />
         </label>
         <label className="flex flex-col gap-1">
-          {ko ? '기수 필터' : 'Generation filter'}
+          {t.generationFilter}
           <select
             className="admin-input"
             value={generation}
@@ -136,8 +150,8 @@ export default function PartMembersInput({
               setPart('')
             }}
           >
-            <option value="">{ko ? '모든 기수' : 'All generations'}</option>
-            <option value="none">{ko ? '소속 없음' : 'No membership'}</option>
+            <option value="">{t.anyGeneration}</option>
+            <option value="none">{t.noMembership}</option>
             {generations.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
@@ -146,15 +160,15 @@ export default function PartMembersInput({
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          {ko ? '파트 필터' : 'Part filter'}
+          {t.partFilter}
           <select
             className="admin-input"
             value={part}
             onChange={(event) => setPart(event.target.value)}
           >
-            <option value="">{ko ? '모든 파트' : 'All parts'}</option>
+            <option value="">{t.anyPart}</option>
             {(!generation || generation === 'none') && (
-              <option value="none">{ko ? '소속 없음' : 'No membership'}</option>
+              <option value="none">{t.noMembership}</option>
             )}
             {parts.map(([id, name]) => (
               <option key={id} value={id}>
@@ -166,14 +180,10 @@ export default function PartMembersInput({
       </div>
       <p role="status" className="text-ink-muted text-sm">
         {!active
-          ? ko
-            ? '이름을 검색하거나 기수·파트를 선택해 멤버를 찾으세요.'
-            : 'Search a name or select a generation or part to find members.'
+          ? t.memberPickerHint
           : candidates.length === 0
-            ? ko
-              ? '검색 결과가 없습니다.'
-              : 'No matching members.'
-            : `${ko ? '검색 결과' : 'Results'}: ${candidates.length}`}
+            ? t.noMatchingMembers
+            : `${t.searchResults}: ${candidates.length}`}
       </p>
       <div className="admin-form-grid max-h-80 gap-2 overflow-y-auto">
         {candidates.map((member) => (
@@ -189,7 +199,7 @@ export default function PartMembersInput({
                 .map(
                   ({ part }) => `${part.generation?.name ?? ''} · ${part.name}`
                 )
-                .join(', ') || (ko ? '소속 없음' : 'No membership')}
+                .join(', ') || t.noMembership}
             </span>
           </button>
         ))}

@@ -1,13 +1,16 @@
+/**
+ * 프로젝트 허브·상세 추천 목록의 프로젝트 카드(서버 컴포넌트).
+ */
 import Link from 'next/link'
 import { ViewTransition } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import Chip from '@/app/components/site/chip'
 import StaticImage from '@/app/components/site/static-image'
 import ExternalLink from '@/app/components/site/external-link'
 import type { ProjectArchiveCopy } from '@/lib/contents/archive-copy'
 import { joinFacetValues } from '@/lib/site/filter-state'
-import { initials } from '@/lib/site/format'
+import { initials } from '@/lib/format/text'
 import { isPlaceholderImage } from '@/lib/site/images'
 import {
   contributorName,
@@ -17,14 +20,19 @@ import {
   projectTitle,
   type ShowcaseProject,
 } from '@/lib/site/project-showcase'
+import { projectPath, localeHref } from '@/lib/site/routes'
 
+/** 일반 카드 표지 이미지의 `sizes`. */
 const COVER_SIZES = '(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw'
+/** 두 칸짜리 대표 카드 표지 이미지의 `sizes`. */
 const FEATURED_SIZES =
   '(min-width: 1024px) 740px, (min-width: 640px) 50vw, 100vw'
 
 /**
- * A release card. The title link stretches over the card; the demo and
- * source links sit above it, so anchors are never nested.
+ * 프로젝트 카드. 제목 링크가 카드 전체를 덮고, 데모·소스 링크는 그 위에 올라가
+ * 링크가 중첩되지 않는다. `data-*` 속성은 `FilterBar`가 검색·필터에 쓴다.
+ * @param titleLevel 제목 태그 수준(허브는 h2, 상세 추천은 h3)
+ * @param featured 두 칸짜리 대표 카드로 그릴지
  */
 export default function ProjectCard({
   project,
@@ -80,7 +88,10 @@ export default function ProjectCard({
           <p className="release-generation">{project.generationName}</p>
           <Title className="release-title">
             <Link
-              href={`/${lang}/project/${project.generationName}/${project.id}`}
+              href={localeHref(
+                lang,
+                projectPath(project.generationName, project.id)
+              )}
               className="stretched-link"
               transitionTypes={['nav-forward']}
             >

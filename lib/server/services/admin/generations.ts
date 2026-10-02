@@ -1,8 +1,15 @@
+/**
+ * 기수 관리 서비스(목록, 상세, 생성, 수정, 삭제).
+ *
+ * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
+ * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
+ * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
+ */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { invalidateGenerationPublicCache } from '@/lib/server/cache'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
@@ -23,6 +30,7 @@ import {
 } from '@/lib/server/services/admin/types'
 import { generationValidation } from '@/lib/validations/generation'
 
+/** 기수 입력(검증 전) 타입. */
 export type GenerationInput = z.input<typeof generationValidation>
 
 const NOT_FOUND = 'Generation not found'
@@ -67,10 +75,12 @@ async function loadGenerationDetail(generationId: number) {
   }
 }
 
+/** 기수 상세: 파트와 구성원(공개 가능한 필드만). */
 export type GenerationDetail = NonNullable<
   Awaited<ReturnType<typeof loadGenerationDetail>>
 >
 
+/** 기수 상세. 접근할 수 없는 기수면 FORBIDDEN. */
 export async function getGenerationDetail(
   actor: Actor,
   generationId: number
@@ -86,6 +96,7 @@ export async function getGenerationDetail(
   return detail ? ok(detail) : fail('NOT_FOUND', NOT_FOUND)
 }
 
+/** 상세 조회 결과를 기수 입력 형태로 되돌린다(MCP 부분 수정 병합용). */
 export function generationToInput(detail: GenerationDetail): GenerationInput {
   return {
     name: detail.name,
@@ -94,6 +105,7 @@ export function generationToInput(detail: GenerationDetail): GenerationInput {
   }
 }
 
+/** 기수를 만든다(LEAD 전용). */
 export async function createGeneration(
   actor: Actor,
   input: unknown
@@ -127,6 +139,7 @@ export async function createGeneration(
   }
 }
 
+/** 기수 이름·기간을 고친다. 이름이 바뀌면 이전·새 이름의 공개 캐시를 모두 지운다. */
 export async function updateGeneration(
   actor: Actor,
   generationId: number,
@@ -172,6 +185,7 @@ export async function updateGeneration(
   return ok({ id: generationId })
 }
 
+/** 기수를 지운다. 파트·프로젝트도 DB 제약(cascade)으로 함께 지워진다. */
 export async function deleteGeneration(
   actor: Actor,
   generationId: number

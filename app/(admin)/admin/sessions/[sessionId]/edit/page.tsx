@@ -1,8 +1,11 @@
+/**
+ * 세션 수정 화면(`/admin/sessions/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { updateSessionAction } from '@/app/(admin)/admin/sessions/[sessionId]/edit/actions'
@@ -11,9 +14,16 @@ import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import {
+  SESSION_CATEGORY_OPTIONS,
+  sessionTypeOptions,
+} from '@/app/(admin)/admin/sessions/_lib/session-form-options'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { requirePermission } from '@/lib/server/permission/require-permission'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveAdminGenerationScope,
+  canSwitchToGeneration,
+} from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
@@ -25,10 +35,12 @@ import {
 import { groupMemberships } from '@/lib/admin/member-options'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Session',
 }
 
+/** 기존 값을 채운 세션 수정 폼. */
 export default async function EditSessionPage({
   params,
 }: {
@@ -92,12 +104,7 @@ export default async function EditSessionPage({
       {actualGeneration && (
         <AdminGenerationScopeMismatchNotice
           actualGeneration={actualGeneration}
-          canSwitch={
-            resolvedScope?.canAccessAll === true ||
-            resolvedScope?.options.some(
-              (option) => option.id === actualGeneration.id
-            ) === true
-          }
+          canSwitch={canSwitchToGeneration(resolvedScope, actualGeneration.id)}
           currentScope={resolvedScope?.scope ?? null}
           locale={locale}
         />
@@ -141,22 +148,13 @@ export default async function EditSessionPage({
           koDefaultValue={sessionData.locationKo}
         />
         <DataSelectInput
-          data={[
-            { name: t.generalSession, value: 'General Session' },
-            { name: t.partSession, value: 'Part Session' },
-          ]}
+          data={sessionTypeOptions(t)}
           name={'type'}
           title={t.sessionType}
           defaultValue={sessionData.type ? sessionData.type : 'Part Session'}
         />
         <DataSelectInput
-          data={[
-            { name: 'Tech Talk (T19)', value: 'tech_talk' },
-            { name: 'Part Session', value: 'part_session' },
-            { name: 'Hackathon', value: 'hackathon' },
-            { name: 'Demo Day', value: 'demo_day' },
-            { name: 'DevRel / Social', value: 'devrel' },
-          ]}
+          data={SESSION_CATEGORY_OPTIONS}
           name={'category'}
           title={'Activity Category'}
           defaultValue={sessionData.category ?? 'tech_talk'}

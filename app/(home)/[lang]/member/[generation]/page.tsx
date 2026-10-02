@@ -1,61 +1,61 @@
+/**
+ * 기수별 멤버 페이지(`/{lang}/member/{기수}`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
-import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
-import GenerationPager from '@/app/components/site/generation-pager'
 import MemberCard from '@/app/components/site/member-card'
-import PageHeader from '@/app/components/site/page-header'
+import GenerationPageHeader from '@/app/components/site/generation-page-header'
 import PageTransition from '@/app/components/site/page-transition'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   memberArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getMembersByGeneration } from '@/lib/server/queries/public/members'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import { createLocalizedMetadata, getLocalizedUrl } from '@/lib/seo/metadata'
-import { countLabel, fillTemplate } from '@/lib/site/format'
-import { generationNeighbors } from '@/lib/site/generations'
+import { countLabel, fillTemplate } from '@/lib/format/text'
 import { breadcrumbList } from '@/lib/site/json-ld'
 import { partHue } from '@/lib/site/labels'
+import { toLocale } from '@/lib/i18n'
+import { generationPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
-export async function generateStaticParams({
-  params,
-}: {
-  params: { lang: string }
-}) {
-  return getGenerationStaticParams(languageParamChecker(params.lang))
+/** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
+export async function generateStaticParams() {
+  return getGenerationStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
 
-  if (!(await getMembersByGeneration(generation, locale))) {
+  if (!(await getMembersByGeneration(generation))) {
     notFound()
   }
 
   const copy = memberArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/member/${generation}`,
+    path: generationPath('member', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
   })
 }
 
-export default async function MembersPage({ params }: Props) {
+/** 페이지 본문. */
+export default async function MemberGenerationPage({ params }: Props) {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
-  const generations = await getGenerationSummaries(locale)
+  const locale = toLocale(lang)
+  const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 
   if (!current) {
@@ -64,7 +64,6 @@ export default async function MembersPage({ params }: Props) {
 
   const copy = memberArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
-  const { older, newer } = generationNeighbors(generations, generation)
 
   return (
     <PageTransition>
@@ -76,39 +75,21 @@ export default async function MembersPage({ params }: Props) {
             { name: common.members, url: getLocalizedUrl(locale, '/member') },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/member/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('member', generation)
+              ),
             },
           ])}
         />
-        <Breadcrumbs
-          label={common.breadcrumb}
-          items={[
-            { label: common.home, href: `/${locale}` },
-            { label: common.members, href: `/${locale}/member` },
-            { label: generation },
-          ]}
-        />
-        <PageHeader
+        <GenerationPageHeader
+          lang={locale}
+          section="member"
+          current={current}
+          generations={generations}
           tag={copy.tag}
-          title={fillTemplate(copy.generationTitle, { generation })}
-          description={fillTemplate(copy.generationDescription, { generation })}
-          meta={
-            <>
-              <span>
-                {current.startDate}
-                {current.endDate ? ` – ${current.endDate}` : ''}
-              </span>
-              <GenerationPager
-                basePath="member"
-                lang={locale}
-                older={older}
-                newer={newer}
-                label={common.generations}
-                olderLabel={common.olderGeneration}
-                newerLabel={common.newerGeneration}
-              />
-            </>
-          }
+          titleTemplate={copy.generationTitle}
+          descriptionTemplate={copy.generationDescription}
         />
         <Suspense fallback={<MemberDirectorySkeleton />}>
           <MemberDirectory generation={generation} lang={locale} />
@@ -140,7 +121,7 @@ async function MemberDirectory({
   generation: string
   lang: Locale
 }) {
-  const data = await getMembersByGeneration(generation, lang)
+  const data = await getMembersByGeneration(generation)
   const copy = memberArchiveCopy[lang]
   const parts = data?.parts ?? []
 
@@ -152,7 +133,7 @@ async function MemberDirectory({
     )
   }
 
-  // The first photo on the page is the likely LCP image.
+  // 페이지의 첫 사진이 LCP 이미지일 가능성이 높으므로 우선 로드한다.
   const firstPhoto = parts
     .flatMap((part) => part.usersToParts)
     .find(({ user }) => user.image)?.user.id

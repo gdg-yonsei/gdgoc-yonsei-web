@@ -16,36 +16,37 @@ vi.mock('@/auth', () => ({
   getAuthSession: mockAuth,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
-vi.mock('@/lib/server/get-pre-signed-url', () => ({
-  default: mockGetPreSignedUrl,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  presignImageUpload: mockGetPreSignedUrl,
 }))
 
-vi.mock('@/lib/server/r2-client', () => ({
-  default: {
+vi.mock('@/lib/server/storage/r2-client', () => ({
+  r2Client: {
     send: mockR2Send,
   },
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     update: mockDbUpdate,
     query: { users: { findFirst: mockUserFindFirst } },
   },
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: mockInvalidateMemberPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: mockGetGenerationNamesForUserId,
 }))
 

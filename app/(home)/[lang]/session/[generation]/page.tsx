@@ -1,21 +1,21 @@
+/**
+ * 기수별 세션 페이지(`/{lang}/session/{기수}`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
-import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
-import GenerationPager from '@/app/components/site/generation-pager'
-import PageHeader from '@/app/components/site/page-header'
+import GenerationPageHeader from '@/app/components/site/generation-page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import SessionLog from '@/app/components/site/session-log/session-log'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   sessionArchiveCopy,
   sessionFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
@@ -25,25 +25,23 @@ import {
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { fillTemplate } from '@/lib/site/format'
-import { generationNeighbors } from '@/lib/site/generations'
+import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 import {
   groupSessionLog,
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
+import { toLocale } from '@/lib/i18n'
+import { generationPath, sessionPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
-export async function generateStaticParams({
-  params,
-}: {
-  params: { lang: string }
-}) {
-  return getGenerationStaticParams(languageParamChecker(params.lang))
+/** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
+export async function generateStaticParams() {
+  return getGenerationStaticParams()
 }
 
 async function generationSessions(generation: string) {
@@ -52,11 +50,12 @@ async function generationSessions(generation: string) {
   return archive.filter((session) => session.generationName === generation)
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const [generations, sessions] = await Promise.all([
-    getGenerationSummaries(locale),
+    getGenerationSummaries(),
     generationSessions(generation),
   ])
 
@@ -67,18 +66,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = sessionArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/session/${generation}`,
+    path: generationPath('session', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
-    // Reachable, linked from nowhere, and not worth an index slot.
+    // 기록이 없는 기수 페이지는 접근은 되지만 어디서도 링크하지 않으므로(기수 띠에서 흐리게 표시) 색인할 가치가 없다.
     noindex: sessions.length === 0,
   })
 }
 
+/** 페이지 본문. */
 export default async function SessionGenerationPage({ params }: Props) {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
-  const generations = await getGenerationSummaries(locale)
+  const locale = toLocale(lang)
+  const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 
   if (!current) {
@@ -86,41 +86,18 @@ export default async function SessionGenerationPage({ params }: Props) {
   }
 
   const copy = sessionArchiveCopy[locale]
-  const common = archiveCommonCopy[locale]
-  const { older, newer } = generationNeighbors(generations, generation)
 
   return (
     <PageTransition>
       <div className="site-page">
-        <Breadcrumbs
-          label={common.breadcrumb}
-          items={[
-            { label: common.home, href: `/${locale}` },
-            { label: common.sessions, href: `/${locale}/session` },
-            { label: generation },
-          ]}
-        />
-        <PageHeader
+        <GenerationPageHeader
+          lang={locale}
+          section="session"
+          current={current}
+          generations={generations}
           tag={copy.tag}
-          title={fillTemplate(copy.generationTitle, { generation })}
-          description={fillTemplate(copy.generationDescription, { generation })}
-          meta={
-            <>
-              <span>
-                {current.startDate}
-                {current.endDate ? ` – ${current.endDate}` : ''}
-              </span>
-              <GenerationPager
-                basePath="session"
-                lang={locale}
-                older={older}
-                newer={newer}
-                label={common.generations}
-                olderLabel={common.olderGeneration}
-                newerLabel={common.newerGeneration}
-              />
-            </>
-          }
+          titleTemplate={copy.generationTitle}
+          descriptionTemplate={copy.generationDescription}
         />
         <Suspense fallback={<GenerationLogFallback />}>
           <SessionGenerationContent generation={generation} lang={locale} />
@@ -165,7 +142,7 @@ async function SessionGenerationContent({
   }
 
   const facets = sessionFacets(sessions, lang)
-  const url = getLocalizedUrl(lang, `/session/${generation}`)
+  const url = getLocalizedUrl(lang, generationPath('session', generation))
 
   return (
     <>
@@ -182,10 +159,7 @@ async function SessionGenerationContent({
             websiteId: `${getSiteUrl()}#website`,
             items: sessions.map((session) => ({
               name: sessionTitle(session, lang),
-              url: getLocalizedUrl(
-                lang,
-                `/session/${generation}/${session.id}`
-              ),
+              url: getLocalizedUrl(lang, sessionPath(generation, session.id)),
             })),
           }),
           breadcrumbList([

@@ -1,3 +1,6 @@
+/**
+ * 기수 상세 화면(`/admin/generations/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
@@ -13,13 +16,13 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 
+/** 탭 제목에 기수 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ generationId: string }>
 }) {
   const { generationId } = await params
-  // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
 
   return {
@@ -27,6 +30,7 @@ export async function generateMetadata({
   }
 }
 
+/** 기수 상세. */
 export default async function GenerationPage({
   params,
 }: {
@@ -35,13 +39,10 @@ export default async function GenerationPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { generationId } = await params
-  // generation 데이터 가져오기
   const generationData = await getGeneration(Number(generationId))
-  // generation 데이터가 없을 경우 404 페이지로 이동
   if (!generationData) {
     notFound()
   }
-  // 사용자 권한 가져오기
   const session = await getAuthSession()
 
   return (

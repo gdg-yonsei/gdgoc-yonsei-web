@@ -1,3 +1,6 @@
+/**
+ * React Email 템플릿: 새 세션 개설 안내 메일(같은 기수 멤버에게). `pnpm email:dev`로 미리 볼 수 있다.
+ */
 import {
   Tailwind,
   pixelBasedPreset,
@@ -15,6 +18,7 @@ import {
   Hr,
 } from 'react-email'
 
+/** 메일에 넣을 세션 정보와 신청 링크. */
 interface NewSessionProps {
   session: {
     name: string
@@ -40,15 +44,7 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
 }
 
-/**
- * 새로운 세션이 생성될 때 참여 등록 되지 않은 같은 기수 멤버에게 보내는 메일
- *
- * @param session - 세션 이름
- * @param part - 세션 개최하는 파트
- * @param generation - 세션 개최하는 기수
- * @param registerUrl - 세션 등록 url
- * @constructor
- */
+/** 새 세션 안내 메일 본문. */
 const NewSession = ({
   session,
   part,

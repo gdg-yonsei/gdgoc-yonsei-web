@@ -5,7 +5,7 @@ const images = vi.hoisted(() => ({
   completeImageUpload: vi.fn(async () => ({ ok: true, data: {} })),
   importImageFromUrl: vi.fn(async () => ({ ok: true, data: {} })),
 }))
-vi.mock('@/db', () => ({ default: {} }))
+vi.mock('@/db', () => ({ db: {} }))
 vi.mock('@/lib/server/services/admin/images', () => ({
   ...images,
   MAX_IMAGE_UPLOAD_BYTES: 209_715_200,

@@ -1,12 +1,12 @@
 /**
- * 관리자 화면의 이미지 업로드 흐름(사전 서명 URL 발급 → R2 직접 업로드)을 담당한다.
+ * 관리자 화면의 이미지 업로드 흐름(사전 서명 URL 발급 → R2 직접 업로드)을 담당한다(클라이언트 전용).
  *
- * 업로드 컴포넌트 세 개가 같은 흐름을 각자 구현하면서 응답 상태를 확인하지 않았다.
- * 그래서 권한 만료(403)나 검증 실패(400) 같은 정상적인 에러 응답이 성공으로
- * 취급됐고, `undefined`가 섞인 URL이 폼 히든 필드에 실려 그대로 DB에 저장됐다.
- * 응답 검사와 형태 확인을 이 모듈 한 곳으로 모아 호출부가 실패를 놓칠 수 없게 한다.
+ * 업로드 컴포넌트(단일·다중·프로필)는 모두 이 모듈을 거친다. 응답 상태와 모양을 여기서 검사하므로,
+ * 권한 만료(403)나 검증 실패(400) 같은 오류 응답이 성공처럼 처리되어 잘못된 URL이 폼에 실리는 일이 없다.
  */
+import { toPublicImageUrl } from '@/lib/image-url'
 
+/** 업로드 실패. `status`가 있으면 업로드 API가 돌려준 HTTP 상태다. */
 export class ImageUploadError extends Error {
   readonly status?: number
 
@@ -20,12 +20,6 @@ export class ImageUploadError extends Error {
 interface PresignedUpload {
   uploadUrl: string
   fileName: string
-}
-
-function toPublicImageUrl(objectKey: string) {
-  // NEXT_PUBLIC_IMAGE_URL 에 후행 슬래시가 있든 없든 한 개의 슬래시로 이어 붙인다.
-  const baseUrl = process.env.NEXT_PUBLIC_IMAGE_URL ?? ''
-  return `${baseUrl.replace(/\/+$/, '')}/${objectKey}`
 }
 
 /**

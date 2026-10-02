@@ -1,14 +1,21 @@
+/**
+ * 관리자 대시보드 통계 조회.
+ *
+ * 캐시하지 않는 관리자 조회다(권한·기수 범위에 따라 결과가 달라 공유 캐시를 쓰지 않는다).
+ * 권한 확인은 호출부(레이아웃 가드, 서비스)가 먼저 한다.
+ */
 import 'server-only'
 import { eq } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import { getSessions } from '@/lib/server/fetcher/admin/get-sessions'
 import { getProjects } from '@/lib/server/fetcher/admin/get-projects'
 import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
+/** 대시보드 숫자 타일 값. */
 export type AdminStats = {
   members: number
   sessions: number

@@ -1,5 +1,8 @@
+/**
+ * 프로젝트 생성 화면(`/admin/projects/create`). 권한은 레이아웃이 확인한다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { createProjectAction } from '@/app/(admin)/admin/projects/create/actions'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
@@ -8,7 +11,7 @@ import DataInput from '@/app/components/admin/data-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import TagsInput from '@/app/components/admin/tags-input'
-import { getTagNames } from '@/lib/server/services/project-tags'
+import { getTagNames } from '@/lib/server/services/admin/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
@@ -22,10 +25,12 @@ import {
 } from '@/app/components/admin/bilingual-fields'
 import { dedupeById } from '@/lib/admin/member-options'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Create Project',
 }
 
+/** 프로젝트 생성 폼. */
 export default async function CreateProjectPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),

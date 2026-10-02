@@ -18,11 +18,11 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
@@ -35,7 +35,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
@@ -140,7 +140,7 @@ describe('generation CRUD server actions', () => {
   })
 
   it('deletes generation from shared delete action path', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const r2 = vi.hoisted(() => ({
   PRESIGNED_UPLOAD_TTL_SECONDS: 900,
-  presignImagePut: vi.fn(),
+  presignSizedImageUpload: vi.fn(),
   headImage: vi.fn(),
   readImageHead: vi.fn(),
   deleteImage: vi.fn(),
@@ -21,7 +21,7 @@ const records = vi.hoisted(() => ({
 }))
 vi.mock('@/lib/server/uploads/upload-records', () => records)
 
-vi.mock('@/lib/server/uploads/r2-upload', () => r2)
+vi.mock('@/lib/server/storage/r2', () => r2)
 vi.mock('@/lib/server/uploads/remote-fetch', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('@/lib/server/uploads/remote-fetch')
@@ -63,7 +63,7 @@ beforeEach(() => {
   records.markUploadCompleted.mockResolvedValue(true)
   r2.deleteImage.mockResolvedValue(undefined)
   records.claimExpiredUploads.mockResolvedValue([])
-  r2.presignImagePut.mockResolvedValue(
+  r2.presignSizedImageUpload.mockResolvedValue(
     'https://r2.example/put?X-Amz-Signature=x'
   )
 })
@@ -85,7 +85,7 @@ describe('createImageUpload', () => {
       'Content-Type': 'image/png',
       'Content-Length': String(MAX_IMAGE_UPLOAD_BYTES),
     })
-    expect(r2.presignImagePut).toHaveBeenCalledWith(
+    expect(r2.presignSizedImageUpload).toHaveBeenCalledWith(
       data?.objectKey,
       'image/png',
       MAX_IMAGE_UPLOAD_BYTES
@@ -337,7 +337,7 @@ describe('upload limits and cleanup', () => {
       ok: false,
       code: 'RATE_LIMITED',
     })
-    expect(r2.presignImagePut).not.toHaveBeenCalled()
+    expect(r2.presignSizedImageUpload).not.toHaveBeenCalled()
   })
 
   it('reserves before fetching, so failed imports still count', async () => {

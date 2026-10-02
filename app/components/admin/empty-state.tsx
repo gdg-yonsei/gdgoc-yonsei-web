@@ -1,12 +1,17 @@
+/**
+ * 관리자 목록이 비었을 때 보여 주는 공용 카드(서버/클라이언트 공용).
+ */
 import { InboxIcon } from '@heroicons/react/24/outline'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
 /**
- * 빈 상태 카드 (DESIGN.md `ex-empty-state-card`).
+ * 빈 상태 카드(DESIGN.md `ex-empty-state-card`).
  *
- * 이전에는 같은 마크업이 5곳에 복붙되어 있었고 `shadow-sm` 유무처럼 미묘하게
- * 어긋나 있었습니다. `generations`에는 빈 상태가 아예 없었습니다.
+ * 모든 관리자 목록이 같은 모양을 쓰도록 이 컴포넌트 하나로 모아 둔다.
+ * @param title 제목
+ * @param description 보조 설명
+ * @param action 새 항목 만들기 같은 후속 동작 버튼
  */
 export default function AdminEmptyState({
   title,

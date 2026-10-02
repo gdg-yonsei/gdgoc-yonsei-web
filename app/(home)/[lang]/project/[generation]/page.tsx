@@ -1,21 +1,21 @@
+/**
+ * 기수별 프로젝트 페이지(`/{lang}/project/{기수}`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
-import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
-import GenerationPager from '@/app/components/site/generation-pager'
-import PageHeader from '@/app/components/site/page-header'
+import GenerationPageHeader from '@/app/components/site/generation-page-header'
 import PageTransition from '@/app/components/site/page-transition'
 import ProjectGrid from '@/app/components/site/project-grid/project-grid'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   projectArchiveCopy,
   projectFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
@@ -24,25 +24,23 @@ import {
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { fillTemplate } from '@/lib/site/format'
-import { generationNeighbors } from '@/lib/site/generations'
+import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
 import {
   projectFacets,
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
+import { toLocale } from '@/lib/i18n'
+import { generationPath, projectPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string }>
 }
 
-export async function generateStaticParams({
-  params,
-}: {
-  params: { lang: string }
-}) {
-  return getGenerationStaticParams(languageParamChecker(params.lang))
+/** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
+export async function generateStaticParams() {
+  return getGenerationStaticParams()
 }
 
 async function generationProjects(generation: string) {
@@ -51,11 +49,12 @@ async function generationProjects(generation: string) {
   )
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const [generations, projects] = await Promise.all([
-    getGenerationSummaries(locale),
+    getGenerationSummaries(),
     generationProjects(generation),
   ])
 
@@ -66,17 +65,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const copy = projectArchiveCopy[locale]
   return createLocalizedMetadata({
     locale,
-    path: `/project/${generation}`,
+    path: generationPath('project', generation),
     title: fillTemplate(copy.generationTitle, { generation }),
     description: fillTemplate(copy.generationDescription, { generation }),
     noindex: projects.length === 0,
   })
 }
 
+/** 페이지 본문. */
 export default async function ProjectGenerationPage({ params }: Props) {
   const { lang, generation } = await params
-  const locale = languageParamChecker(lang)
-  const generations = await getGenerationSummaries(locale)
+  const locale = toLocale(lang)
+  const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 
   if (!current) {
@@ -84,41 +84,18 @@ export default async function ProjectGenerationPage({ params }: Props) {
   }
 
   const copy = projectArchiveCopy[locale]
-  const common = archiveCommonCopy[locale]
-  const { older, newer } = generationNeighbors(generations, generation)
 
   return (
     <PageTransition>
       <div className="site-page">
-        <Breadcrumbs
-          label={common.breadcrumb}
-          items={[
-            { label: common.home, href: `/${locale}` },
-            { label: common.projects, href: `/${locale}/project` },
-            { label: generation },
-          ]}
-        />
-        <PageHeader
+        <GenerationPageHeader
+          lang={locale}
+          section="project"
+          current={current}
+          generations={generations}
           tag={copy.tag}
-          title={fillTemplate(copy.generationTitle, { generation })}
-          description={fillTemplate(copy.generationDescription, { generation })}
-          meta={
-            <>
-              <span>
-                {current.startDate}
-                {current.endDate ? ` – ${current.endDate}` : ''}
-              </span>
-              <GenerationPager
-                basePath="project"
-                lang={locale}
-                older={older}
-                newer={newer}
-                label={common.generations}
-                olderLabel={common.olderGeneration}
-                newerLabel={common.newerGeneration}
-              />
-            </>
-          }
+          titleTemplate={copy.generationTitle}
+          descriptionTemplate={copy.generationDescription}
         />
         <Suspense fallback={<GenerationGridFallback />}>
           <ProjectGenerationContent generation={generation} lang={locale} />
@@ -165,7 +142,7 @@ async function ProjectGenerationContent({
   }
 
   const facets = projectFacets(projects)
-  const url = getLocalizedUrl(lang, `/project/${generation}`)
+  const url = getLocalizedUrl(lang, generationPath('project', generation))
 
   return (
     <>
@@ -182,10 +159,7 @@ async function ProjectGenerationContent({
             websiteId: `${getSiteUrl()}#website`,
             items: projects.map((project) => ({
               name: projectTitle(project, lang),
-              url: getLocalizedUrl(
-                lang,
-                `/project/${generation}/${project.id}`
-              ),
+              url: getLocalizedUrl(lang, projectPath(generation, project.id)),
             })),
           }),
           breadcrumbList([

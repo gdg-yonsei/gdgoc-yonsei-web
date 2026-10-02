@@ -1,5 +1,9 @@
+/**
+ * Google "G" 로고(SVG). Google 로그인 버튼에서 쓴다.
+ */
 import { SVGProps } from 'react'
 
+/** Google 로고. props는 `<svg>`에 그대로 넘긴다. */
 export default function Google({ ...rest }: SVGProps<SVGSVGElement>) {
   return (
     <svg

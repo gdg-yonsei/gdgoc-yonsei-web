@@ -1,8 +1,13 @@
+/**
+ * 점(dot) 배경 연출용 격자 계산.
+ *
+ * 홈 화면 연출(anime.js 장면, CSS 전환)이 쓰는 순수 계산 함수. DOM 없이 단위 테스트한다.
+ */
+
 type Point = { x: number; y: number }
 type Box = { left: number; top: number; width: number; height: number }
 
-/** Columns and rows of a dot field about `spacing` pixels apart, shrunk
-    evenly to stay within `cap` dots. */
+/** 약 `spacing`픽셀 간격 점 배경의 열·행 수. 점이 `cap`개를 넘으면 비율대로 줄인다. */
 export function fieldShape(
   width: number,
   height: number,
@@ -19,8 +24,8 @@ export function fieldShape(
   return [columns, rows]
 }
 
-/** Index, row by row, of the dot under a point on a `columns` × `rows`
-    field spread evenly over `box`; points outside clamp to its edges. */
+/** `box`에 고르게 펼친 `columns` × `rows` 점 배경에서 한 점 아래에 있는 점의 번호(행 우선).
+    상자 밖의 점은 가장자리로 붙인다. */
 export function nearestCell(
   point: Point,
   box: Box,

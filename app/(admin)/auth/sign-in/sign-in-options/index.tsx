@@ -1,10 +1,11 @@
-import SignInWithGithub from '@/app/(admin)/auth/sign-in/sign-in-options/github'
+/**
+ * 로그인 화면의 로그인 방법 묶음(서버 컴포넌트).
+ */
+import SocialSignIn from '@/app/(admin)/auth/sign-in/sign-in-options/social-sign-in'
 import PasskeySignInButton from '@/app/(admin)/auth/sign-in/sign-in-options/passkey'
-import SignInWithGoogle from '@/app/(admin)/auth/sign-in/sign-in-options/google'
 
 /**
- * Sign In Options 을 표시하는 컴포넌트
- * @constructor
+ * 로그인 방법 목록: GitHub, Google, 패스키.
  */
 export default function SignInOptions({
   callbackURL,
@@ -14,8 +15,8 @@ export default function SignInOptions({
 }) {
   return (
     <div className={'flex w-full flex-col gap-2'}>
-      <SignInWithGithub callbackURL={callbackURL} />
-      <SignInWithGoogle callbackURL={callbackURL} />
+      <SocialSignIn provider={'github'} callbackURL={callbackURL} />
+      <SocialSignIn provider={'google'} callbackURL={callbackURL} />
       <PasskeySignInButton callbackURL={callbackURL} />
     </div>
   )

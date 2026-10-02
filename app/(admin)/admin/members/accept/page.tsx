@@ -1,9 +1,10 @@
+/**
+ * 가입 승인 화면(`/admin/members/accept`). 승인 대기(`UNVERIFIED`) 사용자를 가입 순으로 보여 준다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import AdminEmptyState from '@/app/components/admin/empty-state'
-import db from '@/db'
-import { eq } from 'drizzle-orm'
-import { users } from '@/db/schema/users'
+import { getPendingMembers } from '@/lib/server/fetcher/admin/get-pending-members'
 import AcceptForm from '@/app/(admin)/admin/members/accept/accept-form'
 import Image from 'next/image'
 import { Metadata } from 'next'
@@ -14,17 +15,16 @@ import {
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Approve Members',
 }
 
+/** 대기 사용자 카드 목록(사진, 이름, 이메일, SNS, 가입일)과 승인·거절 버튼. */
 export default async function AcceptMemberPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
-  const unacceptedMembers = await db.query.users.findMany({
-    where: eq(users.role, 'UNVERIFIED'),
-    orderBy: (member, { asc }) => [asc(member.createdAt)],
-  })
+  const unacceptedMembers = await getPendingMembers()
 
   return (
     <AdminDefaultLayout>
@@ -53,9 +53,7 @@ export default async function AcceptMemberPage() {
                 className={'size-10 shrink-0 rounded-lg object-cover'}
               />
               <div className={'flex min-w-0 flex-col gap-0.5'}>
-                <div
-                  className={'type-body-sm text-ink truncate font-semibold'}
-                >
+                <div className={'type-body-sm text-ink truncate font-semibold'}>
                   {member.name}
                 </div>
                 <div className={'type-caption text-ink-subtle truncate'}>
@@ -85,7 +83,7 @@ export default async function AcceptMemberPage() {
                 </div>
               </div>
             </div>
-            {/* 좁은 화면에서 버튼이 압축되어 라벨이 줄바꿈되지 않도록 감쌉니다. */}
+            {/* 좁은 화면에서 버튼이 압축되어 라벨이 줄바꿈되지 않도록 감싼다. */}
             <div className={'flex flex-wrap items-center gap-2'}>
               <AcceptForm userId={member.id} />
               <DeleteForm userId={member.id} />

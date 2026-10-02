@@ -1,7 +1,20 @@
+/**
+ * 관리자 데이터 변경 후 공개 사이트 캐시를 무효화하는 함수 모음.
+ *
+ * 변경 종류마다 어떤 캐시를 지울지 이 파일 한 곳에서 정한다. 서비스 계층
+ * (`lib/server/services/admin/*`)이 DB 쓰기 직후 호출한다.
+ *
+ * 두 단계로 나눠 무효화한다.
+ * - 즉시(immediate) 태그: 방금 바꾼 데이터를 보여 주는 화면. `updateCacheTags`로 바로
+ *   지워 관리자가 저장 직후 공개 페이지에서 변경을 볼 수 있게 한다(read-your-own-writes).
+ * - 백그라운드(background) 태그: 간접적으로 영향을 받는 화면(홈, 사이트맵 등).
+ *   `revalidateCacheTags`로 다음 방문 때 새로 계산하게 한다.
+ * 경로 무효화(`revalidatePath`)는 언어별 공개 경로를 보조로 지울 때만 쓴다.
+ */
 import 'server-only'
 
 import { revalidatePath } from 'next/cache'
-import { i18n } from '@/i18n-config'
+import { i18n } from '@/lib/i18n'
 import {
   generationLatestTag,
   generationListTag,
@@ -26,17 +39,23 @@ import {
   uniqueStrings,
   updateCacheTags,
 } from '@/lib/server/cache/utils'
+import { generationPath, projectPath, sessionPath } from '@/lib/site/routes'
 
+/** 기수 이름별 기수 아카이브 경로(구성원·프로젝트·세션). */
 function generationScopedPaths(
   generationNames: readonly string[]
 ): LocalizedPublicRoute[] {
   return generationNames.flatMap((generationName) => [
-    toLocalizedPublicRoute(`/member/${generationName}`),
-    toLocalizedPublicRoute(`/project/${generationName}`),
-    toLocalizedPublicRoute(`/session/${generationName}`),
+    toLocalizedPublicRoute(generationPath('member', generationName)),
+    toLocalizedPublicRoute(generationPath('project', generationName)),
+    toLocalizedPublicRoute(generationPath('session', generationName)),
   ])
 }
 
+/**
+ * 공개 사이트의 목록 캐시를 지운다(관리자 사이드바의 새로고침 버튼): 홈, 허브(세션·프로젝트·멤버·캘린더), 기수 목록, 사이트맵.
+ * 세션·프로젝트·멤버 상세(`*:item:*` 태그)는 포함하지 않는다.
+ */
 export function invalidateAllPublicCache() {
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [
@@ -57,15 +76,15 @@ export function invalidateAllPublicCache() {
   revalidatePath('/sitemap.xml')
 }
 
+/** 기수가 바뀌었을 때. 바뀌기 전·후 기수 이름의 아카이브를 모두 지운다. */
 export function invalidateGenerationPublicCache(args: {
   previousGenerationName?: string | null
   nextGenerationName?: string | null
 }) {
-  const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(
-      Boolean
-    ) as string[]
-  )
+  const generationNames = uniqueStrings([
+    args.previousGenerationName,
+    args.nextGenerationName,
+  ])
 
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [
@@ -97,6 +116,7 @@ export function invalidateGenerationPublicCache(args: {
   ])
 }
 
+/** 파트(구성원 소속)가 바뀌었을 때. 구성원 디렉터리와 세션 기록에 파트 이름이 보이기 때문이다. */
 export function invalidatePartPublicCache(generationNames: readonly string[]) {
   const uniqueGenerationNames = uniqueStrings(generationNames)
 
@@ -127,6 +147,7 @@ export function invalidatePartPublicCache(generationNames: readonly string[]) {
   )
 }
 
+/** 구성원 정보가 바뀌었을 때. 구성원이 속한 모든 기수의 디렉터리를 지운다. */
 export function invalidateMemberPublicCache(args: {
   memberId?: string
   generationNames?: readonly string[]
@@ -158,16 +179,16 @@ export function invalidateMemberPublicCache(args: {
   )
 }
 
+/** 프로젝트가 생성·수정·삭제됐을 때. 이전·새 기수 목록과 상세 페이지를 지운다. */
 export function invalidateProjectPublicCache(args: {
   projectId: string
   previousGenerationName?: string | null
   nextGenerationName?: string | null
 }) {
-  const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(
-      Boolean
-    ) as string[]
-  )
+  const generationNames = uniqueStrings([
+    args.previousGenerationName,
+    args.nextGenerationName,
+  ])
 
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [
@@ -193,23 +214,23 @@ export function invalidateProjectPublicCache(args: {
     ...localizedPublicPaths(['/project']),
     ...localizedPublicPaths(
       generationNames.flatMap((generationName) => [
-        toLocalizedPublicRoute(`/project/${generationName}`),
-        toLocalizedPublicRoute(`/project/${generationName}/${args.projectId}`),
+        toLocalizedPublicRoute(generationPath('project', generationName)),
+        toLocalizedPublicRoute(projectPath(generationName, args.projectId)),
       ])
     ),
   ])
 }
 
+/** 세션이 생성·수정·삭제됐을 때. 캘린더, 세션 기록, 기수 목록, 상세 페이지를 지운다. */
 export function invalidateSessionPublicCache(args: {
   sessionId: string
   previousGenerationName?: string | null
   nextGenerationName?: string | null
 }) {
-  const generationNames = uniqueStrings(
-    [args.previousGenerationName, args.nextGenerationName].filter(
-      Boolean
-    ) as string[]
-  )
+  const generationNames = uniqueStrings([
+    args.previousGenerationName,
+    args.nextGenerationName,
+  ])
 
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [
@@ -235,8 +256,8 @@ export function invalidateSessionPublicCache(args: {
     ...localizedPublicPaths(['/calendar', '/session']),
     ...localizedPublicPaths(
       generationNames.flatMap((generationName) => [
-        toLocalizedPublicRoute(`/session/${generationName}`),
-        toLocalizedPublicRoute(`/session/${generationName}/${args.sessionId}`),
+        toLocalizedPublicRoute(generationPath('session', generationName)),
+        toLocalizedPublicRoute(sessionPath(generationName, args.sessionId)),
       ])
     ),
   ])

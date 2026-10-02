@@ -10,7 +10,7 @@ const { findProject, canAccessGeneration, dbUpdate, dbDelete, dbInsert } =
   }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: { projects: { findFirst: findProject } },
     update: dbUpdate,
     delete: dbDelete,

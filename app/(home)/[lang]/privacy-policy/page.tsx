@@ -1,21 +1,27 @@
+/**
+ * 개인정보 처리방침(`/{lang}/privacy-policy`). 한국어 원문과 영문판을 함께 싣는다.
+ */
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import PageTransition from '@/app/components/site/page-transition'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { chromeCopy } from '@/lib/contents/site-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { Metadata } from 'next'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeHref } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string }>
 }
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
 
   if (lang === 'ko') {
     return createLocalizedMetadata({
@@ -36,8 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** 페이지 본문. */
 export default async function PrivacyPolicyPage({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const common = archiveCommonCopy[lang]
   const isKorean = lang === 'ko'
 
@@ -47,7 +54,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
         <Breadcrumbs
           label={common.breadcrumb}
           items={[
-            { label: common.home, href: `/${lang}` },
+            { label: common.home, href: localeHref(lang) },
             { label: chromeCopy[lang].privacy },
           ]}
         />
@@ -55,7 +62,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
           <article className="policy-doc site-prose prose">
             {isKorean ? (
               <>
-                {/* Intro */}
+                {/* 소개 */}
                 <section>
                   <h1>웹사이트 개인정보처리방침</h1>
                   <p>
@@ -71,7 +78,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   <hr />
                 </section>
 
-                {/* Table of Contents */}
+                {/* 목차 */}
                 <nav aria-label="섹션 목록">
                   <h2>목차</h2>
                   <ol>
@@ -106,7 +113,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ol>
                 </nav>
 
-                {/* 1. Purpose */}
+                {/* 1. 처리 목적 */}
                 <section id="purpose">
                   <h2>1. 개인정보의 수집 및 이용 목적</h2>
                   <p>
@@ -131,7 +138,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 2. Items */}
+                {/* 2. 처리 항목 */}
                 <section id="items">
                   <h2>2. 수집하는 개인정보 항목 및 수집 방법</h2>
                   <p>
@@ -158,7 +165,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </div>
                 </section>
 
-                {/* 3. Retention */}
+                {/* 3. 보유 기간 */}
                 <section id="retention">
                   <h2>3. 개인정보의 처리 및 보유 기간</h2>
                   <p>
@@ -176,7 +183,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 4. Outsourcing */}
+                {/* 4. 처리 위탁 */}
                 <section id="outsourcing">
                   <h2>4. 개인정보의 제3자 제공 및 처리 위탁</h2>
                   <p>
@@ -193,7 +200,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </div>
                 </section>
 
-                {/* 5. Rights */}
+                {/* 5. 정보주체의 권리 */}
                 <section id="rights">
                   <h2>5. 정보주체와 법정대리인의 권리·의무 및 행사 방법</h2>
                   <p>
@@ -202,7 +209,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </p>
                 </section>
 
-                {/* 6. Security */}
+                {/* 6. 안전성 확보 조치 */}
                 <section id="security">
                   <h2>6. 개인정보의 안전성 확보 조치</h2>
                   <ul>
@@ -214,7 +221,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 7. DPO */}
+                {/* 7. 개인정보 보호책임자 */}
                 <section id="dpo">
                   <h2>7. 개인정보 보호책임자</h2>
                   <ul>
@@ -225,7 +232,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 8. Change */}
+                {/* 8. 변경 고지 */}
                 <section id="change">
                   <h2>8. 개인정보처리방침의 변경</h2>
                   <p>법령 및 방침 변경 시 공지사항을 통해 고지합니다.</p>
@@ -241,8 +248,8 @@ export default async function PrivacyPolicyPage({ params }: Props) {
               </>
             ) : (
               <>
-                {/* English Version */}
-                {/* Intro */}
+                {/* 영문판 */}
+                {/* 소개 (영문) */}
                 <section>
                   <h1>Website Privacy Policy</h1>
                   <p>
@@ -260,7 +267,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   <hr />
                 </section>
 
-                {/* Table of Contents */}
+                {/* 목차 (영문) */}
                 <nav aria-label="Table of Contents">
                   <h2>Table of Contents</h2>
                   <ol>
@@ -306,7 +313,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ol>
                 </nav>
 
-                {/* 1. Purpose */}
+                {/* 1. 처리 목적 (영문) */}
                 <section id="purpose">
                   <h2>
                     1. Purpose of Collection and Use of Personal Information
@@ -337,7 +344,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 2. Items */}
+                {/* 2. 처리 항목 (영문) */}
                 <section id="items">
                   <h2>
                     2. Items of Personal Information Collected and Collection
@@ -367,7 +374,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </div>
                 </section>
 
-                {/* 3. Retention */}
+                {/* 3. 보유 기간 (영문) */}
                 <section id="retention">
                   <h2>
                     3. Processing and Retention Period of Personal Information
@@ -390,7 +397,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 4. Outsourcing */}
+                {/* 4. 처리 위탁 (영문) */}
                 <section id="outsourcing">
                   <h2>
                     4. Provision and Outsourcing of Personal Information to
@@ -418,7 +425,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </div>
                 </section>
 
-                {/* 5. Rights */}
+                {/* 5. 정보주체의 권리 (영문) */}
                 <section id="rights">
                   <h2>
                     5. Rights and Obligations of Data Subjects and Their Legal
@@ -430,7 +437,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </p>
                 </section>
 
-                {/* 6. Security */}
+                {/* 6. 안전성 확보 조치 (영문) */}
                 <section id="security">
                   <h2>
                     6. Measures to Ensure the Security of Personal Information
@@ -450,7 +457,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 7. DPO */}
+                {/* 7. 개인정보 보호책임자 (영문) */}
                 <section id="dpo">
                   <h2>7. Data Protection Officer</h2>
                   <ul>
@@ -461,7 +468,7 @@ export default async function PrivacyPolicyPage({ params }: Props) {
                   </ul>
                 </section>
 
-                {/* 8. Change */}
+                {/* 8. 변경 고지 (영문) */}
                 <section id="change">
                   <h2>8. Changes to the Privacy Policy</h2>
                   <p>

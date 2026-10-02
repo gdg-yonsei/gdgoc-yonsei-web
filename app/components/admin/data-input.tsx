@@ -1,25 +1,24 @@
 'use client'
 
+/**
+ * 관리자 폼의 기본 입력 필드(클라이언트 컴포넌트). 텍스트·숫자·날짜·체크박스 등 `<input>` 하나와 라벨을 그린다.
+ */
 import { HTMLInputTypeAttribute, useId } from 'react'
 import { cn } from '@/lib/cn'
 
 /**
- * Data input component
+ * 라벨이 붙은 `<input>`.
  *
- * 라벨은 `<p>`가 아니라 `<label htmlFor>`로 연결됩니다. 라벨을 눌러 입력에
- * 포커스할 수 있고, 스크린리더가 필드 이름을 확실히 읽습니다.
- * (보이는 라벨 텍스트는 그대로 유지되므로 기존 e2e의
- *  `getByRole('textbox', { name })`은 계속 동작합니다.)
- *
- * @param defaultValue - 기본값
- * @param name - input name
- * @param placeholder - input placeholder
- * @param title - input title
- * @param type - input type
- * @param isChecked - input checked 여부
- * @param required - is Essential
- * @param readOnly - 값은 제출되지만 고칠 수 없다(disabled 와 달리 폼에 포함된다)
- * @constructor
+ * 라벨을 `<label htmlFor>`로 연결해, 라벨을 눌러 포커스할 수 있고 스크린리더가 필드
+ * 이름을 읽는다. e2e는 `getByRole('textbox', { name })`으로 이 라벨을 찾는다.
+ * @param defaultValue 초깃값(null이면 빈 문자열)
+ * @param name 폼 필드 이름
+ * @param placeholder 입력 안내 문구
+ * @param title 라벨
+ * @param type input type(기본 `text`)
+ * @param isChecked 체크박스 초기 선택 여부
+ * @param required 필수 여부(라벨에 `*` 표시)
+ * @param readOnly 값은 제출되지만 고칠 수 없다(disabled와 달리 폼에 포함된다)
  */
 export default function DataInput({
   defaultValue,

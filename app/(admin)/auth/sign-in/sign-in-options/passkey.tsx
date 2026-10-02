@@ -1,16 +1,19 @@
 'use client'
 
+/**
+ * 패스키 로그인 버튼(클라이언트 컴포넌트). 패스키는 로그인 후 프로필 화면에서 먼저 등록해야 한다.
+ */
 import { useTransition } from 'react'
 import { KeyIcon } from '@heroicons/react/24/outline'
-import LoadingSpinner from '@/app/components/loading-spinner'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
 import { useAtom } from 'jotai'
-import { isAuthenticatingState } from '@/lib/atoms'
+import { isAuthenticatingState } from '@/lib/admin/atoms'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 
 /**
- * Passkey 로그인 버튼
- * @constructor
+ * 브라우저 WebAuthn 인증으로 로그인하고 `callbackURL`로 이동한다.
+ * @param callbackURL 로그인 후 이동할 경로
  */
 export default function PasskeySignInButton({
   callbackURL,

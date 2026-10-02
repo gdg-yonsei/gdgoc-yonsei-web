@@ -1,3 +1,5 @@
 # Generated files: reformatting them only adds churn to every diff.
 drizzle/meta/
 pnpm-lock.yaml
+# Vendored font stylesheet: keep the upstream formatting byte for byte.
+app/pretendard.css

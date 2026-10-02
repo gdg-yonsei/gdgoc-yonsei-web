@@ -1,20 +1,22 @@
+/**
+ * 프로젝트 허브(`/{lang}/project`): 기수 띠, 검색·필터, 프로젝트 격자.
+ */
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
+import {
+  ArchiveListSkeleton,
+  ProjectCardSkeletons,
+} from '@/app/components/site/skeletons'
 import JsonLd from '@/app/components/json-ld'
-import LocalizedText from '@/app/components/localized-text'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
 import GenerationStrip from '@/app/components/site/generation-strip'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
 import ProjectGrid from '@/app/components/site/project-grid/project-grid'
 import {
   archiveCommonCopy,
   projectArchiveCopy,
   projectFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getProjectShowcase } from '@/lib/server/queries/public/projects'
 import {
@@ -29,18 +31,22 @@ import {
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { projectPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
 const en = projectArchiveCopy.en
 const ko = projectArchiveCopy.ko
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = projectArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -51,58 +57,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/* Same shell pattern as the Session Log: nothing above the fold reads params. */
+/** 페이지 본문. */
 export default function ProjectHubPage({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page" data-testid="project-showcase-shell">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
-        >
-          <HubBreadcrumbs params={params} section="projects" />
-        </Suspense>
-        <PageHeader
-          tag={en.tag}
-          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
-          description={
-            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
-          }
-        />
-        <Suspense fallback={<ProjectGridFallback />}>
-          <ProjectHubContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function ProjectGridFallback() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading projects"
-      className="archive-skeleton"
+    <ArchiveHubShell
+      params={params}
+      section="projects"
+      testId="project-showcase-shell"
+      tag={en.tag}
+      title={{ en: en.hubTitle, ko: ko.hubTitle }}
+      description={{ en: en.hubDescription, ko: ko.hubDescription }}
+      fallback={
+        <ArchiveListSkeleton label="Loading projects">
+          <ProjectCardSkeletons />
+        </ArchiveListSkeleton>
+      }
     >
-      <span className="skeleton-bar h-10 w-72 max-w-full" />
-      <span className="skeleton-bar h-36 w-full rounded-3xl" />
-      <div className="release-grid">
-        {Array.from({ length: 3 }, (_, index) => (
-          <span key={index} className="skeleton-bar aspect-[4/5] rounded-3xl" />
-        ))}
-      </div>
-    </div>
+      <ProjectHubContent params={params} />
+    </ArchiveHubShell>
   )
 }
 
 async function ProjectHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = projectArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const [showcase, generations] = await Promise.all([
     getProjectShowcase(),
-    getGenerationSummaries(lang),
+    getGenerationSummaries(),
   ])
   const projects = sortShowcase(showcase)
   const facets = projectFacets(projects)
@@ -123,7 +105,7 @@ async function ProjectHubContent({ params }: Props) {
               name: projectTitle(project, lang),
               url: getLocalizedUrl(
                 lang,
-                `/project/${project.generationName}/${project.id}`
+                projectPath(project.generationName, project.id)
               ),
             })),
           }),

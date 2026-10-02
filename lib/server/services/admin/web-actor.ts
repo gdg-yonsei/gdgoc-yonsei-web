@@ -1,8 +1,11 @@
+/**
+ * 웹 요청(Server Action, 관리자 API)의 로그인 사용자를 서비스 Actor로 바꾸는 어댑터.
+ */
 import 'server-only'
 
 import { forbidden } from 'next/navigation'
 import { getAuthSession } from '@/auth'
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import type { Actor, ServiceFailure } from '@/lib/server/services/admin/types'
 
 /** 웹 세션 사용자를 Actor 로. 웹 세션은 OAuth 스코프 제한이 없다. */

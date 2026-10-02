@@ -1,26 +1,35 @@
+/**
+ * 파트 수정 화면(`/admin/parts/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
+import { requireGenerationAccess } from '@/lib/server/permission/require-permission'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import { updatePartAction } from '@/app/(admin)/admin/parts/[partId]/edit/actions'
 import DataTextarea from '@/app/components/admin/data-textarea'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 import PartMembersInput from '@/app/components/admin/part-members-input'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveAdminGenerationScope,
+  canSwitchToGeneration,
+} from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Part',
 }
 
+/** 기존 값을 채운 파트 수정 폼. */
 export default async function EditPartPage({
   params,
 }: {
@@ -30,9 +39,7 @@ export default async function EditPartPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params
-  // Part 정보 가져오기
   const partData = await getPart(Number(partId))
-  // 파트에 속한 멤버 정보 리스트
   const membersIdList = partData
     ? partData.usersToParts
         .filter((userToPart) => userToPart.userType === 'Primary')
@@ -45,12 +52,12 @@ export default async function EditPartPage({
         .map((user) => user.user.id)
     : []
 
-  // 파트 정보가 없다면 404 페이지로 이동
   if (!partData) {
     notFound()
   }
+  // 다른 기수의 파트는 URL을 알아도 볼 수 없다.
+  await requireGenerationAccess(partData.generationsId)
 
-  // Part 정보 업데이트 Action
   const updatePartActionWithPartId = updatePartAction.bind(null, partId)
   const session = await getAuthSession()
   const resolvedScope = session?.user?.id
@@ -69,12 +76,7 @@ export default async function EditPartPage({
       {actualGeneration && (
         <AdminGenerationScopeMismatchNotice
           actualGeneration={actualGeneration}
-          canSwitch={
-            resolvedScope?.canAccessAll === true ||
-            resolvedScope?.options.some(
-              (option) => option.id === actualGeneration.id
-            ) === true
-          }
+          canSwitch={canSwitchToGeneration(resolvedScope, actualGeneration.id)}
           currentScope={resolvedScope?.scope ?? null}
           locale={locale}
         />
@@ -86,8 +88,8 @@ export default async function EditPartPage({
       <div className={'admin-title py-4'}>
         {t.edit} {partData.name}
       </div>
-      {/* Next keeps visited pages mounted; a new key per saved version resets
-          the uncontrolled fields instead of showing the previous edit's input. */}
+      {/* Next는 방문한 페이지를 마운트된 채 유지한다. 저장된 버전마다 key를 바꿔, 비제어 입력이
+          이전 편집 내용 대신 저장된 값으로 다시 채워지게 한다. */}
       <DataForm
         key={partData.updatedAt?.toISOString() ?? 'new'}
         action={updatePartActionWithPartId}
@@ -113,11 +115,7 @@ export default async function EditPartPage({
           defaultValue={partData.displayOrder}
           placeholder="10"
         />
-        <p className="text-ink-muted text-sm">
-          {locale === 'ko'
-            ? '작은 숫자의 파트부터 표시됩니다.'
-            : 'Parts with smaller numbers appear first.'}
-        </p>
+        <p className="text-ink-muted text-sm">{t.displayOrderHint}</p>
         <DataTextarea
           defaultValue={partData.description}
           name={'description'}

@@ -1,11 +1,15 @@
+/**
+ * 파트 상세 화면(`/admin/parts/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
+import { requireGenerationAccess } from '@/lib/server/permission/require-permission'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import { getAuthSession } from '@/auth'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import DataDeleteButton from '@/app/components/admin/data-delete-button'
 import { Metadata } from 'next'
 import {
@@ -14,13 +18,13 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 
+/** 탭 제목에 파트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ partId: string }>
 }): Promise<Metadata> {
   const { partId } = await params
-  // Part 데이터 가져오기
   const partData = await getPart(Number(partId))
 
   return {
@@ -28,6 +32,7 @@ export async function generateMetadata({
   }
 }
 
+/** 파트 상세. */
 export default async function PartPage({
   params,
 }: {
@@ -36,14 +41,13 @@ export default async function PartPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params
-  // Part 데이터 가져오기
   const partData = await getPart(Number(partId))
-  // Part 데이터가 없으면 404 페이지 표시
   if (!partData) {
     notFound()
   }
+  // 다른 기수의 파트는 URL을 알아도 볼 수 없다.
+  await requireGenerationAccess(partData.generationsId)
 
-  // 사용자 로그인 정보
   const session = await getAuthSession()
 
   return (

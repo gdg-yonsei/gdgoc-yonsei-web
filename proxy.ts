@@ -1,14 +1,27 @@
+/**
+ * Next.js 16 Proxy(예전 Middleware). 모든 요청이 페이지에 닿기 전에 여기를 지난다.
+ *
+ * 하는 일
+ * 1. 언어가 없는 공개 경로(`/session`)를 브라우저 언어에 맞춰 `/en/session` 등으로 리다이렉트
+ * 2. 관리자 경로: `/ko/admin/...`을 `/admin/...`으로 rewrite하고 언어를 `x-admin-locale`
+ *    헤더와 쿠키로 넘긴다(관리자 화면은 URL 언어 세그먼트 없이 한 벌만 있다)
+ * 3. 존재하지 않는 기수·상세 페이지를 DB로 확인해 404 HTML을 바로 돌려준다. Cache Components는
+ *    페이지를 스트리밍하므로 페이지 안에서 `notFound()`를 부르면 상태 코드가 이미 200으로 나간
+ *    뒤일 수 있다. 실제 404 상태 코드를 보장하려고 여기서 막는다.
+ *
+ * API, 인증, `.well-known`, 폰트, 루트 정적 파일은 건드리지 않는다.
+ */
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { i18n } from './i18n-config'
+import { i18n, isLocale } from '@/lib/i18n'
 import { ADMIN_LOCALE_COOKIE } from '@/lib/admin-i18n'
-import db from '@/db'
+import { db } from '@/db'
 import { generations } from '@/db/schema/generations'
 import { parts } from '@/db/schema/parts'
 import { projects } from '@/db/schema/projects'
 import { sessions } from '@/db/schema/sessions'
 import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import {
   BRACKET_VIEWBOX,
@@ -22,6 +35,7 @@ import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
 import { and, eq, lte } from 'drizzle-orm'
 
+/** 언어 세그먼트를 붙이지 않는 루트 정적 파일(검색 엔진 소유 확인 파일 포함). */
 const UNLOCALIZED_PUBLIC_PATHS = new Set([
   '/default-image.png',
   '/default-user-profile.png',
@@ -43,27 +57,15 @@ const UNLOCALIZED_PUBLIC_PATHS = new Set([
   '/twitter-image.png',
 ])
 
-/**
- * `getLocale` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(`request`, `NextRequest`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
+/** 브라우저 `Accept-Language` 헤더에서 지원 언어 중 가장 알맞은 언어를 고른다. */
 function getLocale(request: NextRequest): string | undefined {
-  // Negotiator expects plain object so we need to transform headers
+  // Negotiator는 일반 객체를 받으므로 Headers를 객체로 바꾼다
   const negotiatorHeaders: Record<string, string> = {}
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
 
-  // @ts-expect-error - i18n.locales is a readonly array
-  const locales: string[] = i18n.locales
+  const locales = [...i18n.locales]
 
-  // Use negotiator and intl-localematcher to get best locale
+  // negotiator로 선호 언어 목록을 읽고 intl-localematcher로 가장 알맞은 지원 언어를 고른다
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
     locales
   )
@@ -71,17 +73,16 @@ function getLocale(request: NextRequest): string | undefined {
   return matchLocale(languages, locales, i18n.defaultLocale)
 }
 
-function isSupportedLocale(locale: string | undefined): locale is string {
-  return (
-    !!locale && i18n.locales.includes(locale as (typeof i18n.locales)[number])
-  )
-}
-
+/** 존재 여부를 확인할 공개 동적 페이지(기수 아카이브, 프로젝트·세션 상세). */
 type PublicRouteIdentity =
   | { kind: 'generation'; generation: string }
   | { kind: 'project'; generation: string; id: string }
   | { kind: 'session'; generation: string; id: string }
 
+/**
+ * 요청이 존재 확인 대상 페이지인지 판별한다. HTML 문서 요청(GET/HEAD)만 대상이며,
+ * 클라이언트 내비게이션의 RSC 요청(`text/x-component`)은 페이지가 처리하게 둔다.
+ */
 function getPublicRouteIdentity(
   request: NextRequest
 ): PublicRouteIdentity | null {
@@ -97,7 +98,7 @@ function getPublicRouteIdentity(
   const segments = request.nextUrl.pathname.split('/').filter(Boolean)
   const [locale, section, generation, id] = segments
 
-  if (!isSupportedLocale(locale) || !generation) {
+  if (!isLocale(locale) || !generation) {
     return null
   }
 
@@ -123,6 +124,10 @@ function getPublicRouteIdentity(
   return null
 }
 
+/**
+ * 페이지가 실제로 있는지 DB로 확인한다. 세션은 공개 페이지와 같은 기준(웹사이트 표시,
+ * 이미 끝난 세션)으로 본다.
+ */
 async function publicRouteExists(identity: PublicRouteIdentity) {
   if (identity.kind === 'generation') {
     const match = await db
@@ -175,6 +180,7 @@ async function publicRouteExists(identity: PublicRouteIdentity) {
   return match.length > 0
 }
 
+/** 404 페이지에 넣을 GDG 괄호 SVG. */
 function bracketSvg(side: BracketSide) {
   const paths = bracketCapsulesInViewBox(side)
     .map(
@@ -190,6 +196,7 @@ const NOT_FOUND_BRACKETS = {
   right: bracketSvg('right'),
 }
 
+/** 404 상태 코드와 함께 돌려줄 가벼운 인라인 HTML 페이지. */
 function publicRouteNotFound(request: NextRequest) {
   const locale = request.nextUrl.pathname.split('/')[1] === 'ko' ? 'ko' : 'en'
   const backLabel = locale === 'ko' ? '홈으로 돌아가기' : 'Back to Home'
@@ -229,18 +236,7 @@ function publicRouteNotFound(request: NextRequest) {
   })
 }
 
-/**
- * `proxy` 함수는 전달받은 입력값을 바탕으로 필요한 비즈니스 로직을 수행합니다.
- *
- * 구동 원리:
- * 1. 입력값(`request`, `NextRequest`)을 기준으로 전처리/검증 또는 조회 조건을 구성합니다.
- * 2. 함수 본문의 조건 분기와 동기/비동기 로직을 순서대로 실행합니다.
- * 3. 계산 결과를 반환하거나 캐시/DB/리다이렉트 등 필요한 부수 효과를 반영합니다.
- *
- * 작동 결과:
- * - 호출부에서 즉시 활용 가능한 결과값 또는 실행 상태를 제공합니다.
- * - 후속 로직이 안정적으로 이어질 수 있도록 일관된 동작을 보장합니다.
- */
+/** Proxy 진입점. 아무것도 돌려주지 않으면 요청이 그대로 페이지로 간다. */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const useSecureCookie = process.env.NODE_ENV === 'production'
@@ -252,7 +248,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/.well-known/') ||
     pathname === '/auth' ||
     pathname.startsWith('/auth/') ||
-    // 정적 폰트 에셋(Pretendard 서브셋 92개)은 로케일 프리픽스를 붙이면 안 됩니다.
+    // 정적 폰트 파일(Pretendard 서브셋 92개)에는 언어 세그먼트를 붙이면 안 된다.
     pathname.startsWith('/fonts/') ||
     UNLOCALIZED_PUBLIC_PATHS.has(pathname)
   ) {
@@ -262,7 +258,7 @@ export async function proxy(request: NextRequest) {
   const pathnameSegments = pathname.split('/')
   const localeFromPath = pathnameSegments[1]
   const isLocalizedAdminPath =
-    isSupportedLocale(localeFromPath) && pathnameSegments[2] === 'admin'
+    isLocale(localeFromPath) && pathnameSegments[2] === 'admin'
 
   if (isLocalizedAdminPath) {
     const requestHeaders = new Headers(request.headers)
@@ -289,7 +285,7 @@ export async function proxy(request: NextRequest) {
 
   if (isAdminPath) {
     const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
-    const locale = isSupportedLocale(localeFromCookie)
+    const locale = isLocale(localeFromCookie)
       ? localeFromCookie
       : (getLocale(request) ?? i18n.defaultLocale)
     const requestHeaders = new Headers(request.headers)
@@ -315,28 +311,16 @@ export async function proxy(request: NextRequest) {
     return publicRouteNotFound(request)
   }
 
-  // // `/_next/` and `/api/` are ignored by the watcher, but we need to ignore files in `public` manually.
-  // // If you have one
-  // if (
-  //   [
-  //     '/manifest.json',
-  //     '/favicon.ico',
-  //     // Your other files in `public`
-  //   ].includes(pathname)
-  // )
-  //   return
-
-  // Check if there is any supported locale in the pathname
+  // 경로에 지원 언어 세그먼트가 있는지 확인한다
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   )
 
-  // Redirect if there is no locale
+  // 언어가 없으면 브라우저 언어로 리다이렉트한다
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request)
 
-    // e.g. incoming request is /products
-    // The new URL is now /en-US/products
+    // 예: /session 요청 → /ko/session
     const redirectUrl = new URL(
       `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`,
       request.url
@@ -346,9 +330,10 @@ export async function proxy(request: NextRequest) {
   }
 }
 
+/** Proxy를 실행할 경로. */
 export const config = {
-  // Localize every application-looking path. Known root assets are handled by
-  // UNLOCALIZED_PUBLIC_PATHS so arbitrary dotted paths cannot impersonate a
-  // locale segment and create indexable duplicate pages.
+  // `_next` 내부 경로를 뺀 모든 경로를 지역화 대상으로 본다. 알려진 루트 정적 파일은
+  // UNLOCALIZED_PUBLIC_PATHS로 따로 처리하므로, 점이 들어간 임의 경로가 언어 세그먼트처럼
+  // 보여 색인 가능한 중복 페이지가 생기는 일을 막는다.
   matcher: ['/((?!_next/).*)'],
 }

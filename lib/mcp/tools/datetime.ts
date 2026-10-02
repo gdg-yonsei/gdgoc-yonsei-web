@@ -1,3 +1,8 @@
+/**
+ * MCP 세션 도구의 일시 입력 해석.
+ */
+import 'server-only'
+
 const LOCAL = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/
 const WITH_OFFSET =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/

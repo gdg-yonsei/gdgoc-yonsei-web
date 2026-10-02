@@ -1,11 +1,13 @@
 import { sql } from 'drizzle-orm'
-import db from '../../db'
+import { db } from '../../db'
 
 // Perf baselines were measured on dev-seed data only; the e2e run leaves its
 // fixtures behind. Refuse to touch anything but the disposable local DB.
 async function main() {
   if (!(process.env.AUTH_DRIZZLE_URL ?? '').includes('@localhost:5439/')) {
-    throw new Error('refusing to truncate: AUTH_DRIZZLE_URL is not the local embedded Postgres')
+    throw new Error(
+      'refusing to truncate: AUTH_DRIZZLE_URL is not the local embedded Postgres'
+    )
   }
   await db.execute(
     sql.raw(`TRUNCATE TABLE "userToSession", "external_participants", "users_to_projects",

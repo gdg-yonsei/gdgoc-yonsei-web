@@ -1,8 +1,7 @@
 /**
- * `overrides` in pnpm-workspace.yaml win over package.json. When a direct
- * dependency is bumped in package.json but its override is not, pnpm keeps
- * installing the old version without a word (next stayed on 16.3.2 while
- * package.json said 16.3.6). Fail when the two disagree.
+ * pnpm-workspace.yaml의 `overrides`는 package.json보다 우선한다. package.json에서 직접 의존성을 올리고
+ * override는 그대로 두면, pnpm은 아무 경고 없이 예전 버전을 계속 설치한다(package.json은 16.3.6인데
+ * next가 16.3.2에 머문 적이 있다). 두 값이 다르면 실패시킨다.
  */
 import { readFileSync } from 'node:fs'
 

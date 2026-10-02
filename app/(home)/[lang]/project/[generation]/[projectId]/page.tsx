@@ -1,15 +1,17 @@
+/**
+ * 프로젝트 상세 페이지(`/{lang}/project/{기수}/{id}`). URL의 기수가 실제와 다르면 404.
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
 import ProjectDetailView from '@/app/components/site/project-detail/project-detail-view'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   projectArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import {
   getProjectById,
   getProjectShowcase,
@@ -32,6 +34,8 @@ import {
   toShowcaseProject,
 } from '@/lib/site/project-showcase'
 import ProjectDetailLoading from './loading'
+import { pickLocalized, toLocale } from '@/lib/i18n'
+import { generationPath, projectPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ projectId: string; lang: string; generation: string }>
@@ -43,7 +47,7 @@ async function loadProject(
   locale: Locale
 ) {
   const [row, showcase] = await Promise.all([
-    getProjectById(projectId, locale),
+    getProjectById(projectId),
     getProjectShowcase(),
   ])
 
@@ -54,7 +58,8 @@ async function loadProject(
   return {
     project: {
       ...toShowcaseProject(row),
-      content: locale === 'ko' ? row.contentKo || row.content : row.content,
+      content:
+        pickLocalized(locale, { en: row.content, ko: row.contentKo }) ?? '',
       images: row.images,
     },
     showcase: sortShowcase(showcase),
@@ -71,9 +76,10 @@ function fallbackDescription(
     : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, projectId } = await params
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {
@@ -83,7 +89,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = projectTitle(loaded.project, locale)
   return createLocalizedMetadata({
     locale,
-    path: `/project/${generation}/${projectId}`,
+    path: projectPath(generation, projectId),
     title,
     description: summarizeForMetadata(
       projectSummary(loaded.project, locale),
@@ -93,6 +99,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
+/** 페이지 본문. */
 export default async function ProjectDetailPage({ params }: Props) {
   const resolved = await params
 
@@ -114,7 +121,7 @@ async function ProjectDetail({
   generation: string
   projectId: string
 }) {
-  const locale = languageParamChecker(lang)
+  const locale = toLocale(lang)
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {
@@ -125,7 +132,7 @@ async function ProjectDetail({
   const copy = projectArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
   const title = projectTitle(project, locale)
-  const url = getLocalizedUrl(locale, `/project/${generation}/${projectId}`)
+  const url = getLocalizedUrl(locale, projectPath(generation, projectId))
 
   return (
     <div className="site-page">
@@ -158,7 +165,10 @@ async function ProjectDetail({
             },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/project/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('project', generation)
+              ),
             },
             { name: title, url },
           ]),

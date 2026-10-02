@@ -1,37 +1,43 @@
+/**
+ * 멤버 허브(`/{lang}/member`): 기수 목록과 최신 기수 멤버.
+ */
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
+import {
+  ArchiveListSkeleton,
+  SkeletonBars,
+} from '@/app/components/site/skeletons'
 import JsonLd from '@/app/components/json-ld'
-import LocalizedText from '@/app/components/localized-text'
 import EmptyState from '@/app/components/site/empty-state'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
 import {
   archiveCommonCopy,
   memberArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import {
   createLocalizedMetadata,
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { fillTemplate } from '@/lib/site/format'
+import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { generationPath, localeHref } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
 const en = memberArchiveCopy.en
 const ko = memberArchiveCopy.ko
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = memberArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -42,55 +48,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/*
- * The shell never reads params, so every link here shares one instant App
- * Shell; LocalizedText picks the language with CSS.
- */
+/** 페이지 본문. */
 export default function MemberIndex({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page" data-testid="member-directory-shell">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
-        >
-          <HubBreadcrumbs params={params} section="members" />
-        </Suspense>
-        <PageHeader
-          tag={en.tag}
-          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
-          description={
-            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
-          }
-        />
-        <Suspense fallback={<MemberHubSkeleton />}>
-          <MemberHubContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function MemberHubSkeleton() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading generations"
-      className="archive-skeleton"
+    <ArchiveHubShell
+      params={params}
+      section="members"
+      testId="member-directory-shell"
+      tag={en.tag}
+      title={{ en: en.hubTitle, ko: ko.hubTitle }}
+      description={{ en: en.hubDescription, ko: ko.hubDescription }}
+      fallback={
+        <ArchiveListSkeleton label="Loading generations" showFilters={false}>
+          <SkeletonBars count={4} className="h-28 w-full rounded-3xl" />
+        </ArchiveListSkeleton>
+      }
     >
-      {Array.from({ length: 4 }, (_, index) => (
-        <span key={index} className="skeleton-bar h-28 w-full rounded-3xl" />
-      ))}
-    </div>
+      <MemberHubContent params={params} />
+    </ArchiveHubShell>
   )
 }
 
 async function MemberHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = memberArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
-  const generations = [...(await getGenerationSummaries(lang))].sort((a, b) =>
+  const generations = [...(await getGenerationSummaries())].sort((a, b) =>
     b.startDate.localeCompare(a.startDate)
   )
   const url = getLocalizedUrl(lang, '/member')
@@ -114,7 +97,10 @@ async function MemberHubContent({ params }: Props) {
               name: fillTemplate(copy.generationTitle, {
                 generation: generation.name,
               }),
-              url: getLocalizedUrl(lang, `/member/${generation.name}`),
+              url: getLocalizedUrl(
+                lang,
+                generationPath('member', generation.name)
+              ),
             })),
           }),
           breadcrumbList([
@@ -127,7 +113,7 @@ async function MemberHubContent({ params }: Props) {
         {generations.map((generation) => (
           <li key={generation.id}>
             <Link
-              href={`/${lang}/member/${generation.name}`}
+              href={localeHref(lang, generationPath('member', generation.name))}
               prefetch={true}
               transitionTypes={['nav-forward']}
               className="member-generation"

@@ -1,10 +1,16 @@
+/**
+ * 멤버 정보 수정 화면(`/admin/members/{id}/edit`).
+ *
+ * 레이아웃 가드(`members` 수정) 위에, 대상 역할·기수까지 보는 세밀한 판단(`authorizeMemberEdit`)을
+ * 한 번 더 한다. 다른 사람의 이메일은 LEAD만 바꿀 수 있어 그 외에는 읽기 전용으로 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import { updateMemberAction } from '@/app/(admin)/admin/members/[memberId]/edit/actions'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { requirePermission } from '@/lib/server/permission/require-permission'
 import { forbidden, notFound } from 'next/navigation'
 import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
@@ -14,16 +20,18 @@ import ImageUpload from '@/app/(admin)/admin/members/[memberId]/edit/image-uploa
 import SubmitButton from '@/app/components/admin/submit-button'
 import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/member-role-manager'
 import DataInput from '@/app/components/admin/data-input'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Member',
 }
 
+/** 멤버 수정 폼. 수정할 수 없으면 403, 멤버가 없으면 404. */
 export default async function EditMemberPage({
   params,
 }: {
@@ -44,12 +52,10 @@ export default async function EditMemberPage({
     forbidden()
   }
   const emailReadOnly = !canChangeMemberEmail(actor, memberId)
-  // Member 정보 가져오기
   const memberData = await getMember(memberId)
   if (!memberData) {
     notFound()
   }
-  // Member 정보 업데이트 Action
   const updateMemberActionWithMemberId = updateMemberAction.bind(null, memberId)
 
   return (
@@ -178,11 +184,9 @@ export default async function EditMemberPage({
             isChecked={memberData.isForeigner}
           />
 
-          {(await handlePermission(
-            session?.user?.id,
-            'put',
-            'membersRole'
-          )) && <MemberRoleManager userRole={memberData.role} />}
+          {(await hasPermission(session?.user?.id, 'put', 'membersRole')) && (
+            <MemberRoleManager userRole={memberData.role} />
+          )}
           <SubmitButton />
         </DataForm>
       </div>

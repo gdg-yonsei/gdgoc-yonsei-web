@@ -1,5 +1,8 @@
-import type { Locale } from '@/i18n-config'
-import { sessionMonthKey } from '@/lib/site/datetime'
+/**
+ * 세션 기록 데이터 가공(순수 함수): 제목·장소, 기수·월별 묶음, 필터, 검색, 관련 세션.
+ */
+import { pickLocalized, type Locale } from '@/lib/i18n'
+import { sessionMonthKey } from '@/lib/format/datetime'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
 import {
   SESSION_CATEGORIES,
@@ -7,7 +10,7 @@ import {
   isSessionCategory,
 } from '@/lib/site/labels'
 
-/** One public session as the archive read model returns it (bilingual). */
+/** 세션 기록 쿼리가 돌려주는 공개 세션 하나(두 언어 필드 포함). */
 export type LogSession = {
   id: string
   name: string
@@ -26,8 +29,10 @@ export type LogSession = {
   generationStartDate: string
 }
 
+/** 한 달의 세션 묶음. */
 export type LogMonth = { key: string; sessions: LogSession[] }
 
+/** 한 기수의 세션 묶음(월별). */
 export type LogGeneration = {
   name: string
   startDate: string
@@ -35,27 +40,23 @@ export type LogGeneration = {
   months: LogMonth[]
 }
 
-/** Month key for sessions without a start time. */
+/** 시작 시각이 없는 세션을 모으는 월 키(미정). */
 export const TBA_MONTH = 'tba'
 
+/** 현재 언어의 세션 제목(없으면 다른 언어). */
 export function sessionTitle(
   session: Pick<LogSession, 'name' | 'nameKo'>,
   locale: Locale
 ): string {
-  return locale === 'ko'
-    ? session.nameKo || session.name
-    : session.name || session.nameKo
+  return pickLocalized(locale, { en: session.name, ko: session.nameKo }) ?? ''
 }
 
+/** 현재 언어의 세션 장소(없으면 다른 언어). */
 export function sessionLocation(
   session: Pick<LogSession, 'location' | 'locationKo'>,
   locale: Locale
 ): string | null {
-  const [primary, fallback] =
-    locale === 'ko'
-      ? [session.locationKo, session.location]
-      : [session.location, session.locationKo]
-  return primary || fallback || null
+  return pickLocalized(locale, { en: session.location, ko: session.locationKo })
 }
 
 function compareNewestFirst(a: LogSession, b: LogSession): number {
@@ -65,6 +66,7 @@ function compareNewestFirst(a: LogSession, b: LogSession): number {
   return 0
 }
 
+/** 세션을 기수(최신순) → 월(최신순)로 묶는다. */
 export function groupSessionLog(
   sessions: readonly LogSession[]
 ): LogGeneration[] {
@@ -109,6 +111,7 @@ function counts(values: readonly string[]): Map<string, number> {
   return map
 }
 
+/** 필터 선택지: 활동 분류, 파트, 기수와 각 개수. */
 export function sessionFacets(
   sessions: readonly LogSession[],
   locale: Locale
@@ -143,6 +146,7 @@ export function sessionFacets(
   }
 }
 
+/** 검색 대상 문자열(두 언어 제목·장소, 파트, 기수). */
 export function sessionSearchText(session: LogSession): string {
   return normalizeSearchText(
     [
@@ -162,7 +166,7 @@ export function sessionSearchText(session: LogSession): string {
 
 const startTime = (session: LogSession) => session.startAt?.getTime() ?? 0
 
-/** The newest dated sessions, for the home page's log. */
+/** 일정이 있는 최신 세션(홈 화면 "최근 세션" 섹션). */
 export function latestSessions(
   sessions: readonly LogSession[],
   limit: number
@@ -173,7 +177,7 @@ export function latestSessions(
     .slice(0, limit)
 }
 
-/** Chronological neighbours across the whole archive (undated sessions skip). */
+/** 전체 기록에서 시간순 이전·다음 세션(일정 없는 세션은 건너뛴다). */
 export function adjacentSessions(
   sessions: readonly LogSession[],
   id: string
@@ -186,6 +190,10 @@ export function adjacentSessions(
   return { previous: dated[index - 1] ?? null, next: dated[index + 1] ?? null }
 }
 
+/**
+ * 관련 세션(상세 페이지 하단). 점수가 낮을수록 가깝다:
+ * 같은 파트·같은 기수 → 같은 파트 → 같은 분류. 같은 점수면 시간이 가까운 순.
+ */
 export function relatedSessions(
   sessions: readonly LogSession[],
   current: LogSession,

@@ -1,8 +1,11 @@
+/**
+ * 프로젝트 목록 화면(`/admin/projects`). 생성 권한이 있으면 "만들기" 버튼을 보인다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import { Suspense } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
@@ -15,10 +18,12 @@ import {
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Projects',
 }
 
+/** 프로젝트 목록. 표는 Suspense로 스트리밍하고 그동안 스켈레톤을 보여 준다. */
 export default async function ProjectsPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),
@@ -27,7 +32,7 @@ export default async function ProjectsPage() {
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canCreate, resolvedScope] = await Promise.all([
-    handlePermission(userId, 'post', 'projects'),
+    hasPermission(userId, 'post', 'projects'),
     userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
   ])
   const canCreateInCurrentScope =
@@ -57,11 +62,7 @@ export default async function ProjectsPage() {
         }
       />
       <Suspense fallback={<AdminTableSkeleton />}>
-        <ProjectsTable
-          scope={resolvedScope?.scope ?? null}
-          locale={locale}
-          t={t}
-        />
+        <ProjectsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
     </AdminDefaultLayout>
   )

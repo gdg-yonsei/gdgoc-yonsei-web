@@ -1,9 +1,14 @@
+/**
+ * 프로젝트 상세 페이지 본문(서버 컴포넌트): 표지, 본문, 팀·스택·링크·날짜, 갤러리, 같은 기수 추천, 다음 프로젝트.
+ *
+ * 데이터 조회는 page가 하고, 이 컴포넌트는 받은 데이터를 그리기만 한다.
+ */
 import Image from 'next/image'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
-import ImageSliderGallery from '@/app/components/images-slider'
+import type { Locale } from '@/lib/i18n'
+import ImageGallery from '@/app/components/site/gallery/image-gallery'
 import SafeMDX from '@/app/components/safe-mdx'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
@@ -14,8 +19,8 @@ import type {
   ArchiveCommonCopy,
   ProjectArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import { formatInstantDate, toSeoulDateIso } from '@/lib/site/datetime'
-import { fillTemplate, initials } from '@/lib/site/format'
+import { formatInstantDate, toSeoulDateIso } from '@/lib/format/datetime'
+import { fillTemplate, initials } from '@/lib/format/text'
 import { isPlaceholderImage } from '@/lib/site/images'
 import {
   contributorName,
@@ -23,12 +28,24 @@ import {
   projectTitle,
   type ShowcaseProject,
 } from '@/lib/site/project-showcase'
+import { generationPath, localeHref, projectPath } from '@/lib/site/routes'
 
+/** 상세 화면용 프로젝트: 카드 모델에 본문과 본문 이미지를 더한 것. */
 export type ProjectDetail = ShowcaseProject & {
   content: string
   images: string[]
 }
 
+/**
+ * 프로젝트 상세.
+ *
+ * 표지 이미지는 목록 카드와 같은 `ViewTransition` 이름을 써서, 카드에서 상세로 이동할 때
+ * 이미지가 이어지는 전환을 만든다.
+ * @param project 현재 프로젝트
+ * @param more 같은 기수의 다른 프로젝트
+ * @param next 다음 프로젝트(없으면 null)
+ * @param copy/common 현재 언어의 프로젝트·공통 문구
+ */
 export default function ProjectDetailView({
   lang,
   project,
@@ -45,8 +62,11 @@ export default function ProjectDetailView({
   common: ArchiveCommonCopy
 }) {
   const title = projectTitle(project, lang)
-  const hubHref = `/${lang}/project`
-  const generationHref = `${hubHref}/${project.generationName}`
+  const hubHref = localeHref(lang, '/project')
+  const generationHref = localeHref(
+    lang,
+    generationPath('project', project.generationName)
+  )
   const gallery = project.images.filter((image) => !isPlaceholderImage(image))
   const links = [
     ...(project.demoUrl
@@ -62,7 +82,7 @@ export default function ProjectDetailView({
       <Breadcrumbs
         label={common.breadcrumb}
         items={[
-          { label: common.home, href: `/${lang}` },
+          { label: common.home, href: localeHref(lang) },
           { label: common.projects, href: hubHref },
           { label: project.generationName, href: generationHref },
           { label: title },
@@ -157,7 +177,10 @@ export default function ProjectDetailView({
                 })}
               </ul>
               <Link
-                href={`/${lang}/member/${project.generationName}`}
+                href={localeHref(
+                  lang,
+                  generationPath('member', project.generationName)
+                )}
                 className="detail-more"
               >
                 {fillTemplate(copy.allMembers, {
@@ -215,7 +238,7 @@ export default function ProjectDetailView({
           <h2 id="case-gallery" className="case-section-title">
             {copy.gallery}
           </h2>
-          <ImageSliderGallery images={gallery} alt={title} />
+          <ImageGallery lang={lang} images={gallery} alt={title} />
         </section>
       )}
 
@@ -243,7 +266,7 @@ export default function ProjectDetailView({
       {next && (
         <nav aria-label={copy.nextProject} className="case-next detail-pager">
           <Link
-            href={`${hubHref}/${next.generationName}/${next.id}`}
+            href={localeHref(lang, projectPath(next.generationName, next.id))}
             transitionTypes={['nav-forward']}
           >
             <span className="detail-pager-label">

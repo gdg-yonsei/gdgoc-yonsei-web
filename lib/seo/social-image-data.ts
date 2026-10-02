@@ -1,13 +1,22 @@
+/**
+ * 소셜 미리보기 이미지에 들어갈 내용(제목, 기수, 분류, 날짜, 대표 이미지) 조회.
+ */
 import 'server-only'
 
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getProjectById } from '@/lib/server/queries/public/projects'
 import { getSessionById } from '@/lib/server/queries/public/sessions'
-import { formatInstantDate, formatSessionShortDate } from '@/lib/site/datetime'
+import {
+  formatInstantDate,
+  formatSessionShortDate,
+} from '@/lib/format/datetime'
 import { isPlaceholderImage } from '@/lib/site/images'
+import { projectTitle } from '@/lib/site/project-showcase'
+import { sessionTitle } from '@/lib/site/session-log'
 import { categoryLabel, isSessionCategory } from '@/lib/site/labels'
 
+/** 소셜 카드 내용. `version`은 원본 행이 바뀔 때마다 달라져 이미지 URL과 캐시 키에 쓰인다. */
 export type SocialImageContent = {
   title: string
   generation: string
@@ -18,10 +27,12 @@ export type SocialImageContent = {
   locale: Locale
 }
 
+/** 수정 시각으로 짧은 버전 문자열을 만든다. */
 function versionFor(date: Date): string {
   return date.getTime().toString(36)
 }
 
+/** 데이터를 찾지 못했을 때 쓰는 기본 카드 내용. */
 export function createFallbackSocialImageContent(
   locale: Locale,
   kind: 'project' | 'session',
@@ -52,6 +63,7 @@ export function createFallbackSocialImageContent(
   }
 }
 
+/** 세션 소셜 카드 내용. 공개되지 않았거나 기수가 맞지 않으면 기본 카드. */
 export async function getSessionSocialImageContent({
   locale,
   generation,
@@ -67,14 +79,14 @@ export async function getSessionSocialImageContent({
     generation
   )
   const visibilityBucket = await getCachedSessionVisibilityBucket()
-  const session = await getSessionById(sessionId, locale, visibilityBucket)
+  const session = await getSessionById(sessionId, visibilityBucket)
 
   if (!session || session.part?.generation?.name !== generation) {
     return fallback
   }
 
   return {
-    title: locale === 'ko' ? session.nameKo || session.name : session.name,
+    title: sessionTitle(session, locale),
     generation,
     category: isSessionCategory(session.category)
       ? categoryLabel(session.category, locale)
@@ -90,6 +102,7 @@ export async function getSessionSocialImageContent({
   }
 }
 
+/** 프로젝트 소셜 카드 내용. 없거나 기수가 맞지 않으면 기본 카드. */
 export async function getProjectSocialImageContent({
   locale,
   generation,
@@ -104,14 +117,14 @@ export async function getProjectSocialImageContent({
     'project',
     generation
   )
-  const project = await getProjectById(projectId, locale)
+  const project = await getProjectById(projectId)
 
   if (!project || project.generation.name !== generation) {
     return fallback
   }
 
   return {
-    title: locale === 'ko' ? project.nameKo || project.name : project.name,
+    title: projectTitle(project, locale),
     generation,
     category: locale === 'ko' ? '프로젝트' : 'Project',
     date: formatInstantDate(project.updatedAt, locale),
@@ -123,6 +136,7 @@ export async function getProjectSocialImageContent({
   }
 }
 
+/** 소셜 이미지 대체 텍스트. */
 export function getSocialImageAlt(content: SocialImageContent): string {
   return [content.title, content.generation, content.category]
     .filter(Boolean)

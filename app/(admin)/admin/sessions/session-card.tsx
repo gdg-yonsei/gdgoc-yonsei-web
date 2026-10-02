@@ -1,3 +1,6 @@
+/**
+ * "참여 중인 세션" 카드. 누르면 세션 상세로 간다.
+ */
 import { type AdminSessionListItem } from '@/lib/server/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -6,13 +9,17 @@ import {
   getAdminMessages,
   localizeAdminHref,
 } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { pickLocalized, type Locale } from '@/lib/i18n'
 
+/** 대표 이미지, 세션 이름(관리자 언어, 없으면 다른 언어), 파트, 날짜를 보여 주는 링크 카드. */
 export default function SessionCard({
   session,
   locale,
 }: {
-  session: Pick<AdminSessionListItem, 'id' | 'mainImage' | 'name' | 'startAt'> &
+  session: Pick<
+    AdminSessionListItem,
+    'id' | 'mainImage' | 'name' | 'nameKo' | 'startAt'
+  > &
     Partial<Pick<AdminSessionListItem, 'partName'>>
   locale: Locale
 }) {
@@ -35,7 +42,9 @@ export default function SessionCard({
       />
       <div className={'flex h-full flex-col items-start gap-2 p-3'}>
         <div className={'flex min-w-0 flex-col gap-1'}>
-          <div className={'type-title text-ink'}>{session.name}</div>
+          <div className={'type-title text-ink'}>
+            {pickLocalized(locale, { en: session.name, ko: session.nameKo })}
+          </div>
           {session.partName && (
             <span className={'admin-badge-primary w-fit'}>
               {session.partName}

@@ -1,38 +1,23 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getPartFormData from '@/lib/server/form-data/get-part-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { updatePart } from '@/lib/server/services/admin/parts'
-import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
-
 /**
- * Update Part Action
- * @param partId - part id
- * @param prevState - previous state for form error
- * @param formData - part data
+ * 파트 수정 Server Action. 항목 id는 `bind`로 고정해 넘긴다.
  */
+import {
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parsePartForm } from '@/lib/server/form-data/admin-forms'
+import { updatePart } from '@/lib/server/services/admin/parts'
+
+/** 파트 정보와 구성원을 고치고 파트 상세로 이동한다. 첫 인자는 `bind`로 고정한다. */
 export async function updatePartAction(
   partId: string,
-  _prevState: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await updatePart(
-    actor,
-    Number(partId),
-    getPartFormData(formData)
-  )
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath(`/admin/parts/${partId}`))
+  return runAdminFormAction({
+    run: (actor) => updatePart(actor, Number(partId), parsePartForm(formData)),
+    redirectTo: `/admin/parts/${partId}`,
+  })
 }

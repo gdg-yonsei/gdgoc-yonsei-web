@@ -1,24 +1,27 @@
 'use client'
 
+/**
+ * 관리자 모바일 하단 탭 바(클라이언트 컴포넌트).
+ */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSetAtom } from 'jotai'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
-import { menuBarState } from '@/lib/atoms'
+import { menuBarState } from '@/lib/admin/atoms'
 import { NAV_ICONS, isNavItemActive } from '@/app/components/admin/nav-item'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import type { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import { cn } from '@/lib/cn'
 
-/** 하단 탭에 노출할 최대 개수. 나머지는 '더보기' 드로어로 넘깁니다. */
+/** 하단 탭에 보일 최대 개수. 나머지는 '더보기' 드로어로 넘긴다. */
 const MAX_TABS = 4
 
 /**
  * 모바일 하단 탭 바.
  *
- * 관리자 화면 대부분이 한 손 조작이라, 자주 쓰는 목적지를 엄지 도달 범위인
- * 화면 하단에 고정합니다. `navigations`는 이미 권한 필터링을 거친 목록이므로
- * 사용자가 접근 못 하는 탭은 애초에 들어오지 않습니다.
+ * 모바일에서는 한 손으로 조작하는 경우가 많아, 자주 쓰는 목적지를 엄지가 닿는
+ * 화면 하단에 고정한다. `navigations`는 이미 권한으로 걸러진 목록이므로
+ * 사용자가 접근할 수 없는 탭은 들어오지 않는다.
  */
 export default function MobileTabBar({
   navigations,
@@ -35,8 +38,8 @@ export default function MobileTabBar({
   if (tabs.length === 0) return null
 
   return (
-    // 사이드바/드로어의 `mainNavigation`과 다른 이름을 씁니다. 같은 이름이면
-    // 랜드마크가 중복되어 보조기술과 테스트 모두에서 모호해집니다.
+    // 사이드바/드로어의 `mainNavigation`과 다른 이름을 쓴다. 같은 이름이면
+    // 랜드마크가 중복되어 보조기술과 테스트 모두에서 모호해진다.
     <nav
       aria-label={t('menu')}
       className={

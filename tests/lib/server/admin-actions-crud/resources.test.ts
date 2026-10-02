@@ -42,11 +42,11 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
@@ -56,7 +56,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: mockInvalidateSessionPublicCache,
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getProjectCacheContext: mockGetProjectCacheContext,
   getSessionCacheContext: mockGetSessionCacheContext,
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
@@ -68,14 +68,15 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     delete: mockDelete,
     query: mockQuery,
   },
 }))
 
-vi.mock('@/lib/server/delete-r2-images', () => ({
-  default: mockDeleteR2Images,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  deleteImages: mockDeleteR2Images,
 }))
 
 describe('delete-resource server actions', () => {
@@ -105,7 +106,7 @@ describe('delete-resource server actions', () => {
   })
 
   it('rejects delete request when dataId format is invalid', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -122,7 +123,7 @@ describe('delete-resource server actions', () => {
     // CORE 는 파트를 삭제할 수 없다(LEAD 전용).
     mockGetUserRole.mockResolvedValue('CORE')
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -144,7 +145,7 @@ describe('delete-resource server actions', () => {
     })
     mockDeleteR2Images.mockResolvedValue(false)
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -158,7 +159,7 @@ describe('delete-resource server actions', () => {
   })
 
   it('deletes part resource when request form is valid', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()
@@ -186,7 +187,7 @@ describe('delete-resource server actions', () => {
       generationName: '10th',
     })
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

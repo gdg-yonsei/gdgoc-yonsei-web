@@ -1,15 +1,17 @@
+/**
+ * 세션 상세 페이지(`/{lang}/session/{기수}/{id}`). 공개되지 않았거나 URL의 기수가 다르면 404.
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import PageTransition from '@/app/components/site/page-transition'
 import SessionDetailView from '@/app/components/site/session-detail/session-detail-view'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import {
   archiveCommonCopy,
   sessionArchiveCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import {
   getSessionArchive,
@@ -22,7 +24,7 @@ import {
   getSiteUrl,
   summarizeForMetadata,
 } from '@/lib/seo/metadata'
-import { formatSessionShortDate } from '@/lib/site/datetime'
+import { formatSessionShortDate } from '@/lib/format/datetime'
 import {
   breadcrumbList,
   sessionEvent,
@@ -36,19 +38,17 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import SessionDetailLoading from './loading'
+import { pickLocalized, toLocale } from '@/lib/i18n'
+import { generationPath, sessionPath } from '@/lib/site/routes'
 
 type Props = {
   params: Promise<{ lang: string; generation: string; sessionId: string }>
 }
 
-async function loadSession(
-  sessionId: string,
-  generation: string,
-  locale: Locale
-) {
+async function loadSession(sessionId: string, generation: string) {
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const [session, archive] = await Promise.all([
-    getSessionById(sessionId, locale, visibilityBucket),
+    getSessionById(sessionId, visibilityBucket),
     getSessionArchive(visibilityBucket),
   ])
 
@@ -68,10 +68,11 @@ function fallbackDescription(
     : `Learn from ${title}, a GDGoC Yonsei ${generation} session.`
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, generation, sessionId } = await params
-  const locale = languageParamChecker(lang)
-  const loaded = await loadSession(sessionId, generation, locale)
+  const locale = toLocale(lang)
+  const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
     notFound()
@@ -82,8 +83,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return createLocalizedMetadata({
     locale,
-    path: `/session/${generation}/${sessionId}`,
-    // "25-26 Sixth T19 · Tech Talk · Nov 4, 2025"
+    path: sessionPath(generation, sessionId),
+    // 예: "25-26 Sixth T19 · Tech Talk · Nov 4, 2025"
     title: [
       title,
       categoryLabel(session.category, locale),
@@ -92,13 +93,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         : []),
     ].join(' · '),
     description: summarizeForMetadata(
-      locale === 'ko' ? session.descriptionKo : session.description,
+      pickLocalized(locale, {
+        en: session.description,
+        ko: session.descriptionKo,
+      }),
       fallbackDescription(locale, title, generation)
     ),
     generatedSocialImage: true,
   })
 }
 
+/** 페이지 본문. */
 export default async function SessionDetailPage({ params }: Props) {
   const resolved = await params
 
@@ -120,8 +125,8 @@ async function SessionDetail({
   generation: string
   sessionId: string
 }) {
-  const locale = languageParamChecker(lang)
-  const loaded = await loadSession(sessionId, generation, locale)
+  const locale = toLocale(lang)
+  const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
     notFound()
@@ -131,10 +136,12 @@ async function SessionDetail({
   const copy = sessionArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
   const title = sessionTitle(session, locale)
-  const description =
-    locale === 'ko' ? session.descriptionKo : session.description
+  const description = pickLocalized(locale, {
+    en: session.description,
+    ko: session.descriptionKo,
+  })
   const location = sessionLocation(session, locale)
-  const url = getLocalizedUrl(locale, `/session/${generation}/${sessionId}`)
+  const url = getLocalizedUrl(locale, sessionPath(generation, sessionId))
   const summary = summarizeForMetadata(
     description,
     fallbackDescription(locale, title, generation)
@@ -181,7 +188,10 @@ async function SessionDetail({
             },
             {
               name: generation,
-              url: getLocalizedUrl(locale, `/session/${generation}`),
+              url: getLocalizedUrl(
+                locale,
+                generationPath('session', generation)
+              ),
             },
             { name: title, url },
           ]),

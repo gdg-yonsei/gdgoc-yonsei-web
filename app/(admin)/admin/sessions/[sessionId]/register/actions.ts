@@ -1,28 +1,23 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
+/**
+ * 세션 참가 신청 Server Action.
+ */
+import {
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
 import { registerForSession } from '@/lib/server/services/admin/sessions'
-import { getWebActor } from '@/lib/server/services/admin/web-actor'
 
+/**
+ * 세션 참가 신청. 폼에서 `bind`로 `sessionId`를 고정해 부른다.
+ * 신청할 수 없는 세션(마감·비공개)은 403, 정원 초과·중복 신청은 폼 오류로 보여 준다.
+ */
 export async function registerSessionAction(
-  sessionId: string,
-  _prevState: { error: string },
-  _formData: FormData
-) {
-  void _prevState
-  void _formData
-
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const result = await registerForSession(actor, sessionId)
-  if (!result.ok) {
-    // 신청할 수 없는 세션(마감·비공개)은 403, 그 외는 폼 오류로 보여 준다.
-    return result.code === 'FORBIDDEN' ? forbidden() : { error: result.message }
-  }
-
-  return redirect(await getLocalizedAdminPath(`/admin/sessions/${sessionId}`))
+  sessionId: string
+): Promise<AdminFormState> {
+  return runAdminFormAction({
+    run: (actor) => registerForSession(actor, sessionId),
+    redirectTo: `/admin/sessions/${sessionId}`,
+  })
 }

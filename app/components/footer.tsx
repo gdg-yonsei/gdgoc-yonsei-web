@@ -1,16 +1,25 @@
+/**
+ * 공개 사이트 푸터(서버 컴포넌트): 사이트 링크, 공식 채널, 서울 시계, 언어 전환.
+ *
+ * 채널 주소는 `lib/site/channels.ts`, 문구는 `chromeCopy`에서 읽는다. 현재 경로를 읽는
+ * 언어 전환은 Suspense로 감싸 정적 셸을 막지 않게 한다.
+ */
 import { Suspense, type ReactNode } from 'react'
 import Link from 'next/link'
 import ArrowUpRightIcon from '@heroicons/react/24/outline/ArrowUpRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import GDGLogo from '@/app/components/svg/gdg-logo'
 import FooterLocaleSwitch from '@/app/components/site/footer-locale-switch'
 import LocaleSwitch from '@/app/components/site/locale-switch'
 import SeoulClock from '@/app/components/site/seoul-clock'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import { CHANNELS } from '@/lib/site/channels'
+import { localeHref } from '@/lib/site/routes'
 
+/** 저작권 표기 연도. 렌더링 시점의 연도를 쓰면 정적 셸 캐시와 어긋나므로 상수로 둔다. */
 const COPYRIGHT_YEAR = 2026
 
+/** 제목이 붙은 푸터 링크 열. */
 function FooterColumn({
   title,
   children,
@@ -28,6 +37,7 @@ function FooterColumn({
   )
 }
 
+/** 외부 링크 표시 화살표 아이콘. */
 const External = () => (
   <ArrowUpRightIcon
     aria-hidden="true"
@@ -35,6 +45,12 @@ const External = () => (
   />
 )
 
+/**
+ * 사이트 푸터.
+ *
+ * 푸터 링크는 화면 아래쪽이라 거의 누르지 않으므로 `prefetch={false}`로 둔다.
+ * @param lang 현재 언어
+ */
 export default function Footer({ lang }: { lang: Locale }) {
   const copy = chromeCopy[lang]
 
@@ -55,7 +71,7 @@ export default function Footer({ lang }: { lang: Locale }) {
           <FooterColumn title={copy.footerExplore}>
             <li>
               <Link
-                href={`/${lang}/session`}
+                href={localeHref(lang, '/session')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -64,7 +80,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/project`}
+                href={localeHref(lang, '/project')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -73,7 +89,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/calendar`}
+                href={localeHref(lang, '/calendar')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -82,7 +98,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/member`}
+                href={localeHref(lang, '/member')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -137,7 +153,7 @@ export default function Footer({ lang }: { lang: Locale }) {
           <FooterColumn title={copy.footerSite}>
             <li>
               <Link
-                href={`/${lang}/privacy-policy`}
+                href={localeHref(lang, '/privacy-policy')}
                 prefetch={false}
                 className="site-footer-link"
               >
@@ -146,20 +162,11 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/terms-of-service`}
+                href={localeHref(lang, '/terms-of-service')}
                 prefetch={false}
                 className="site-footer-link"
               >
                 {copy.terms}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href={`/${lang}/2026-freshman-ot`}
-                prefetch={false}
-                className="site-footer-link"
-              >
-                {copy.freshmanOt}
               </Link>
             </li>
             <li>
@@ -174,7 +181,7 @@ export default function Footer({ lang }: { lang: Locale }) {
             </li>
             <li>
               <Link
-                href={`/${lang}/admin`}
+                href={localeHref(lang, '/admin')}
                 prefetch={false}
                 className="site-footer-link"
               >

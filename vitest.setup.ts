@@ -28,6 +28,15 @@ type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   placeholder?: 'blur' | 'empty'
 }
 
+// `after()`는 요청 컨텍스트 밖에서 호출하면 예외를 던진다. 테스트에서는 예약된
+// 작업을 즉시 실행해 결과를 검증할 수 있게 한다.
+vi.mock('next/server', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/server')>()),
+  after: (task: unknown) => {
+    if (typeof task === 'function') void task()
+  },
+}))
+
 vi.mock('next/image', () => ({
   default: ({
     src,

@@ -1,5 +1,8 @@
+/**
+ * 파트 생성 화면(`/admin/parts/create`). 권한은 레이아웃이 확인한다.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { createPartAction } from '@/app/(admin)/admin/parts/create/actions'
@@ -11,10 +14,12 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Create Part',
 }
 
+/** 파트 생성 폼. */
 export default async function CreatePartPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -69,11 +74,7 @@ export default async function CreatePartPage() {
           defaultValue={10}
           placeholder="10"
         />
-        <p className="text-ink-muted text-sm">
-          {locale === 'ko'
-            ? '작은 숫자의 파트부터 표시됩니다.'
-            : 'Parts with smaller numbers appear first.'}
-        </p>
+        <p className="text-ink-muted text-sm">{t.displayOrderHint}</p>
         <DataTextarea
           defaultValue={''}
           name={'description'}

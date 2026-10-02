@@ -36,23 +36,6 @@ test.describe('public routes and user interactions', () => {
     }
   })
 
-  test('freshman OT pages load', async ({ page }) => {
-    test.setTimeout(90_000)
-
-    const routes = ['/en/2026-freshman-ot', '/ko/2026-freshman-ot']
-
-    for (const route of routes) {
-      await test.step(route, async () => {
-        const response = await page.goto(route, {
-          waitUntil: 'domcontentloaded',
-        })
-        expect(response).not.toBeNull()
-        expect(response?.status() ?? 0).toBeLessThan(400)
-        await expect(page.locator('body')).toBeVisible()
-      })
-    }
-  })
-
   test('top-level member/project/session routes are stable generation indexes', async ({
     context,
     page,

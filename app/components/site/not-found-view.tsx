@@ -1,14 +1,20 @@
+/**
+ * 루트 404 화면 본문(서버 컴포넌트).
+ */
 import Link from 'next/link'
 import BracketPoster from '@/app/components/site/bracket-poster'
 
+/** 404 화면의 도움 링크. 언어 접두사 없이 두어 proxy가 언어를 고르게 한다. */
 const links = [
   { href: '/', en: 'Home', ko: '홈' },
   { href: '/session', en: 'Sessions', ko: '세션' },
   { href: '/project', en: 'Projects', ko: '프로젝트' },
 ]
 
-/** Root 404 content. No locale is known here, so the copy is bilingual and
-    the links let the proxy pick the language. */
+/**
+ * 루트 404 본문. 여기서는 언어를 알 수 없으므로 문구를 두 언어로 함께 쓰고,
+ * 링크의 언어는 proxy가 정하게 한다.
+ */
 export default function NotFoundView() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 text-center">

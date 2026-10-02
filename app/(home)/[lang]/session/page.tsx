@@ -1,20 +1,22 @@
+/**
+ * 세션 허브(`/{lang}/session`): 기수 띠, 검색·필터, 세션 로그.
+ */
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
+import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
+import {
+  ArchiveListSkeleton,
+  SkeletonBars,
+} from '@/app/components/site/skeletons'
 import JsonLd from '@/app/components/json-ld'
-import LocalizedText from '@/app/components/localized-text'
 import EmptyState from '@/app/components/site/empty-state'
 import FilterBar from '@/app/components/site/filter-bar'
 import GenerationStrip from '@/app/components/site/generation-strip'
-import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
-import PageHeader from '@/app/components/site/page-header'
-import PageTransition from '@/app/components/site/page-transition'
 import SessionLog from '@/app/components/site/session-log/session-log'
 import {
   archiveCommonCopy,
   sessionArchiveCopy,
   sessionFilterCopy,
 } from '@/lib/contents/archive-copy'
-import languageParamChecker from '@/lib/language-param-checker'
 import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
 import { getSessionArchive } from '@/lib/server/queries/public/sessions'
@@ -30,18 +32,22 @@ import {
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
+import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { sessionPath } from '@/lib/site/routes'
 
 type Props = { params: Promise<{ lang: string }> }
 
 const en = sessionArchiveCopy.en
 const ko = sessionArchiveCopy.ko
 
+/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'ko' }]
+  return localeStaticParams()
 }
 
+/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = languageParamChecker((await params).lang)
+  const locale = toLocale((await params).lang)
   const copy = sessionArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -52,61 +58,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/*
- * The shell (header, H1, description) never reads params, so every link to
- * this route shares one instant App Shell; LocalizedText picks the language
- * with CSS. Everything URL- or data-dependent streams in below.
- */
+/** 페이지 본문. */
 export default function SessionHubPage({ params }: Props) {
   return (
-    <PageTransition>
-      <div className="site-page" data-testid="session-log-shell">
-        <Suspense
-          fallback={
-            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
-          }
-        >
-          <HubBreadcrumbs params={params} section="sessions" />
-        </Suspense>
-        <PageHeader
-          tag={en.tag}
-          title={<LocalizedText en={en.hubTitle} ko={ko.hubTitle} />}
-          description={
-            <LocalizedText en={en.hubDescription} ko={ko.hubDescription} />
-          }
-        />
-        <Suspense fallback={<SessionHubFallback />}>
-          <SessionHubContent params={params} />
-        </Suspense>
-      </div>
-    </PageTransition>
-  )
-}
-
-function SessionHubFallback() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading sessions"
-      className="archive-skeleton"
+    <ArchiveHubShell
+      params={params}
+      section="sessions"
+      testId="session-log-shell"
+      tag={en.tag}
+      title={{ en: en.hubTitle, ko: ko.hubTitle }}
+      description={{ en: en.hubDescription, ko: ko.hubDescription }}
+      fallback={
+        <ArchiveListSkeleton label="Loading sessions">
+          <SkeletonBars count={4} className="h-20 w-full" />
+        </ArchiveListSkeleton>
+      }
     >
-      <span className="skeleton-bar h-10 w-72 max-w-full" />
-      <span className="skeleton-bar h-36 w-full rounded-3xl" />
-      {Array.from({ length: 4 }, (_, index) => (
-        <span key={index} className="skeleton-bar h-20 w-full" />
-      ))}
-    </div>
+      <SessionHubContent params={params} />
+    </ArchiveHubShell>
   )
 }
 
 async function SessionHubContent({ params }: Props) {
-  const lang = languageParamChecker((await params).lang)
+  const lang = toLocale((await params).lang)
   const copy = sessionArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const [archive, generations] = await Promise.all([
     getSessionArchive(visibilityBucket),
-    getGenerationSummaries(lang),
+    getGenerationSummaries(),
   ])
   const facets = sessionFacets(archive, lang)
   const url = getLocalizedUrl(lang, '/session')
@@ -126,7 +106,7 @@ async function SessionHubContent({ params }: Props) {
               name: sessionTitle(session, lang),
               url: getLocalizedUrl(
                 lang,
-                `/session/${session.generationName}/${session.id}`
+                sessionPath(session.generationName, session.id)
               ),
             })),
           }),

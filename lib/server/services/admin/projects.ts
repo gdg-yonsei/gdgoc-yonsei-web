@@ -1,26 +1,33 @@
+/**
+ * 프로젝트 관리 서비스(목록, 상세, 생성, 수정, 삭제).
+ *
+ * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
+ * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
+ * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
+ */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { projects } from '@/db/schema/projects'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import {
-  deleteRemovedR2Images,
   insertRowsIfAny,
   replaceRelationRows,
   stripHtmlCharacters,
-} from '@/lib/server/actions/admin'
+} from '@/lib/server/services/admin/shared'
+import { deleteImages, deleteRemovedImages } from '@/lib/server/storage/r2'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
-import deleteR2Images from '@/lib/server/delete-r2-images'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import {
   getProjects,
   type AdminProjectListItem,
 } from '@/lib/server/fetcher/admin/get-projects'
+import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { normalizeR2ImageObjectKey } from '@/lib/server/r2-object-key'
+import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import {
   authorize,
   canAccessGeneration,
@@ -37,10 +44,11 @@ import {
 import {
   getGenerationNameById,
   getProjectCacheContext,
-} from '@/lib/server/services/cache-context'
-import { syncProjectTags } from '@/lib/server/services/project-tags'
+} from '@/lib/server/services/admin/cache-context'
+import { syncProjectTags } from '@/lib/server/services/admin/project-tags'
 import { projectValidation } from '@/lib/validations/project'
 
+/** 프로젝트 입력(검증 전) 타입. */
 export type ProjectInput = z.input<typeof projectValidation>
 
 const NOT_FOUND = 'Project not found'
@@ -50,6 +58,7 @@ function parseProjectInput(input: unknown) {
   return parsed.success ? ok(parsed.data) : fromZodError(parsed.error)
 }
 
+/** 범위(기수)의 프로젝트 목록. */
 export async function listProjects(
   actor: Actor,
   { generation }: { generation?: number | 'all' } = {}
@@ -83,10 +92,12 @@ async function loadProjectDetail(projectId: string) {
   }
 }
 
+/** 프로젝트 상세(참가자, 태그, 기수). */
 export type ProjectDetail = NonNullable<
   Awaited<ReturnType<typeof loadProjectDetail>>
 >
 
+/** 프로젝트 상세. */
 export async function getProjectDetail(
   actor: Actor,
   projectId: string
@@ -120,6 +131,7 @@ export function projectToInput(detail: ProjectDetail): ProjectInput {
   }
 }
 
+/** 프로젝트와 참가자·태그를 한 트랜잭션으로 만든다. 선택한 기수에 접근할 수 있어야 한다. */
 export async function createProject(
   actor: Actor,
   input: unknown
@@ -154,38 +166,43 @@ export async function createProject(
   try {
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
-    const createdProject = (
-      await db
-        .insert(projects)
-        .values({
-          name,
-          nameKo,
-          description,
-          descriptionKo,
-          authorId: actor.userId,
-          generationId: Number(generationId),
-          images: contentImages,
-          mainImage,
-          content: stripHtmlCharacters(content),
-          contentKo: stripHtmlCharacters(contentKo),
-          repoUrl,
-          demoUrl,
-        })
-        .returning({ id: projects.id })
-    )[0]
+    // 프로젝트 행, 참가자, 태그는 함께 저장되거나 함께 실패해야 한다.
+    const createdProject = await db.transaction(async (tx) => {
+      const created = (
+        await tx
+          .insert(projects)
+          .values({
+            name,
+            nameKo,
+            description,
+            descriptionKo,
+            authorId: actor.userId,
+            generationId: Number(generationId),
+            images: contentImages,
+            mainImage,
+            content: stripHtmlCharacters(content),
+            contentKo: stripHtmlCharacters(contentKo),
+            repoUrl,
+            demoUrl,
+          })
+          .returning({ id: projects.id })
+      )[0]
+      if (!created) return undefined
+
+      await insertRowsIfAny(
+        participants.map((participant) => ({
+          projectId: created.id,
+          userId: participant,
+        })),
+        (rows) => tx.insert(usersToProjects).values(rows)
+      )
+      await syncProjectTags(created.id, tags, tx)
+      return created
+    })
 
     if (!createdProject) {
       return fail('INTERNAL', 'Failed to create project')
     }
-
-    await insertRowsIfAny(
-      participants.map((participant) => ({
-        projectId: createdProject.id,
-        userId: participant,
-      })),
-      (rows) => db.insert(usersToProjects).values(rows)
-    )
-    await syncProjectTags(createdProject.id, tags)
 
     projectId = createdProject.id
 
@@ -201,6 +218,10 @@ export async function createProject(
   return ok({ id: projectId })
 }
 
+/**
+ * 프로젝트를 고친다. 작성자는 기수와 무관하게 자기 프로젝트를 고칠 수 있다.
+ * DB를 커밋한 뒤 더는 쓰지 않는 이미지를 R2에서 지운다.
+ */
 export async function updateProject(
   actor: Actor,
   projectId: string,
@@ -271,44 +292,51 @@ export async function updateProject(
       return fail('NOT_FOUND', NOT_FOUND)
     }
 
-    await deleteRemovedR2Images({
+    // 프로젝트 행과 참가자·태그 관계는 하나의 트랜잭션으로 바꾼다.
+    await db.transaction(async (tx) => {
+      await tx
+        .update(projects)
+        .set({
+          name,
+          nameKo,
+          description,
+          descriptionKo,
+          content: stripHtmlCharacters(content),
+          contentKo: stripHtmlCharacters(contentKo),
+          images: contentImages,
+          mainImage,
+          generationId: Number(generationId),
+          repoUrl,
+          demoUrl,
+          updatedAt: new Date(),
+        })
+        .where(eq(projects.id, projectId))
+
+      await replaceRelationRows({
+        deleteRows: () =>
+          tx
+            .delete(usersToProjects)
+            .where(eq(usersToProjects.projectId, projectId)),
+        rows: participants.map((user) => ({
+          projectId,
+          userId: user,
+        })),
+        insertRows: (rows) => tx.insert(usersToProjects).values(rows),
+      })
+      await syncProjectTags(projectId, tags, tx)
+    })
+
+    // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
+    // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
+    await deleteRemovedImages({
       previousImages: prevImages.images,
       nextImages: contentImages,
       previousMainImage: prevImages.mainImage,
       nextMainImage: mainImage,
       prefix: 'projects',
-    })
-
-    await db
-      .update(projects)
-      .set({
-        name,
-        nameKo,
-        description,
-        descriptionKo,
-        content: stripHtmlCharacters(content),
-        contentKo: stripHtmlCharacters(contentKo),
-        images: contentImages,
-        mainImage,
-        generationId: Number(generationId),
-        repoUrl,
-        demoUrl,
-        updatedAt: new Date(),
-      })
-      .where(eq(projects.id, projectId))
-
-    await replaceRelationRows({
-      deleteRows: () =>
-        db
-          .delete(usersToProjects)
-          .where(eq(usersToProjects.projectId, projectId)),
-      rows: participants.map((user) => ({
-        projectId,
-        userId: user,
-      })),
-      insertRows: (rows) => db.insert(usersToProjects).values(rows),
-    })
-    await syncProjectTags(projectId, tags)
+    }).catch((error: unknown) =>
+      logger.error('admin.projects.update.r2-cleanup', error, { projectId })
+    )
 
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
@@ -327,6 +355,10 @@ export async function updateProject(
   return ok({ id: projectId })
 }
 
+/**
+ * 프로젝트를 지운다. 이미지를 R2에서 먼저 지우고, 실패하면 DB도 지우지 않는다
+ * (R2가 실패했을 때 다시 시도할 수 있게 레코드를 남긴다).
+ */
 export async function deleteProject(
   actor: Actor,
   projectId: string
@@ -354,14 +386,14 @@ export async function deleteProject(
 
   try {
     const projectCacheContext = await getProjectCacheContext(projectId)
-    const projectImageKeys = [
+    const projectImageKeys = uniqueStrings([
       ...projectImageList.images
         .map((image) => normalizeR2ImageObjectKey(image, 'projects'))
         .filter(Boolean),
       normalizeR2ImageObjectKey(projectImageList.mainImage, 'projects'),
-    ].filter(Boolean) as string[]
+    ])
 
-    if (!(await deleteR2Images(projectImageKeys))) {
+    if (!(await deleteImages(projectImageKeys))) {
       return fail('INTERNAL', 'R2 Image Delete Error')
     }
 

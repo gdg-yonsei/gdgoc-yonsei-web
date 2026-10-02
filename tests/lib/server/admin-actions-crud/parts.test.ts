@@ -28,11 +28,11 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
@@ -42,7 +42,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: vi.fn(),
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNameById: mockGetGenerationNameById,
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
   getProjectCacheContext: vi.fn(),
@@ -58,14 +58,21 @@ vi.mock('next/navigation', () => ({
   forbidden: mockForbidden,
 }))
 
-vi.mock('@/db', () => ({
-  default: {
+vi.mock('@/db', () => {
+  const db = {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
     query: mockQuery,
-  },
-}))
+  }
+  // 트랜잭션 콜백은 같은 목 객체로 바로 실행한다.
+  return {
+    db: {
+      ...db,
+      transaction: (callback: (tx: typeof db) => unknown) => callback(db),
+    },
+  }
+})
 
 function createFormData(entries: Record<string, string>) {
   const formData = new FormData()
@@ -285,7 +292,7 @@ describe('parts CRUD server actions', () => {
   )
 
   it('deletes part from shared delete action path', async () => {
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

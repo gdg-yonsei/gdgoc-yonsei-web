@@ -1,3 +1,6 @@
+/**
+ * 루트 위치 OAuth 인가 서버 메타데이터(RFC 8414) 라우트.
+ */
 import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider'
 import { connection } from 'next/server'
 import { auth } from '@/auth'

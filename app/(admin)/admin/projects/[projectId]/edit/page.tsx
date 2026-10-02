@@ -1,20 +1,26 @@
+/**
+ * 프로젝트 수정 화면(`/admin/projects/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { updateProjectAction } from '@/app/(admin)/admin/projects/[projectId]/edit/actions'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataInput from '@/app/components/admin/data-input'
 import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import TagsInput from '@/app/components/admin/tags-input'
-import { getTagNames } from '@/lib/server/services/project-tags'
+import { getTagNames } from '@/lib/server/services/admin/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { requirePermission } from '@/lib/server/permission/require-permission'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import {
+  resolveAdminGenerationScope,
+  canSwitchToGeneration,
+} from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 import GenerationField from '@/app/components/admin/generation-field'
@@ -25,10 +31,12 @@ import {
 import { dedupeById } from '@/lib/admin/member-options'
 import { connection } from 'next/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Project',
 }
 
+/** 기존 값을 채운 프로젝트 수정 폼. */
 export default async function EditProjectPage({
   params,
 }: {
@@ -75,12 +83,7 @@ export default async function EditProjectPage({
       {actualGeneration && (
         <AdminGenerationScopeMismatchNotice
           actualGeneration={actualGeneration}
-          canSwitch={
-            resolvedScope?.canAccessAll === true ||
-            resolvedScope?.options.some(
-              (option) => option.id === actualGeneration.id
-            ) === true
-          }
+          canSwitch={canSwitchToGeneration(resolvedScope, actualGeneration.id)}
           currentScope={resolvedScope?.scope ?? null}
           locale={locale}
         />

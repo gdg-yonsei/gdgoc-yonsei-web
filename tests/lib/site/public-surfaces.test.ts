@@ -16,7 +16,6 @@ const ROOTS = [
   'app/components/header',
   'app/components/footer.tsx',
 ]
-const SKIP = /2026-freshman-ot/
 const FIXED_NEUTRAL =
   /\b(?:bg|text|border|ring|divide|from|via|to)-(?:neutral|gray|slate|zinc|stone)-\d{2,3}\b/
 const SOLID_WHITE = /(?<![\w:-])bg-white(?![\w/-])/
@@ -27,9 +26,7 @@ function files(path: string): string[] {
     : [path]
 }
 
-const sources = ROOTS.flatMap(files).filter(
-  (path) => /\.tsx?$/.test(path) && !SKIP.test(path)
-)
+const sources = ROOTS.flatMap(files).filter((path) => /\.tsx?$/.test(path))
 
 describe('public surfaces follow the colour scheme', () => {
   it.each(sources)('%s uses scheme tokens', (path) => {

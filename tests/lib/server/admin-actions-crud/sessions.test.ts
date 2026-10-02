@@ -43,11 +43,11 @@ vi.mock('@/auth', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: mockHandlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: mockHandlePermission,
 }))
 
 vi.mock('@/lib/server/cache', () => ({
@@ -58,7 +58,7 @@ vi.mock('@/lib/server/cache', () => ({
   invalidateProjectPublicCache: vi.fn(),
 }))
 
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNameForPartId: mockGetGenerationNameForPartId,
   getSessionCacheContext: mockGetSessionCacheContext,
   getProjectCacheContext: vi.fn(),
@@ -81,24 +81,32 @@ vi.mock('next/navigation', () => ({
   forbidden: mockForbidden,
 }))
 
-vi.mock('@/db', () => ({
-  default: {
+vi.mock('@/db', () => {
+  const db = {
     insert: mockInsert,
     update: mockUpdate,
     delete: mockDelete,
     select: mockSelect,
     query: mockQuery,
-  },
-}))
+  }
+  // 트랜잭션 콜백은 같은 목 객체로 바로 실행한다.
+  return {
+    db: {
+      ...db,
+      transaction: (callback: (tx: typeof db) => unknown) => callback(db),
+    },
+  }
+})
 
-vi.mock('@/lib/server/r2-client', () => ({
-  default: {
+vi.mock('@/lib/server/storage/r2-client', () => ({
+  r2Client: {
     send: mockR2Send,
   },
 }))
 
-vi.mock('@/lib/server/delete-r2-images', () => ({
-  default: mockDeleteR2Images,
+vi.mock('@/lib/server/storage/r2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/server/storage/r2')>()),
+  deleteImages: mockDeleteR2Images,
 }))
 
 vi.mock('resend', () => ({
@@ -454,7 +462,7 @@ describe('sessions CRUD server actions', () => {
       generationName: 'seed-gen',
     })
 
-    const { default: deleteResourceAction } =
+    const { deleteResourceAction } =
       await import('@/app/components/admin/data-delete-button/actions')
 
     const formData = new FormData()

@@ -9,11 +9,11 @@ const { dbUpdate, updateSet } = vi.hoisted(() => {
   return { updateSet, dbUpdate: vi.fn(() => ({ set: updateSet })) }
 })
 
-vi.mock('@/db', () => ({ default: { update: dbUpdate } }))
+vi.mock('@/db', () => ({ db: { update: dbUpdate } }))
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: vi.fn(),
 }))
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: vi.fn(async () => []),
 }))
 

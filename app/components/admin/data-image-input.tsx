@@ -1,14 +1,25 @@
 'use client'
 
+/**
+ * 단일 이미지 업로드 입력(클라이언트 컴포넌트).
+ *
+ * 파일을 고르면 presigned URL로 R2에 바로 올리고(`lib/upload-image.ts`), 받은 공개 URL을
+ * 숨은 필드에 넣어 폼과 함께 제출한다. 업로드 중에는 전역 atom으로 제출 버튼을 막는다.
+ */
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
-import { uploadSingleImageState } from '@/lib/atoms'
+import { uploadSingleImageState } from '@/lib/admin/atoms'
 import { deleteUploadedImage, uploadSingleImage } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
- * 이미지 한 장을 업로드하고, 공개 URL 을 히든 필드에 실어 폼과 함께 전송한다.
+ * 이미지 한 장을 업로드하고, 공개 URL을 숨은 필드에 실어 폼과 함께 전송한다.
+ *
+ * @param name 폼 필드 이름
+ * @param baseUrl 업로드 API 경로(리소스별 `/api/admin/.../upload` 등)
+ * @param defaultValue 기존 이미지 URL(수정 화면)
+ * @param children 업로드 버튼 문구
  */
 export default function DataImageInput({
   children,

@@ -1,12 +1,12 @@
 /**
- * Triggers a Dokploy deployment of the production app and waits for it.
+ * 운영 앱의 Dokploy 배포를 시작하고 끝날 때까지 기다린다.
  *
- * Dokploy builds from the tip of `main`, so the caller (cd.yml) first checks
- * that the tip is still the commit CI just verified.
+ * Dokploy는 `main`의 최신 커밋으로 빌드하므로, 호출하는 쪽(cd.yml)이 먼저 그 커밋이 CI가 방금 검증한
+ * 커밋인지 확인한다.
  *
- * Env: DOKPLOY_URL, DOKPLOY_API_KEY, DOKPLOY_APPLICATION_ID,
- *      DEPLOY_TITLE, DEPLOY_DESCRIPTION (optional),
- *      DEPLOY_TIMEOUT_MINUTES (optional, default 25).
+ * 환경 변수: DOKPLOY_URL, DOKPLOY_API_KEY, DOKPLOY_APPLICATION_ID,
+ *           DEPLOY_TITLE, DEPLOY_DESCRIPTION(선택),
+ *           DEPLOY_TIMEOUT_MINUTES(선택, 기본 25).
  */
 import { appendFileSync } from 'node:fs'
 
@@ -56,8 +56,8 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const known = new Set((await listDeployments()).map((d) => d.deploymentId))
 const started = Date.now()
 
-// Dokploy's GitHub auto-deploy must be off, or every push builds twice and
-// untested commits reach production. Warn loudly if a push already started one.
+// Dokploy의 GitHub 자동 배포는 꺼져 있어야 한다. 켜져 있으면 push마다 두 번 빌드하고, 검증되지 않은
+// 커밋이 운영에 나간다. push로 이미 배포가 시작됐으면 크게 경고한다.
 const application = await api(
   'GET',
   `application.one?applicationId=${encodeURIComponent(applicationId)}`

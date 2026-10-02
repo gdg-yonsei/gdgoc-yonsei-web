@@ -29,3 +29,21 @@ describe('Next.js 16.3 custom cache handler contracts', () => {
     }
   })
 })
+
+describe('Redis entry expiry', () => {
+  const {
+    expireToSetOptions,
+  } = require('../../../lib/server/cache/handlers/redis-shared.cjs')
+
+  it('turns a cache life expire into a Redis EX option', () => {
+    expect(expireToSetOptions(7200)).toEqual({ EX: 7200 })
+    expect(expireToSetOptions(1.2)).toEqual({ EX: 2 })
+  })
+
+  it('keeps entries without a usable expire forever', () => {
+    expect(expireToSetOptions(undefined)).toBeUndefined()
+    expect(expireToSetOptions(0)).toBeUndefined()
+    expect(expireToSetOptions(Number.POSITIVE_INFINITY)).toBeUndefined()
+    expect(expireToSetOptions(0xfffffffe)).toBeUndefined()
+  })
+})

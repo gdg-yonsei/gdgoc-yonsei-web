@@ -21,7 +21,7 @@ const {
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: { users: { findFirst: findUser, findMany: findUsers } },
     update: dbUpdate,
     delete: dbDelete,
@@ -39,7 +39,7 @@ vi.mock('@/lib/server/fetcher/admin/get-member', () => ({ getMember }))
 vi.mock('@/lib/server/cache', () => ({
   invalidateMemberPublicCache: vi.fn(),
 }))
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNamesForUserId: vi.fn(async () => []),
 }))
 

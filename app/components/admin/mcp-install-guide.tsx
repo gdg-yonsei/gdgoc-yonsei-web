@@ -1,5 +1,8 @@
 'use client'
 
+/**
+ * GYMS 관리자 홈의 MCP 연결 안내 카드(클라이언트 컴포넌트). 클라이언트(Claude Code, Codex 등)별 탭으로 설치 단계를 보여 준다.
+ */
 import { KeyboardEvent, useId, useRef, useState } from 'react'
 import {
   CheckIcon,
@@ -12,6 +15,7 @@ import {
   McpClientId,
 } from '@/app/components/admin/mcp-install-guides'
 
+/** 값을 클립보드에 복사하고 2초간 "복사됨"을 보여 주는 버튼. */
 function CopyButton({ value, label }: { value: string; label: string }) {
   const { t } = useAdminI18n()
   const [copied, setCopied] = useState(false)
@@ -43,6 +47,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   )
 }
 
+/** 복사 버튼이 붙은 코드 블록. */
 function CodeBlock({ code, label }: { code: string; label: string }) {
   return (
     <div
@@ -63,7 +68,9 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
 }
 
 /**
- * GYMS 홈의 MCP 연결 안내. 클라이언트별 탭으로 설치 방법을 보여준다.
+ * MCP 연결 안내. 탭은 WAI-ARIA tablist 패턴(화살표·Home·End 키 이동)을 따른다.
+ *
+ * @param mcpUrl MCP 서버 주소(`{사이트}/mcp`)
  */
 export default function McpInstallGuide({ mcpUrl }: { mcpUrl: string }) {
   const { t, locale } = useAdminI18n()
@@ -73,6 +80,7 @@ export default function McpInstallGuide({ mcpUrl }: { mcpUrl: string }) {
   const baseId = useId()
   const guide = guides.find((g) => g.id === selected)
 
+  /** 화살표·Home·End 키로 탭을 옮기고 포커스도 함께 옮긴다. */
   const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const index = guides.findIndex((g) => g.id === selected)
     let next = index

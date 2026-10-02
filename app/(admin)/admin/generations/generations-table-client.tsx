@@ -1,33 +1,29 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+/**
+ * 기수 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
+ */
+import { useState } from 'react'
 import AdminDataTable, {
   type AdminColumn,
 } from '@/app/components/admin/data-table'
 import AdminEmptyState from '@/app/components/admin/empty-state'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
 import {
   downloadCsv,
-  useFilteredSortedItems,
+  filterAndSortItems,
 } from '@/app/(admin)/admin/_lib/admin-table-client'
-import {
-  formatAdminDate,
-  localizeAdminHref,
-  type AdminMessages,
-} from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import { formatAdminDate, localizeAdminHref } from '@/lib/admin-i18n'
+import type { Locale } from '@/lib/i18n'
+import type { AdminGenerationListItem } from '@/lib/server/fetcher/admin/get-generations'
 
-export type AdminGenerationListItem = {
-  id: number
-  name: string
-  startDate: string
-  endDate: string | null
-}
-
-function formatDate(value: string | null | undefined, locale: Locale) {
+/**
+ * 기수 날짜(`YYYY-MM-DD`)를 표시한다. 이 형식은 UTC 자정으로 파싱되므로
+ * UTC로 표시해야 로컬 타임존에서 하루가 밀리지 않는다.
+ */
+function formatGenerationDate(value: string | null, locale: Locale) {
   if (!value) return null
-  // 'YYYY-MM-DD' 기수 날짜는 UTC 자정으로 파싱된다 — UTC 로 표시해야
-  // 로컬 타임존에서 하루가 밀리지 않는다.
   return formatAdminDate(value, locale, {
     year: 'numeric',
     month: '2-digit',
@@ -37,24 +33,19 @@ function formatDate(value: string | null | undefined, locale: Locale) {
 }
 
 /**
- * 기수 목록.
- *
- * 이 페이지에는 검색·정렬·CSV가 아예 없었습니다. 나머지 목록과 동일한 툴바를
- * 붙여 일관성을 맞춥니다.
+ * 기수 목록 표(검색·정렬·CSV 내보내기).
+ * 기수 자체가 그룹 기준이므로 다른 목록과 달리 기수별로 묶지 않는다.
  */
 export default function GenerationsTableClient({
   generationsData,
-  locale,
-  t,
 }: {
   generationsData: AdminGenerationListItem[]
-  locale: Locale
-  t: AdminMessages
 }) {
+  const { locale, messages: t } = useAdminI18n()
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('id-desc')
 
-  const filteredGenerations = useFilteredSortedItems({
+  const filteredGenerations = filterAndSortItems({
     items: generationsData,
     searchQuery,
     sortBy,
@@ -64,28 +55,25 @@ export default function GenerationsTableClient({
       key === 'name' ? left.name.localeCompare(right.name) : right.id - left.id,
   })
 
-  const columns = useMemo<AdminColumn<AdminGenerationListItem>[]>(
-    () => [
-      {
-        key: 'name',
-        header: t.columnName,
-        width: 'minmax(0,2fr)',
-        primary: true,
-        render: (generation) => generation.name,
+  const columns: AdminColumn<AdminGenerationListItem>[] = [
+    {
+      key: 'name',
+      header: t.columnName,
+      width: 'minmax(0,2fr)',
+      primary: true,
+      render: (generation) => generation.name,
+    },
+    {
+      key: 'period',
+      header: t.columnPeriod,
+      width: 'minmax(0,1.5fr)',
+      render: (generation) => {
+        const start = formatGenerationDate(generation.startDate, locale)
+        const end = formatGenerationDate(generation.endDate, locale)
+        return `${start ?? t.tbd} – ${end ?? t.tbd}`
       },
-      {
-        key: 'period',
-        header: t.columnPeriod,
-        width: 'minmax(0,1.5fr)',
-        render: (generation) => {
-          const start = formatDate(generation.startDate, locale)
-          const end = formatDate(generation.endDate, locale)
-          return `${start ?? t.tbd} – ${end ?? t.tbd}`
-        },
-      },
-    ],
-    [t, locale]
-  )
+    },
+  ]
 
   const handleExportCsv = () => {
     downloadCsv({
@@ -93,8 +81,8 @@ export default function GenerationsTableClient({
       headers: [t.name, t.startTime, t.endTime],
       rows: filteredGenerations.map((generation) => [
         generation.name,
-        formatDate(generation.startDate, locale) ?? '',
-        formatDate(generation.endDate, locale) ?? '',
+        formatGenerationDate(generation.startDate, locale) ?? '',
+        formatGenerationDate(generation.endDate, locale) ?? '',
       ]),
     })
   }
@@ -125,7 +113,7 @@ export default function GenerationsTableClient({
         getHref={(generation) =>
           localizeAdminHref(`/admin/generations/${generation.id}`, locale)
         }
-        // e2e가 `getByRole('link', { name: /Generation: <name>/ })`로 행을 찾습니다.
+        // e2e가 `getByRole('link', { name: /Generation: <name>/ })`로 행을 찾는다.
         getAriaLabel={(generation) => `${t.generation}: ${generation.name}`}
         columns={columns}
         empty={

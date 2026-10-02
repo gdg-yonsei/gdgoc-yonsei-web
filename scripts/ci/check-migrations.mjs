@@ -1,17 +1,15 @@
 /**
- * CI guard for drizzle migrations.
+ * Drizzle 마이그레이션 CI 검사.
  *
- * Production applies migrations during `pnpm build` on Dokploy, before the new
- * code serves traffic and with no automatic rollback. This script runs on
- * every PR and fails before that can go wrong:
+ * 운영 환경은 Dokploy의 `pnpm build` 중에 마이그레이션을 적용한다. 새 코드가 트래픽을 받기 전이고,
+ * 자동 롤백도 없다. 이 스크립트는 모든 PR에서 실행되어 문제가 생기기 전에 실패한다.
  *
- * - the journal and the .sql files must match one to one, in order;
- * - migrations that already exist on the base branch must not be edited
- *   (production has applied them, so an edit never runs there);
- * - new migrations that drop or rewrite data need the PR label
- *   `migration:destructive-ok` (passed in as ALLOW_DESTRUCTIVE_MIGRATION=true).
+ * - journal과 .sql 파일이 순서대로 하나씩 대응해야 한다.
+ * - base 브랜치에 이미 있는 마이그레이션은 고치면 안 된다(운영에 이미 적용되어, 고쳐도 다시 실행되지 않는다).
+ * - 데이터를 지우거나 다시 쓰는 새 마이그레이션은 PR 라벨 `migration:destructive-ok`가 필요하다
+ *   (ALLOW_DESTRUCTIVE_MIGRATION=true로 전달됨).
  *
- * Usage: node scripts/ci/check-migrations.mjs <base-git-ref>
+ * 사용법: node scripts/ci/check-migrations.mjs <base-git-ref>
  */
 import { execFileSync } from 'node:child_process'
 import { appendFileSync, existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -33,8 +31,8 @@ const BLOCKING = [
   ],
 ]
 
-// Checked per statement. Statements on tables created in the same migration
-// are skipped: an empty table has nothing to lock or validate.
+// 문장(statement) 단위로 검사한다. 같은 마이그레이션에서 만든 테이블에 대한 문장은 건너뛴다.
+// 빈 테이블에는 잠글 것도 검증할 것도 없다.
 const WARNINGS = [
   [
     /\bRENAME\b/i,
@@ -68,7 +66,7 @@ function stripComments(sql) {
 
 const mergeBase = baseRef ? git('merge-base', baseRef, 'HEAD') : null
 
-// 1. Journal ↔ files.
+// 1. journal ↔ 파일.
 const journal = JSON.parse(readFileSync(JOURNAL, 'utf8'))
 const journalTags = journal.entries.map((entry) => entry.tag)
 const sqlTags = readdirSync(MIGRATIONS_DIR)
@@ -76,8 +74,7 @@ const sqlTags = readdirSync(MIGRATIONS_DIR)
   .map((name) => name.replace(/\.sql$/, ''))
   .sort()
 
-// Entries the base branch already had. Their timestamps are history that
-// production has already applied, so problems there are only reported.
+// base 브랜치에 이미 있던 항목. 그 타임스탬프는 운영에 이미 적용된 이력이므로 문제는 보고만 한다.
 let baseEntryCount = journal.entries.length
 if (mergeBase) {
   try {
@@ -111,9 +108,8 @@ journal.entries.forEach((entry, index) => {
       `entry ${entry.tag} has idx ${entry.idx}, expected ${index}`,
     ])
   }
-  // drizzle's migrator applies a migration only when its `when` is newer than
-  // the newest one recorded in the database, so an older timestamp is
-  // silently skipped on any database that is already up to date.
+  // drizzle 마이그레이터는 `when`이 DB에 기록된 가장 최근 값보다 새로울 때만 마이그레이션을 적용한다.
+  // 그래서 더 오래된 타임스탬프는 이미 최신인 DB에서 아무 말 없이 건너뛰어진다.
   if (entry.when <= newestWhen) {
     ;(index >= baseEntryCount ? errors : warnings).push([
       JOURNAL,
@@ -126,7 +122,7 @@ journal.entries.forEach((entry, index) => {
   }
 })
 
-// 2. Changes against the base branch.
+// 2. base 브랜치 대비 변경 사항.
 if (mergeBase) {
   const changed = git(
     'diff',
@@ -179,7 +175,7 @@ if (mergeBase) {
   }
 }
 
-// 3. Report.
+// 3. 보고.
 for (const [file, message] of warnings) {
   console.log(`::warning file=${file}::${message}`)
 }

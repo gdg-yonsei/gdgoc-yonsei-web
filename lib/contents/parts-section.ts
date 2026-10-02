@@ -1,4 +1,9 @@
-const partsSectionContent = [
+/**
+ * 홈 파트 소개 섹션 문구(두 언어).
+ */
+
+/** 파트별 소개. `title`은 세션 기록의 파트 필터 값으로도 쓰인다. */
+export const partsSectionContent = [
   {
     title: 'Front-End',
     content: {
@@ -42,5 +47,3 @@ const partsSectionContent = [
     },
   },
 ]
-
-export default partsSectionContent

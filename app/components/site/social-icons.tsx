@@ -1,8 +1,14 @@
+/**
+ * SNS 브랜드 아이콘(SVG). `currentColor`로 그려 주변 글자색을 따른다.
+ *
+ * heroicons에는 브랜드 아이콘이 없어 직접 둔다.
+ */
 import type { SVGProps } from 'react'
 
-/* Brand marks drawn in currentColor, so they follow the colour scheme. */
+/** SVG 요소 props. */
 type IconProps = SVGProps<SVGSVGElement>
 
+/** GitHub 아이콘. */
 export function GithubIcon(props: IconProps) {
   return (
     <svg
@@ -17,6 +23,7 @@ export function GithubIcon(props: IconProps) {
   )
 }
 
+/** LinkedIn 아이콘. */
 export function LinkedInIcon(props: IconProps) {
   return (
     <svg
@@ -31,6 +38,7 @@ export function LinkedInIcon(props: IconProps) {
   )
 }
 
+/** Instagram 아이콘. */
 export function InstagramIcon(props: IconProps) {
   return (
     <svg

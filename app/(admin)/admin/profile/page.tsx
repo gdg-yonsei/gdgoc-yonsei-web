@@ -1,3 +1,6 @@
+/**
+ * 내 프로필 화면(`/admin/profile`): 프로필 정보, 알림 메일 설정, 패스키 등록.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import UserProfile from '@/app/(admin)/admin/profile/user-profile'
 import { Suspense } from 'react'
@@ -12,10 +15,12 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Profile',
 }
 
+/** 프로필 정보는 Suspense로 스트리밍하고, 그동안 같은 배치의 스켈레톤을 보여 준다. */
 export default async function ProfilePage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

@@ -1,4 +1,9 @@
-const aboutSectionContents = {
+/**
+ * 홈 소개(about) 섹션 문구(두 언어).
+ */
+
+/** GDG 소개, GDGoC Yonsei 소개, 세 가지 가치(커뮤니티·기술·지속 성장) 문구. */
+export const aboutSectionContents = {
   gdg: {
     ko: 'GDG (Google Developer Groups) on Campus는 구글 기술에 관심 있는 대학생 개발자들로 이루어진 커뮤니티입니다. GDG에 참여하는 학생들은 동료 간의 학습 환경에서 개발 및 리더십 등 다양한 역량을 키우며, “Connect - Learn - Grow”의 과정을 통해 지역사회와 사회를 위한 해결책을 만드는 것을 목표로 활동합니다.',
     en: 'GDG (Google Developer Groups) on Campus is a community of university student developers interested in Google technologies. Students in GDG engage in the process of "Connect - Learn - Grow," where they develop various skills such as development and leadership in a peer-to-peer learning environment, with the goal of building solutions for their communities and society.',
@@ -20,5 +25,3 @@ const aboutSectionContents = {
     ko: 'IT 기반 솔루션을 통해 지속 가능한 사회에 기여하는 전문가로 개발자를 성장시키는 것을 목표로 합니다.',
   },
 }
-
-export default aboutSectionContents

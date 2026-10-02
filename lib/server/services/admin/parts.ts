@@ -1,8 +1,15 @@
+/**
+ * 파트 관리 서비스(목록, 상세, 생성, 수정, 삭제).
+ *
+ * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
+ * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
+ * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
+ */
 import 'server-only'
 
 import { and, eq, inArray } from 'drizzle-orm'
 import type { z } from 'zod'
-import db from '@/db'
+import { db } from '@/db'
 import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import { invalidatePartPublicCache } from '@/lib/server/cache'
@@ -11,6 +18,7 @@ import {
   getParts,
   type AdminPartListItem,
 } from '@/lib/server/fetcher/admin/get-parts'
+import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import {
   authorize,
@@ -28,9 +36,10 @@ import {
 import {
   getGenerationNameById,
   getGenerationNameForPartId,
-} from '@/lib/server/services/cache-context'
+} from '@/lib/server/services/admin/cache-context'
 import { partValidation } from '@/lib/validations/part'
 
+/** 파트 입력(검증 전) 타입. */
 export type PartInput = z.input<typeof partValidation>
 
 const NOT_FOUND = 'Part not found'
@@ -62,6 +71,7 @@ function buildMemberships(
   ]
 }
 
+/** 범위(기수)의 파트 목록. */
 export async function listParts(
   actor: Actor,
   { generation }: { generation?: number | 'all' } = {}
@@ -92,8 +102,10 @@ async function loadPartDetail(partId: number) {
   }
 }
 
+/** 파트 상세(기수, 구성원). */
 export type PartDetail = NonNullable<Awaited<ReturnType<typeof loadPartDetail>>>
 
+/** 파트 상세. 접근할 수 없는 기수의 파트면 FORBIDDEN. */
 export async function getPartDetail(
   actor: Actor,
   partId: number
@@ -109,6 +121,7 @@ export async function getPartDetail(
   return ok(detail)
 }
 
+/** 상세를 파트 입력 형태로 되돌린다(MCP 부분 수정 병합용). */
 export function partToInput(detail: PartDetail): PartInput {
   return {
     name: detail.name,
@@ -124,6 +137,7 @@ export function partToInput(detail: PartDetail): PartInput {
   }
 }
 
+/** 파트와 구성원 소속을 한 트랜잭션으로 만든다. */
 export async function createPart(
   actor: Actor,
   input: unknown
@@ -150,30 +164,34 @@ export async function createPart(
   try {
     const generation = await getGenerationNameById(generationId)
 
-    const createdPart = (
-      await db
-        .insert(parts)
-        .values({
-          name,
-          description,
-          generationsId: generationId,
-          displayOrder: displayOrder ?? 10,
-        })
-        .returning({ id: parts.id })
-    )[0]
+    // 파트 행과 구성원 소속은 함께 저장되거나 함께 실패해야 한다.
+    const createdPart = await db.transaction(async (tx) => {
+      const created = (
+        await tx
+          .insert(parts)
+          .values({
+            name,
+            description,
+            generationsId: generationId,
+            displayOrder: displayOrder ?? 10,
+          })
+          .returning({ id: parts.id })
+      )[0]
 
-    if (!createdPart) {
-      throw new Error('Failed to create part')
-    }
+      if (!created) {
+        throw new Error('Failed to create part')
+      }
 
-    const memberships = buildMemberships(
-      createdPart.id,
-      membersList,
-      doubleBoardMembersList
-    )
-    if (memberships.length > 0) {
-      await db.insert(usersToParts).values(memberships)
-    }
+      const memberships = buildMemberships(
+        created.id,
+        membersList,
+        doubleBoardMembersList
+      )
+      if (memberships.length > 0) {
+        await tx.insert(usersToParts).values(memberships)
+      }
+      return created
+    })
 
     invalidatePartPublicCache(generation?.name ? [generation.name] : [])
 
@@ -184,6 +202,10 @@ export async function createPart(
   }
 }
 
+/**
+ * 파트 정보와 구성원을 고친다. 기수는 바꿀 수 없다.
+ * 관리 화면에서 다루지 않는 Core 소속은 보존하고, 주 소속·겸임만 교체한다.
+ */
 export async function updatePart(
   actor: Actor,
   partId: number,
@@ -240,38 +262,42 @@ export async function updatePart(
     const previousGenerationName = await getGenerationNameForPartId(partId)
     const nextGeneration = await getGenerationNameById(generationId)
 
-    await db
-      .update(parts)
-      .set({
-        name,
-        description: description,
-        generationsId: generationId,
-        ...(displayOrder === undefined ? {} : { displayOrder }),
-        updatedAt: new Date(),
-      })
-      .where(eq(parts.id, partId))
-    // Core 및 관리 화면에서 편집하지 않는 소속은 보존합니다.
-    await db
-      .delete(usersToParts)
-      .where(
-        and(
-          eq(usersToParts.partId, partId),
-          inArray(usersToParts.userType, ['Primary', 'Secondary'])
+    // 파트 정보와 구성원 교체(삭제 후 재삽입)는 하나의 트랜잭션으로 처리한다.
+    // 중간에 실패하면 구성원이 비어 버린 파트가 남지 않는다.
+    await db.transaction(async (tx) => {
+      await tx
+        .update(parts)
+        .set({
+          name,
+          description: description,
+          generationsId: generationId,
+          ...(displayOrder === undefined ? {} : { displayOrder }),
+          updatedAt: new Date(),
+        })
+        .where(eq(parts.id, partId))
+      // Core 및 관리 화면에서 편집하지 않는 소속은 보존한다.
+      await tx
+        .delete(usersToParts)
+        .where(
+          and(
+            eq(usersToParts.partId, partId),
+            inArray(usersToParts.userType, ['Primary', 'Secondary'])
+          )
         )
-      )
 
-    const memberships = buildMemberships(
-      partId,
-      membersList,
-      doubleBoardMembersList,
-      preservedIds
-    )
-    if (memberships.length > 0) {
-      await db.insert(usersToParts).values(memberships)
-    }
+      const memberships = buildMemberships(
+        partId,
+        membersList,
+        doubleBoardMembersList,
+        preservedIds
+      )
+      if (memberships.length > 0) {
+        await tx.insert(usersToParts).values(memberships)
+      }
+    })
 
     invalidatePartPublicCache(
-      [previousGenerationName, nextGeneration?.name].filter(Boolean) as string[]
+      uniqueStrings([previousGenerationName, nextGeneration?.name])
     )
   } catch (e) {
     logger.error('admin.parts.update', e, {
@@ -283,6 +309,7 @@ export async function updatePart(
   return ok({ id: partId })
 }
 
+/** 파트를 지운다(LEAD 전용). */
 export async function deletePart(
   actor: Actor,
   partId: number

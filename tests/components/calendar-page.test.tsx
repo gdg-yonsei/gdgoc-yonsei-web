@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SessionCalendar from '@/app/(home)/[lang]/calendar/session-calendar'
 import { toCalendarEvents, type CalendarSession } from '@/lib/site/calendar'
+import { calendarWidgetCopy } from '@/lib/contents/calendar-copy'
 
 vi.mock('next/link', () => ({
   default: ({
@@ -44,11 +45,27 @@ const sessions: CalendarSession[] = [
 function renderCalendar(lang: 'en' | 'ko' = 'en') {
   const events = toCalendarEvents(sessions, lang, '2026-09-24T03:00:00.000Z')
   return render(
-    <SessionCalendar lang={lang} events={events} serverToday="2026-09-24" />
+    <SessionCalendar
+      lang={lang}
+      copy={calendarWidgetCopy[lang]}
+      events={events}
+      serverToday="2026-09-24"
+    />
   )
 }
 
 describe('SessionCalendar', () => {
+  // 하이드레이션 이후 달력은 실제 서울 날짜를 "오늘"로 사용하므로,
+  // 테스트가 실행되는 날짜와 무관하게 결과가 같도록 Date만 고정한다.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-09-24T03:00:00.000Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('shows the current month with links to published sessions', () => {
     renderCalendar()
 

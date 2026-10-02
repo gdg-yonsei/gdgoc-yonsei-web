@@ -1,3 +1,8 @@
+/**
+ * MCP 파트 도구(목록, 상세, 생성, 수정, 삭제).
+ */
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import {
@@ -33,6 +38,7 @@ const partFields = {
     .describe('Sort order on the public site (lower first).'),
 }
 
+/** 파트 도구 목록. */
 export const partTools = [
   defineTool({
     name: 'list_parts',

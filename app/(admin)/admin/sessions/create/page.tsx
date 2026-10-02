@@ -1,7 +1,10 @@
+/**
+ * 세션 생성 화면(`/admin/sessions/create`). 권한은 레이아웃이 확인한다.
+ */
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import DataForm from '@/app/components/data-form'
+import DataForm from '@/app/components/admin/data-form'
 import DataInput from '@/app/components/admin/data-input'
 import { createSessionAction } from '@/app/(admin)/admin/sessions/create/actions'
 import SubmitButton from '@/app/components/admin/submit-button'
@@ -9,6 +12,10 @@ import { Metadata } from 'next'
 import SessionPartParticipantsInput from '@/app/components/admin/session-part-participants-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
 import DataSelectInput from '@/app/components/admin/data-select-input'
+import {
+  SESSION_CATEGORY_OPTIONS,
+  sessionTypeOptions,
+} from '@/app/(admin)/admin/sessions/_lib/session-form-options'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
@@ -21,10 +28,12 @@ import {
 import { groupMemberships } from '@/lib/admin/member-options'
 import ResourceImageFields from '@/app/components/admin/resource-image-fields'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Create Session',
 }
 
+/** 세션 생성 폼. */
 export default async function CreateSessionPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),
@@ -120,22 +129,13 @@ export default async function CreateSessionPage() {
           required={true}
         />
         <DataSelectInput
-          data={[
-            { name: t.generalSession, value: 'General Session' },
-            { name: t.partSession, value: 'Part Session' },
-          ]}
+          data={sessionTypeOptions(t)}
           name={'type'}
           title={t.sessionType}
           defaultValue={'Part Session'}
         />
         <DataSelectInput
-          data={[
-            { name: 'Tech Talk (T19)', value: 'tech_talk' },
-            { name: 'Part Session', value: 'part_session' },
-            { name: 'Hackathon', value: 'hackathon' },
-            { name: 'Demo Day', value: 'demo_day' },
-            { name: 'DevRel / Social', value: 'devrel' },
-          ]}
+          data={SESSION_CATEGORY_OPTIONS}
           name={'category'}
           title={'Activity Category'}
           defaultValue={'tech_talk'}

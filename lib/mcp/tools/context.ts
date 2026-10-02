@@ -1,8 +1,14 @@
+/**
+ * MCP `whoami` 도구: 연결한 사용자의 역할, 스코프, 접근 가능한 기수를 알려 준다.
+ */
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool } from '@/lib/mcp/registry'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 import { ok } from '@/lib/server/services/admin/types'
 
+/** 가장 먼저 부르도록 안내하는 도구. 다른 도구에 쓸 수 있는 `generationId`를 알려 준다. */
 export const whoami = defineTool({
   name: 'whoami',
   title: 'Who am I',

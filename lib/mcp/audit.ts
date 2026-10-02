@@ -1,7 +1,14 @@
+/**
+ * MCP 도구 호출 감사 로그.
+ *
+ * 조회가 아닌 도구(쓰기·관리)를 실행하면 누가, 어떤 클라이언트로, 무엇을 했는지 기록한다.
+ * 비밀값과 연락처는 가리고, URL의 쿼리 문자열과 긴 문자열은 잘라서 저장한다. 1년이 지난
+ * 기록은 한 시간에 한 번씩 지운다.
+ */
 import 'server-only'
 
 import { eq, lt } from 'drizzle-orm'
-import db from '@/db'
+import { db } from '@/db'
 import { mcpAuditLog } from '@/db/schema/mcp-audit-log'
 import { oauthClient } from '@/db/schema/oauth'
 import { logger } from '@/lib/server/logger'

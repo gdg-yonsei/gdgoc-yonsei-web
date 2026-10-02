@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { sql } from 'drizzle-orm'
-import db from '../../../db'
+import { db } from '../../../db'
 import { authSessions } from '../../../db/schema/auth-sessions'
 import { generations } from '../../../db/schema/generations'
 import { parts } from '../../../db/schema/parts'

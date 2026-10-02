@@ -1,3 +1,6 @@
+/**
+ * 캐시 무효화 방식 전환 컨텍스트(Server Action과 Route Handler 구분).
+ */
 import 'server-only'
 
 import { AsyncLocalStorage } from 'node:async_hooks'
@@ -15,6 +18,7 @@ export function runWithRouteHandlerInvalidation<T>(
   return storage.run({ routeHandler: true }, fn)
 }
 
+/** 현재 코드가 `runWithRouteHandlerInvalidation` 안에서 실행 중인지. */
 export function isRouteHandlerInvalidation(): boolean {
   return storage.getStore()?.routeHandler === true
 }

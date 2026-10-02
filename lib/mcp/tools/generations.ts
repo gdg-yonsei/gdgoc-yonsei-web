@@ -1,3 +1,8 @@
+/**
+ * MCP 기수 도구(목록, 상세, 생성, 수정, 삭제).
+ */
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import { patchWith } from '@/lib/mcp/tools/common'
@@ -21,6 +26,7 @@ const name = z
     'URL-safe generation name, e.g. "25-26" (letters, numbers, single hyphens).'
   )
 
+/** 기수 도구 목록. */
 export const generationTools = [
   defineTool({
     name: 'list_generations',

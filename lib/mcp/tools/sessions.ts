@@ -1,3 +1,8 @@
+/**
+ * MCP 세션 도구(목록, 상세, 생성, 수정, 삭제, 참가 신청·취소, 참가자 제거).
+ */
+import 'server-only'
+
 import { z } from 'zod'
 import { defineTool, idOf } from '@/lib/mcp/registry'
 import {
@@ -20,7 +25,7 @@ import {
   updateSession,
 } from '@/lib/server/services/admin/sessions'
 import { fail, ok } from '@/lib/server/services/admin/types'
-import { sessionWallClockNow } from '@/lib/site/datetime'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 
 const sessionId = z.string().uuid().describe('Session id.')
 const dateTime = z
@@ -85,6 +90,7 @@ function toServiceFields(input: Record<string, unknown>) {
   return { fields: converted }
 }
 
+/** 세션 도구 목록. */
 export const sessionTools = [
   defineTool({
     name: 'list_sessions',

@@ -1,6 +1,13 @@
+/**
+ * 로컬 개발용 시드 데이터(`pnpm db:seed`).
+ *
+ * 기수 하나, 파트, 멤버, 태그, 프로젝트, 1년치 세션을 넣는다. 시드 행은 `dev-seed-` 접두사로 표시해
+ * 다시 실행할 때 이전 시드만 지운다(TRUNCATE하지 않음). 일회용 DB가 아니면 실행을 거부한다
+ * (`scripts/lib/disposable-database.ts`).
+ */
 import 'dotenv/config'
 import { eq, inArray, like } from 'drizzle-orm'
-import db from '../db'
+import { db } from '../db'
 import { generations } from '../db/schema/generations'
 import { parts } from '../db/schema/parts'
 import { projects } from '../db/schema/projects'
@@ -60,18 +67,83 @@ const SEED_TAGS = [
 ]
 
 const SEED_PROJECTS = [
-  { name: 'Campus Compass', nameKo: '캠퍼스 나침반', description: 'Indoor navigation for Yonsei campus buildings.', descriptionKo: '연세 캠퍼스 실내 길찾기 서비스.', tags: ['Flutter', 'Firebase'], repoUrl: 'https://github.com/gdg-yonsei/campus-compass', demoUrl: 'https://campus-compass.example.com' },
-  { name: 'Lecture Lens', nameKo: '렉처 렌즈', description: 'AI-powered lecture summarization and search.', descriptionKo: 'AI 강의 요약·검색 도구.', tags: ['PyTorch', 'FastAPI'], repoUrl: 'https://github.com/gdg-yonsei/lecture-lens', demoUrl: null },
-  { name: 'Green Route', nameKo: '그린 루트', description: 'Carbon-aware commute planner for students.', descriptionKo: '탄소 배출을 고려한 통학 경로 추천.', tags: ['Next.js', 'TypeScript'], repoUrl: 'https://github.com/gdg-yonsei/green-route', demoUrl: 'https://green-route.example.com' },
-  { name: 'Mokdori', nameKo: '먹도리', description: 'Campus restaurant queue and review service.', descriptionKo: '학식·맛집 대기열과 리뷰 서비스.', tags: ['Kotlin', 'Firebase'], repoUrl: null, demoUrl: 'https://mokdori.example.com' },
-  { name: 'Cloud Atlas', nameKo: '클라우드 아틀라스', description: 'Terraform templates for student projects.', descriptionKo: '학생 프로젝트용 Terraform 템플릿 모음.', tags: ['Terraform', 'Go'], repoUrl: 'https://github.com/gdg-yonsei/cloud-atlas', demoUrl: null },
-  { name: 'Study Sync', nameKo: '스터디 싱크', description: 'Real-time study group matching platform.', descriptionKo: '실시간 스터디 그룹 매칭 플랫폼.', tags: ['Next.js', 'Firebase'], repoUrl: 'https://github.com/gdg-yonsei/study-sync', demoUrl: 'https://study-sync.example.com' },
-  { name: 'Sign Bridge', nameKo: '사인 브릿지', description: 'Sign language translation with on-device ML.', descriptionKo: '온디바이스 ML 수어 번역.', tags: ['PyTorch', 'Flutter'], repoUrl: 'https://github.com/gdg-yonsei/sign-bridge', demoUrl: null },
-  { name: 'Portfolio Kit', nameKo: '포트폴리오 킷', description: 'Design-system-driven portfolio builder.', descriptionKo: '디자인 시스템 기반 포트폴리오 빌더.', tags: ['Figma', 'TypeScript'], repoUrl: 'https://github.com/gdg-yonsei/portfolio-kit', demoUrl: 'https://portfolio-kit.example.com' },
+  {
+    name: 'Campus Compass',
+    nameKo: '캠퍼스 나침반',
+    description: 'Indoor navigation for Yonsei campus buildings.',
+    descriptionKo: '연세 캠퍼스 실내 길찾기 서비스.',
+    tags: ['Flutter', 'Firebase'],
+    repoUrl: 'https://github.com/gdg-yonsei/campus-compass',
+    demoUrl: 'https://campus-compass.example.com',
+  },
+  {
+    name: 'Lecture Lens',
+    nameKo: '렉처 렌즈',
+    description: 'AI-powered lecture summarization and search.',
+    descriptionKo: 'AI 강의 요약·검색 도구.',
+    tags: ['PyTorch', 'FastAPI'],
+    repoUrl: 'https://github.com/gdg-yonsei/lecture-lens',
+    demoUrl: null,
+  },
+  {
+    name: 'Green Route',
+    nameKo: '그린 루트',
+    description: 'Carbon-aware commute planner for students.',
+    descriptionKo: '탄소 배출을 고려한 통학 경로 추천.',
+    tags: ['Next.js', 'TypeScript'],
+    repoUrl: 'https://github.com/gdg-yonsei/green-route',
+    demoUrl: 'https://green-route.example.com',
+  },
+  {
+    name: 'Mokdori',
+    nameKo: '먹도리',
+    description: 'Campus restaurant queue and review service.',
+    descriptionKo: '학식·맛집 대기열과 리뷰 서비스.',
+    tags: ['Kotlin', 'Firebase'],
+    repoUrl: null,
+    demoUrl: 'https://mokdori.example.com',
+  },
+  {
+    name: 'Cloud Atlas',
+    nameKo: '클라우드 아틀라스',
+    description: 'Terraform templates for student projects.',
+    descriptionKo: '학생 프로젝트용 Terraform 템플릿 모음.',
+    tags: ['Terraform', 'Go'],
+    repoUrl: 'https://github.com/gdg-yonsei/cloud-atlas',
+    demoUrl: null,
+  },
+  {
+    name: 'Study Sync',
+    nameKo: '스터디 싱크',
+    description: 'Real-time study group matching platform.',
+    descriptionKo: '실시간 스터디 그룹 매칭 플랫폼.',
+    tags: ['Next.js', 'Firebase'],
+    repoUrl: 'https://github.com/gdg-yonsei/study-sync',
+    demoUrl: 'https://study-sync.example.com',
+  },
+  {
+    name: 'Sign Bridge',
+    nameKo: '사인 브릿지',
+    description: 'Sign language translation with on-device ML.',
+    descriptionKo: '온디바이스 ML 수어 번역.',
+    tags: ['PyTorch', 'Flutter'],
+    repoUrl: 'https://github.com/gdg-yonsei/sign-bridge',
+    demoUrl: null,
+  },
+  {
+    name: 'Portfolio Kit',
+    nameKo: '포트폴리오 킷',
+    description: 'Design-system-driven portfolio builder.',
+    descriptionKo: '디자인 시스템 기반 포트폴리오 빌더.',
+    tags: ['Figma', 'TypeScript'],
+    repoUrl: 'https://github.com/gdg-yonsei/portfolio-kit',
+    demoUrl: 'https://portfolio-kit.example.com',
+  },
 ]
 
+/** 대상 DB가 지워도 되는 DB인지 확인한다. */
 function assertLocalDatabase() {
-  // `--force` is the deliberate escape hatch for a database chosen by hand.
+  // `--force`는 사람이 직접 고른 DB에 시드하기 위한 의도적인 우회 수단이다.
   if (process.argv.includes('--force')) {
     return
   }

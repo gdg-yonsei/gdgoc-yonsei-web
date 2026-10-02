@@ -1,28 +1,20 @@
-import { getParts } from '@/lib/server/fetcher/admin/get-parts'
+/**
+ * 파트 목록 서버 래퍼. 데이터를 읽어 클라이언트 표에 넘긴다.
+ */
 import PartsTableClient from '@/app/(admin)/admin/parts/parts-table-client'
-import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 
 /**
- * 파트 정보 표시 테이블
- * @constructor
+ * 목록 데이터를 서버에서 읽어 클라이언트 표에 넘기는 래퍼.
+ * 페이지가 Suspense로 감싸 데이터가 오는 동안 스켈레톤을 보여 준다.
  */
 export default async function PartsTable({
   scope,
 }: {
   scope: AdminGenerationScope | null
 }) {
-  const locale = await getAdminLocale()
-  const t = getAdminMessages(locale)
-  // 파트 데이터 가져오기
   const partsData = await getParts(scope)
 
-  return (
-    <PartsTableClient
-      partsData={partsData}
-      scope={scope}
-      locale={locale}
-      t={t}
-    />
-  )
+  return <PartsTableClient partsData={partsData} scope={scope} />
 }

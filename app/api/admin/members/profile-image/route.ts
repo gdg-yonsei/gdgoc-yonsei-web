@@ -1,4 +1,6 @@
-import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
+/**
+ * 관리자 API: 멤버 프로필 이미지 업로드용 사전 서명 URL 발급.
+ */
 import {
   parseRequestBody,
   privateError,
@@ -7,7 +9,8 @@ import {
 } from '@/lib/server/http'
 import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
-import { getSafeImageExtension } from '@/lib/server/r2-object-key'
+import { getSafeImageExtension } from '@/lib/server/storage/object-key'
+import { presignImageUpload } from '@/lib/server/storage/r2'
 import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 
 /**
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
   }
 
   const fileName = `users/${memberId}/${crypto.randomUUID()}.${extension}`
-  const uploadUrl = await getPreSignedUrl(fileName, type)
+  const uploadUrl = await presignImageUpload(fileName, type)
 
   // fileName 은 다른 업로드 API 와 동일하게 객체 키만 담는다.
   // 공개 URL 조합은 호출부(lib/upload-image.ts)가 담당한다.

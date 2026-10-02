@@ -1,24 +1,15 @@
+/**
+ * 기수 목록 서버 래퍼. 데이터를 읽어 클라이언트 표에 넘긴다.
+ */
+import GenerationsTableClient from '@/app/(admin)/admin/generations/generations-table-client'
 import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
-import GenerationsTableClient, {
-  type AdminGenerationListItem,
-} from '@/app/(admin)/admin/generations/generations-table-client'
-import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
 /**
- * Generations 를 보여주는 Table 컴포넌트
- * @constructor
+ * 기수 목록을 서버에서 읽어 클라이언트 표에 넘기는 래퍼.
+ * 페이지가 Suspense로 감싸 데이터가 오는 동안 스켈레톤을 보여 준다.
  */
 export default async function GenerationsTable() {
-  const locale = await getAdminLocale()
-  const t = getAdminMessages(locale)
-  // generations 데이터 가져오기
   const generationsData = await getGenerations()
 
-  return (
-    <GenerationsTableClient
-      generationsData={generationsData as AdminGenerationListItem[]}
-      locale={locale}
-      t={t}
-    />
-  )
+  return <GenerationsTableClient generationsData={generationsData} />
 }

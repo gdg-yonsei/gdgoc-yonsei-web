@@ -1,10 +1,12 @@
+/**
+ * 언어 전환 링크에 현재 필터(쿼리 문자열)를 이어 붙이는 클라이언트 헬퍼.
+ */
 import type { SyntheticEvent } from 'react'
 
 /**
- * Locale links are rendered from the pathname; the Session Log and project
- * hubs keep their filters in the query string. Just before a locale link is
- * used (hover, focus, click), copy the current query onto it so a filtered
- * page stays filtered in the other language.
+ * 언어 전환 링크는 경로만으로 만들어지지만, 세션 기록·프로젝트 허브는 필터를 쿼리
+ * 문자열에 둔다. 링크를 쓰기 직전(호버, 포커스, 클릭)에 현재 쿼리를 링크에 복사해, 필터를
+ * 건 페이지가 다른 언어에서도 같은 필터를 유지하게 한다.
  */
 export function carryQueryString(event: SyntheticEvent<HTMLElement>) {
   const { target } = event

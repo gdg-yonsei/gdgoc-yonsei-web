@@ -1,17 +1,20 @@
+/**
+ * 홈의 참여 안내(join) 섹션(서버 컴포넌트).
+ */
 import { Fragment } from 'react'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink, { buttonClasses } from '@/app/components/site/button-link'
 import ExternalLink from '@/app/components/site/external-link'
 import SectionTag from '@/app/components/site/section-tag'
 import { landingCopy } from '@/lib/contents/site-copy'
 import { CHANNELS } from '@/lib/site/channels'
+import { localeHref } from '@/lib/site/routes'
 
 /**
- * `<join>`: the bookend to the hero. The brackets close around the call to
- * action as the section scrolls in (site-home.css, or the join scene); with
- * reduced motion they simply sit closed. Title words are set apart for the
- * scene's closing pop.
+ * `<join>` 섹션(히어로와 짝을 이루는 마지막 장). 섹션이 스크롤되어 들어오면 괄호가 행동 유도 문구를
+ * 감싸며 닫힌다(site-home.css 또는 join 장면). 움직임 줄이기에서는 처음부터 닫힌 채 있다. 제목 단어는
+ * 장면의 마지막 튀어 오르기 연출을 위해 따로 감싼다.
  */
 export default function Join({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].join
@@ -51,7 +54,10 @@ export default function Join({ lang }: { lang: Locale }) {
               </ExternalLink>
             </li>
             <li>
-              <ButtonLink href={`/${lang}/calendar`} tone="stageOutline">
+              <ButtonLink
+                href={localeHref(lang, '/calendar')}
+                tone="stageOutline"
+              >
                 {copy.calendar}
               </ButtonLink>
             </li>

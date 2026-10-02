@@ -1,24 +1,29 @@
+/**
+ * 홈 히어로(첫 화면) 섹션(서버 컴포넌트). 텍스트와 SVG 괄호는 서버에서 그려 JS 없이도 완성된 화면이다.
+ */
 import type { CSSProperties, ReactNode } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
-import type { Locale } from '@/i18n-config'
+import type { Locale } from '@/lib/i18n'
 import { googleSans } from '@/app/fonts'
 import BracketPoster from '@/app/components/site/bracket-poster'
 import ButtonLink from '@/app/components/site/button-link'
 import { cn } from '@/lib/cn'
 import { heroCopy } from '@/lib/contents/site-copy'
-import { countLabel } from '@/lib/site/format'
+import { countLabel } from '@/lib/format/text'
 import BracketStage from './bracket-stage'
+import { localeHref } from '@/lib/site/routes'
 
 const rise = (delayMs: number) =>
   ({ '--rise-delay': `${delayMs}ms` }) as CSSProperties
 
+/** 히어로 메타 띠에 보일 개수. */
 export type HeroCounts = {
   sessions: number
   projects: number
   generations: number
 }
 
-/** The mono meta strip. Without counts it holds fixed-width placeholders. */
+/** 고정폭 글꼴 메타 정보 띠. 개수가 없으면 같은 폭의 자리 표시자를 둔다(레이아웃이 튀지 않게). */
 export function HeroMetaList({
   lang,
   counts,
@@ -56,9 +61,8 @@ export function HeroMetaList({
 }
 
 /**
- * "< GDGoC Yonsei >": the chapter name sits between the two GDG brackets.
- * The SVG posters paint immediately; BracketStage later swaps them for the
- * live halftone field once the browser is idle.
+ * "< GDGoC Yonsei >": 동아리 이름이 GDG 괄호 두 개 사이에 놓인다. SVG 포스터는 바로 그려지고,
+ * 브라우저가 한가해지면 BracketStage가 실시간 망점 필드로 바꾼다.
  */
 export default function Hero({
   lang,
@@ -101,11 +105,11 @@ export default function Hero({
           {copy.tagline}
         </p>
         <div className="hero-rise hero-actions" style={rise(320)}>
-          <ButtonLink href={`/${lang}/session`} tone="stageSolid">
+          <ButtonLink href={localeHref(lang, '/session')} tone="stageSolid">
             {copy.primaryCta}
             <ArrowRightIcon aria-hidden="true" className="size-4" />
           </ButtonLink>
-          <ButtonLink href={`/${lang}/project`} tone="stageOutline">
+          <ButtonLink href={localeHref(lang, '/project')} tone="stageOutline">
             {copy.secondaryCta}
           </ButtonLink>
         </div>

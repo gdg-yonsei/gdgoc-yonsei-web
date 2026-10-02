@@ -10,7 +10,7 @@ const { findSession, findPart, canAccessGeneration, dbDelete, dbUpdate } =
   }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: {
       sessions: { findFirst: findSession },
       parts: { findFirst: findPart },
@@ -30,7 +30,7 @@ vi.mock('@/lib/server/services/admin/authorize', async (importOriginal) => ({
 vi.mock('@/lib/server/cache', () => ({
   invalidateSessionPublicCache: vi.fn(),
 }))
-vi.mock('@/lib/server/services/cache-context', () => ({
+vi.mock('@/lib/server/services/admin/cache-context', () => ({
   getGenerationNameForPartId: vi.fn(async () => 'gen'),
   getSessionCacheContext: vi.fn(async () => ({ generationName: 'gen' })),
 }))

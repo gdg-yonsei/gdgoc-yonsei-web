@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   breadcrumbList,
   collectionPage,
+  homeStructuredData,
   projectWork,
   sessionEvent,
   sessionLearningResource,
@@ -133,5 +134,33 @@ describe('JSON-LD builders', () => {
     expect(plain['@type']).toBe('CreativeWork')
     expect(plain).not.toHaveProperty('codeRepository')
     expect(plain).not.toHaveProperty('keywords')
+  })
+})
+
+describe('homeStructuredData', () => {
+  it('links the organization, website and home page by id', () => {
+    const [organization, website, page] = homeStructuredData({
+      siteRoot: 'https://example.com',
+      englishHomeUrl: 'https://example.com/en',
+      logoUrl: 'https://example.com/logo.svg',
+      canonical: 'https://example.com/ko',
+      locale: 'ko',
+      title: 'Title',
+      description: 'Description',
+    })
+
+    expect(organization).toMatchObject({
+      '@id': 'https://example.com#organization',
+      email: 'gdsc.yonsei.univ@gmail.com',
+    })
+    expect(website).toMatchObject({
+      '@id': 'https://example.com#website',
+      publisher: { '@id': 'https://example.com#organization' },
+    })
+    expect(page).toMatchObject({
+      '@id': 'https://example.com/ko#webpage',
+      inLanguage: 'ko',
+      isPartOf: { '@id': 'https://example.com#website' },
+    })
   })
 })

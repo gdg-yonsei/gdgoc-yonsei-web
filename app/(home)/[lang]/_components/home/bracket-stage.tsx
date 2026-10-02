@@ -1,12 +1,16 @@
 'use client'
 
+/**
+ * 히어로 배경 WebGL 캔버스와 지연 로더(클라이언트 컴포넌트).
+ */
 import { useEffect, useRef } from 'react'
 import { readMotionEnvironment, shouldLoadMotion } from '@/lib/motion/gate'
+import { mountWhenIdle } from '@/lib/motion/idle'
 
 /**
- * Loads the WebGL halftone field once the browser is idle. The server SVG
- * brackets stay (and remain the whole experience) when WebGL2 is missing,
- * motion is reduced, or the visitor asked to save data.
+ * 히어로 배경의 WebGL 하프톤 필드를 브라우저가 한가할 때 불러온다.
+ * WebGL2가 없거나, 움직임 줄이기·데이터 절약을 켠 방문자에게는 서버가 그린 SVG
+ * 브래킷만 보인다(그것만으로도 완성된 화면이다).
  */
 export default function BracketStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -17,29 +21,10 @@ export default function BracketStage() {
     if (!canvas || !hero) return
     if (!shouldLoadMotion(readMotionEnvironment())) return
 
-    let cancelled = false
-    let teardown: (() => void) | undefined
-
-    const start = () => {
-      import('./bracket-field-gl')
-        .then(({ mountBracketField }) => {
-          if (!cancelled) teardown = mountBracketField(canvas, hero)
-        })
-        // A stale or blocked chunk only costs the live field; the poster stays.
-        .catch(() => {})
-    }
-
-    const hasIdle = typeof window.requestIdleCallback === 'function'
-    const handle = hasIdle
-      ? window.requestIdleCallback(start, { timeout: 2500 })
-      : window.setTimeout(start, 1200)
-
-    return () => {
-      cancelled = true
-      if (hasIdle) window.cancelIdleCallback(handle)
-      else window.clearTimeout(handle)
-      teardown?.()
-    }
+    return mountWhenIdle(
+      () => import('./bracket-field-gl'),
+      ({ mountBracketField }) => mountBracketField(canvas, hero)
+    )
   }, [])
 
   return (

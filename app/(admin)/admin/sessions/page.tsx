@@ -1,3 +1,6 @@
+/**
+ * 세션 목록 화면(`/admin/sessions`): 세션 표, 참여 중인 세션, 참여할 세션.
+ */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import {
   AdminCardSkeleton,
@@ -5,7 +8,7 @@ import {
 } from '@/app/components/admin/skeleton'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { getAuthSession } from '@/auth'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import Link from 'next/link'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import SessionsTable from '@/app/(admin)/admin/sessions/sessions-table'
@@ -20,10 +23,12 @@ import {
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
+/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Sessions',
 }
 
+/** 세션 목록. 표는 Suspense로 스트리밍하고 그동안 스켈레톤을 보여 준다. */
 export default async function SessionsPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),
@@ -32,16 +37,15 @@ export default async function SessionsPage() {
   const t = getAdminMessages(locale)
   const userId = session?.user?.id
   const [canCreate, resolvedScope] = await Promise.all([
-    handlePermission(userId, 'post', 'sessions'),
+    hasPermission(userId, 'post', 'sessions'),
     userId ? resolveAdminGenerationScope(userId) : Promise.resolve(null),
   ])
   const canCreateInCurrentScope =
     canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
-    // 목록이 먼저 오고, 개인 일정(참여 중/참여 가능)은 그 아래 보조 섹션으로
-    // 둡니다. 이전에는 두 섹션이 페이지 제목보다 위에 있어 실제 세션 목록이
-    // 화면 밖으로 밀려나 있었습니다.
+    // 세션 목록을 먼저 두고, 개인 일정(참여 중/참여 가능)은 그 아래 보조 섹션으로 둔다.
+    // 세션은 특정 기수에 속해야 하므로 "전체 기수" 범위에서는 만들기 버튼 대신 안내를 보인다.
     <AdminDefaultLayout className={'gap-6'}>
       <AdminPageHeader
         title={t.sessions}
@@ -65,11 +69,7 @@ export default async function SessionsPage() {
         }
       />
       <Suspense fallback={<AdminTableSkeleton />}>
-        <SessionsTable
-          scope={resolvedScope?.scope ?? null}
-          locale={locale}
-          t={t}
-        />
+        <SessionsTable scope={resolvedScope?.scope ?? null} />
       </Suspense>
       <div className={'border-hairline flex flex-col gap-6 border-t pt-6'}>
         <Suspense fallback={<AdminCardSkeleton />}>

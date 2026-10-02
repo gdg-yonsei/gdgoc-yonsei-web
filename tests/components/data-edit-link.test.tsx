@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react'
 
 const { handlePermission } = vi.hoisted(() => ({ handlePermission: vi.fn() }))
 
-vi.mock('@/lib/server/permission/handle-permission', () => ({
-  default: handlePermission,
+vi.mock('@/lib/server/permission/has-permission', () => ({
+  hasPermission: handlePermission,
 }))
 vi.mock('@/lib/admin-i18n/server', () => ({
   getAdminLocale: async () => 'en',

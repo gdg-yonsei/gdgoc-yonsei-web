@@ -77,6 +77,11 @@ describe('project text', () => {
     expect(contributorName(project({}).contributors[0]!, 'ko')).toBe('김민지')
   })
 
+  it('falls back to Korean when the English summary is empty', () => {
+    const korean = project({ description: '', descriptionKo: '실내 길찾기' })
+    expect(projectSummary(korean, 'en')).toBe('실내 길찾기')
+  })
+
   it('indexes names, summaries, tags and contributors', () => {
     const text = projectSearchText(project({}))
     expect(text).toContain('campus compass')

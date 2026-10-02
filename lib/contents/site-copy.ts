@@ -1,5 +1,37 @@
-import type { Locale } from '@/i18n-config'
+/**
+ * 공개 사이트 공통 문구: 메타데이터 기본값, 헤더·푸터(chrome), 히어로, 홈 섹션.
+ *
+ * 이 파일도 클라이언트 번들에 넣지 않는다(`client-bundle-guards` 테스트). 클라이언트 컴포넌트에는
+ * 필요한 문구만 prop으로 넘긴다.
+ */
+import type { Locale } from '@/lib/i18n'
 
+/**
+ * 페이지 제목·설명 기본값.
+ * - `defaultTitle`/`defaultDescription`: 개별 설명이 없는 페이지가 물려받는 값(`[lang]/layout.tsx`)
+ * - `homeDescription`: 홈 화면 메타데이터와 구조화 데이터에 쓰는 설명
+ */
+export const siteMetadataCopy: Record<
+  Locale,
+  { defaultTitle: string; defaultDescription: string; homeDescription: string }
+> = {
+  en: {
+    defaultTitle: 'GDGoC Yonsei | Yonsei University Developer Community',
+    defaultDescription:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, projects, members, events, and activities.",
+    homeDescription:
+      "Official website of GDGoC Yonsei, Yonsei University's student developer community. Explore technical sessions, collaborative projects, members, events, and activities.",
+  },
+  ko: {
+    defaultTitle: 'GDGoC Yonsei | 연세대학교 학생 개발자 커뮤니티',
+    defaultDescription:
+      '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
+    homeDescription:
+      '연세대학교 학생 개발자 커뮤니티 GDGoC Yonsei의 공식 웹사이트입니다. 기술 세션, 협업 프로젝트, 구성원, 행사와 커뮤니티 활동을 확인하세요.',
+  },
+}
+
+/** 헤더·푸터·내비게이션 문구. */
 export type ChromeCopy = {
   skipToContent: string
   home: string
@@ -21,12 +53,12 @@ export type ChromeCopy = {
   chapterPage: string
   privacy: string
   terms: string
-  freshmanOt: string
   source: string
   gyms: string
   clockLabel: string
 }
 
+/** 헤더·푸터 문구(언어별). */
 export const chromeCopy: Record<Locale, ChromeCopy> = {
   en: {
     skipToContent: 'Skip to content',
@@ -50,7 +82,6 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     chapterPage: 'Official GDG chapter',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
-    freshmanOt: '2026 Freshman Orientation',
     source: 'Source code',
     gyms: 'GYMS for members',
     clockLabel: 'Sinchon, Seoul',
@@ -77,13 +108,13 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     chapterPage: '공식 GDG 챕터 페이지',
     privacy: '개인정보처리방침',
     terms: '이용약관',
-    freshmanOt: '2026 신입생 OT',
     source: '소스 코드',
     gyms: '멤버 전용 GYMS',
     clockLabel: '서울 신촌',
   },
 }
 
+/** 히어로 섹션 문구. */
 type HeroCopy = {
   eyebrow: string
   tagline: string
@@ -100,6 +131,7 @@ type HeroCopy = {
   scrollCue: string
 }
 
+/** 히어로 문구(언어별). */
 export const heroCopy: Record<Locale, HeroCopy> = {
   en: {
     eyebrow: 'Google Developer Groups on Campus · Yonsei University',
@@ -135,6 +167,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
   },
 }
 
+/** 프로그램(활동) 카드 식별자. */
 export type ProgramKey =
   | 'T19'
   | 'Part Session'
@@ -143,6 +176,7 @@ export type ProgramKey =
   | 'Yonsei X Korea Demo Day'
   | 'The Bridge Hackathon'
 
+/** 홈 화면 섹션별 문구. */
 export type LandingCopy = {
   manifesto: {
     tag: string
@@ -175,9 +209,8 @@ export type LandingCopy = {
 }
 
 /*
- * Landing copy. Facts (the T19 schedule, the six parts, program names and
- * the 2023 Solution Challenge numbers) come from lib/contents/*; nothing
- * here promises dates the chapter hasn't announced.
+ * 홈 화면 문구. 사실 정보(T19 일정, 여섯 개 파트, 프로그램 이름, 2023 Solution Challenge
+ * 수치)는 lib/contents/*의 다른 파일과 같아야 하며, 챕터가 발표하지 않은 날짜는 약속하지 않는다.
  */
 export const landingCopy: Record<Locale, LandingCopy> = {
   en: {

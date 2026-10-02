@@ -1,34 +1,30 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getMemberFormData from '@/lib/server/form-data/get-member-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { updateMyProfile } from '@/lib/server/services/admin/profile'
+/**
+ * 내 프로필 수정 Server Action.
+ */
+import { forbidden } from 'next/navigation'
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parseMemberForm } from '@/lib/server/form-data/admin-forms'
+import { updateMyProfile } from '@/lib/server/services/admin/profile'
 
 /**
- * Update Profile Action
- * @param memberId - member id (항상 로그인한 본인이어야 한다)
- * @param prev - previous state for form error
- * @param formData - member data
+ * 본인 프로필을 고친다. `memberId`는 `bind`로 고정되며, 로그인한 본인과 다르면
+ * 403이다(다른 사람의 프로필 폼을 재사용한 요청을 막는다).
  */
 export async function updateProfileAction(
   memberId: string,
-  _prev: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor || actor.userId !== memberId) {
-    return forbidden()
-  }
-
-  const result = await updateMyProfile(actor, getMemberFormData(formData))
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/profile'))
+  return runAdminFormAction({
+    run: async (actor) =>
+      actor.userId === memberId
+        ? updateMyProfile(actor, parseMemberForm(formData))
+        : forbidden(),
+    redirectTo: '/admin/profile',
+  })
 }

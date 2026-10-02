@@ -1,7 +1,11 @@
+/**
+ * 관리자 목록 화면의 공용 반응형 표(서버/클라이언트 양쪽에서 쓰는 순수 렌더링 컴포넌트).
+ */
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
+/** 표의 열 정의. */
 export type AdminColumn<T> = {
   /** 안정적인 열 식별자. React key와 `data-label`에 사용됩니다. */
   key: string

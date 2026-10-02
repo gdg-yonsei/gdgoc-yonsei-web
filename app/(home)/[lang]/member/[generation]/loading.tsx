@@ -1,15 +1,18 @@
+/**
+ * 기수별 멤버 페이지 로딩 스켈레톤.
+ */
+import {
+  GenerationPageSkeleton,
+  SkeletonBars,
+} from '@/app/components/site/skeletons'
+
+/** 기수 페이지 데이터를 기다리는 동안 보이는 스켈레톤. */
 export default function MemberGenerationLoading() {
   return (
-    <div role="status" aria-label="Loading members" className="site-page">
-      <span className="skeleton-bar h-4 w-48" />
-      <span className="skeleton-bar mt-6 h-14 w-2/3" />
-      <span className="skeleton-bar mt-4 h-5 w-full max-w-xl" />
+    <GenerationPageSkeleton label="Loading members">
       <div className="archive-skeleton">
-        {Array.from({ length: 6 }, (_, index) => (
-          <span key={index} className="skeleton-bar h-20 w-full" />
-        ))}
+        <SkeletonBars count={6} className="h-20 w-full" />
       </div>
-      <span className="sr-only">Loading members</span>
-    </div>
+    </GenerationPageSkeleton>
   )
 }

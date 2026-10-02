@@ -1,3 +1,7 @@
+/**
+ * 세션 상세 로딩 스켈레톤.
+ */
+
 export default function SessionDetailLoading() {
   return (
     <div

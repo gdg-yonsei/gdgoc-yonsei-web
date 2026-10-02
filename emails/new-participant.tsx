@@ -1,3 +1,6 @@
+/**
+ * React Email 템플릿: 세션 작성자에게 보내는 새 참가자 알림 메일. `pnpm email:dev`로 미리 볼 수 있다.
+ */
 import {
   Tailwind,
   pixelBasedPreset,
@@ -13,6 +16,7 @@ import {
   Column,
 } from 'react-email'
 
+/** 메일에 넣을 세션 정보와 참가자 이름. */
 interface NewParticipantProps {
   session: {
     name: string
@@ -36,13 +40,7 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
 }
 
-/**
- * 새로운 세션이 생성될 때 참여 등록 되지 않은 같은 기수 멤버에게 보내는 메일
- *
- * @param session - 세션 이름
- * @param participantName - 참가자 이름
- * @constructor
- */
+/** 새 참가자 알림 메일 본문. */
 const NewParticipant = ({ session, participantName }: NewParticipantProps) => {
   return (
     <Html>

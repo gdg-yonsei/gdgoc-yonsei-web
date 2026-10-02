@@ -1,3 +1,8 @@
+/**
+ * 프로그램 섹션의 연출: sticky 카드 묶음과 Solution Challenge 깔때기.
+ *
+ * 장면 함수 규칙은 `../scene.ts` 참고.
+ */
 import { animate, stagger, utils, type Timeline } from 'animejs'
 import { formatCount, parseCount } from '@/lib/motion/count'
 import { stackPhases } from '@/lib/motion/stack'
@@ -10,11 +15,9 @@ import { sceneTimeline } from '../timeline'
 const BURST_COLOURS = Object.values(CAPSULE_HEX)
 
 /**
- * The Solution Challenge funnel, played once: the bands open from the centre
- * one after another like brackets parting, the figures count up and the
- * Top 10 band bursts into halftone dots. Figures count on an aria-hidden
- * overlay, so the number in the document never changes; the overlay and
- * dots leave when it finishes.
+ * Solution Challenge 깔때기 연출(한 번만 재생). 띠가 괄호가 벌어지듯 가운데에서 차례로 열리고, 숫자가
+ * 올라가며, Top 10 띠가 망점으로 터진다. 숫자는 aria-hidden 오버레이에서 세므로 문서 안의 실제 숫자는
+ * 바뀌지 않는다. 오버레이와 점은 연출이 끝나면 사라진다.
  */
 function funnelTimeline(funnel: HTMLElement): {
   timeline: Timeline
@@ -62,7 +65,7 @@ function funnelTimeline(funnel: HTMLElement): {
     .call(() => {
       const last = bands.at(-1)
       if (!last) return
-      // Centred on the last band, outside its clip-path.
+      // 마지막 띠의 가운데, clip-path 바깥.
       const origin = funnel.getBoundingClientRect()
       const box = last.getBoundingClientRect()
       for (const dot of dots) {
@@ -105,10 +108,9 @@ function funnelTimeline(funnel: HTMLElement): {
 }
 
 /**
- * `<programs>`: on the sticky stack each card lands like a sticker (its tilt
- * settles and its numeral flips in) and recedes under the next one; the
- * Solution Challenge funnel plays once as its card takes its slot. On phones
- * and short screens the cards simply rise in.
+ * `<programs>` 장면. sticky 카드 묶음에서 카드가 스티커처럼 붙고(기울기가 바로잡히고 번호가 뒤집혀
+ * 나타남) 다음 카드 아래로 물러난다. Solution Challenge 카드가 자리를 잡을 때 깔때기 연출이 한 번
+ * 재생된다. 휴대폰과 낮은 화면에서는 카드가 단순히 떠오르기만 한다.
  */
 const programs: Scene = ({ root, scope, matches, belowFold }) => {
   const cleanups: Array<() => void> = []
@@ -119,10 +121,9 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
   const stack = matches.stack
     ? root.querySelector<HTMLElement>('.program-stack')
     : null
-  // Scroll lines are measured on the stack, never on a sticky card: to
-  // measure a sticky target anime.js unsticks it, a full layout on every
-  // refresh. The rows share one height, so a card's place in the stack's
-  // flow is exact.
+  // 스크롤 기준선은 sticky 카드가 아니라 묶음(stack)에서 잰다. anime.js는 sticky 대상을 재려고 sticky를
+  // 잠시 풀기 때문에 새로 고칠 때마다 전체 레이아웃이 일어난다. 행의 높이가 모두 같으므로 묶음 흐름에서
+  // 카드의 위치는 정확히 계산된다.
   const row =
     stack && cards[0]
       ? cards[0].getBoundingClientRect().height +
@@ -138,8 +139,8 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
       viewport: innerHeight,
     })
 
-    // Each sheet dims under a shade of its own as the next card covers it
-    // (animating a variable on the sheet restyled all of its contents).
+    // 다음 카드가 덮을 때 각 카드는 자기 그림자 레이어로 어두워진다(카드의 CSS 변수를 움직이면 카드 안
+    // 내용 전체의 스타일이 다시 계산됐다).
     const shades = sheets.map((sheet) => {
       if (!sheet) return null
       const shade = document.createElement('span')
@@ -150,11 +151,9 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
     })
     cleanups.push(() => shades.forEach((shade) => shade?.remove()))
 
-    // One scroll-synced timeline per card: it lands (its tilt settles, its
-    // numeral flips in) and, over the later part of the same approach, the
-    // card it covers recedes. Six observers instead of eleven. All six are
-    // built, reading the page, before any renders its start: one style
-    // recalculation rather than one per card.
+    // 카드마다 스크롤에 맞춘 타임라인 하나: 카드가 붙고(기울기 정리, 번호 뒤집힘), 같은 접근 구간의 뒷부분에서
+    // 덮이는 카드가 물러난다. observer가 열한 개가 아니라 여섯 개다. 여섯 개 모두 페이지를 읽어 만든 뒤에
+    // 시작 상태를 그리므로 스타일 재계산은 카드마다가 아니라 한 번이다.
     const scrubs: Array<() => void> = []
     phases.forEach(({ landing }, index) => {
       const sheet = sheets[index]
@@ -192,8 +191,7 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
     })
     scrubs.forEach((start) => start())
 
-    // The sheets share one height and the slots are in pixels: rebuild when
-    // the height changes (a new width, fonts arriving).
+    // 카드 높이가 모두 같고 자리는 픽셀 단위이므로, 높이가 바뀌면(너비 변경, 폰트 로드) 다시 만든다.
     let height = cards[0]!.offsetHeight
     const resizes = new ResizeObserver(() => {
       const now = cards[0]!.offsetHeight
@@ -225,7 +223,7 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
     belowFold(funnel)
   ) {
     const { timeline, settle } = funnelTimeline(funnel)
-    // Reverting the scope mid-play must not leave overlays behind.
+    // 재생 중에 scope를 되돌려도 오버레이가 남지 않아야 한다.
     cleanups.push(settle)
     utils.set(funnel.querySelectorAll('.sc-funnel-step'), { '--open': 0 })
     const play = () => {
@@ -233,7 +231,7 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
       timeline.play()
     }
     if (stack) {
-      // Just before its card takes its slot.
+      // 카드가 자리를 잡기 직전.
       const slot = parseFloat(getComputedStyle(funnelCard).top)
       arrival(stack, `${slot + 2} ${inFlow(cards.indexOf(funnelCard))}`, play)
     } else {

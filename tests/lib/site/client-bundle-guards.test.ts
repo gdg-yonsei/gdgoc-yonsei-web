@@ -11,11 +11,13 @@ const ROOTS = [
   'app/components/site',
   'app/components/header',
   'app/(home)/[lang]/_components',
+  'app/(home)/[lang]/calendar',
 ]
 const FORBIDDEN = [
   'lib/cn.ts',
   'lib/contents/site-copy.ts',
   'lib/contents/archive-copy.ts',
+  'lib/contents/calendar-copy.ts',
 ]
 
 /** Path comparisons below use forward slashes; normalize Windows separators. */
@@ -92,8 +94,8 @@ describe('public client bundles', () => {
     expect(
       resolveImport(
         'app/components/site/filter-bar.tsx',
-        '../../../lib/site/format'
+        '../../../lib/format/text'
       )
-    ).toBe('lib/site/format.ts')
+    ).toBe('lib/format/text.ts')
   })
 })

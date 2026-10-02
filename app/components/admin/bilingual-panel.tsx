@@ -1,17 +1,22 @@
 'use client'
 
+/**
+ * 영어·한국어 입력 패널(클라이언트 컴포넌트). 관리자 폼의 모든 이중 언어 필드가 이 패널 안에 들어간다.
+ */
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { getLanguageCompletion } from '@/app/components/admin/bilingual-completion'
 import { cn } from '@/lib/cn'
+import { fillTemplate } from '@/lib/format/text'
 
+/**
+ * 영어·한국어 입력을 탭(또는 나란히 보기)으로 묶는 패널.
+ *
+ * - 비활성 탭은 언마운트하지 않고 숨겨 두어, 폼 제출 시 두 언어 값이 모두 전송된다.
+ * - `requiredBoth`이면 부모 `<form>`의 입력을 지켜보며 언어별 작성 여부를 표시하고,
+ *   제출할 때 빠진 언어 탭으로 전환한다. 제출 자체를 막는 일은 `DataForm`이 한다
+ *   (`data-bilingual-*` 속성으로 필드 정보를 넘긴다).
+ */
 export default function BilingualPanel({
   enTitle,
   koTitle,
@@ -46,39 +51,10 @@ export default function BilingualPanel({
   })
   const [showValidationMessage, setShowValidationMessage] = useState(false)
 
-  const title = useMemo(() => {
-    if (selected === 'ko') {
-      return koTitle ?? t('korean')
-    }
-    return enTitle ?? t('english')
-  }, [selected, enTitle, koTitle, t])
+  const title =
+    selected === 'ko' ? (koTitle ?? t('korean')) : (enTitle ?? t('english'))
 
-  const evaluateCompletion = useCallback(
-    (formElement: HTMLFormElement) => {
-      if (!requiredBoth || !enFieldNames.length || !koFieldNames.length) {
-        return { en: true, ko: true }
-      }
-
-      const formData = new FormData(formElement)
-      const isFilled = (name: string) => {
-        const value = formData.get(name)
-        if (typeof value === 'string') {
-          return value.trim().length > 0
-        }
-        if (value instanceof File) {
-          return value.size > 0
-        }
-        return false
-      }
-
-      return {
-        en: enFieldNames.every(isFilled),
-        ko: koFieldNames.every(isFilled),
-      }
-    },
-    [requiredBoth, enFieldNames, koFieldNames]
-  )
-
+  // 부모 <form>은 이 컴포넌트 밖의 DOM이므로 이벤트 리스너로 동기화한다.
   useEffect(() => {
     if (!requiredBoth || !panelRef.current) {
       return
@@ -89,14 +65,23 @@ export default function BilingualPanel({
       return
     }
 
+    const evaluateCompletion = () =>
+      enFieldNames.length && koFieldNames.length
+        ? getLanguageCompletion(
+            new FormData(formElement),
+            enFieldNames,
+            koFieldNames
+          )
+        : { en: true, ko: true }
+
     const syncCompletion = () => {
-      const next = evaluateCompletion(formElement)
+      const next = evaluateCompletion()
       setCompletion(next)
       setShowValidationMessage((prev) => (prev ? !(next.en && next.ko) : prev))
     }
 
     const onSubmit = () => {
-      const next = evaluateCompletion(formElement)
+      const next = evaluateCompletion()
       const hasMissingLanguage = !next.en || !next.ko
       setCompletion(next)
       setShowValidationMessage(hasMissingLanguage)
@@ -116,25 +101,21 @@ export default function BilingualPanel({
       formElement.removeEventListener('change', syncCompletion)
       formElement.removeEventListener('submit', onSubmit)
     }
-  }, [evaluateCompletion, requiredBoth, splitView])
+  }, [requiredBoth, enFieldNames, koFieldNames, splitView])
 
   const hasMissingLanguage = requiredBoth && (!completion.en || !completion.ko)
 
-  const missingLanguageMessage = useMemo(() => {
-    if (!hasMissingLanguage) {
-      return ''
-    }
-    const missingLanguages = [
-      !completion.en ? t('english') : null,
-      !completion.ko ? t('korean') : null,
-    ].filter((value): value is string => Boolean(value))
-    const label = fieldLabel ?? (locale === 'ko' ? '이 항목' : 'This field')
-
-    if (locale === 'ko') {
-      return `${label}: ${missingLanguages.join(', ')} 버전을 작성해 주세요.`
-    }
-    return `${label}: Please fill the ${missingLanguages.join(', ')} version.`
-  }, [completion.en, completion.ko, fieldLabel, hasMissingLanguage, locale, t])
+  const missingLanguageMessage = hasMissingLanguage
+    ? fillTemplate(t('bilingualFillVersion'), {
+        label: fieldLabel ?? t('bilingualThisField'),
+        languages: [
+          !completion.en ? t('english') : null,
+          !completion.ko ? t('korean') : null,
+        ]
+          .filter(Boolean)
+          .join(', '),
+      })
+    : ''
 
   const statusDoneText = t('written')
   const statusMissingText = t('notWritten')

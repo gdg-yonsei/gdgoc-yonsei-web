@@ -8,9 +8,9 @@ vi.mock('@/lib/hooks/use-reduced-motion', () => ({
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en/project',
 }))
-import LoadingSpinner from '@/app/components/loading-spinner'
-import UserProfileImage from '@/app/components/user-profile-image'
-import UserProfileImagePreview from '@/app/components/user-profile-image-preview'
+import LoadingSpinner from '@/app/components/admin/loading-spinner'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
+import UserProfileImagePreview from '@/app/components/admin/user-profile-image-preview'
 import Footer from '@/app/components/footer'
 
 describe('common components', () => {
@@ -39,6 +39,21 @@ describe('common components', () => {
     expect(screen.getByAltText('profile')).toHaveAttribute(
       'src',
       'https://cdn.example.com/users/a.png'
+    )
+
+    // 키 앞에 슬래시가 없어도 공개 도메인과 슬래시 하나로 이어진다.
+    rerender(
+      <UserProfileImage
+        src={'users/b.png'}
+        alt={'profile'}
+        width={100}
+        height={100}
+        className={'rounded'}
+      />
+    )
+    expect(screen.getByAltText('profile')).toHaveAttribute(
+      'src',
+      'https://cdn.example.com/users/b.png'
     )
 
     rerender(
@@ -135,9 +150,6 @@ describe('common components', () => {
     expect(
       screen.getAllByRole('link', { name: /한국어/ }).at(-1)
     ).toHaveAttribute('href', '/ko/project')
-    expect(
-      screen.getByRole('link', { name: '2026 Freshman Orientation' })
-    ).toHaveAttribute('href', '/en/2026-freshman-ot')
   })
 
   it('draws footer link arrows as icons, not glyphs outside the Latin font subset', () => {
@@ -154,7 +166,7 @@ describe('common components', () => {
     }))
 
     const { default: BackToPageButton } =
-      await import('@/app/components/back-to-page-button')
+      await import('@/app/components/admin/back-to-page-button')
 
     const user = userEvent.setup()
     render(<BackToPageButton />)

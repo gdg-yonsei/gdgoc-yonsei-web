@@ -1,4 +1,4 @@
-/* Hero — "< GDGoC Yonsei >" */
+/* 히어로 — "< GDGoC Yonsei >" */
 @layer components {
   .hero {
     position: relative;
@@ -35,8 +35,10 @@
     flex: 1;
     flex-direction: column;
     align-items: center;
-    /* Top-anchored, not centred: if a font swap changes the height of the
-       tagline or CTAs, nothing above them moves (no layout shift). */
+    /*
+     * 가운데가 아니라 위쪽에 맞춘다. 폰트가 바뀌며 소개 문구나 버튼 높이가 달라져도 그 위의 요소는 움직이지
+     * 않는다(레이아웃 이동 없음).
+     */
     justify-content: flex-start;
     padding: max(7rem, 26svh) 1rem 3rem;
     text-align: center;
@@ -59,20 +61,18 @@
     font-size: clamp(3rem, 8.6vw, 9rem);
   }
 
-  /* Set in Google Sans rather than the Flex display face; the display stack
-     covers the swap period. */
+  /* Flex 디스플레이 서체가 아니라 Google Sans로 쓴다. 폰트 교체 동안은 디스플레이 글꼴 목록이 대신한다. */
   .hero-title {
     font-family: var(--font-google-sans), var(--font-display);
     font-size: 1em;
     font-weight: 700;
     line-height: 0.92;
     letter-spacing: -0.045em;
-    /* The title fills the row at the 9rem cap; never let it wrap, not even
-       while a fallback face with wider metrics is showing. */
+    /* 제목은 최대 9rem에서 한 줄을 꽉 채운다. 폭이 더 넓은 대체 글꼴이 보이는 동안에도 줄바꿈되지 않게 한다. */
     white-space: nowrap;
   }
 
-  /* Each word moves on its own as the stage scrolls away (hero scene). */
+  /* 무대가 스크롤되어 멀어질 때 단어마다 따로 움직인다(hero 장면). */
   .hero-word {
     display: inline-block;
   }
@@ -90,8 +90,10 @@
     height: 100%;
   }
 
-  /* Halftone bracket poster (hero, 404): solid capsules, a faint tint and a
-     dot grid cut with a CSS mask — no SVG patterns (see BracketPoster). */
+  /*
+   * 망점 괄호 포스터(히어로, 404): 단색 캡슐 위에 옅은 색과 CSS 마스크로 자른 점 격자를 겹친다. SVG 패턴은
+   * 쓰지 않는다(BracketPoster 참고).
+   */
   .bracket-poster {
     --dot: max(3.5px, 0.05em);
     position: relative;
@@ -147,8 +149,10 @@
     gap: 0.75rem;
   }
 
-  /* The hero scene leans each call to action toward a nearby pointer.
-     `translate` composes with the press feedback's `transform`. */
+  /*
+   * hero 장면이 행동 유도 버튼을 가까운 포인터 쪽으로 기울인다. `translate`는 누름 피드백의 `transform`과
+   * 함께 적용된다.
+   */
   .hero-actions > a {
     translate: var(--magnet-x, 0px) var(--magnet-y, 0px);
   }
@@ -160,7 +164,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    /* Clears the paper sheet that overlaps the stage by up to 2rem. */
+    /* 무대와 최대 2rem 겹치는 종이 면을 피해 띄운다. */
     padding: 0 1rem 3.5rem;
   }
 
@@ -200,7 +204,7 @@
     background-color: #f9ab00;
   }
 
-  /* Fixed width, so the strip doesn't shift when the counts stream in. */
+  /* 고정 폭이라 개수가 스트리밍되어 들어와도 띠가 흔들리지 않는다. */
   .hero-meta-skeleton {
     display: inline-block;
     width: 5.5em;
@@ -215,10 +219,10 @@
     font-size: 0.6875rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #8f8f8f; /* quiet, yet 5.2:1 on the stage */
+    color: #8f8f8f; /* 차분하지만 무대 위에서 대비 5.2:1 */
   }
 
-  /* Wide tracking suits Latin caps; Hangul reads better set closer. */
+  /* 넓은 자간은 라틴 대문자에 어울리고, 한글은 좁게 써야 잘 읽힌다. */
   html.site:lang(ko) .hero-eyebrow,
   html.site:lang(ko) .hero-cue {
     letter-spacing: 0.06em;
@@ -230,7 +234,7 @@
       font-size: 14vw;
     }
 
-    /* Stacked on phones so wrapping never depends on font metrics. */
+    /* 휴대폰에서는 세로로 쌓아, 줄바꿈이 폰트 크기에 좌우되지 않게 한다. */
     .hero-actions {
       width: min(100%, 20rem);
       flex-direction: column;
@@ -241,7 +245,7 @@
       display: block;
     }
 
-    /* Taller brackets frame the two-line phone title (hero only). */
+    /* 휴대폰의 두 줄 제목을 감싸도록 괄호를 더 길게 그린다(히어로 전용). */
     .hero-mark .bracket-slot {
       height: 1.62em;
     }
@@ -249,7 +253,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* `backwards` so the rest state (and :hover) owns the element afterwards. */
+  /* `backwards`로 두어, 애니메이션이 끝난 뒤에는 기본 상태(와 :hover)가 요소를 다시 맡는다. */
   .hero-title {
     animation: hero-title-in 1400ms var(--ease-spring) backwards;
   }
@@ -282,8 +286,7 @@
   }
 }
 
-/* Only transform animates: letter-spacing would re-run layout on every frame
-   of the entrance. */
+/* transform만 움직인다. letter-spacing을 움직이면 등장 애니메이션 매 프레임마다 레이아웃을 다시 계산한다. */
 @keyframes hero-title-in {
   from {
     transform: translateY(0.06em);
@@ -304,9 +307,10 @@
   }
 }
 
-/* Movement only: the tagline is the LCP element, and LCP ignores text
-   until it paints with non-zero opacity. `translate` composes with the
-   `transform` the hero scene drives on the same elements. */
+/*
+ * 이동만 한다. 소개 문구가 LCP 요소인데, LCP는 불투명도가 0이 아닌 상태로 그려질 때까지 텍스트를 세지
+ * 않는다. `translate`는 같은 요소에 hero 장면이 거는 `transform`과 함께 적용된다.
+ */
 @keyframes hero-rise {
   from {
     translate: 0 14px;

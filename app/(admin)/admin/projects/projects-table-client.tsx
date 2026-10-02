@@ -1,37 +1,32 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+/**
+ * 프로젝트 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
+ */
+import { useState } from 'react'
 import Image from 'next/image'
-import AdminDataTable, {
-  type AdminColumn,
-} from '@/app/components/admin/data-table'
-import AdminEmptyState from '@/app/components/admin/empty-state'
-import { type AdminProjectListItem } from '@/lib/server/fetcher/admin/get-projects'
-import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import {
-  formatAdminDate,
-  localizeAdminHref,
-  type AdminMessages,
-} from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+import type { AdminColumn } from '@/app/components/admin/data-table'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
+import GenerationGroupedTables from '@/app/(admin)/admin/_components/generation-grouped-tables'
 import {
   downloadCsv,
-  useFilteredSortedItems,
-  useGroupedItems,
+  filterAndSortItems,
+  groupByGeneration,
 } from '@/app/(admin)/admin/_lib/admin-table-client'
+import { formatAdminDate, localizeAdminHref } from '@/lib/admin-i18n'
+import type { Locale } from '@/lib/i18n'
+import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import type { AdminProjectListItem } from '@/lib/server/fetcher/admin/get-projects'
 
-interface ProjectsTableClientProps {
-  projectsData: AdminProjectListItem[]
-  scope: AdminGenerationScope | null
-  locale: Locale
-  t: AdminMessages
-}
-
-type ProjectGroup = {
-  generationName: string
-  generationId: number
-  projects: AdminProjectListItem[]
+/** 생성·수정 시각은 실제 시각이므로 서울 시간으로 날짜만 보여 준다. */
+function formatSeoulDate(value: Date | string, locale: Locale) {
+  return formatAdminDate(value, locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Asia/Seoul',
+  })
 }
 
 function projectMatchesSearch(project: AdminProjectListItem, query: string) {
@@ -46,158 +41,98 @@ function compareProjects(
   right: AdminProjectListItem,
   sortBy: string
 ) {
-  if (sortBy === 'name') {
-    return left.name.localeCompare(right.name)
-  }
+  if (sortBy === 'name') return left.name.localeCompare(right.name)
 
-  if (sortBy === 'created-desc') {
-    return (
-      new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
-    )
-  }
-
-  return (
-    new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
-  )
+  const field = sortBy === 'created-desc' ? 'createdAt' : 'updatedAt'
+  return new Date(right[field]).getTime() - new Date(left[field]).getTime()
 }
 
-function getProjectGroupKey(project: AdminProjectListItem) {
-  return String(project.generationId)
-}
-
-function createProjectGroup(project: AdminProjectListItem): ProjectGroup {
-  return {
-    generationName: project.generationName ?? 'Unknown',
-    generationId: project.generationId,
-    projects: [],
-  }
-}
-
-function addProjectToGroup(group: ProjectGroup, project: AdminProjectListItem) {
-  group.projects.push(project)
-}
-
-function compareProjectGroups(left: ProjectGroup, right: ProjectGroup) {
-  return right.generationId - left.generationId
-}
-
+/** 프로젝트 목록 표(검색, 수정일·생성일·이름 정렬, CSV 내보내기, 기수별 묶음). */
 export default function ProjectsTableClient({
   projectsData,
   scope,
-  locale,
-  t,
-}: ProjectsTableClientProps) {
+}: {
+  projectsData: AdminProjectListItem[]
+  scope: AdminGenerationScope | null
+}) {
+  const { locale, messages: t } = useAdminI18n()
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('updated-desc')
 
-  const filteredAndSortedProjects = useFilteredSortedItems({
+  const filteredProjects = filterAndSortItems({
     items: projectsData,
     searchQuery,
     sortBy,
     matchesSearch: projectMatchesSearch,
     compareItems: compareProjects,
   })
-  const groupedProjects = useGroupedItems({
-    items: filteredAndSortedProjects,
-    getGroupKey: getProjectGroupKey,
-    createGroup: createProjectGroup,
-    addItem: addProjectToGroup,
-    compareGroups: compareProjectGroups,
-  })
+  const groups = groupByGeneration(filteredProjects, (project) => ({
+    id: project.generationId,
+    name: project.generationName,
+  }))
 
-  const columns = useMemo<AdminColumn<AdminProjectListItem>[]>(
-    () => [
-      {
-        key: 'name',
-        header: t.columnName,
-        width: 'minmax(0,2.5fr)',
-        primary: true,
-        render: (project) => (
-          <span className={'flex min-w-0 items-center gap-3'}>
-            <Image
-              src={project.mainImage}
-              alt={''}
-              width={160}
-              height={107}
-              className={
-                'border-hairline aspect-3/2 w-14 shrink-0 rounded-sm border object-cover'
-              }
-              placeholder={'blur'}
-              blurDataURL={'/default-image.png'}
-            />
-            <span className={'flex min-w-0 flex-col'}>
-              <span className={'truncate'}>{project.name}</span>
-              {project.nameKo && (
-                <span className={'type-eyebrow text-ink-muted truncate'}>
-                  {project.nameKo}
-                </span>
-              )}
-            </span>
+  const columns: AdminColumn<AdminProjectListItem>[] = [
+    {
+      key: 'name',
+      header: t.columnName,
+      width: 'minmax(0,2.5fr)',
+      primary: true,
+      render: (project) => (
+        <span className={'flex min-w-0 items-center gap-3'}>
+          <Image
+            src={project.mainImage}
+            alt={''}
+            width={160}
+            height={107}
+            className={
+              'border-hairline aspect-3/2 w-14 shrink-0 rounded-sm border object-cover'
+            }
+            placeholder={'blur'}
+            blurDataURL={'/default-image.png'}
+          />
+          <span className={'flex min-w-0 flex-col'}>
+            <span className={'truncate'}>{project.name}</span>
+            {project.nameKo && (
+              <span className={'type-eyebrow text-ink-muted truncate'}>
+                {project.nameKo}
+              </span>
+            )}
           </span>
-        ),
-      },
-      {
-        key: 'generation',
-        header: t.columnGeneration,
-        width: '8rem',
-        hideOnMobile: scope?.kind !== 'all',
-        render: (project) => project.generationName ?? '—',
-      },
-      {
-        key: 'updated',
-        header: t.columnUpdated,
-        width: '9rem',
-        render: (project) =>
-          formatAdminDate(project.updatedAt, locale, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            timeZone: 'Asia/Seoul',
-          }),
-      },
-      {
-        key: 'created',
-        header: t.columnCreated,
-        width: '9rem',
-        hideOnMobile: true,
-        render: (project) =>
-          formatAdminDate(project.createdAt, locale, {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            timeZone: 'Asia/Seoul',
-          }),
-      },
-    ],
-    [t, locale, scope]
-  )
+        </span>
+      ),
+    },
+    {
+      key: 'generation',
+      header: t.columnGeneration,
+      width: '8rem',
+      hideOnMobile: scope?.kind !== 'all',
+      render: (project) => project.generationName ?? '—',
+    },
+    {
+      key: 'updated',
+      header: t.columnUpdated,
+      width: '9rem',
+      render: (project) => formatSeoulDate(project.updatedAt, locale),
+    },
+    {
+      key: 'created',
+      header: t.columnCreated,
+      width: '9rem',
+      hideOnMobile: true,
+      render: (project) => formatSeoulDate(project.createdAt, locale),
+    },
+  ]
 
   const handleExportCsv = () => {
     downloadCsv({
       filenamePrefix: 'projects',
-      headers: [
-        t.name,
-        t.nameKo || '한글 이름',
-        t.generation,
-        t.createdAt,
-        t.updatedAt,
-      ],
-      rows: filteredAndSortedProjects.map((project) => [
+      headers: [t.name, t.nameKo, t.generation, t.createdAt, t.updatedAt],
+      rows: filteredProjects.map((project) => [
         project.name,
         project.nameKo,
         project.generationName,
-        formatAdminDate(project.createdAt, locale, {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          timeZone: 'Asia/Seoul',
-        }),
-        formatAdminDate(project.updatedAt, locale, {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          timeZone: 'Asia/Seoul',
-        }),
+        formatSeoulDate(project.createdAt, locale),
+        formatSeoulDate(project.updatedAt, locale),
       ]),
     })
   }
@@ -222,34 +157,16 @@ export default function ProjectsTableClient({
           ],
         }}
       />
-
-      {filteredAndSortedProjects.length === 0 ? (
-        <AdminEmptyState
-          title={t.noScopedResults}
-          description={t.noScopedResultsHint}
-        />
-      ) : (
-        <div className={'flex flex-col gap-6'}>
-          {groupedProjects.map((group) => (
-            <div key={group.generationName} className={'flex flex-col gap-2'}>
-              {scope?.kind === 'all' && (
-                <h2 className={'admin-field-label'}>
-                  {t.generation}: {group.generationName}
-                </h2>
-              )}
-              <AdminDataTable
-                items={group.projects}
-                caption={`${t.projects} — ${group.generationName}`}
-                getKey={(project) => project.id}
-                getHref={(project) =>
-                  localizeAdminHref(`/admin/projects/${project.id}`, locale)
-                }
-                columns={columns}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      <GenerationGroupedTables
+        groups={groups}
+        showGenerationHeadings={scope?.kind === 'all'}
+        captionLabel={t.projects}
+        columns={columns}
+        getKey={(project) => project.id}
+        getHref={(project) =>
+          localizeAdminHref(`/admin/projects/${project.id}`, locale)
+        }
+      />
     </div>
   )
 }

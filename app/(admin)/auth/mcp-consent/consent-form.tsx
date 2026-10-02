@@ -1,8 +1,12 @@
 'use client'
 
+/**
+ * MCP 클라이언트 연결 동의 폼(클라이언트 컴포넌트). 동의 화면 문구는 외부 클라이언트 사용자를 위해 영어로 둔다.
+ */
 import { useState, useTransition } from 'react'
 import { authClient } from '@/lib/auth-client'
 
+/** GYMS MCP 스코프별 이름과 설명(`lib/mcp/scopes` 참고). */
 const SCOPE_LABELS: Record<string, { title: string; detail: string }> = {
   'gyms:read': {
     title: 'Read',
@@ -18,14 +22,16 @@ const SCOPE_LABELS: Record<string, { title: string; detail: string }> = {
   },
 }
 
+/** 동의 API 응답. Better Auth 버전에 따라 이동 주소 필드 이름이 다르다. */
 type ConsentResponse = { redirect_uri?: string; url?: string } | null
 
+/** 동의 응답에서 이동할 주소(인가 코드가 붙은 redirect_uri)를 꺼낸다. */
 function redirectTarget(data: ConsentResponse): string | undefined {
   return data?.redirect_uri ?? data?.url
 }
 
 /**
- * MCP 클라이언트 연결 동의 폼.
+ * 동의 폼.
  * 역할로 실제 권한이 생기는 스코프만 체크박스로 보여 주고, 승인하면 인가 서버가
  * 돌려준 redirect_uri(인가 코드 포함)로 이동한다.
  */

@@ -1,3 +1,6 @@
+/**
+ * OAuth/MCP 디스커버리 문서 라우트(`/.well-known/*`).
+ */
 import { connection } from 'next/server'
 import { auth } from '@/auth'
 
@@ -15,4 +18,5 @@ export async function GET(request: Request) {
   return auth.handler(request)
 }
 
+/** HEAD 요청도 같은 핸들러로 처리한다. */
 export const HEAD = GET

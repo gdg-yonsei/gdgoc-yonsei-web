@@ -10,7 +10,7 @@ const { findPart, canAccessGeneration, dbUpdate, dbDelete } = vi.hoisted(
 )
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     query: { parts: { findFirst: findPart } },
     update: dbUpdate,
     delete: dbDelete,

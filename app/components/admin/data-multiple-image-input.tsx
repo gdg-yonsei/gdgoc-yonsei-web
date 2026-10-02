@@ -1,10 +1,16 @@
 'use client'
 
+/**
+ * 여러 장 이미지 업로드 입력(클라이언트 컴포넌트).
+ *
+ * 업로드한 공개 URL 목록을 JSON 문자열로 숨은 필드에 넣어 제출한다. 미리보기(dataURL)와
+ * 전송 값(공개 URL)을 같은 인덱스로 맞춰 두어야 삭제 버튼이 올바른 항목을 지운다.
+ */
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
-import { uploadMultipleImagesState } from '@/lib/atoms'
+import { uploadMultipleImagesState } from '@/lib/admin/atoms'
 import { uploadMultipleImages } from '@/lib/upload-image'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 

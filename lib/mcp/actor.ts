@@ -1,6 +1,9 @@
+/**
+ * MCP 액세스 토큰 클레임을 서비스 Actor로 바꾼다(`app/api/mcp/route.ts`가 쓴다).
+ */
 import 'server-only'
 
-import getUserRole from '@/lib/server/fetcher/admin/get-user-role'
+import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import {
   SCOPES,
   type Actor,

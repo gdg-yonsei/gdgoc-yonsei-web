@@ -1,6 +1,10 @@
+/**
+ * 인증 화면(로그인, MCP 동의) 레이아웃. 관리자 앱 셸(사이드바 등) 없이 화면만 그린다.
+ */
 import { ReactNode } from 'react'
 import { Metadata } from 'next'
 
+/** 인증 화면 제목 형식(`화면 | GYMS`). */
 export const metadata: Metadata = {
   title: {
     default: 'GYMS',

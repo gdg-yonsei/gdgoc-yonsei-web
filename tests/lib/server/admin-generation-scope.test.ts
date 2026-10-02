@@ -10,11 +10,11 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
-  default: mockGetUserRole,
+  getUserRole: mockGetUserRole,
 }))
 
 vi.mock('@/db', () => ({
-  default: {
+  db: {
     select: mockSelect,
     selectDistinct: mockSelectDistinct,
   },

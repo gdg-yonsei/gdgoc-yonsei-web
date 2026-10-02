@@ -1,3 +1,9 @@
+/**
+ * MCP 서버 생성.
+ *
+ * 요청마다 새 서버를 만들고(무상태 Streamable HTTP), 연결한 사용자가 쓸 수 있는 도구만
+ * 등록한다. 쓰기·관리 도구는 감사 로그로 감싼다.
+ */
 import 'server-only'
 
 import { McpServer, createMcpHandler } from '@modelcontextprotocol/server'
@@ -7,6 +13,7 @@ import { toCallToolResult } from '@/lib/mcp/result'
 import { logger } from '@/lib/server/logger'
 import { fail, type Actor } from '@/lib/server/services/admin/types'
 
+/** MCP 클라이언트(AI)에게 주는 사용 안내. 도구를 쓰는 순서와 시간·이미지 규칙을 알려 준다. */
 const INSTRUCTIONS = `GYMS is the GDGoC Yonsei management system.
 Call whoami first to learn your role, granted scopes and which generationId values you can use.
 Session start/end times without a UTC offset are interpreted as Seoul wall-clock time (Asia/Seoul).

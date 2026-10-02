@@ -1,10 +1,16 @@
+/**
+ * 멤버 상세 화면(`/admin/members/{id}`).
+ *
+ * 연락처(이메일·학번·전화)는 같은 기수 멤버·본인·LEAD에게만 보이고 그 외에는 "—"로 가린다.
+ * 수정 버튼은 수정 화면과 같은 판단(`authorizeMemberEdit`)으로 보인다.
+ */
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
-import formatUserName from '@/lib/format-user-name'
+import { formatUserName } from '@/lib/format/user-name'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { getAuthSession } from '@/auth'
-import UserProfileImage from '@/app/components/user-profile-image'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
 import DataEditLink from '@/app/components/admin/data-edit-link'
 import {
   getAdminLocale,
@@ -19,6 +25,7 @@ import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import { Metadata } from 'next'
 
+/** 탭 제목에 멤버 이름을 넣는다. 멤버가 없으면 404(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: {
@@ -26,7 +33,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { memberId } = await params
 
-  // Member 정보 가져오기
   const memberData = await getMember(memberId)
   if (!memberData) {
     notFound()
@@ -37,6 +43,11 @@ export async function generateMetadata({
   }
 }
 
+/**
+ * 멤버 프로필 상세.
+ *
+ * 여러 기수에 속한 멤버는 현재 선택한 기수의 소속(파트)을 보여 준다.
+ */
 export default async function MemberPage({
   params,
 }: {
@@ -50,7 +61,6 @@ export default async function MemberPage({
     ? await resolveAdminGenerationScope(currentSession.user.id)
     : null
 
-  // Member 정보 가져오기
   const memberData = await getMember(
     memberId,
     resolvedScope?.scope?.kind === 'generation'

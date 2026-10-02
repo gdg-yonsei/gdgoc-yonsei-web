@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { acceptMemberValidation } from '@/lib/validations/accept-member'
-import { deleteMemberValidation } from '@/lib/validations/delete-member'
 import { generationValidation } from '@/lib/validations/generation'
 import { memberValidation } from '@/lib/validations/member'
 import { partValidation } from '@/lib/validations/part'
@@ -18,13 +17,6 @@ describe('validation schemas', () => {
     expect(
       acceptMemberValidation.safeParse({ userId: '', role: '' }).success
     ).toBe(false)
-  })
-
-  it('validates delete member payload', () => {
-    expect(deleteMemberValidation.safeParse({ userId: 'u1' }).success).toBe(
-      true
-    )
-    expect(deleteMemberValidation.safeParse({ userId: '' }).success).toBe(false)
   })
 
   it('validates generation payload and date order', () => {

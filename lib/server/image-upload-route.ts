@@ -1,10 +1,14 @@
+/**
+ * 관리자 웹 이미지 업로드 API 라우트 팩토리(프로젝트·세션).
+ *
+ * 브라우저는 이 API에서 사전 서명 URL을 받아 R2에 파일을 직접 올린다(서버를 거치지
+ * 않는다). 흐름: 권한 확인 → 파일 이름 검증 → 객체 키 생성 → 사전 서명 URL 발급.
+ * `app/api/admin/{projects,sessions}/{main,content}-image/route.ts`가 이 팩토리로 만든
+ * 핸들러를 그대로 내보낸다.
+ */
 import 'server-only'
 
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getAuthSession } from '@/auth'
-import getPreSignedUrl from '@/lib/server/get-pre-signed-url'
-import r2Client from '@/lib/server/r2-client'
-import { getR2BucketEnv } from '@/lib/server/env'
 import {
   parseRequestBody,
   privateError,
@@ -13,39 +17,39 @@ import {
   privateOk,
 } from '@/lib/server/http'
 import { logger } from '@/lib/server/logger'
-import handlePermission from '@/lib/server/permission/handle-permission'
+import { hasPermission } from '@/lib/server/permission/has-permission'
 import {
   getSafeImageExtension,
   normalizeR2ImageObjectKey,
-} from '@/lib/server/r2-object-key'
+} from '@/lib/server/storage/object-key'
+import { deleteImage, presignImageUpload } from '@/lib/server/storage/r2'
 import {
   imageDeleteValidation,
   multipleImageUploadValidation,
   singleImageUploadValidation,
 } from '@/lib/validations/admin-api'
 
-/**
- * 프로젝트와 세션의 이미지 업로드 라우트를 만든다.
- *
- * 네 개 라우트(`projects`/`sessions` × 단일/다중)가 리소스 이름과 객체 키 접두사만
- * 다른 완전히 동일한 코드였다. 복사본이 각자 조금씩 어긋나 있었기 때문에
- * (성공 응답 형태가 `{ message: 'success' }` 와 `{ success: true }` 로 갈리고,
- * R2 삭제에는 에러 처리가 아예 없었다) 한 곳으로 모은다.
- */
+/** 라우트 설정. 네 라우트(리소스 × 단일/다중)는 리소스 이름만 다르다. */
 interface ImageRouteConfig {
   /** 권한 매트릭스의 리소스 이름이자 R2 객체 키 접두사 */
   resource: 'projects' | 'sessions'
 }
 
+/** `{리소스}/{UUID}.{확장자}` 객체 키를 만든다. 허용하지 않는 확장자면 `null`. */
 function buildObjectKey(resource: string, fileName: string) {
   const extension = getSafeImageExtension(fileName)
   return extension ? `${resource}/${crypto.randomUUID()}.${extension}` : null
 }
 
+/**
+ * 이미지 한 장 업로드(POST)와 삭제(DELETE) 핸들러를 만든다.
+ * - POST: `{ fileName, type }` → `{ uploadUrl, fileName(객체 키) }`
+ * - DELETE: `{ imageUrl }` → 해당 리소스 접두사의 객체만 지운다
+ */
 export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'post', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }
 
@@ -62,14 +66,14 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
       return privateError('Invalid file extension', 400)
     }
 
-    const uploadUrl = await getPreSignedUrl(fileName, body.data.type)
+    const uploadUrl = await presignImageUpload(fileName, body.data.type)
 
     return privateJson({ uploadUrl, fileName })
   }
 
   async function DELETE(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'delete', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'delete', resource))) {
       return privateForbidden()
     }
 
@@ -87,12 +91,7 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
     }
 
     try {
-      await r2Client.send(
-        new DeleteObjectCommand({
-          Bucket: getR2BucketEnv().R2_BUCKET_NAME,
-          Key: objectKey,
-        })
-      )
+      await deleteImage(objectKey)
     } catch (error) {
       logger.error(`api.admin.${resource}.image-delete`, error, { objectKey })
       return privateError('Failed to delete the image', 500)
@@ -104,10 +103,11 @@ export function createSingleImageUploadRoute({ resource }: ImageRouteConfig) {
   return { POST, DELETE }
 }
 
+/** 여러 장 업로드(POST) 핸들러를 만든다. `{ images: [...] }` → `{ uploadUrls: [...] }` */
 export function createMultipleImageUploadRoute({ resource }: ImageRouteConfig) {
   async function POST(request: Request) {
     const session = await getAuthSession()
-    if (!(await handlePermission(session?.user?.id, 'post', resource))) {
+    if (!(await hasPermission(session?.user?.id, 'post', resource))) {
       return privateForbidden()
     }
 
@@ -128,12 +128,11 @@ export function createMultipleImageUploadRoute({ resource }: ImageRouteConfig) {
       fileNames.push(fileName)
     }
 
-    // 확장자 검사를 모두 통과한 뒤에 사전 서명 URL 을 만든다.
-    // 이전 구현은 검사와 발급을 한 루프에서 처리해, 뒤쪽 파일이 거부되면
-    // 앞쪽 파일의 URL 을 이미 발급해 둔 상태로 400 을 반환했다.
+    // 모든 파일의 확장자 검사를 통과한 뒤에야 사전 서명 URL을 만든다. 일부가 거부되면
+    // URL을 하나도 발급하지 않고 400을 돌려준다.
     const uploadUrls = await Promise.all(
       fileNames.map((fileName, index) =>
-        getPreSignedUrl(fileName, body.data.images[index]!.type)
+        presignImageUpload(fileName, body.data.images[index]!.type)
       )
     )
 

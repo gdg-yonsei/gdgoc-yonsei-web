@@ -1,5 +1,11 @@
+/**
+ * MCP 클라이언트 동적 등록(DCR) 요청 보정. `auth.ts`의 `before` 훅이 쓴다.
+ */
+import 'server-only'
+
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
 
+/** URI가 http 루프백(localhost, 127.0.0.1, [::1]) 주소인지. */
 function isHttpLoopback(uri: unknown): boolean {
   if (typeof uri !== 'string') return false
   try {

@@ -1,38 +1,27 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import formatUserName from '@/lib/format-user-name'
-import UserProfileImage from '@/app/components/user-profile-image'
-import AdminDataTable, {
-  type AdminColumn,
-} from '@/app/components/admin/data-table'
-import AdminEmptyState from '@/app/components/admin/empty-state'
-import { type AdminMemberListItem } from '@/lib/server/fetcher/admin/get-members'
-import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { localizeAdminHref, type AdminMessages } from '@/lib/admin-i18n'
-import { Locale } from '@/i18n-config'
+/**
+ * 멤버 목록 표(클라이언트 컴포넌트). 검색·필터·정렬은 브라우저에서 한다(목록 규모가 작아 서버 왕복이 필요 없다).
+ */
+import { useState } from 'react'
+import UserProfileImage from '@/app/components/admin/user-profile-image'
+import type { AdminColumn } from '@/app/components/admin/data-table'
+import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import AdminTableToolbar from '@/app/(admin)/admin/_components/admin-table-toolbar'
+import GenerationGroupedTables from '@/app/(admin)/admin/_components/generation-grouped-tables'
 import {
   ALL_FILTER_VALUE,
   downloadCsv,
+  filterAndSortItems,
   getUniqueStringOptions,
-  useFilteredSortedItems,
-  useGroupedItems,
+  groupByGeneration,
 } from '@/app/(admin)/admin/_lib/admin-table-client'
+import { localizeAdminHref } from '@/lib/admin-i18n'
+import { formatUserName } from '@/lib/format/user-name'
+import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
+import type { AdminMemberListItem } from '@/lib/server/fetcher/admin/get-members'
 
-interface MembersTableClientProps {
-  membersData: AdminMemberListItem[]
-  scope: AdminGenerationScope | null
-  locale: Locale
-  t: AdminMessages
-}
-
-type MemberGroup = {
-  generation: string
-  generationId: number
-  members: AdminMemberListItem[]
-}
-
+/** 영문 표기 이름(외국인이면 이름 성, 아니면 성 이름). */
 function getEnglishMemberName(member: AdminMemberListItem) {
   return formatUserName(
     member.name,
@@ -42,6 +31,7 @@ function getEnglishMemberName(member: AdminMemberListItem) {
   )
 }
 
+/** 한글 이름. 한글 성·이름이 모두 있을 때만 만든다. */
 function getKoreanMemberName(member: AdminMemberListItem) {
   return member.firstNameKo && member.lastNameKo
     ? formatUserName(
@@ -54,172 +44,135 @@ function getKoreanMemberName(member: AdminMemberListItem) {
     : ''
 }
 
+/** 영문·한글 이름, 파트, 기수 중 하나라도 검색어를 포함하면 일치. */
 function memberMatchesSearch(member: AdminMemberListItem, query: string) {
-  const fullName = getEnglishMemberName(member).toLowerCase()
-  const fullNameKo = getKoreanMemberName(member).toLowerCase()
-  const part = (member.part ?? '').toLowerCase()
-  const generation = (member.generation ?? '').toLowerCase()
-
-  return (
-    fullName.includes(query) ||
-    fullNameKo.includes(query) ||
-    part.includes(query) ||
-    generation.includes(query)
-  )
+  return [
+    getEnglishMemberName(member),
+    getKoreanMemberName(member),
+    member.part ?? '',
+    member.generation ?? '',
+  ].some((text) => text.toLowerCase().includes(query))
 }
 
+/** 정렬 기준(`part`·`role`·이름)에 따라 두 멤버를 비교한다. */
 function compareMembers(
   left: AdminMemberListItem,
   right: AdminMemberListItem,
   sortBy: string
 ) {
-  if (sortBy === 'part') {
+  if (sortBy === 'part')
     return (left.part ?? '').localeCompare(right.part ?? '')
-  }
-
-  if (sortBy === 'role') {
-    return left.role.localeCompare(right.role)
-  }
-
+  if (sortBy === 'role') return left.role.localeCompare(right.role)
   return getEnglishMemberName(left).localeCompare(getEnglishMemberName(right))
 }
 
-function getMemberGroupKey(member: AdminMemberListItem) {
-  return String(member.generationId ?? 'none')
-}
-
-function createMemberGroup(member: AdminMemberListItem): MemberGroup {
-  return {
-    generation: member.generation ?? 'Unknown',
-    generationId: member.generationId ?? 0,
-    members: [],
-  }
-}
-
-function addMemberToGroup(group: MemberGroup, member: AdminMemberListItem) {
-  group.members.push(member)
-}
-
-function compareMemberGroups(left: MemberGroup, right: MemberGroup) {
-  return right.generationId - left.generationId
-}
-
+/** 멤버 목록 표(검색, 파트·역할 필터, 정렬, CSV 내보내기, 기수별 묶음). */
 export default function MembersTableClient({
   membersData,
   scope,
-  locale,
-  t,
-}: MembersTableClientProps) {
+}: {
+  membersData: AdminMemberListItem[]
+  scope: AdminGenerationScope | null
+}) {
+  const { locale, messages: t } = useAdminI18n()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPart, setSelectedPart] = useState(ALL_FILTER_VALUE)
   const [selectedRole, setSelectedRole] = useState(ALL_FILTER_VALUE)
   const [sortBy, setSortBy] = useState('name')
 
-  const uniqueParts = useMemo(
-    () => getUniqueStringOptions(membersData, (member) => member.part),
-    [membersData]
+  const uniqueParts = getUniqueStringOptions(
+    membersData,
+    (member) => member.part
   )
-  const uniqueRoles = useMemo(
-    () => getUniqueStringOptions(membersData, (member) => member.role),
-    [membersData]
+  const uniqueRoles = getUniqueStringOptions(
+    membersData,
+    (member) => member.role
   )
-  const filters = useMemo(
-    () => [
+  const filteredMembers = filterAndSortItems({
+    items: membersData,
+    searchQuery,
+    filters: [
       {
         value: selectedPart,
-        predicate: (member: AdminMemberListItem, value: string) =>
-          member.part === value,
+        predicate: (member, value) => member.part === value,
       },
       {
         value: selectedRole,
-        predicate: (member: AdminMemberListItem, value: string) =>
-          member.role === value,
+        predicate: (member, value) => member.role === value,
       },
     ],
-    [selectedPart, selectedRole]
-  )
-  const filteredAndSortedMembers = useFilteredSortedItems({
-    items: membersData,
-    searchQuery,
-    filters,
     sortBy,
     matchesSearch: memberMatchesSearch,
     compareItems: compareMembers,
   })
-  const groupedMembers = useGroupedItems({
-    items: filteredAndSortedMembers,
-    getGroupKey: getMemberGroupKey,
-    createGroup: createMemberGroup,
-    addItem: addMemberToGroup,
-    compareGroups: compareMemberGroups,
-  })
+  const groups = groupByGeneration(filteredMembers, (member) => ({
+    id: member.generationId,
+    name: member.generation,
+  }))
 
-  const columns = useMemo<AdminColumn<AdminMemberListItem>[]>(
-    () => [
-      {
-        key: 'name',
-        header: t.columnName,
-        width: 'minmax(0,2fr)',
-        primary: true,
-        render: (member) => (
-          <span className={'flex min-w-0 items-center gap-2.5'}>
-            <UserProfileImage
-              src={member.image}
-              alt={''}
-              width={80}
-              height={80}
-              className={'aspect-square w-8 shrink-0 rounded-full object-cover'}
-            />
-            <span className={'flex min-w-0 flex-col'}>
-              {/* e2e가 `getByText(name, { exact: true })`로 찾으므로
-                  이름은 반드시 단일 요소의 텍스트로 남아야 합니다. */}
-              <span className={'truncate'}>{getEnglishMemberName(member)}</span>
-              {getKoreanMemberName(member) && (
-                <span className={'type-eyebrow text-ink-muted truncate'}>
-                  {getKoreanMemberName(member)}
-                </span>
-              )}
-            </span>
+  const columns: AdminColumn<AdminMemberListItem>[] = [
+    {
+      key: 'name',
+      header: t.columnName,
+      width: 'minmax(0,2fr)',
+      primary: true,
+      render: (member) => (
+        <span className={'flex min-w-0 items-center gap-2.5'}>
+          <UserProfileImage
+            src={member.image}
+            alt={''}
+            width={80}
+            height={80}
+            className={'aspect-square w-8 shrink-0 rounded-full object-cover'}
+          />
+          <span className={'flex min-w-0 flex-col'}>
+            {/* e2e가 `getByText(name, { exact: true })`로 찾으므로
+                이름은 반드시 단일 요소의 텍스트로 남아야 한다. */}
+            <span className={'truncate'}>{getEnglishMemberName(member)}</span>
+            {getKoreanMemberName(member) && (
+              <span className={'type-eyebrow text-ink-muted truncate'}>
+                {getKoreanMemberName(member)}
+              </span>
+            )}
           </span>
+        </span>
+      ),
+    },
+    {
+      key: 'part',
+      header: t.columnPart,
+      width: 'minmax(0,1fr)',
+      render: (member) =>
+        member.part ? (
+          <span className={'admin-badge-primary'}>{member.part}</span>
+        ) : (
+          <span className={'text-ink-faint'}>—</span>
         ),
-      },
-      {
-        key: 'part',
-        header: t.columnPart,
-        width: 'minmax(0,1fr)',
-        render: (member) =>
-          member.part ? (
-            <span className={'admin-badge-primary'}>{member.part}</span>
-          ) : (
-            <span className={'text-ink-faint'}>—</span>
-          ),
-      },
-      {
-        key: 'role',
-        header: t.columnRole,
-        width: '7rem',
-        render: (member) => (
-          <span className={'admin-badge-neutral'}>
-            {member.role.toUpperCase()}
-          </span>
-        ),
-      },
-      {
-        key: 'generation',
-        header: t.columnGeneration,
-        width: '8rem',
-        hideOnMobile: scope?.kind !== 'all',
-        render: (member) => member.generation ?? '—',
-      },
-    ],
-    [t, scope]
-  )
+    },
+    {
+      key: 'role',
+      header: t.columnRole,
+      width: '7rem',
+      render: (member) => (
+        <span className={'admin-badge-neutral'}>
+          {member.role.toUpperCase()}
+        </span>
+      ),
+    },
+    {
+      key: 'generation',
+      header: t.columnGeneration,
+      width: '8rem',
+      hideOnMobile: scope?.kind !== 'all',
+      render: (member) => member.generation ?? '—',
+    },
+  ]
 
   const handleExportCsv = () => {
     downloadCsv({
       filenamePrefix: 'members',
       headers: [t.name, t.nameEn, t.part, t.role, t.generation, t.foreigner],
-      rows: filteredAndSortedMembers.map((member) => [
+      rows: filteredMembers.map((member) => [
         getKoreanMemberName(member) || getEnglishMemberName(member),
         getEnglishMemberName(member),
         member.part,
@@ -273,34 +226,16 @@ export default function MembersTableClient({
           ],
         }}
       />
-
-      {filteredAndSortedMembers.length === 0 ? (
-        <AdminEmptyState
-          title={t.noScopedResults}
-          description={t.noScopedResultsHint}
-        />
-      ) : (
-        <div className={'flex flex-col gap-6'}>
-          {groupedMembers.map((group) => (
-            <div key={group.generation} className={'flex flex-col gap-2'}>
-              {scope?.kind === 'all' && (
-                <h2 className={'admin-field-label'}>
-                  {t.generation}: {group.generation}
-                </h2>
-              )}
-              <AdminDataTable
-                items={group.members}
-                caption={`${t.members} — ${group.generation}`}
-                getKey={(member) => member.id}
-                getHref={(member) =>
-                  localizeAdminHref(`/admin/members/${member.id}`, locale)
-                }
-                columns={columns}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      <GenerationGroupedTables
+        groups={groups}
+        showGenerationHeadings={scope?.kind === 'all'}
+        captionLabel={t.members}
+        columns={columns}
+        getKey={(member) => member.id}
+        getHref={(member) =>
+          localizeAdminHref(`/admin/members/${member.id}`, locale)
+        }
+      />
     </div>
   )
 }

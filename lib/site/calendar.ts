@@ -1,9 +1,13 @@
-import type { Locale } from '@/i18n-config'
-import { formatSessionTime, toKstIso } from '@/lib/site/datetime'
+/**
+ * 공개 캘린더 데이터 가공(순수 함수). 세션을 서울 날짜 기준 일정으로 바꾸고 달력 격자를 만든다.
+ */
+import type { Locale } from '@/lib/i18n'
+import { formatSessionTime, toKstIso } from '@/lib/format/datetime'
 import { categoryHue, categoryLabel, type Hue } from '@/lib/site/labels'
 import { sessionLocation, sessionTitle } from '@/lib/site/session-log'
+import { sessionPath, localeHref } from '@/lib/site/routes'
 
-/** A dated public session as the calendar read model returns it. */
+/** 캘린더 쿼리가 돌려주는 일정이 있는 공개 세션. */
 export type CalendarSession = {
   id: string
   name: string
@@ -18,8 +22,8 @@ export type CalendarSession = {
 }
 
 /**
- * One calendar entry, localized and flattened to strings so it crosses to the
- * client as-is. Days are Seoul calendar days (`YYYY-MM-DD`).
+ * 캘린더 일정 하나. 클라이언트로 그대로 넘길 수 있게 현재 언어로 바꾸고 문자열로 평탄화했다.
+ * 날짜는 서울 기준(`YYYY-MM-DD`)이다.
  */
 export type CalendarEvent = {
   id: string
@@ -34,16 +38,16 @@ export type CalendarEvent = {
   startTime: string
   endTime: string | null
   dateTime: string
-  /** The public session page, or null while the session is still scheduled. */
+  /** 공개 세션 페이지 주소. 아직 열리기 전 세션이면 null. */
   href: string | null
 }
 
-/** `2026-09-24`: the Seoul day of a session wall-clock value. */
+/** 세션 벽시계 시각의 서울 날짜: `2026-09-24` */
 function sessionDay(date: Date): string {
   return toKstIso(date).slice(0, 10)
 }
 
-/** A session ending exactly at midnight belongs to the day before. */
+/** 정확히 자정에 끝나는 세션은 전날에 속한다. */
 function lastSessionDay(start: Date, end: Date | null): string {
   const startDay = sessionDay(start)
   if (!end || end <= start) return startDay
@@ -55,8 +59,9 @@ function lastSessionDay(start: Date, end: Date | null): string {
 }
 
 /**
- * `visibilityBucket` is the same publication cut-off the session archive and
- * detail pages use, so an entry links out exactly when its page exists.
+ * 세션 목록을 캘린더 일정으로 바꾼다.
+ * `visibilityBucket`은 세션 기록·상세 페이지와 같은 공개 기준 시각이라, 상세 페이지가
+ * 존재할 때만 일정이 링크로 연결된다.
  */
 export function toCalendarEvents(
   sessions: readonly CalendarSession[],
@@ -87,7 +92,7 @@ export function toCalendarEvents(
             : null,
         dateTime: toKstIso(session.startAt),
         href: published
-          ? `/${locale}/session/${session.generationName}/${session.id}`
+          ? localeHref(locale, sessionPath(session.generationName, session.id))
           : null,
       }
     })
@@ -102,7 +107,7 @@ function compareEvents(a: CalendarEvent, b: CalendarEvent): number {
   )
 }
 
-/** `2026-09` */
+/** 날짜가 속한 달: `2026-09-24` → `2026-09` */
 export function monthOfDay(day: string): string {
   return day.slice(0, 7)
 }
@@ -115,13 +120,13 @@ function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
-/** `2026-09` shifted by whole months: `shiftMonth('2026-12', 1)` → `2027-01`. */
+/** 달을 앞뒤로 옮긴다: `shiftMonth('2026-12', 1)` → `2027-01` */
 export function shiftMonth(month: string, delta: number): string {
   const [year = 1970, index = 1] = month.split('-').map(Number)
   return dayKey(new Date(Date.UTC(year, index - 1 + delta, 1))).slice(0, 7)
 }
 
-/** The Sunday-first weeks that cover a month, as day keys (4 to 6 rows). */
+/** 한 달을 덮는 일요일 시작 주들(4~6줄)의 날짜 키. 앞뒤 달 날짜도 칸을 채운다. */
 export function monthWeeks(month: string): string[][] {
   const first = utcDay(`${month}-01`)
   const cursor = new Date(first)
@@ -140,7 +145,7 @@ export function monthWeeks(month: string): string[][] {
   return weeks
 }
 
-/** Events that take place on `day`, multi-day events included. */
+/** `day`에 열리는 일정(여러 날 일정 포함). */
 export function eventsOnDay(
   events: readonly CalendarEvent[],
   day: string
@@ -148,7 +153,7 @@ export function eventsOnDay(
   return events.filter((event) => event.startDay <= day && day <= event.endDay)
 }
 
-/** Events that overlap `month` at all. */
+/** `month`와 조금이라도 겹치는 일정. */
 export function eventsInMonth(
   events: readonly CalendarEvent[],
   month: string

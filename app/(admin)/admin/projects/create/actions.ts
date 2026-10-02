@@ -1,39 +1,30 @@
 'use server'
 
-import { forbidden, redirect } from 'next/navigation'
-import getProjectFormData from '@/lib/server/form-data/get-project-form-data'
-import { getLocalizedAdminPath } from '@/lib/admin-i18n/server'
-import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import { createProject } from '@/lib/server/services/admin/projects'
+/**
+ * 프로젝트 생성 Server Action. 성공하면 목록 또는 상세로 이동하고, 실패하면 폼에 오류 문구를 돌려준다.
+ */
 import {
-  getWebActor,
-  toActionError,
-} from '@/lib/server/services/admin/web-actor'
+  requireCreationScope,
+  runAdminFormAction,
+  type AdminFormState,
+} from '@/lib/server/actions/admin-form-action'
+import { parseProjectForm } from '@/lib/server/form-data/admin-forms'
+import { createProject } from '@/lib/server/services/admin/projects'
 
+/** 현재 선택한 기수에 프로젝트를 만들고 프로젝트 목록으로 이동한다. */
 export async function createProjectAction(
-  _prev: { error: string },
+  _prev: AdminFormState,
   formData: FormData
 ) {
-  const actor = await getWebActor()
-  if (!actor) {
-    return forbidden()
-  }
-
-  const formValues = getProjectFormData(formData)
-
-  // 웹 화면은 현재 선택된 기수에서만 데이터를 만든다.
-  const resolvedScope = await resolveAdminGenerationScope(actor.userId)
-  if (
-    resolvedScope.scope?.kind !== 'generation' ||
-    resolvedScope.scope.generationId !== Number(formValues.generationId)
-  ) {
-    return { error: 'Select a specific generation scope before creating data.' }
-  }
-
-  const result = await createProject(actor, formValues)
-  if (!result.ok) {
-    return toActionError(result)
-  }
-
-  redirect(await getLocalizedAdminPath('/admin/projects'))
+  return runAdminFormAction({
+    run: async (actor) => {
+      const input = parseProjectForm(formData)
+      const scope = await requireCreationScope(
+        actor,
+        Number(input.generationId)
+      )
+      return scope.ok ? createProject(actor, input) : scope
+    },
+    redirectTo: '/admin/projects',
+  })
 }

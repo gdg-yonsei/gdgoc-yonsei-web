@@ -1,3 +1,6 @@
+/**
+ * GYMS MCP 엔드포인트 라우트(`/api/mcp`).
+ */
 import { requireMcpAuth } from '@better-auth/mcp'
 import {
   OAuthError,

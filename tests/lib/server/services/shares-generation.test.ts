@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 const { selectDistinct } = vi.hoisted(() => ({ selectDistinct: vi.fn() }))
 
-vi.mock('@/db', () => ({ default: { selectDistinct } }))
+vi.mock('@/db', () => ({ db: { selectDistinct } }))
 
 import { sharesGenerationWith } from '@/lib/server/services/admin/authorize'
 

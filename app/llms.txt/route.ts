@@ -1,8 +1,12 @@
+/**
+ * `/llms.txt`: AI 크롤러·에이전트를 위한 사이트 안내(평문). 사이트 구조, URL 규칙, 필터 파라미터를 설명한다.
+ */
 import { getSiteUrl } from '@/lib/seo/metadata'
-import partsSectionContent from '@/lib/contents/parts-section'
+import { partsSectionContent } from '@/lib/contents/parts-section'
 import { CHANNELS } from '@/lib/site/channels'
 import { SESSION_CATEGORIES } from '@/lib/site/labels'
 
+/** 사이트 안내 문서를 만든다(1시간 브라우저 캐시, 1일 CDN 캐시). */
 export function GET() {
   const url = (path: string) => getSiteUrl(path)
   const lines = [

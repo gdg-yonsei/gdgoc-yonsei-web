@@ -1,3 +1,6 @@
+/**
+ * MCP용 OAuth 2.1 인가 서버 테이블(클라이언트, 토큰, 동의, 서명 키).
+ */
 import {
   boolean,
   index,
@@ -24,6 +27,7 @@ const id = () =>
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID())
 
+/** 액세스 토큰(JWT) 서명 키. */
 export const jwks = pgTable('jwks', {
   id: id(),
   publicKey: text('publicKey').notNull(),
@@ -34,6 +38,7 @@ export const jwks = pgTable('jwks', {
   crv: text('crv'),
 })
 
+/** 등록된 MCP 클라이언트(DCR 또는 CIMD로 등록). */
 export const oauthClient = pgTable(
   'oauth_client',
   {
@@ -81,6 +86,7 @@ export const oauthClient = pgTable(
   (table) => [index('oauth_client_userId_idx').on(table.userId)]
 )
 
+/** 토큰을 발급받을 수 있는 보호 리소스(`/api/mcp`). `scripts/prepare-auth.ts`가 빌드 전에 만든다. */
 export const oauthResource = pgTable('oauth_resource', {
   id: id(),
   identifier: text('identifier').notNull().unique(),
@@ -101,6 +107,7 @@ export const oauthResource = pgTable('oauth_resource', {
   metadata: jsonb('metadata'),
 })
 
+/** 클라이언트와 리소스의 연결. */
 export const oauthClientResource = pgTable(
   'oauth_client_resource',
   {
@@ -120,6 +127,7 @@ export const oauthClientResource = pgTable(
   ]
 )
 
+/** 리프레시 토큰. 회전(rotation) 시 재사용 감지 정보도 함께 저장한다. */
 export const oauthRefreshToken = pgTable(
   'oauth_refresh_token',
   {
@@ -160,6 +168,7 @@ export const oauthRefreshToken = pgTable(
   ]
 )
 
+/** 발급된 액세스 토큰 기록. */
 export const oauthAccessToken = pgTable(
   'oauth_access_token',
   {
@@ -196,6 +205,7 @@ export const oauthAccessToken = pgTable(
   ]
 )
 
+/** 사용자가 클라이언트에 허락한 스코프(동의 화면 결과). */
 export const oauthConsent = pgTable(
   'oauth_consent',
   {
@@ -217,6 +227,7 @@ export const oauthConsent = pgTable(
   ]
 )
 
+/** 클라이언트 assertion 재사용 방지 기록. */
 export const oauthClientAssertion = pgTable('oauth_client_assertion', {
   id: id(),
   expiresAt: timestamp('expiresAt', { mode: 'date' }).notNull(),

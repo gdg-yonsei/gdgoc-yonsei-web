@@ -1,10 +1,12 @@
-export type SeedCategory =
-  | 'tech_talk'
-  | 'part_session'
-  | 'hackathon'
-  | 'demo_day'
-  | 'devrel'
+/**
+ * 시드 세션 일정 생성 헬퍼(순수 함수, `tests/lib/seed-helpers.test.ts`가 검증한다).
+ */
 
+/** 시드 세션 분류(세션 `category` 컬럼 값). */
+export type SeedCategory =
+  'tech_talk' | 'part_session' | 'hackathon' | 'demo_day' | 'devrel'
+
+/** 만들 세션 한 건. */
 export type SeedSessionPlan = {
   name: string
   nameKo: string
@@ -15,6 +17,7 @@ export type SeedSessionPlan = {
   locationKo: string
 }
 
+/** 기간(양 끝 포함). */
 export type DateRange = { from: Date; to: Date }
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -23,25 +26,26 @@ function isInRanges(date: Date, ranges: readonly DateRange[]): boolean {
   return ranges.some((range) => date >= range.from && date <= range.to)
 }
 
-/** from~to 사이 특정 요일(UTC)·시각의 반복 일정 생성 (skipRanges 제외) */
+/**
+ * from~to 사이 특정 요일·시각의 반복 일정을 만든다(skipRanges에 걸리는 날은 뺀다).
+ *
+ * 세션 시각은 서울 벽시계 시각을 UTC 라벨로 저장하므로(`lib/format/datetime.ts`), `hour`는 서울 시각을
+ * 그대로 넣는다. 예: 화요일 19시 세션은 `hour: 19` → `…T19:00:00.000Z`.
+ */
 export function weeklyOccurrences(options: {
   from: Date
   to: Date
-  /** 0=일 ... 6=토 (UTC) */
+  /** 0=일 ... 6=토 */
   weekday: number
-  hourUtc: number
+  /** 서울 벽시계 시각(시) */
+  hour: number
   stepWeeks?: number
   skipRanges?: readonly DateRange[]
 }): Date[] {
-  const { from, to, weekday, hourUtc, stepWeeks = 1, skipRanges = [] } = options
+  const { from, to, weekday, hour, stepWeeks = 1, skipRanges = [] } = options
 
   const first = new Date(
-    Date.UTC(
-      from.getUTCFullYear(),
-      from.getUTCMonth(),
-      from.getUTCDate(),
-      hourUtc
-    )
+    Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate(), hour)
   )
   while (first.getUTCDay() !== weekday) {
     first.setUTCDate(first.getUTCDate() + 1)
@@ -85,14 +89,15 @@ function twoHourSlot(start: Date): { startAt: Date; endAt: Date } {
   }
 }
 
+/** 시드 기간 1년치 세션 계획: 매주 T19, 격주 파트 세션, 해커톤·데모데이 같은 특별 행사. 시작 순으로 정렬한다. */
 export function buildSessionPlans(): SeedSessionPlan[] {
   const plans: SeedSessionPlan[] = []
 
-  // 매주 화요일 19:00 KST (10:00 UTC) — T19
+  // 매주 화요일 19:00 — T19
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 2,
-    hourUtc: 10,
+    hour: 19,
     skipRanges: SEED_BREAKS,
   }).forEach((date, index) => {
     plans.push({
@@ -105,11 +110,11 @@ export function buildSessionPlans(): SeedSessionPlan[] {
     })
   })
 
-  // 격주 목요일 — 파트 세션
+  // 격주 목요일 19:00 — 파트 세션
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 4,
-    hourUtc: 10,
+    hour: 19,
     stepWeeks: 2,
     skipRanges: SEED_BREAKS,
   }).forEach((date, index) => {
@@ -123,17 +128,74 @@ export function buildSessionPlans(): SeedSessionPlan[] {
     })
   })
 
+  // 특별 행사. dateIso도 서울 벽시계 시각을 UTC 라벨로 적는다(예: 오후 7시 → T19:00Z).
   const specials: Array<
     Omit<SeedSessionPlan, 'startAt' | 'endAt'> & { dateIso: string }
   > = [
-    { name: 'Namu-thon', nameKo: '나무톤', category: 'hackathon', dateIso: '2025-11-08T01:00:00.000Z', location: 'Baekyang Nuri', locationKo: '백양누리' },
-    { name: 'The Bridge Hackathon', nameKo: '브릿지 해커톤', category: 'hackathon', dateIso: '2026-02-21T01:00:00.000Z', location: 'Seoul & Tokyo', locationKo: '서울·도쿄' },
-    { name: 'oTP Demo Day', nameKo: 'oTP 데모데이', category: 'demo_day', dateIso: '2025-12-12T09:00:00.000Z', location: 'Engineering Hall Auditorium', locationKo: '공학원 대강당' },
-    { name: 'Yonsei X Korea Demo Day', nameKo: '연세 X 고려 데모데이', category: 'demo_day', dateIso: '2026-05-30T05:00:00.000Z', location: 'Korea University', locationKo: '고려대학교' },
-    { name: 'Welcome Networking Night', nameKo: '웰컴 네트워킹 나이트', category: 'devrel', dateIso: '2025-09-19T09:00:00.000Z', location: 'Sinchon', locationKo: '신촌' },
-    { name: 'DevRel Insight Night', nameKo: 'DevRel 인사이트 나이트', category: 'devrel', dateIso: '2025-10-31T09:00:00.000Z', location: 'Student Union', locationKo: '학생회관' },
-    { name: 'Alumni Career Talk', nameKo: '알럼나이 커리어 토크', category: 'devrel', dateIso: '2026-03-27T09:00:00.000Z', location: 'Online', locationKo: '온라인' },
-    { name: 'Google I/O Watch Party', nameKo: '구글 I/O 워치 파티', category: 'devrel', dateIso: '2026-05-08T09:00:00.000Z', location: 'Engineering Hall B039', locationKo: '공학원 B039' },
+    {
+      name: 'Namu-thon',
+      nameKo: '나무톤',
+      category: 'hackathon',
+      dateIso: '2025-11-08T10:00:00.000Z',
+      location: 'Baekyang Nuri',
+      locationKo: '백양누리',
+    },
+    {
+      name: 'The Bridge Hackathon',
+      nameKo: '브릿지 해커톤',
+      category: 'hackathon',
+      dateIso: '2026-02-21T10:00:00.000Z',
+      location: 'Seoul & Tokyo',
+      locationKo: '서울·도쿄',
+    },
+    {
+      name: 'oTP Demo Day',
+      nameKo: 'oTP 데모데이',
+      category: 'demo_day',
+      dateIso: '2025-12-12T18:00:00.000Z',
+      location: 'Engineering Hall Auditorium',
+      locationKo: '공학원 대강당',
+    },
+    {
+      name: 'Yonsei X Korea Demo Day',
+      nameKo: '연세 X 고려 데모데이',
+      category: 'demo_day',
+      dateIso: '2026-05-30T14:00:00.000Z',
+      location: 'Korea University',
+      locationKo: '고려대학교',
+    },
+    {
+      name: 'Welcome Networking Night',
+      nameKo: '웰컴 네트워킹 나이트',
+      category: 'devrel',
+      dateIso: '2025-09-19T18:00:00.000Z',
+      location: 'Sinchon',
+      locationKo: '신촌',
+    },
+    {
+      name: 'DevRel Insight Night',
+      nameKo: 'DevRel 인사이트 나이트',
+      category: 'devrel',
+      dateIso: '2025-10-31T18:00:00.000Z',
+      location: 'Student Union',
+      locationKo: '학생회관',
+    },
+    {
+      name: 'Alumni Career Talk',
+      nameKo: '알럼나이 커리어 토크',
+      category: 'devrel',
+      dateIso: '2026-03-27T18:00:00.000Z',
+      location: 'Online',
+      locationKo: '온라인',
+    },
+    {
+      name: 'Google I/O Watch Party',
+      nameKo: '구글 I/O 워치 파티',
+      category: 'devrel',
+      dateIso: '2026-05-08T18:00:00.000Z',
+      location: 'Engineering Hall B039',
+      locationKo: '공학원 B039',
+    },
   ]
   for (const special of specials) {
     plans.push({
