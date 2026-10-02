@@ -151,7 +151,8 @@ export async function unregisterFromSession(
     sessionData.endAt !== null &&
     sessionData.endAt <= sessionWallClockNow()
   ) {
-    return fail('FORBIDDEN', 'The session has already ended.')
+    // 권한 문제가 아니라 세션 상태 때문에 거절하는 것이므로 CONFLICT다.
+    return fail('CONFLICT', 'The session has already ended.')
   }
 
   await db
