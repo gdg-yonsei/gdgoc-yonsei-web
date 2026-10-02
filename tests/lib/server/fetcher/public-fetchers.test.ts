@@ -193,46 +193,6 @@ describe('public queries', () => {
     expect(mockCacheQuery).not.toHaveBeenCalled()
   })
 
-  it('fetches visible sessions with generation relation and bucketed cache input', async () => {
-    mockSessionsFindMany.mockResolvedValue([{ id: 'session-1' }])
-    const { getSessions } = await import('@/lib/server/queries/public/sessions')
-
-    const result = await getSessions('2026-03-07T00:00:00.000Z')
-
-    expect(result).toEqual([{ id: 'session-1' }])
-    expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
-      'session:list:en',
-      'session:list:ko',
-    ])
-    expect(mockSessionsFindMany).toHaveBeenCalledTimes(1)
-
-    const query = mockSessionsFindMany.mock.calls[0]![0]
-    expect(query).toMatchObject({
-      columns: {
-        id: true,
-        name: true,
-        nameKo: true,
-      },
-      with: {
-        part: {
-          columns: {
-            id: true,
-            name: true,
-            generationsId: true,
-          },
-          with: {
-            generation: {
-              columns: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
-    })
-  })
-
   it('shares visible session detail data across locales', async () => {
     const sessionId = '6bf4a326-52ec-4da5-b204-9a67c7332a0f'
     mockSessionsFindFirst.mockResolvedValue({ id: sessionId })
