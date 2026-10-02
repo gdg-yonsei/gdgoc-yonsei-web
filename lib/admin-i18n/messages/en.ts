@@ -264,4 +264,8 @@ export const en = {
   editor: 'Editor',
   preview: 'Preview',
   displayOrderHint: 'Parts with smaller numbers appear first.',
+  // ── 404 ──
+  notFoundTitle: 'Page not found',
+  notFoundHint: 'The item may have been deleted, or the address is wrong.',
+  backToDashboard: 'Back to dashboard',
 } as const

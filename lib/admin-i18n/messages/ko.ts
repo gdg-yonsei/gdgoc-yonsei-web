@@ -258,4 +258,8 @@ export const ko = {
   editor: '에디터',
   preview: '미리보기',
   displayOrderHint: '작은 숫자의 파트부터 표시됩니다.',
+  // ── 404 ──
+  notFoundTitle: '페이지를 찾을 수 없습니다',
+  notFoundHint: '항목이 삭제되었거나 주소가 잘못되었을 수 있습니다.',
+  backToDashboard: '대시보드로 돌아가기',
 } as const satisfies AdminMessages
