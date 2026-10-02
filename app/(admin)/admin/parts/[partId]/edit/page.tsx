@@ -2,6 +2,7 @@ import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
+import { requireGenerationAccess } from '@/lib/server/permission/require-permission'
 import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
@@ -52,6 +53,8 @@ export default async function EditPartPage({
   if (!partData) {
     notFound()
   }
+  // 다른 기수의 파트는 URL을 알아도 볼 수 없다.
+  await requireGenerationAccess(partData.generationsId)
 
   // Part 정보 업데이트 Action
   const updatePartActionWithPartId = updatePartAction.bind(null, partId)

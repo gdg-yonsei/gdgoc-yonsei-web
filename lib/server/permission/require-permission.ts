@@ -2,6 +2,8 @@ import 'server-only'
 
 import { forbidden } from 'next/navigation'
 import { getAuthSession } from '@/auth'
+import { canAccessGeneration } from '@/lib/server/services/admin/authorize'
+import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import {
   hasPermission,
   type ActionType,
@@ -47,4 +49,17 @@ export async function requireOwnPermission(
   }
 
   return session
+}
+
+/**
+ * 로그인 사용자가 해당 기수의 데이터를 볼 수 있는지 확인하고, 아니면 403으로 멈춘다.
+ * LEAD는 모든 기수, 그 외 역할은 자신이 속한 기수만 볼 수 있다(MCP 조회와 같은 규칙).
+ */
+export async function requireGenerationAccess(
+  generationId: number | null | undefined
+) {
+  const actor = await getWebActor()
+  if (!actor || !(await canAccessGeneration(actor, generationId))) {
+    forbidden()
+  }
 }
