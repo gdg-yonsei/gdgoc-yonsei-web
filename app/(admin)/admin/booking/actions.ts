@@ -102,9 +102,9 @@ export async function requestBookingAction(
       data: { id: inserted?.id ?? 0, status: 'PENDING' },
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    // DB 오류 원문에는 테이블·제약 이름이 들어 있으므로 화면에는 일반 문구만 보인다.
     logger.error('booking.request', error)
-    return { success: false, error: message || '예약 등록에 실패했습니다' }
+    return { success: false, error: '예약 등록에 실패했습니다' }
   }
 }
 
@@ -140,8 +140,7 @@ export async function deleteBookingAction(
     revalidatePath('/admin/booking')
     return { success: true, data: undefined }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
     logger.error('booking.delete', error)
-    return { success: false, error: message || '삭제에 실패했습니다' }
+    return { success: false, error: '삭제에 실패했습니다' }
   }
 }

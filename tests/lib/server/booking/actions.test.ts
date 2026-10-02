@@ -187,6 +187,21 @@ describe('booking-related server actions', () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith('/admin/booking')
   })
 
+  it('hides database error details from the client', async () => {
+    mockDbExecute.mockRejectedValue(
+      new Error('duplicate key value violates unique constraint "x"')
+    )
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const { requestBookingAction } =
+      await import('@/app/(admin)/admin/booking/actions')
+
+    await expect(
+      requestBookingAction(createBookingFormData())
+    ).resolves.toEqual({ success: false, error: '예약 등록에 실패했습니다' })
+    errorSpy.mockRestore()
+  })
+
   it('blocks booking deletion when the user lacks permission', async () => {
     mockHandlePermission.mockResolvedValue(false)
 
