@@ -21,6 +21,7 @@ import { invalidateSessionPublicCache } from '@/lib/server/cache'
 import { runAfterResponse } from '@/lib/server/after-response'
 import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import {
@@ -85,8 +86,7 @@ export async function createSession(
     displayOnWebsite,
   } = parsed.data
 
-  let sessionId = ''
-  try {
+  const created = await withDbErrors('admin.sessions.create', async () => {
     const [selectedPart, nextGenerationName] = await Promise.all([
       db.query.parts.findFirst({
         where: eq(parts.id, Number(partId)),
@@ -162,16 +162,14 @@ export async function createSession(
       return created
     })
 
-    sessionId = createdSession.id
-
     invalidateSessionPublicCache({
-      sessionId,
+      sessionId: createdSession.id,
       nextGenerationName,
     })
-  } catch (e) {
-    logger.error('admin.sessions.create', e)
-    return fail('INTERNAL', 'DB Update Error')
-  }
+    return ok(createdSession.id)
+  })
+  if (!created.ok) return created
+  const sessionId = created.data
 
   // endAt 은 Seoul 벽시계를 UTC 라벨로 저장한 값이다.
   if (internalOpen && endAt > sessionWallClockNow()) {
@@ -256,110 +254,110 @@ export async function updateSession(
     displayOnWebsite,
   } = parsed.data
 
-  try {
-    const [previousSession, selectedPart] = await Promise.all([
-      getSessionCacheContext(sessionId),
-      db.query.parts.findFirst({
-        where: eq(parts.id, Number(partId)),
-        columns: {
-          generationsId: true,
-        },
-      }),
-    ])
+  return withDbErrors(
+    'admin.sessions.update',
+    async () => {
+      const [previousSession, selectedPart] = await Promise.all([
+        getSessionCacheContext(sessionId),
+        db.query.parts.findFirst({
+          where: eq(parts.id, Number(partId)),
+          columns: {
+            generationsId: true,
+          },
+        }),
+      ])
 
-    if (
-      !existingSession.part?.generationsId ||
-      existingSession.part.generationsId !== selectedPart?.generationsId
-    ) {
-      return fail(
-        'VALIDATION',
-        'Session generation cannot be changed from this screen.'
-      )
-    }
+      if (
+        !existingSession.part?.generationsId ||
+        existingSession.part.generationsId !== selectedPart?.generationsId
+      ) {
+        return fail(
+          'VALIDATION',
+          'Session generation cannot be changed from this screen.'
+        )
+      }
 
-    const prevImages = (
-      await db
-        .select({ images: sessions.images, mainImage: sessions.mainImage })
-        .from(sessions)
-        .where(eq(sessions.id, sessionId))
-        .limit(1)
-    )[0]
+      const prevImages = (
+        await db
+          .select({ images: sessions.images, mainImage: sessions.mainImage })
+          .from(sessions)
+          .where(eq(sessions.id, sessionId))
+          .limit(1)
+      )[0]
 
-    if (!prevImages) {
-      return fail('NOT_FOUND', NOT_FOUND)
-    }
+      if (!prevImages) {
+        return fail('NOT_FOUND', NOT_FOUND)
+      }
 
-    // 세션 행과 참가자 교체는 하나의 트랜잭션으로 처리한다.
-    await db.transaction(async (tx) => {
-      await tx
-        .update(sessions)
-        .set({
-          name,
-          nameKo,
-          description: stripHtmlCharacters(description),
-          descriptionKo: stripHtmlCharacters(descriptionKo),
-          images: contentImages,
-          // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
-          // 값이 없으면 넘기지 않고 기존 값을 유지한다.
-          ...(mainImage ? { mainImage } : {}),
-          updatedAt: new Date(),
-          location,
-          locationKo,
-          maxCapacity,
-          internalOpen,
-          publicOpen,
-          partId: Number(partId),
-          startAt,
-          endAt,
-          type,
-          category,
-          displayOnWebsite,
+      // 세션 행과 참가자 교체는 하나의 트랜잭션으로 처리한다.
+      await db.transaction(async (tx) => {
+        await tx
+          .update(sessions)
+          .set({
+            name,
+            nameKo,
+            description: stripHtmlCharacters(description),
+            descriptionKo: stripHtmlCharacters(descriptionKo),
+            images: contentImages,
+            // mainImage 는 nullable 이지만 컬럼은 NOT NULL 이므로,
+            // 값이 없으면 넘기지 않고 기존 값을 유지한다.
+            ...(mainImage ? { mainImage } : {}),
+            updatedAt: new Date(),
+            location,
+            locationKo,
+            maxCapacity,
+            internalOpen,
+            publicOpen,
+            partId: Number(partId),
+            startAt,
+            endAt,
+            type,
+            category,
+            displayOnWebsite,
+          })
+          .where(eq(sessions.id, sessionId))
+
+        await replaceRelationRows({
+          deleteRows: () =>
+            tx
+              .delete(userToSession)
+              .where(eq(userToSession.sessionId, sessionId)),
+          rows: participantId.map((participant) => ({
+            userId: participant,
+            sessionId,
+          })),
+          insertRows: (rows) => tx.insert(userToSession).values(rows),
         })
-        .where(eq(sessions.id, sessionId))
-
-      await replaceRelationRows({
-        deleteRows: () =>
-          tx
-            .delete(userToSession)
-            .where(eq(userToSession.sessionId, sessionId)),
-        rows: participantId.map((participant) => ({
-          userId: participant,
-          sessionId,
-        })),
-        insertRows: (rows) => tx.insert(userToSession).values(rows),
       })
-    })
 
-    // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
-    // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
-    await deleteRemovedImages({
-      previousImages: prevImages.images,
-      nextImages: contentImages,
-      previousMainImage: prevImages.mainImage,
-      nextMainImage: mainImage,
-      prefix: 'sessions',
-    }).catch((error: unknown) =>
-      logger.error('admin.sessions.update.r2-cleanup', error, { sessionId })
-    )
+      // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
+      // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
+      await deleteRemovedImages({
+        previousImages: prevImages.images,
+        nextImages: contentImages,
+        previousMainImage: prevImages.mainImage,
+        nextMainImage: mainImage,
+        prefix: 'sessions',
+      }).catch((error: unknown) =>
+        logger.error('admin.sessions.update.r2-cleanup', error, { sessionId })
+      )
 
-    const nextGenerationName = await getGenerationNameForPartId(Number(partId))
+      const nextGenerationName = await getGenerationNameForPartId(
+        Number(partId)
+      )
 
-    invalidateSessionPublicCache({
-      sessionId,
-      previousGenerationName: previousSession.generationName,
-      nextGenerationName,
-    })
-  } catch (e) {
-    logger.error('admin.sessions.update', e, {
-      sessionId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: sessionId })
+      invalidateSessionPublicCache({
+        sessionId,
+        previousGenerationName: previousSession.generationName,
+        nextGenerationName,
+      })
+      return ok({ id: sessionId })
+    },
+    { sessionId }
+  )
 }
 
-/** 세션을 지운다. 이미지를 R2에서 먼저 지우고, 실패하면 DB도 지우지 않는다. */
+/** 세션을 지운다. 행을 먼저 지우고, 커밋 뒤에 R2 이미지를 지운다. */
 export async function deleteSession(
   actor: Actor,
   sessionId: string
@@ -387,30 +385,39 @@ export async function deleteSession(
     return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
   }
 
-  try {
-    const sessionCacheContext = await getSessionCacheContext(sessionId)
-    const sessionImageKeys = uniqueStrings([
-      ...sessionImageList.images
-        .map((image) => normalizeR2ImageObjectKey(image, 'sessions'))
-        .filter(Boolean),
-      normalizeR2ImageObjectKey(sessionImageList.mainImage, 'sessions'),
-    ])
+  return withDbErrors(
+    'admin.delete-resource',
+    async () => {
+      const sessionCacheContext = await getSessionCacheContext(sessionId)
+      await db.delete(sessions).where(eq(sessions.id, sessionId))
+      invalidateSessionPublicCache({
+        sessionId,
+        previousGenerationName: sessionCacheContext.generationName,
+      })
 
-    if (!(await deleteImages(sessionImageKeys))) {
-      return fail('INTERNAL', 'R2 Image Delete Error')
-    }
-    await db.delete(sessions).where(eq(sessions.id, sessionId))
-    invalidateSessionPublicCache({
-      sessionId,
-      previousGenerationName: sessionCacheContext.generationName,
-    })
-  } catch (err) {
-    logger.error('admin.delete-resource', err, {
-      dataType: 'sessions',
-      dataId: sessionId,
-    })
-    return fail('INTERNAL', 'DB Delete Error')
-  }
+      // R2는 트랜잭션에 묶을 수 없다. 행을 먼저 지우고 이미지는 커밋 뒤에 지운다. R2 삭제가 실패해도
+      // 쓰지 않는 객체가 남을 뿐이므로 삭제는 성공으로 처리하고, 남은 키를 로그로 남겨 손으로 치울 수 있게 한다.
+      const sessionImageKeys = uniqueStrings([
+        ...sessionImageList.images
+          .map((image) => normalizeR2ImageObjectKey(image, 'sessions'))
+          .filter(Boolean),
+        normalizeR2ImageObjectKey(sessionImageList.mainImage, 'sessions'),
+      ])
+      if (!(await deleteImages(sessionImageKeys))) {
+        logger.warn(
+          'admin.delete-resource.r2-cleanup',
+          'Row deleted but its images could not be removed from R2',
+          {
+            dataType: 'sessions',
+            dataId: sessionId,
+            imageKeys: sessionImageKeys,
+          }
+        )
+      }
 
-  return ok({ id: sessionId })
+      return ok({ id: sessionId })
+    },
+    { dataType: 'sessions', dataId: sessionId },
+    'DB Delete Error'
+  )
 }

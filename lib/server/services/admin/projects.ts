@@ -26,6 +26,7 @@ import {
 } from '@/lib/server/fetcher/admin/get-projects'
 import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import {
@@ -163,7 +164,7 @@ export async function createProject(
   }
 
   let projectId = ''
-  try {
+  return withDbErrors('admin.projects.create', async () => {
     const nextGeneration = await getGenerationNameById(Number(generationId))
 
     // 프로젝트 행, 참가자, 태그는 함께 저장되거나 함께 실패해야 한다.
@@ -210,12 +211,9 @@ export async function createProject(
       projectId,
       nextGenerationName: nextGeneration?.name,
     })
-  } catch (e) {
-    logger.error('admin.projects.create', e)
-    return fail('INTERNAL', 'DB Update Error')
-  }
 
-  return ok({ id: projectId })
+    return ok({ id: projectId })
+  })
 }
 
 /**
@@ -277,87 +275,88 @@ export async function updateProject(
     )
   }
 
-  try {
-    const previousProject = await getProjectCacheContext(projectId)
+  return withDbErrors(
+    'admin.projects.update',
+    async () => {
+      const previousProject = await getProjectCacheContext(projectId)
 
-    const prevImages = (
-      await db
-        .select({ images: projects.images, mainImage: projects.mainImage })
-        .from(projects)
-        .where(eq(projects.id, projectId))
-        .limit(1)
-    )[0]
+      const prevImages = (
+        await db
+          .select({ images: projects.images, mainImage: projects.mainImage })
+          .from(projects)
+          .where(eq(projects.id, projectId))
+          .limit(1)
+      )[0]
 
-    if (!prevImages) {
-      return fail('NOT_FOUND', NOT_FOUND)
-    }
+      if (!prevImages) {
+        return fail('NOT_FOUND', NOT_FOUND)
+      }
 
-    // 프로젝트 행과 참가자·태그 관계는 하나의 트랜잭션으로 바꾼다.
-    await db.transaction(async (tx) => {
-      await tx
-        .update(projects)
-        .set({
-          name,
-          nameKo,
-          description,
-          descriptionKo,
-          content: stripHtmlCharacters(content),
-          contentKo: stripHtmlCharacters(contentKo),
-          images: contentImages,
-          mainImage,
-          generationId: Number(generationId),
-          repoUrl,
-          demoUrl,
-          updatedAt: new Date(),
+      // 프로젝트 행과 참가자·태그 관계는 하나의 트랜잭션으로 바꾼다.
+      await db.transaction(async (tx) => {
+        await tx
+          .update(projects)
+          .set({
+            name,
+            nameKo,
+            description,
+            descriptionKo,
+            content: stripHtmlCharacters(content),
+            contentKo: stripHtmlCharacters(contentKo),
+            images: contentImages,
+            mainImage,
+            generationId: Number(generationId),
+            repoUrl,
+            demoUrl,
+            updatedAt: new Date(),
+          })
+          .where(eq(projects.id, projectId))
+
+        await replaceRelationRows({
+          deleteRows: () =>
+            tx
+              .delete(usersToProjects)
+              .where(eq(usersToProjects.projectId, projectId)),
+          rows: participants.map((user) => ({
+            projectId,
+            userId: user,
+          })),
+          insertRows: (rows) => tx.insert(usersToProjects).values(rows),
         })
-        .where(eq(projects.id, projectId))
-
-      await replaceRelationRows({
-        deleteRows: () =>
-          tx
-            .delete(usersToProjects)
-            .where(eq(usersToProjects.projectId, projectId)),
-        rows: participants.map((user) => ({
-          projectId,
-          userId: user,
-        })),
-        insertRows: (rows) => tx.insert(usersToProjects).values(rows),
+        await syncProjectTags(projectId, tags, tx)
       })
-      await syncProjectTags(projectId, tags, tx)
-    })
 
-    // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
-    // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
-    await deleteRemovedImages({
-      previousImages: prevImages.images,
-      nextImages: contentImages,
-      previousMainImage: prevImages.mainImage,
-      nextMainImage: mainImage,
-      prefix: 'projects',
-    }).catch((error: unknown) =>
-      logger.error('admin.projects.update.r2-cleanup', error, { projectId })
-    )
+      // R2는 트랜잭션에 묶을 수 없으므로 커밋이 끝난 뒤 지운다. 실패해도 쓰지 않는
+      // 이미지가 남을 뿐이라 수정은 성공으로 처리한다.
+      await deleteRemovedImages({
+        previousImages: prevImages.images,
+        nextImages: contentImages,
+        previousMainImage: prevImages.mainImage,
+        nextMainImage: mainImage,
+        prefix: 'projects',
+      }).catch((error: unknown) =>
+        logger.error('admin.projects.update.r2-cleanup', error, { projectId })
+      )
 
-    const nextGeneration = await getGenerationNameById(Number(generationId))
+      const nextGeneration = await getGenerationNameById(Number(generationId))
 
-    invalidateProjectPublicCache({
+      invalidateProjectPublicCache({
+        projectId,
+        previousGenerationName: previousProject.generationName,
+        nextGenerationName: nextGeneration?.name,
+      })
+
+      return ok({ id: projectId })
+    },
+    {
       projectId,
-      previousGenerationName: previousProject.generationName,
-      nextGenerationName: nextGeneration?.name,
-    })
-  } catch (e) {
-    logger.error('admin.projects.update', e, {
-      projectId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: projectId })
+    }
+  )
 }
 
 /**
- * 프로젝트를 지운다. 이미지를 R2에서 먼저 지우고, 실패하면 DB도 지우지 않는다
- * (R2가 실패했을 때 다시 시도할 수 있게 레코드를 남긴다).
+ * 프로젝트를 지운다. 행을 먼저 지우고 커밋 뒤에 R2 이미지를 지운다. R2가 실패하면 고아 객체가 남지만,
+ * 이미지가 먼저 지워져 "행은 남았는데 이미지가 없는" 상태가 되는 것보다 낫다.
  */
 export async function deleteProject(
   actor: Actor,
@@ -384,31 +383,39 @@ export async function deleteProject(
     return fail('FORBIDDEN', 'You cannot manage projects of this generation.')
   }
 
-  try {
-    const projectCacheContext = await getProjectCacheContext(projectId)
-    const projectImageKeys = uniqueStrings([
-      ...projectImageList.images
-        .map((image) => normalizeR2ImageObjectKey(image, 'projects'))
-        .filter(Boolean),
-      normalizeR2ImageObjectKey(projectImageList.mainImage, 'projects'),
-    ])
+  return withDbErrors(
+    'admin.delete-resource',
+    async () => {
+      const projectCacheContext = await getProjectCacheContext(projectId)
+      await db.delete(projects).where(eq(projects.id, projectId))
+      invalidateProjectPublicCache({
+        projectId,
+        previousGenerationName: projectCacheContext.generationName,
+      })
 
-    if (!(await deleteImages(projectImageKeys))) {
-      return fail('INTERNAL', 'R2 Image Delete Error')
-    }
+      // R2는 트랜잭션에 묶을 수 없다. 행을 먼저 지우고 이미지는 커밋 뒤에 지운다. R2 삭제가 실패해도
+      // 쓰지 않는 객체가 남을 뿐이므로 삭제는 성공으로 처리하고, 남은 키를 로그로 남겨 손으로 치울 수 있게 한다.
+      const projectImageKeys = uniqueStrings([
+        ...projectImageList.images
+          .map((image) => normalizeR2ImageObjectKey(image, 'projects'))
+          .filter(Boolean),
+        normalizeR2ImageObjectKey(projectImageList.mainImage, 'projects'),
+      ])
+      if (!(await deleteImages(projectImageKeys))) {
+        logger.warn(
+          'admin.delete-resource.r2-cleanup',
+          'Row deleted but its images could not be removed from R2',
+          {
+            dataType: 'projects',
+            dataId: projectId,
+            imageKeys: projectImageKeys,
+          }
+        )
+      }
 
-    await db.delete(projects).where(eq(projects.id, projectId))
-    invalidateProjectPublicCache({
-      projectId,
-      previousGenerationName: projectCacheContext.generationName,
-    })
-  } catch (err) {
-    logger.error('admin.delete-resource', err, {
-      dataType: 'projects',
-      dataId: projectId,
-    })
-    return fail('INTERNAL', 'DB Delete Error')
-  }
-
-  return ok({ id: projectId })
+      return ok({ id: projectId })
+    },
+    { dataType: 'projects', dataId: projectId },
+    'DB Delete Error'
+  )
 }

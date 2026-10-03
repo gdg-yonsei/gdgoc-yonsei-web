@@ -138,7 +138,7 @@ describe('delete-resource server actions', () => {
     expect(mockDelete).not.toHaveBeenCalled()
   })
 
-  it('returns R2 error when project image deletion fails', async () => {
+  it('still deletes the project row when R2 image cleanup fails', async () => {
     mockQuery.projects.findFirst.mockResolvedValue({
       images: ['https://cdn.example/projects/image-1.png'],
       mainImage: 'https://cdn.example/projects/main.png',
@@ -152,10 +152,15 @@ describe('delete-resource server actions', () => {
     formData.set('dataType', 'projects')
     formData.set('dataId', '00000000-0000-4000-8000-000000000666')
 
-    const result = await deleteResourceAction({ error: '' }, formData)
+    await deleteResourceAction({ error: '' }, formData)
 
-    expect(result).toEqual({ error: 'R2 Image Delete Error' })
-    expect(mockDelete).not.toHaveBeenCalled()
+    // 행을 먼저 지운다. R2 정리가 실패해도 삭제는 성공으로 처리하고 남은 키를 로그로 남긴다.
+    expect(mockDelete).toHaveBeenCalled()
+    expect(mockDeleteR2Images).toHaveBeenCalledWith([
+      'projects/image-1.png',
+      'projects/main.png',
+    ])
+    expect(mockRedirect).toHaveBeenCalledWith('/admin/projects')
   })
 
   it('deletes part resource when request form is valid', async () => {

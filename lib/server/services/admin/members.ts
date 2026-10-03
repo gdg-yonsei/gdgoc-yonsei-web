@@ -17,7 +17,7 @@ import {
   getMembers,
   type AdminMemberListItem,
 } from '@/lib/server/fetcher/admin/get-members'
-import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import {
   authorize,
   canChangeMemberEmail,
@@ -246,43 +246,44 @@ export async function updateMember(
 
   const canChangeRole = authorize(actor, 'put', 'membersRole').ok
 
-  try {
-    const generationNames = await getGenerationNamesForUserId(memberId)
+  return withDbErrors(
+    'admin.members.update',
+    async () => {
+      const generationNames = await getGenerationNamesForUserId(memberId)
 
-    await db
-      .update(users)
-      .set({
-        name,
-        firstName,
-        firstNameKo,
-        lastName,
-        lastNameKo,
-        email,
-        githubId,
-        instagramId,
-        linkedInId,
-        major,
-        studentId: studentId ? Number(studentId) : null,
-        telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
-        ...(canChangeRole && role ? { role } : {}),
-        updatedAt: new Date(),
-        isForeigner,
-        image: profileImage,
+      await db
+        .update(users)
+        .set({
+          name,
+          firstName,
+          firstNameKo,
+          lastName,
+          lastNameKo,
+          email,
+          githubId,
+          instagramId,
+          linkedInId,
+          major,
+          studentId: studentId ? Number(studentId) : null,
+          telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
+          ...(canChangeRole && role ? { role } : {}),
+          updatedAt: new Date(),
+          isForeigner,
+          image: profileImage,
+        })
+        .where(eq(users.id, memberId))
+
+      invalidateMemberPublicCache({
+        memberId,
+        generationNames,
       })
-      .where(eq(users.id, memberId))
 
-    invalidateMemberPublicCache({
+      return ok({ id: memberId })
+    },
+    {
       memberId,
-      generationNames,
-    })
-  } catch (e) {
-    logger.error('admin.members.update', e, {
-      memberId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: memberId })
+    }
+  )
 }
 
 /**
@@ -301,21 +302,23 @@ export async function updateMemberProfileImage(
   if (!parsed.success) return fromZodError(parsed.error)
   const { profileImage } = parsed.data
 
-  try {
-    const generationNames = await getGenerationNamesForUserId(memberId)
+  return withDbErrors(
+    'api.admin.members.profile-image',
+    async () => {
+      const generationNames = await getGenerationNamesForUserId(memberId)
 
-    await db
-      .update(users)
-      .set({ image: profileImage })
-      .where(eq(users.id, memberId))
+      await db
+        .update(users)
+        .set({ image: profileImage })
+        .where(eq(users.id, memberId))
 
-    invalidateMemberPublicCache({ memberId, generationNames })
-  } catch (error) {
-    logger.error('api.admin.members.profile-image', error, { memberId })
-    return fail('INTERNAL', 'Failed to update the profile image')
-  }
+      invalidateMemberPublicCache({ memberId, generationNames })
 
-  return ok({ id: memberId })
+      return ok({ id: memberId })
+    },
+    { memberId },
+    'Failed to update the profile image'
+  )
 }
 
 async function setRole(
@@ -323,23 +326,24 @@ async function setRole(
   role: Role,
   scope: string
 ): Promise<ServiceResult<{ id: string; role: Role }>> {
-  try {
-    const generationNames = await getGenerationNamesForUserId(userId)
+  return withDbErrors(
+    scope,
+    async () => {
+      const generationNames = await getGenerationNamesForUserId(userId)
 
-    await db.update(users).set({ role }).where(eq(users.id, userId))
+      await db.update(users).set({ role }).where(eq(users.id, userId))
 
-    invalidateMemberPublicCache({
-      memberId: userId,
-      generationNames,
-    })
-  } catch (e) {
-    logger.error(scope, e, {
+      invalidateMemberPublicCache({
+        memberId: userId,
+        generationNames,
+      })
+
+      return ok({ id: userId, role })
+    },
+    {
       userId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: userId, role })
+    }
+  )
 }
 
 /** 가입 대기(UNVERIFIED) 사용자를 승인한다. */
@@ -407,21 +411,22 @@ export async function deleteMember(
     return fail('CONFLICT', 'You cannot delete your own account here.')
   }
 
-  try {
-    const generationNames = await getGenerationNamesForUserId(userId)
+  return withDbErrors(
+    'admin.members.delete-pending',
+    async () => {
+      const generationNames = await getGenerationNamesForUserId(userId)
 
-    await db.delete(users).where(eq(users.id, userId))
+      await db.delete(users).where(eq(users.id, userId))
 
-    invalidateMemberPublicCache({
-      memberId: userId,
-      generationNames,
-    })
-  } catch (e) {
-    logger.error('admin.members.delete-pending', e, {
+      invalidateMemberPublicCache({
+        memberId: userId,
+        generationNames,
+      })
+
+      return ok({ id: userId })
+    },
+    {
       userId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: userId })
+    }
+  )
 }

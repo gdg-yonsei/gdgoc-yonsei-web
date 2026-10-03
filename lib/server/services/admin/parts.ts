@@ -20,6 +20,7 @@ import {
 } from '@/lib/server/fetcher/admin/get-parts'
 import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import {
   authorize,
   canAccessGeneration,
@@ -161,7 +162,7 @@ export async function createPart(
     return fail('FORBIDDEN', 'You cannot create parts in this generation.')
   }
 
-  try {
+  return withDbErrors('admin.parts.create', async () => {
     const generation = await getGenerationNameById(generationId)
 
     // 파트 행과 구성원 소속은 함께 저장되거나 함께 실패해야 한다.
@@ -196,10 +197,7 @@ export async function createPart(
     invalidatePartPublicCache(generation?.name ? [generation.name] : [])
 
     return ok({ id: createdPart.id })
-  } catch (e) {
-    logger.error('admin.parts.create', e)
-    return fail('INTERNAL', 'DB Update Error')
-  }
+  })
 }
 
 /**
@@ -248,65 +246,66 @@ export async function updatePart(
     )
   }
 
-  try {
-    const preservedIds = new Set(
-      (existingPart.usersToParts ?? [])
-        .filter(
-          (membership) =>
-            membership.userType !== 'Primary' &&
-            membership.userType !== 'Secondary'
-        )
-        .map((membership) => membership.userId)
-    )
-
-    const previousGenerationName = await getGenerationNameForPartId(partId)
-    const nextGeneration = await getGenerationNameById(generationId)
-
-    // 파트 정보와 구성원 교체(삭제 후 재삽입)는 하나의 트랜잭션으로 처리한다.
-    // 중간에 실패하면 구성원이 비어 버린 파트가 남지 않는다.
-    await db.transaction(async (tx) => {
-      await tx
-        .update(parts)
-        .set({
-          name,
-          description: description,
-          generationsId: generationId,
-          ...(displayOrder === undefined ? {} : { displayOrder }),
-          updatedAt: new Date(),
-        })
-        .where(eq(parts.id, partId))
-      // Core 및 관리 화면에서 편집하지 않는 소속은 보존한다.
-      await tx
-        .delete(usersToParts)
-        .where(
-          and(
-            eq(usersToParts.partId, partId),
-            inArray(usersToParts.userType, ['Primary', 'Secondary'])
+  return withDbErrors(
+    'admin.parts.update',
+    async () => {
+      const preservedIds = new Set(
+        (existingPart.usersToParts ?? [])
+          .filter(
+            (membership) =>
+              membership.userType !== 'Primary' &&
+              membership.userType !== 'Secondary'
           )
-        )
-
-      const memberships = buildMemberships(
-        partId,
-        membersList,
-        doubleBoardMembersList,
-        preservedIds
+          .map((membership) => membership.userId)
       )
-      if (memberships.length > 0) {
-        await tx.insert(usersToParts).values(memberships)
-      }
-    })
 
-    invalidatePartPublicCache(
-      uniqueStrings([previousGenerationName, nextGeneration?.name])
-    )
-  } catch (e) {
-    logger.error('admin.parts.update', e, {
+      const previousGenerationName = await getGenerationNameForPartId(partId)
+      const nextGeneration = await getGenerationNameById(generationId)
+
+      // 파트 정보와 구성원 교체(삭제 후 재삽입)는 하나의 트랜잭션으로 처리한다.
+      // 중간에 실패하면 구성원이 비어 버린 파트가 남지 않는다.
+      await db.transaction(async (tx) => {
+        await tx
+          .update(parts)
+          .set({
+            name,
+            description: description,
+            generationsId: generationId,
+            ...(displayOrder === undefined ? {} : { displayOrder }),
+            updatedAt: new Date(),
+          })
+          .where(eq(parts.id, partId))
+        // Core 및 관리 화면에서 편집하지 않는 소속은 보존한다.
+        await tx
+          .delete(usersToParts)
+          .where(
+            and(
+              eq(usersToParts.partId, partId),
+              inArray(usersToParts.userType, ['Primary', 'Secondary'])
+            )
+          )
+
+        const memberships = buildMemberships(
+          partId,
+          membersList,
+          doubleBoardMembersList,
+          preservedIds
+        )
+        if (memberships.length > 0) {
+          await tx.insert(usersToParts).values(memberships)
+        }
+      })
+
+      invalidatePartPublicCache(
+        uniqueStrings([previousGenerationName, nextGeneration?.name])
+      )
+
+      return ok({ id: partId })
+    },
+    {
       partId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: partId })
+    }
+  )
 }
 
 /** 파트를 지운다(LEAD 전용). */
