@@ -8,7 +8,7 @@ import { clsx, type ClassValue } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
 
 /**
- * `app/globals.css`에서 `@utility`로 등록한 관리자 프리미티브를 tailwind-merge에 알려 준다.
+ * `app/admin.css`에서 `@utility`로 등록한 관리자 프리미티브를 tailwind-merge에 알려 준다.
  * 이렇게 해야 같은 그룹의 클래스가 충돌할 때 나중 값이 이긴다.
  * (예: `cn('admin-btn-primary', 'admin-btn-danger')` → danger만 남음)
  */

@@ -7,7 +7,7 @@
  * 레이아웃이라 CSS·스크립트가 섞이지 않고, 두 영역 사이 이동은 문서 전체를 다시 불러온다.
  */
 import type { Metadata, Viewport } from 'next'
-import '../../globals.css'
+import '../../site.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'

@@ -6,7 +6,7 @@
  * 공개 페이지 안에서 `notFound()`를 부르면 `app/(home)/[lang]/not-found.tsx`가 사이트 셸 안에 그린다.
  */
 import type { Metadata } from 'next'
-import './globals.css'
+import './site.css'
 import NotFoundView from '@/app/components/site/not-found-view'
 import { googleSansCode, googleSansFlex } from '@/app/fonts'
 import { cn } from '@/lib/cn'

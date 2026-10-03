@@ -5,7 +5,7 @@
  * 레이아웃 위에 공통 레이아웃이 없으므로 공통 메타데이터(`rootMetadata`)를 여기서도 펼친다.
  * 관리자 화면은 검색에 노출되지 않도록 robots를 모두 막는다.
  */
-import '../globals.css'
+import '../admin.css'
 import { ReactNode } from 'react'
 import localFont from 'next/font/local'
 import type { Metadata, Viewport } from 'next'
