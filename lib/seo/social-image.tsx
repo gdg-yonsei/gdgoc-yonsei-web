@@ -41,12 +41,13 @@ const SOCIAL_IMAGE_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 const FALLBACK_SOCIAL_IMAGE_CACHE_CONTROL =
   'public, max-age=300, stale-while-revalidate=3600'
 
+/**
+ * 제목용 한글 글꼴. Satori는 woff2를 읽지 못해 `pretendard` 배포본의 woff 서브셋을 저장소에 옮겨 두었다
+ * (`lib/seo/fonts/LICENSE.txt`). 웹 페이지용 글꼴은 `public/fonts/pretendard`의 woff2를 쓴다.
+ */
 async function loadPretendardBold(): Promise<ArrayBuffer> {
   const font = await readFile(
-    resolve(
-      process.cwd(),
-      'node_modules/pretendard/dist/web/static/woff-subset/Pretendard-Bold.subset.woff'
-    )
+    resolve(process.cwd(), 'lib/seo/fonts/Pretendard-Bold.subset.woff')
   )
   return font.buffer.slice(
     font.byteOffset,
