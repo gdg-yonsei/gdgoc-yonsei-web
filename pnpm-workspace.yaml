@@ -48,3 +48,4 @@ minimumReleaseAgeExclude:
   - eslint-config-next@16.3.6
   - next@16.3.6
   - resend@6.29.0
+  - '@redis/time-series@6.3.0'

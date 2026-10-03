@@ -30,9 +30,9 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1141.0",
-    "@aws-sdk/lib-storage": "^3.1141.0",
-    "@aws-sdk/s3-request-presigner": "^3.1141.0",
+    "@aws-sdk/client-s3": "^3.1145.0",
+    "@aws-sdk/lib-storage": "^3.1145.0",
+    "@aws-sdk/s3-request-presigner": "^3.1145.0",
     "@better-auth/cimd": "1.7.6",
     "@better-auth/mcp": "1.7.6",
     "@better-auth/oauth-provider": "1.7.6",
@@ -46,8 +46,8 @@
     "better-auth": "1.7.6",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.3",
-    "jotai": "^3.0.0",
-    "motion": "^13.4.4",
+    "jotai": "^3.0.1",
+    "motion": "^13.5.1",
     "negotiator": "^1.1.0",
     "next": "16.3.6",
     "postgres": "^3.4.9",
@@ -57,9 +57,9 @@
     "react-email": "6.11.0",
     "react-markdown": "^10.1.0",
     "react-qr-code": "^2.2.0",
-    "redis": "^6.2.1",
+    "redis": "^6.3.0",
     "rehype-sanitize": "^6.0.0",
-    "resend": "^6.30.0",
+    "resend": "^6.32.0",
     "satori": "0.33.5",
     "server-only": "^0.0.1",
     "sharp": "0.35.4",
@@ -76,12 +76,12 @@
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/negotiator": "^0.6.5",
-    "@types/node": "^26.6.3",
+    "@types/node": "^26.6.4",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitest/coverage-v8": "^5.0.2",
-    "baseline-browser-mapping": "^2.11.26",
-    "dotenv": "^18.0.4",
+    "@vitest/coverage-v8": "^5.0.3",
+    "baseline-browser-mapping": "^2.11.27",
+    "dotenv": "^18.0.5",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.6",
@@ -92,10 +92,10 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "6.0.3",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.3"
   },
   "engines": {
     "node": ">=22.13.0 <=24"
   },
-  "packageManager": "pnpm@11.20.0+sha512.9a6f330a95b66446ea088faf1521405a8a01f07fde7124cc9958dfed52d4bb436737e65b08f85f37b46fcba375092558ac51262b816844b22f63406ed166bfee"
+  "packageManager": "pnpm@12.8.1+sha512.f64ba907507f5ceafe06c8d38e6052d0179444580ec1279ddd5bfc11cb48aa8a2644b66598e07e761da84872a9fc57d5f902b87fa49d024198d558612aabbe45"
 }
