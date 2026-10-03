@@ -3,50 +3,60 @@
 시스템 구조: [`architecture/overview.md`](./architecture/overview.md)
 개발 환경: [`development.md`](./development.md)
 
-
 ## 1. 꼭 알아야 할 위험
 
-| 위험                              | 내용                                                                                                                         | 대응                                                                                         |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **빌드 = 운영 DB 마이그레이션**   | `pnpm build`가 `drizzle-kit migrate`를 먼저 실행합니다. `.env`가 운영 DB를 가리키면 로컬 빌드가 운영에 마이그레이션을 적용합니다 | 로컬에서는 `pnpm exec next build`만 사용합니다. 후속 작업 "빌드와 마이그레이션 분리" 참고          |
-| **마이그레이션은 되돌릴 수 없다** | Dokploy 빌드에서 적용되고 자동  롤백 기능이 없습니다.                                                                                   | CI가 위험한 변경을 막는다. 파괴적 변경은 백업 후 `migration:destructive-ok`                  |
-| **e2e·시드는 DB를 지운다**        | 2026-09-25에 e2e 초기화가 운영 DB를 비운 사고가 있었습니다.                                                                       | `assertDisposableDatabase`가 로컬 DB만 허용. 이 검사를 우회하지 않습니다.                       |
-| **세션 시각 저장 규칙**           | 세션 `startAt`/`endAt`은 서울 시각을 UTC 라벨로 저장한다(`19:00Z` = 서울 19시). `createdAt` 등은 실제 시각            | 비교는 `sessionWallClockNow()`, 표시는 `timeZone: 'UTC'`. `lib/format/datetime.ts` 헤더 참고 |
-| **이미지 도메인 하드코딩**        | `next.config.ts`의 `images.remotePatterns`에 이미지 도메인이 직접 적혀 있습니다.                                                  | 도메인을 바꾸면 환경 변수와 함께 고쳐야합니다.                                                      |
+| 위험                                 | 내용                                                                                                                                                           | 대응                                                                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **배포 빌드 = 운영 DB 마이그레이션** | Dokploy(Nixpacks)는 `nixpacks.toml`의 `pnpm build:production`(`drizzle-kit migrate && pnpm build`)으로 빌드합니다. `pnpm build`는 마이그레이션을 하지 않습니다 | 로컬에서 `pnpm build:production`·`pnpm db:migrate`를 운영 `.env`로 실행하지 않습니다. Dokploy 앱에 직접 지정한 빌드 명령이 있으면 `pnpm build:production`으로 맞춥니다 |
+| **마이그레이션은 되돌릴 수 없다**    | Dokploy 빌드에서 적용되고 자동 롤백 기능이 없습니다.                                                                                                           | CI가 위험한 변경을 막는다. 파괴적 변경은 백업 후 `migration:destructive-ok`                                                                                            |
+| **e2e·시드는 DB를 지운다**           | 2026-09-25에 e2e 초기화가 운영 DB를 비운 사고가 있었습니다.                                                                                                    | `assertDisposableDatabase`가 로컬 DB만 허용. 이 검사를 우회하지 않습니다.                                                                                              |
+| **세션 시각 저장 규칙**              | 세션 `startAt`/`endAt`은 서울 시각을 UTC 라벨로 저장한다(`19:00Z` = 서울 19시). `createdAt` 등은 실제 시각                                                     | 비교는 `sessionWallClockNow()`, 표시는 `timeZone: 'UTC'`. `lib/format/datetime.ts` 헤더 참고                                                                           |
+| **이미지 도메인 하드코딩**           | `next.config.ts`의 `images.remotePatterns`에 이미지 도메인이 직접 적혀 있습니다.                                                                               | 도메인을 바꾸면 환경 변수와 함께 고쳐야합니다.                                                                                                                         |
 
 ## 2. 검증 상태
 
+2026-10-03, `chore/handoff-follow-ups` 브랜치 기준(로컬 일회용 Postgres 17).
+
+- `pnpm test:types`, `pnpm lint --max-warnings=0`(type-aware 규칙 포함), `pnpm test`(869개) 통과.
+- `pnpm test:e2e:prod`: 128개 중 127개 통과. 실패한 `home-motion.spec.ts`의 "UI/UX curve" 호버 테스트는 간헐적으로
+  실패하는 기존 문제다. 같은 테스트를 `main` 빌드에 5번 돌려 1번 실패했고, 이 브랜치에서는 5번 중 2번 실패했다. CI는 재시도 2회로 통과한다.
+- 브라우저로 공개 사이트(홈, 세션 로그, 404)와 관리자 화면(대시보드, 세션·파트·프로젝트 생성·수정, 멤버 선택기, 기수 범위,
+  MCP 연결 관리)을 확인했다. 컴파일된 CSS는 분리 전과 선택자를 비교했다.
+
+## 3. 2026-10 후속 작업 정리에서 바뀐 것
+
+이전 인수인계의 후속 작업 16개를 모두 처리했습니다. 동작이나 운영에 영향이 있는 것만 적습니다.
+
+- **빌드와 마이그레이션 분리**: 위 위험 표 참고. CI "Migration upgrade path"는 배포와 같은 `drizzle-kit migrate`를 운영과 같은
+  상태의 DB에 실행해 본다.
+- **루트 레이아웃 두 개**: `app/layout.tsx`를 없애 `app/(home)/[lang]/layout.tsx`와 `app/(admin)/layout.tsx`가 각자 루트
+  레이아웃입니다. 공개 사이트의 `lang`은 `next/root-params`로 읽습니다(`getLocale()`). 두 영역 사이 이동과 언어 전환은
+  문서 전체를 다시 불러옵니다. 어떤 라우트와도 맞지 않는 URL은 `app/global-not-found.tsx`(`experimental.globalNotFound`)가
+  404로 응답합니다. 루트 소셜 이미지(`/opengraph-image.png`)는 `app/(admin)/`으로 옮겼습니다(URL은 같음).
+- **CSS 분리**: `globals.css`(공용) + `site.css`(공개) / `admin.css`(관리자). 컴파일된 선택자를 이전 묶음과 비교해 빠진 규칙이
+  없음을 확인했습니다.
+- **삭제 순서**: 세션·프로젝트 삭제는 행을 먼저 지우고 커밋 뒤 R2 이미지를 지웁니다. R2가 실패하면 삭제는 성공하고 남은 키를
+  `admin.delete-resource.r2-cleanup` 경고 로그로 남깁니다(고아 객체는 손으로 치웁니다).
+- **새로고침 버튼**: 목록은 즉시, 세션·프로젝트 상세는 공용 태그(`*:items:*`)로 다음 방문 때 백그라운드에서 다시 만듭니다.
+  이 태그가 없던 때 Redis에 저장된 상세 캐시는 수명이 끝날 때까지 버튼으로 지워지지 않습니다.
+- **관리자 404 상태 코드**: 승인된 사용자의 관리자 상세 HTML 요청이면 proxy가 항목 존재를 확인하고 없으면 진짜 404를 돌려줍니다.
+  로그인하지 않은 요청은 확인하지 않습니다(id 존재 여부가 드러나지 않게).
+- **MCP 연결 관리**: 프로필 → 연결된 AI 도구(`/admin/profile/mcp`). 연결을 끊으면 동의·토큰을 지우고, MCP 라우트가 요청마다
+  동의를 확인하므로 아직 만료되지 않은 JWT도 바로 거절됩니다. 감사 로그(최근 50건)도 같은 화면에서 봅니다.
+- **소셜 이미지 라우트**: `size`/`contentType`이 `SOCIAL_IMAGE_SIZE`/`SOCIAL_IMAGE_CONTENT_TYPE` 상수를 그대로 내보내도 운영 빌드의
+  메타 태그가 같음을 확인했습니다.
+- **린트**: type-aware ESLint(`recommendedTypeCheckedOnly`)를 켰습니다.
+
 ## 4. 후속 작업 (이번에 하지 않은 것)
 
-우선순위가 높은 것부터.
-
-1. **빌드와 마이그레이션 분리.** `build`에서 `drizzle-kit generate && migrate`를 빼고 배포 단계(별도 명령 또는
-   Dokploy pre-deploy)로 옮긴다. 로컬 빌드 사고를 막는다. CI의 "Migration upgrade path" 작업과 함께 조정해야 한다.
-2. **CSS를 사이트·관리자용으로 분리.** `app/globals.css`가 공개 사이트 CSS(`styles/site-*.css`, 약 3,000줄)를
-   관리자 화면에도 싣는다. 공용 토큰만 남기고 `site.css`/`admin.css`로 나눠 각 루트 레이아웃에서 import한다.
-   `tests/lib/site/css-split.test.ts`를 확장하고 두 화면을 브라우저로 확인해야 한다.
-3. **생성·수정 폼 필드 공유.** 세션·프로젝트·파트의 create/edit 페이지가 같은 필드 목록을 각자 갖고 있다.
-   `SessionFormFields` 같은 컴포넌트로 합친다. 함께, 수정 폼 대부분에는 파트 수정 폼처럼 저장 버전별 `key`가 없어
-   Next가 페이지를 유지할 때 이전 입력이 남을 수 있다. 공유 컴포넌트로 옮기면서 같이 맞춘다.
-4. **멤버 선택기 통합.** `part-members-input.tsx`와 `session-part-participants-input.tsx`의 검색·필터 UI가 비슷하다.
-   순수 로직은 `lib/admin/member-options.ts`로 모았으니 UI만 합치면 된다.
-5. **`PageProps`/`LayoutProps` 도입.** 페이지 props 타입을 Next 생성 타입으로 바꾼다. CI에 `next typegen` 단계가 필요하다.
-6. **권한 레이아웃 보일러플레이트 정리.** 20여 개 `layout.tsx`가 `requirePermission` 한 줄과 `connection()`만 한다.
-   레이아웃 팩토리나 `next/root-params` 전환과 함께 정리한다(`connection()` 중복도 이때).
-7. **`next/root-params` 전환.** 공개 사이트 `[lang]` 처리 방식. 루트 레이아웃 구조를 바꾸는 큰 작업이다.
-8. **`services/admin/images.ts` 분할**(업로드 세션 생애주기 / 공개 진입점), **`withDbErrors` 헬퍼**(서비스의 반복 try/catch).
-9. **`lib/server/admin-generation-scope.ts`의 수동 쿠키 파싱**(`getCookieFromHeader`)을 `cookies()`로 바꿀 수 있는지 확인.
-10. **TypeScript·린트 강화.** type-aware ESLint 규칙(`recommendedTypeChecked`), `exactOptionalPropertyTypes`.
-11. **`pretendard` npm 의존성 제거.** 폰트는 `public/`과 `app/pretendard.css`에 들어 있어 패키지는 쓰이지 않는다.
-12. **소셜 이미지 라우트의 `size`/`contentType`** 을 `SOCIAL_IMAGE_SIZE` 상수로 바꿀 수 있는지 운영 빌드로 확인.
-13. **삭제 시 R2 정리 순서 재검토.** 지금은 이미지를 먼저 지우고 행을 지운다(R2 실패 시 삭제 중단). 행을 먼저 지우고
-    이미지는 커밋 뒤 정리하면 "행은 남았는데 이미지가 없는" 상태를 피할 수 있다. 대신 고아 객체가 남을 수 있다.
-14. **MCP 연결 관리 UI.** 연결된 클라이언트 목록·해지, 감사 로그 열람.
-15. **새로고침 버튼이 상세 페이지 캐시도 지우게 할지 결정.** 지금은 목록 캐시만 지운다. DB를 직접 고쳤을 때 상세
-    페이지는 수명(프로젝트 상세는 최대 30일)이 끝날 때까지 이전 내용이 보인다. 항목 태그 전체를 지우려면 모든 id를
-    읽어야 하므로 `revalidateTag(..., 'max')` 방식과 비용을 함께 검토한다.
-16. **관리자 404의 HTTP 상태 코드.** 관리자 페이지의 `notFound()`는 스트리밍이 시작된 뒤라 화면은 404지만 상태
-    코드는 200이다(공개 사이트는 proxy가 미리 확인해 진짜 404를 돌려준다). 관리자 화면은 색인되지 않아 영향은 작다.
+1. **`exactOptionalPropertyTypes`.** 켜면 남는 오류는 `@better-auth/mcp` 1.7.6 자체 타입 선언(엔드포인트 OpenAPI 메타데이터의
+   `format?: undefined`)뿐입니다. 우회하면 `auth.api` 추론이 사라지므로 켜지 않았습니다. 우리 코드는 이미 규칙을 지키므로
+   라이브러리를 올린 뒤 `tsconfig.json`에 켜고 `pnpm test:types`로 확인하면 됩니다.
+2. **`next/root-params`의 `lang` 타입.** `next typegen`이 라우트 그룹을 지운 경로로 루트 레이아웃을 찾아 관리자 루트 레이아웃
+   (`/`)을 모든 경로의 조상으로 봅니다. 그래서 `lang` 타입이 생성되지 않아 `lib/i18n/server.ts`에서 직접 타입을 붙였습니다.
+   Next가 이 판정을 고치면 그 한 줄을 지웁니다.
+3. **관리자 상세의 `connection()`.** 수정 페이지(`edit/page.tsx`)도 `connection()`을 부릅니다. 상위 `[id]` 레이아웃과 겹치지만,
+   개발 모드의 instant 검증이 페이지 단위로 경고를 내므로(이번 작업 전과 같음) 그대로 두었습니다.
 
 ## 5. 의도적으로 그대로 둔 것
 
@@ -63,6 +73,6 @@
 | Google Cloud     | Google OAuth 클라이언트   | 승인된 리디렉션 URI                                                  |
 | Cloudflare       | R2 버킷, 이미지 도메인    | 버킷 CORS, 공개 도메인                                               |
 | Resend           | 메일 발송                 | 발신 도메인 인증                                                     |
-| Google Analytics | 공개 사이트 통계          | 측정 ID는 `app/(home)/[lang]/layout.tsx`의 `GA_MEASUREMENT_ID`       |                          |
+| Google Analytics | 공개 사이트 통계          | 측정 ID는 `app/(home)/[lang]/layout.tsx`의 `GA_MEASUREMENT_ID`       |     |
 
 비밀값과 계정 권한은 저장소에 없습니다. 이전 관리자에게서 직접 넘겨 받아야 합니다.

@@ -99,6 +99,10 @@ page.tsx                           세밀한 규칙(기수 접근, 대상 역할
 서비스                              같은 판단을 다시 한다 (화면 가드는 노출 제어일 뿐)
 ```
 
+권한만 확인하는 레이아웃은 `permissionLayout(action, resource)`, 동적 `[id]` 구간을 요청 시점 렌더링으로 고정하는
+레이아웃은 `requestTimeLayout()`(`lib/server/permission/permission-layout.tsx`)으로 한 줄에 선언한다. `[id]` 아래 수정
+레이아웃은 `connection()`을 다시 부르지 않는다.
+
 화면 가드는 사용자 경험을 위한 것이고, **최종 권한 검사는 항상 서비스가 한다**. 버튼을 숨겼다고 안전한 것이 아니다.
 
 ## 7. MCP OAuth

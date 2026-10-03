@@ -127,6 +127,7 @@ sequenceDiagram
 - 공개 조회는 두 언어 값을 한 번에 읽어 캐시하므로 캐시 키에 언어가 없다. 태그는 언어별로 붙는다.
 - 세션은 "공개 시각"을 한 시간 단위 버킷으로 캐시 키에 넣어, 시간이 지나 공개되는 세션이 한 시간 안에 보이게 한다.
 - 존재하지 않는 기수·상세는 proxy가 DB로 먼저 확인해 진짜 404 상태 코드를 돌려준다(스트리밍 중에는 상태 코드를 바꿀 수 없다).
+  관리자 상세 화면도 승인된 사용자의 요청이면 같은 방식으로 확인한다. 어떤 라우트와도 맞지 않는 URL은 `app/global-not-found.tsx`가 맡는다.
 
 ### 3-2. 관리자 쓰기 (내가 쓴 내용을 바로 보기)
 
@@ -210,13 +211,16 @@ proxy.ts                 요청 전처리(언어 리다이렉트, 관리자 rewr
 auth.ts                  Better Auth 설정(로그인, 패스키, MCP OAuth 인가 서버)
 next.config.ts           cacheComponents, cacheLife 프로필, Redis 캐시 핸들러, 이미지 설정
 app/
-  (home)/[lang]/         공개 사이트(홈, 세션, 프로젝트, 멤버, 캘린더, 약관)
+  (home)/[lang]/         공개 사이트(홈, 세션, 프로젝트, 멤버, 캘린더, 약관). 이 layout이 공개 사이트의 루트 레이아웃
+  (admin)/layout.tsx     관리자·로그인 화면의 루트 레이아웃(공통 상위 레이아웃 없음, 공통 메타데이터는 lib/seo/metadata.ts)
+  global-not-found.tsx   어떤 라우트와도 맞지 않는 URL의 404 문서
+  globals.css            공용 기반 CSS. site.css(공개)·admin.css(관리자)가 불러온다
     _components/home/    홈 섹션과 스크롤 연출(anime.js, WebGL)
   (admin)/admin/         관리자 화면. 리소스별 page/layout/actions/*-table
   (admin)/auth/          로그인, MCP 동의 화면
   api/                   업로드 presign, Better Auth, MCP, 디스커버리 라우트
   components/            공용 UI(admin/, site/, header/, auth/, svg/)
-  styles/                공개 사이트 CSS(site-*.css)
+  styles/                공개 사이트 CSS(site-*.css, site.css가 모은다)
 lib/
   server/
     services/admin/      쓰기 서비스(권한·검증·트랜잭션·무효화). 웹과 MCP가 공유
