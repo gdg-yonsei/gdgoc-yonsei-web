@@ -86,6 +86,7 @@ export async function updateMyProfile(
         studentId: studentId ? Number(studentId) : null,
         telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
         isForeigner,
+        updatedAt: new Date(),
         image: profileImage,
       })
       .where(eq(users.id, actor.userId))

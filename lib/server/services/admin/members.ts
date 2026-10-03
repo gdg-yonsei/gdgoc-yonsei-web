@@ -265,6 +265,7 @@ export async function updateMember(
         studentId: studentId ? Number(studentId) : null,
         telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
         ...(canChangeRole && role ? { role } : {}),
+        updatedAt: new Date(),
         isForeigner,
         image: profileImage,
       })

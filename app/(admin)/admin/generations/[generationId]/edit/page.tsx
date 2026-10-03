@@ -11,6 +11,7 @@ import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import DataForm from '@/app/components/admin/data-form'
 import { Metadata } from 'next'
+import { savedVersionKey } from '@/lib/admin/form-version'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { connection } from 'next/server'
 
@@ -49,7 +50,9 @@ export default async function EditGenerationPage({
       <div className={'admin-title py-4'}>
         {t.edit} {t.generation}: {generationData.name}
       </div>
+      {/* 저장된 버전마다 key를 바꿔, 저장 후 돌아왔을 때 이전 편집 내용 대신 저장된 값을 보여 준다. */}
       <DataForm
+        key={savedVersionKey(generationData.updatedAt)}
         action={updateGenerationActionWithGenerationId}
         className={'admin-form-grid w-full gap-4'}
       >
