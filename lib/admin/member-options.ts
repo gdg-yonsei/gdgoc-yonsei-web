@@ -91,10 +91,11 @@ export function memberMatchesSearch(
     [
       memberDisplayName(member),
       member.name,
-      member.firstName,
-      member.lastName,
-      member.firstNameKo,
-      member.lastNameKo,
+      // "이름 성"과 "성 이름" 어느 순서로 입력해도 찾는다.
+      `${member.firstName ?? ''}${member.lastName ?? ''}`,
+      `${member.lastName ?? ''}${member.firstName ?? ''}`,
+      `${member.lastNameKo ?? ''}${member.firstNameKo ?? ''}`,
+      `${member.firstNameKo ?? ''}${member.lastNameKo ?? ''}`,
     ]
       .filter(Boolean)
       .join(' ')
@@ -112,6 +113,51 @@ export function findMembership(
       (!generation || membership.generation === generation) &&
       (!part || membership.part === part)
   )
+}
+
+/**
+ * 기수·파트 필터의 "소속 없음" 값. 어느 기수·파트에도 속하지 않은 멤버만 고른다. 실제 기수·파트 이름과
+ * 겹치지 않도록 이름으로 쓸 수 없는 값을 쓴다.
+ */
+export const NO_MEMBERSHIP = '__none__'
+
+/**
+ * 멤버의 소속이 기수·파트 필터에 맞는지. 빈 필터는 모두 맞고, `NO_MEMBERSHIP`은 기수·파트가 모두 비어
+ * 있는(소속이 없는) 멤버에만 맞는다.
+ */
+export function matchesMembershipFilter(
+  memberships: readonly MemberMembership[],
+  generation: string,
+  part: string
+): boolean {
+  if (generation === NO_MEMBERSHIP || part === NO_MEMBERSHIP) {
+    return (
+      (!generation || generation === NO_MEMBERSHIP) &&
+      (!part || part === NO_MEMBERSHIP) &&
+      memberships.every(
+        (membership) => !membership.generation && !membership.part
+      )
+    )
+  }
+  if (!generation && !part) return true
+  return Boolean(findMembership(memberships, generation, part))
+}
+
+/** 파트 구성원 조회 결과(`usersToParts`)를 선택기의 소속 목록으로 바꾼다. */
+export function toMemberships(
+  usersToParts: readonly {
+    part: {
+      name: string
+      generationsId: number | null
+      generation: { id: number; name: string } | null
+    }
+  }[]
+): MemberMembership[] {
+  return usersToParts.map(({ part }) => ({
+    generationId: part.generation?.id ?? part.generationsId,
+    generation: part.generation?.name ?? null,
+    part: part.name,
+  }))
 }
 
 /** 멤버들이 속한 기수 이름 목록. 최신 기수(ID가 큰 순)가 먼저 온다. */

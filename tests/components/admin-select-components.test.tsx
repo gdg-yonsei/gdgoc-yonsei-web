@@ -163,9 +163,7 @@ describe('admin selection components', () => {
     const participantInput = container.querySelector(
       'input[name="participantId"]'
     ) as HTMLInputElement
-    const search = screen.getByRole('searchbox', {
-      name: 'Search by name...',
-    })
+    const search = screen.getByRole('textbox', { name: 'Search name' })
 
     // 공백을 섞어 입력해도 한글 이름을 찾습니다.
     fireEvent.change(search, { target: { value: '박 밥' } })
@@ -180,7 +178,7 @@ describe('admin selection components', () => {
     })
 
     fireEvent.change(search, { target: { value: '' } })
-    fireEvent.change(screen.getByRole('combobox', { name: 'Part' }), {
+    fireEvent.change(screen.getByRole('combobox', { name: 'Part filter' }), {
       target: { value: 'Frontend' },
     })
     expect(screen.queryByTitle('박밥')).toBeNull()
@@ -228,10 +226,10 @@ describe('admin selection components', () => {
       'input[name="participantId"]'
     ) as HTMLInputElement
     const generationSelect = screen.getByRole('combobox', {
-      name: 'Generation',
+      name: 'Generation filter',
     }) as HTMLSelectElement
     const partSelect = screen.getByRole('combobox', {
-      name: 'Part',
+      name: 'Part filter',
     }) as HTMLSelectElement
 
     // 최신 기수가 먼저 나옵니다.

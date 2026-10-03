@@ -3,21 +3,28 @@
 /**
  * 파트 멤버 선택 입력(클라이언트 컴포넌트).
  *
- * 이름 검색과 기수·파트 필터로 후보를 좁혀 추가하고, 선택된 멤버는 칩으로 보여 준다.
- * 후보는 필터를 하나라도 입력해야 나타난다(멤버 수가 많아 전체 목록을 바로 그리지 않음).
+ * 이름 검색과 기수·파트 필터(`MemberFilterControls`, 세션 참가자 선택기와 공용)로 후보를 좁혀 추가하고,
+ * 선택된 멤버는 칩으로 보여 준다. 후보는 필터를 하나라도 입력해야 나타난다(멤버 수가 많아 전체 목록을
+ * 바로 그리지 않음).
  */
 import { useState } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import MemberFilterControls, {
+  useMemberFilters,
+} from '@/app/components/admin/member-filter-controls'
 import { formatUserName } from '@/lib/format/user-name'
+import { toMemberships } from '@/lib/admin/member-options'
 import type { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 
 /** `getPartMemberOptions`가 돌려주는 멤버 한 명(소속 파트 포함). */
-type Member = Awaited<ReturnType<typeof getPartMemberOptions>>[number]
+export type PartMemberOption = Awaited<
+  ReturnType<typeof getPartMemberOptions>
+>[number]
 
 /**
  * 선택한 멤버 id 목록을 JSON으로 `name` 필드에 싣는다.
  *
- * 기수/파트 필터의 `none`은 "어느 파트에도 속하지 않은 멤버"를 뜻한다.
+ * 기수/파트 필터의 "소속 없음"은 어느 파트에도 속하지 않은 멤버를 뜻한다.
  * @param members 선택지(전체 멤버)
  * @param defaultValue 처음부터 선택된 멤버 id
  */
@@ -27,7 +34,7 @@ export default function PartMembersInput({
   title,
   defaultValue,
 }: {
-  members: Member[]
+  members: PartMemberOption[]
   name: string
   title: string
   defaultValue: string[]
@@ -35,12 +42,12 @@ export default function PartMembersInput({
   const { locale, messages: t } = useAdminI18n()
   const ko = locale === 'ko'
   const [selected, setSelected] = useState(defaultValue)
-  const [search, setSearch] = useState('')
-  const [generation, setGeneration] = useState('')
-  const [part, setPart] = useState('')
-  const normalize = (value: string) =>
-    value.replace(/\s/g, '').toLocaleLowerCase()
-  const label = (member: Member) =>
+  const options = members.map((member) => ({
+    ...member,
+    memberships: toMemberships(member.usersToParts),
+  }))
+  const filters = useMemberFilters(options)
+  const label = (member: PartMemberOption) =>
     formatUserName(
       member.name,
       ko ? member.firstNameKo || member.firstName : member.firstName,
@@ -48,59 +55,8 @@ export default function PartMembersInput({
       member.isForeigner,
       ko && !member.isForeigner
     )
-  const memberships = members.flatMap((member) =>
-    member.usersToParts.map(({ part }) => part)
-  )
-  const generations = [
-    ...new Map(
-      memberships.flatMap(({ generation }) =>
-        generation ? [[String(generation.id), generation.name] as const] : []
-      )
-    ).entries(),
-  ]
-  const parts = [
-    ...new Map(
-      memberships
-        .filter(
-          (item) => !generation || String(item.generationsId) === generation
-        )
-        .map((item) => [
-          String(item.id),
-          !generation && item.generation
-            ? `${item.generation.name} · ${item.name}`
-            : item.name,
-        ])
-    ).entries(),
-  ]
-  const active = Boolean(search.trim() || generation || part)
-  const candidates = active
-    ? members.filter((member) => {
-        if (selected.includes(member.id)) return false
-        const names = [
-          member.name,
-          `${member.firstName ?? ''} ${member.lastName ?? ''}`,
-          `${member.lastName ?? ''} ${member.firstName ?? ''}`,
-          `${member.lastNameKo ?? ''}${member.firstNameKo ?? ''}`,
-          `${member.firstNameKo ?? ''}${member.lastNameKo ?? ''}`,
-        ]
-        if (!names.some((name) => normalize(name).includes(normalize(search))))
-          return false
-        if (generation === 'none' || part === 'none')
-          return (
-            member.usersToParts.length === 0 &&
-            (!generation || generation === 'none') &&
-            (!part || part === 'none')
-          )
-        return (
-          (!generation && !part) ||
-          member.usersToParts.some(
-            ({ part: membership }) =>
-              (!generation ||
-                String(membership.generationsId) === generation) &&
-              (!part || String(membership.id) === part)
-          )
-        )
-      })
+  const candidates = filters.active
+    ? filters.matches.filter((member) => !selected.includes(member.id))
     : []
 
   return (
@@ -130,56 +86,9 @@ export default function PartMembersInput({
           )
         })}
       </div>
-      <div className="admin-form-grid gap-2">
-        <label className="flex flex-col gap-1">
-          {t.searchName}
-          <input
-            className="admin-input"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t.memberNamePlaceholder}
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          {t.generationFilter}
-          <select
-            className="admin-input"
-            value={generation}
-            onChange={(event) => {
-              setGeneration(event.target.value)
-              setPart('')
-            }}
-          >
-            <option value="">{t.anyGeneration}</option>
-            <option value="none">{t.noMembership}</option>
-            {generations.map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          {t.partFilter}
-          <select
-            className="admin-input"
-            value={part}
-            onChange={(event) => setPart(event.target.value)}
-          >
-            <option value="">{t.anyPart}</option>
-            {(!generation || generation === 'none') && (
-              <option value="none">{t.noMembership}</option>
-            )}
-            {parts.map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <MemberFilterControls filters={filters} allowNoMembership={true} />
       <p role="status" className="text-ink-muted text-sm">
-        {!active
+        {!filters.active
           ? t.memberPickerHint
           : candidates.length === 0
             ? t.noMatchingMembers
@@ -195,10 +104,8 @@ export default function PartMembersInput({
           >
             <span>{label(member)}</span>
             <span className="text-ink-muted text-xs">
-              {member.usersToParts
-                .map(
-                  ({ part }) => `${part.generation?.name ?? ''} · ${part.name}`
-                )
+              {member.memberships
+                .map(({ generation, part }) => `${generation ?? ''} · ${part}`)
                 .join(', ') || t.noMembership}
             </span>
           </button>

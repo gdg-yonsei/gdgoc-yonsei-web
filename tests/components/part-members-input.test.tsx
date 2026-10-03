@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import PartMembersInput from '@/app/components/admin/part-members-input'
+import { NO_MEMBERSHIP } from '@/lib/admin/member-options'
 
 const members = [
   {
@@ -89,21 +90,21 @@ describe('part member filters', () => {
     })
     expect(screen.getAllByRole('button', { name: /Kim Alice/ })).toHaveLength(1)
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: '1' },
+      target: { value: '1st' },
     })
     fireEvent.change(screen.getByLabelText('Part filter'), {
-      target: { value: '1' },
+      target: { value: 'Frontend' },
     })
     expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
     expect(
       screen.queryByRole('option', { name: 'Backend' })
     ).not.toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: '2' },
+      target: { value: '2nd' },
     })
     expect(screen.getByLabelText('Part filter')).toHaveValue('')
     fireEvent.change(screen.getByLabelText('Part filter'), {
-      target: { value: '2' },
+      target: { value: 'Backend' },
     })
     expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
   })
@@ -111,7 +112,7 @@ describe('part member filters', () => {
   it('finds unassigned members and hides candidates again when filters clear', () => {
     setup()
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: 'none' },
+      target: { value: NO_MEMBERSHIP },
     })
     expect(screen.getByRole('button', { name: /Park Bob/ })).toBeVisible()
     expect(

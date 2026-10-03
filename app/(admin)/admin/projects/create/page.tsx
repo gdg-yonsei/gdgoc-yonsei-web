@@ -7,23 +7,14 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import { createProjectAction } from '@/app/(admin)/admin/projects/create/actions'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import DataInput from '@/app/components/admin/data-input'
-import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
-import TagsInput from '@/app/components/admin/tags-input'
 import { getTagNames } from '@/lib/server/services/admin/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
-import ResourceImageFields from '@/app/components/admin/resource-image-fields'
-import GenerationField from '@/app/components/admin/generation-field'
-import {
-  BilingualInputField,
-  BilingualMdxField,
-  BilingualTextareaField,
-} from '@/app/components/admin/bilingual-fields'
 import { dedupeById } from '@/lib/admin/member-options'
+import ProjectFormFields from '@/app/(admin)/admin/projects/_components/project-form-fields'
 
 /** 브라우저 탭 제목. */
 export const metadata: Metadata = {
@@ -67,7 +58,6 @@ export default async function CreateProjectPage() {
     getMembers(null),
     getTagNames(),
   ])
-  const uniqueMembers = dedupeById(membersList)
 
   return (
     <AdminDefaultLayout>
@@ -82,60 +72,11 @@ export default async function CreateProjectPage() {
         action={createProjectAction}
         className={'admin-form-grid gap-2'}
       >
-        <ResourceImageFields
-          mainImageBaseUrl={'/api/admin/projects/main-image'}
-          contentImageBaseUrl={'/api/admin/projects/content-image'}
+        <ProjectFormFields
           t={t}
-        />
-        <BilingualInputField
-          t={t}
-          fieldLabel={t.name}
-          enName={'name'}
-          koName={'nameKo'}
-          enTitle={t.nameEn}
-          koTitle={t.nameKo}
-          enPlaceholder={t.nameEn}
-          koPlaceholder={t.nameKo}
-        />
-        <BilingualTextareaField
-          t={t}
-          fieldLabel={t.description}
-          enName={'description'}
-          koName={'descriptionKo'}
-          enPlaceholder={t.descriptionEn}
-          koPlaceholder={t.descriptionKo}
-        />
-        <DataInput
-          title={'Repository URL'}
-          defaultValue={null}
-          name={'repoUrl'}
-          placeholder={'https://github.com/gdg-yonsei/...'}
-          type={'url'}
-        />
-        <DataInput
-          title={'Demo URL'}
-          defaultValue={null}
-          name={'demoUrl'}
-          placeholder={'https://...'}
-          type={'url'}
-        />
-        <TagsInput defaultValue={[]} suggestions={tagNames} />
-        <GenerationField
-          title={t.generation}
-          value={resolvedScope.selectedGeneration.name}
-          inputName={'generationId'}
-          inputValue={resolvedScope.selectedGeneration.id}
-        />
-        <MembersSelectInput members={uniqueMembers} defaultValue={[]} />
-        <BilingualMdxField
-          t={t}
-          fieldLabel={t.content}
-          enName={'content'}
-          koName={'contentKo'}
-          enTitle={t.contentEn}
-          koTitle={t.contentKo}
-          enPlaceholder={'Write the project content in English.'}
-          koPlaceholder={'프로젝트 내용을 한국어로 작성하세요.'}
+          generation={resolvedScope.selectedGeneration}
+          members={dedupeById(membersList)}
+          tagNames={tagNames}
         />
         <SubmitButton />
       </DataForm>

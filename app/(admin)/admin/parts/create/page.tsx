@@ -3,13 +3,11 @@
  */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import DataForm from '@/app/components/admin/data-form'
-import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { createPartAction } from '@/app/(admin)/admin/parts/create/actions'
-import DataTextarea from '@/app/components/admin/data-textarea'
-import PartMembersInput from '@/app/components/admin/part-members-input'
 import { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
 import { Metadata } from 'next'
+import PartFormFields from '@/app/(admin)/admin/parts/_components/part-form-fields'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
@@ -54,49 +52,10 @@ export default async function CreatePartPage() {
         {t.create} {t.part}
       </div>
       <DataForm action={createPartAction} className={'admin-form-grid gap-2'}>
-        <input
-          hidden={true}
-          name={'generationId'}
-          readOnly={true}
-          value={String(resolvedScope.selectedGeneration.id)}
-        />
-        <DataInput
-          title={t.name}
-          defaultValue={''}
-          name={'name'}
-          placeholder={'e.g. Android, iOS, ...'}
-        />
-        <DataInput
-          title={t.displayOrder}
-          name="displayOrder"
-          type="number"
-          required
-          defaultValue={10}
-          placeholder="10"
-        />
-        <p className="text-ink-muted text-sm">{t.displayOrderHint}</p>
-        <DataTextarea
-          defaultValue={''}
-          name={'description'}
-          placeholder={'e.g. This is a part for Android developers.'}
-        />
-        <div className={'admin-form-grid-full admin-card'}>
-          <div className={'admin-field-label'}>{t.generation}</div>
-          <div className={'admin-field-value'}>
-            {resolvedScope.selectedGeneration.name}
-          </div>
-        </div>
-        <PartMembersInput
+        <PartFormFields
+          t={t}
+          generation={resolvedScope.selectedGeneration}
           members={membersData}
-          name={'membersList'}
-          title={t.members}
-          defaultValue={[]}
-        />
-        <PartMembersInput
-          members={membersData}
-          name={'doubleBoardMembersList'}
-          title={t.doubleBoardMembers}
-          defaultValue={[]}
         />
         <SubmitButton />
       </DataForm>

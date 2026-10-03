@@ -1,24 +1,23 @@
 'use client'
 
 /**
- * 세션 생성/수정 폼의 담당 파트·참가자 선택(클라이언트 컴포넌트). 순수 필터 로직은 `lib/admin/member-options.ts`에 있다.
+ * 세션 생성/수정 폼의 담당 파트·참가자 선택(클라이언트 컴포넌트). 검색·기수·파트 필터는 파트 구성원
+ * 선택기와 같은 `MemberFilterControls`를 쓴다.
  */
 import { useState } from 'react'
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
+import MemberFilterControls, {
+  useMemberFilters,
+} from '@/app/components/admin/member-filter-controls'
 import {
   findMembership,
-  listMembershipGenerations,
-  listMembershipParts,
   memberDisplayName,
-  memberMatchesSearch,
-  normalizeMemberSearch,
   type MemberMembership,
 } from '@/lib/admin/member-options'
 import { cn } from '@/lib/cn'
 
 /** 파트 선택지와 그 구성원. */
-type PartOption = {
+export type SessionPartOption = {
   id: number
   name: string
   generationName: string | null
@@ -34,7 +33,7 @@ type PartOption = {
 }
 
 /** 참가자 후보 멤버와 소속(기수·파트) 목록. */
-type MemberOption = {
+export type SessionMemberOption = {
   id: string
   name: string | null
   firstName: string | null
@@ -61,8 +60,8 @@ export default function SessionPartParticipantsInput({
     partId: number | null
     selectedMembers: string[]
   }
-  members: MemberOption[]
-  parts: PartOption[]
+  members: SessionMemberOption[]
+  parts: SessionPartOption[]
 }) {
   const { t } = useAdminI18n()
   const initialPartId = defaultValue?.partId ?? parts[0]?.id ?? 0
@@ -73,20 +72,10 @@ export default function SessionPartParticipantsInput({
       []
   )
 
-  const [query, setQuery] = useState('')
-  const [generationFilter, setGenerationFilter] = useState('')
-  const [partFilter, setPartFilter] = useState('')
+  const filters = useMemberFilters(members)
+  const filteredMembers = filters.matches
 
   const currentPart = parts.find((part) => part.id === partId) ?? null
-  const memberGenerations = listMembershipGenerations(members)
-  // 기수를 고르면 그 기수에 있는 파트만 보여 준다.
-  const memberParts = listMembershipParts(members, generationFilter)
-  const normalizedQuery = normalizeMemberSearch(query)
-  const filteredMembers = members.filter(
-    (member) =>
-      findMembership(member.memberships, generationFilter, partFilter) &&
-      memberMatchesSearch(member, normalizedQuery)
-  )
 
   const allFilteredSelected =
     filteredMembers.length > 0 &&
@@ -197,7 +186,7 @@ export default function SessionPartParticipantsInput({
 
       <div
         className={
-          'admin-form-grid-full border-hairline bg-surface flex max-h-[32rem] w-full flex-col gap-2 rounded-lg border p-2 lg:h-[28rem]'
+          'admin-form-grid-full border-hairline bg-surface flex max-h-[36rem] w-full flex-col gap-2 rounded-lg border p-2 lg:h-[32rem]'
         }
       >
         <div className={'flex flex-wrap items-center justify-between gap-2'}>
@@ -207,64 +196,8 @@ export default function SessionPartParticipantsInput({
           </p>
         </div>
 
-        <div className={'flex flex-col gap-2 md:flex-row md:items-center'}>
-          <div className={'relative w-full flex-1'}>
-            <MagnifyingGlassIcon
-              className={
-                'text-ink-faint pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2'
-              }
-            />
-            <input
-              type={'search'}
-              aria-label={t('searchMemberPlaceholder')}
-              placeholder={t('searchMemberPlaceholder')}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              className={'admin-input type-body-sm pl-10'}
-            />
-          </div>
-          <select
-            aria-label={t('generation')}
-            value={generationFilter}
-            onChange={(event) => {
-              const generation = event.target.value
-              setGenerationFilter(generation)
-              // 새 기수에 없는 파트가 선택되어 있으면 결과가 비므로 초기화한다.
-              if (
-                partFilter &&
-                !members.some((member) =>
-                  findMembership(member.memberships, generation, partFilter)
-                )
-              ) {
-                setPartFilter('')
-              }
-            }}
-            className={
-              'admin-input type-body-sm w-full cursor-pointer md:w-auto'
-            }
-          >
-            <option value={''}>{t('allGenerations')}</option>
-            {memberGenerations.map((generation) => (
-              <option key={generation} value={generation}>
-                {generation}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label={t('part')}
-            value={partFilter}
-            onChange={(event) => setPartFilter(event.target.value)}
-            className={
-              'admin-input type-body-sm w-full cursor-pointer md:w-auto'
-            }
-          >
-            <option value={''}>{t('allParts')}</option>
-            {memberParts.map((part) => (
-              <option key={part} value={part}>
-                {part}
-              </option>
-            ))}
-          </select>
+        <MemberFilterControls filters={filters} />
+        <div className={'flex justify-end'}>
           <button
             type={'button'}
             onClick={toggleFilteredMembers}
@@ -295,8 +228,8 @@ export default function SessionPartParticipantsInput({
                 const membership =
                   findMembership(
                     member.memberships,
-                    generationFilter,
-                    partFilter
+                    filters.generation,
+                    filters.part
                   ) ?? member.memberships[0]
                 const membershipLabel = [
                   membership?.generation,

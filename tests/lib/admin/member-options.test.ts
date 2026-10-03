@@ -4,9 +4,12 @@ import {
   groupMemberships,
   listMembershipGenerations,
   listMembershipParts,
+  matchesMembershipFilter,
   memberDisplayName,
   memberMatchesSearch,
   normalizeMemberSearch,
+  NO_MEMBERSHIP,
+  toMemberships,
 } from '@/lib/admin/member-options'
 
 describe('groupMemberships', () => {
@@ -100,5 +103,43 @@ describe('member picker helpers', () => {
     expect(listMembershipGenerations([kim, lee])).toEqual(['12th', '11th'])
     expect(listMembershipParts([kim, lee], '')).toEqual(['AI', 'BE', 'FE'])
     expect(listMembershipParts([kim, lee], '12th')).toEqual(['AI', 'BE'])
+  })
+})
+
+describe('matchesMembershipFilter', () => {
+  const member = [{ generationId: 12, generation: '12th', part: 'BE' }]
+  const unassigned = [{ generationId: null, generation: null, part: null }]
+
+  it('matches everything without filters and a membership with them', () => {
+    expect(matchesMembershipFilter([], '', '')).toBe(true)
+    expect(matchesMembershipFilter(member, '12th', 'BE')).toBe(true)
+    expect(matchesMembershipFilter(member, '11th', '')).toBe(false)
+  })
+
+  it('selects only members without a generation or part for "no membership"', () => {
+    expect(matchesMembershipFilter([], NO_MEMBERSHIP, '')).toBe(true)
+    expect(matchesMembershipFilter(unassigned, '', NO_MEMBERSHIP)).toBe(true)
+    expect(matchesMembershipFilter(member, NO_MEMBERSHIP, '')).toBe(false)
+    expect(matchesMembershipFilter([], NO_MEMBERSHIP, 'BE')).toBe(false)
+  })
+})
+
+describe('toMemberships', () => {
+  it('maps part rows to generation and part names', () => {
+    expect(
+      toMemberships([
+        {
+          part: {
+            name: 'BE',
+            generationsId: 12,
+            generation: { id: 12, name: '12th' },
+          },
+        },
+        { part: { name: 'FE', generationsId: 3, generation: null } },
+      ])
+    ).toEqual([
+      { generationId: 12, generation: '12th', part: 'BE' },
+      { generationId: 3, generation: null, part: 'FE' },
+    ])
   })
 })
