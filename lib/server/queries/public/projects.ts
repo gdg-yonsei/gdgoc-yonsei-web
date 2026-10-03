@@ -20,6 +20,7 @@ import {
   generationListTag,
   projectGenerationTag,
   projectListTag,
+  projectDetailsTag,
   projectTag,
   tagQuery,
   uniqueStrings,
@@ -151,7 +152,10 @@ async function getSharedProjectById(projectId: string) {
 
   cacheQuery(
     publicCachePolicy.projectDetail,
-    forEachPublicLocale((locale) => [projectTag(projectId, locale)])
+    forEachPublicLocale((locale) => [
+      projectTag(projectId, locale),
+      projectDetailsTag(locale),
+    ])
   )
 
   return db.query.projects.findFirst({

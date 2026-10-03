@@ -25,6 +25,7 @@ import {
   generationListTag,
   sessionGenerationTag,
   sessionListTag,
+  sessionDetailsTag,
   sessionTag,
   tagQuery,
   uniqueStrings,
@@ -198,7 +199,10 @@ async function getSharedSessionById(
 
   cacheQuery(
     publicCachePolicy.sessionDetail,
-    forEachPublicLocale((locale) => [sessionTag(sessionId, locale)])
+    forEachPublicLocale((locale) => [
+      sessionTag(sessionId, locale),
+      sessionDetailsTag(locale),
+    ])
   )
 
   return db.query.sessions.findFirst({
