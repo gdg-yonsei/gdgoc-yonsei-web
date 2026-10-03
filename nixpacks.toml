@@ -33,3 +33,11 @@ cacheDirectories = [
   "/root/.cache/node/corepack",
   ".next/cache",
 ]
+
+# 배포 빌드만 마이그레이션을 적용한다. `pnpm build`는 DB 스키마를 건드리지 않으므로 로컬에서 운영 DB를
+# 가리키는 `.env`로 빌드해도 마이그레이션이 적용되지 않는다. 마이그레이션이 `next build`보다 먼저인 이유:
+# 빌드가 정적 경로를 만들려고 새 스키마로 DB를 읽는다. CI의 "Migration upgrade path" 작업이 같은
+# `drizzle-kit migrate`를 운영과 같은 상태의 DB에 실행해 본다.
+[phases.build]
+dependsOn = ["install"]
+cmds = ["pnpm build:production"]

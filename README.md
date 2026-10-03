@@ -42,8 +42,8 @@ pnpm db:seed           # (선택) 개발용 데이터
 pnpm dev               # http://localhost:3000
 ```
 
-> `.env`가 운영 DB를 가리키는 상태에서 `pnpm build`·`pnpm db:migrate`를 실행하면 운영 DB에 마이그레이션이
-> 적용된다. 자세한 내용은 [`docs/development.md`](./docs/development.md).
+> `.env`가 운영 DB를 가리키는 상태에서 `pnpm db:migrate`·`pnpm build:production`을 실행하면 운영 DB에
+> 마이그레이션이 적용된다(`pnpm build`는 마이그레이션을 하지 않는다). 자세한 내용은 [`docs/development.md`](./docs/development.md).
 
 ## 주요 명령
 
@@ -54,7 +54,8 @@ pnpm dev               # http://localhost:3000
 | `pnpm test:e2e`                               | Playwright(일회용 로컬 DB 필요)      |
 | `pnpm db:generate` / `pnpm db:migrate`        | 마이그레이션 생성 / 적용             |
 | `pnpm db:seed`                                | 개발용 데이터(로컬 DB만)             |
-| `pnpm build`                                  | **운영 배포용**: 마이그레이션 + 빌드 |
+| `pnpm build`                                  | 운영 빌드(마이그레이션 없음)         |
+| `pnpm build:production`                       | **배포 전용**: 마이그레이션 + 빌드   |
 
 ## 문서
 

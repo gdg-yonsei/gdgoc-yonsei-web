@@ -66,9 +66,9 @@ jobs:
           git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD \
             | xargs -r -d '\n' pnpm exec prettier --check --ignore-unknown
 
-      # `pnpm build` runs drizzle-kit generate on Dokploy. A schema change
-      # without a committed migration would be generated and applied to
-      # production during the deploy, unreviewed.
+      # The deploy (`pnpm build:production` in nixpacks.toml) only applies
+      # committed migrations. A schema change without one would ship code
+      # that queries columns production does not have.
       - name: Schema matches committed migrations
         run: |
           pnpm db:generate
@@ -154,7 +154,8 @@ jobs:
 
       # Production is always at the base branch's migrations with real rows in
       # it. Rebuild that state, then apply this change's migrations on top, as
-      # the Dokploy build will.
+      # the Dokploy build will (`pnpm build:production` migrates before
+      # `next build`; see nixpacks.toml).
       - name: Resolve base revision
         id: base
         env:

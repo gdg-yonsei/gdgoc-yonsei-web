@@ -1,7 +1,7 @@
 /**
  * Drizzle 마이그레이션 CI 검사.
  *
- * 운영 환경은 Dokploy의 `pnpm build` 중에 마이그레이션을 적용한다. 새 코드가 트래픽을 받기 전이고,
+ * 운영 환경은 Dokploy 빌드(`nixpacks.toml`의 `pnpm build:production`)에서 마이그레이션을 적용한다. 새 코드가 트래픽을 받기 전이고,
  * 자동 롤백도 없다. 이 스크립트는 모든 PR에서 실행되어 문제가 생기기 전에 실패한다.
  *
  * - journal과 .sql 파일이 순서대로 하나씩 대응해야 한다.

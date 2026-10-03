@@ -12,7 +12,7 @@
 - 로그인 세션은 DB(`session` 테이블, Drizzle `authSessions`) + 쿠키. 동아리 "세션"(`sessions` 테이블)과 헷갈리지 않도록 코드에서는 `authSessions`로 부른다. 서버 코드는 `getAuthSession()`(React `cache()`로 요청당 한 번)으로 읽는다.
 - DB 테이블 이름은 Auth.js 시절 이름을 유지한다. 그래서 `drizzleAdapter`의 `schema`에서 Better Auth 모델과 Drizzle 테이블을 직접 연결한다.
 - 로그인 화면: `/auth/sign-in`. 관리자 페이지에 로그인 없이 오면 여기로 보낸다.
-- `pnpm build`는 `next build` 전에 `pnpm auth:prepare`(`scripts/prepare-auth.ts`)로 Better Auth를 한 번 초기화한다.
+- `pnpm build`(배포의 `pnpm build:production`도)는 `next build` 전에 `pnpm auth:prepare`(`scripts/prepare-auth.ts`)로 Better Auth를 한 번 초기화한다.
   MCP 리소스 행을 여러 빌드 워커가 동시에 넣으려다 unique 제약에 걸리는 문제를 막기 위해서다.
 
 ## 2. 역할
