@@ -11,7 +11,7 @@
 | `lib/image-url.ts`                    | 클라이언트에서도 쓰는 공개 URL 조립(슬래시 하나로 이어 붙임)                 |
 | `lib/upload-image.ts`                 | 브라우저 쪽 업로드 흐름(presign 요청 → R2 PUT → 응답 검사)                   |
 | `lib/server/image-upload-route.ts`    | 세션·프로젝트 presign API 라우트 팩토리                                      |
-| `lib/server/services/admin/images.ts` | MCP 업로드 서비스(최대 200MB, URL 가져오기, 한도)                            |
+| `lib/server/services/admin/images/`   | MCP 업로드 서비스(최대 200MB, URL 가져오기, 한도). `index.ts`가 진입점, `lifecycle.ts`가 기록 생애 주기 |
 | `lib/server/uploads/*`                | MCP 업로드 보조: 매직 바이트 판별, SSRF 방어, 업로드 기록, 완료 토큰         |
 
 ## 1. 관리자 웹 업로드

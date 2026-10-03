@@ -7,7 +7,7 @@
  *
  * 사용처
  * - 관리자 웹 업로드 API(`lib/server/image-upload-route.ts`, 프로필 이미지 라우트)
- * - MCP 이미지 업로드 서비스(`lib/server/services/admin/images.ts`)
+ * - MCP 이미지 업로드 서비스(`lib/server/services/admin/images/`)
  * - 프로젝트·세션 수정/삭제 시 더 이상 쓰지 않는 이미지 정리
  */
 import 'server-only'
