@@ -197,4 +197,35 @@ test.describe('GYMS MCP over OAuth', () => {
       await sql.end()
     }
   })
+
+  test('disconnecting a client in GYMS rejects its live token at once', async ({
+    browser,
+    baseURL,
+  }) => {
+    const member = await connectAs(browser, baseURL!, MEMBER_STORAGE_STATE, [
+      'gyms:read',
+    ])
+    expect((await member.rawCall('tools/list')).status).toBe(200)
+
+    const context = await browser.newContext({
+      storageState: MEMBER_STORAGE_STATE,
+    })
+    try {
+      const page = await context.newPage()
+      await page.goto(`${baseURL}/admin/profile/mcp`)
+      // 스위트 전체가 클라이언트 하나(E2E MCP Client)를 같이 쓰므로 멤버의 연결은 하나다.
+      const disconnect = page.getByRole('button', {
+        name: 'Disconnect: E2E MCP Client',
+      })
+      await expect(disconnect).toBeVisible()
+      page.once('dialog', (dialog) => void dialog.accept())
+      await disconnect.click()
+      await expect(page.getByText('No AI tools are connected.')).toBeVisible()
+    } finally {
+      await context.close()
+    }
+
+    // 액세스 토큰(JWT)은 아직 만료되지 않았지만 동의가 사라져 바로 거절된다.
+    expect((await member.rawCall('tools/list')).status).toBe(401)
+  })
 })

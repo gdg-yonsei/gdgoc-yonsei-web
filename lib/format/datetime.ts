@@ -84,6 +84,19 @@ const MONTH: Record<Locale, Intl.DateTimeFormat> = {
   }),
 }
 
+const INSTANT_DATE_TIME: Record<Locale, Intl.DateTimeFormat> = {
+  en: new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Seoul',
+  }),
+  ko: new Intl.DateTimeFormat('ko-KR', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Seoul',
+  }),
+}
+
 const INSTANT: Record<Locale, Intl.DateTimeFormat> = {
   en: new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -152,6 +165,11 @@ export function formatMonthKey(key: string, locale: Locale): string {
 /** 실제 시각을 서울 기준 날짜로: `Nov 5, 2025` / `2025. 11. 5.` */
 export function formatInstantDate(date: Date, locale: Locale): string {
   return INSTANT[locale].format(date)
+}
+
+/** 실제 시각을 서울 기준 날짜와 시각으로: `Nov 5, 2025, 7:03 PM` / `2025. 11. 5. 오후 7:03` */
+export function formatInstantDateTime(date: Date, locale: Locale): string {
+  return INSTANT_DATE_TIME[locale].format(date)
 }
 
 /** `2025-11-05`: 실제 시각의 서울 기준 날짜. */

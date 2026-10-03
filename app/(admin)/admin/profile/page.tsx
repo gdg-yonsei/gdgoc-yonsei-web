@@ -6,7 +6,7 @@ import UserProfile from '@/app/(admin)/admin/profile/user-profile'
 import { Suspense } from 'react'
 import RegisterPasskeyButton from '@/app/components/auth/register-passkey-button'
 import Link from 'next/link'
-import { PencilSquareIcon } from '@heroicons/react/24/outline'
+import { CpuChipIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
 import UnsubscribeSessionNotiEmailPage from '@/app/(admin)/admin/profile/unsubscribe-session-noti-email'
 import {
@@ -27,7 +27,7 @@ export default async function ProfilePage() {
 
   return (
     <AdminDefaultLayout>
-      <div className={'flex items-center gap-2'}>
+      <div className={'flex flex-wrap items-center gap-2'}>
         <div className={'admin-title'}>{t.profile}</div>
         <Link
           href={localizeAdminHref('/admin/profile/edit', locale)}
@@ -35,6 +35,13 @@ export default async function ProfilePage() {
         >
           <PencilSquareIcon className={'size-5'} />
           <p>{t.edit}</p>
+        </Link>
+        <Link
+          href={localizeAdminHref('/admin/profile/mcp', locale)}
+          className={'admin-btn-secondary'}
+        >
+          <CpuChipIcon className={'size-5'} />
+          <p>{t.mcpConnections}</p>
         </Link>
       </div>
       <Suspense

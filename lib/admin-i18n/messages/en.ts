@@ -263,6 +263,35 @@ export const en = {
   editor: 'Editor',
   preview: 'Preview',
   displayOrderHint: 'Parts with smaller numbers appear first.',
+  // ── MCP 연결 관리 ──
+  mcpConnections: 'Connected AI tools',
+  mcpConnectionsDescription:
+    'MCP clients (Claude, Codex, ChatGPT, Cursor …) you allowed to use GYMS on your behalf. Disconnecting one stops it immediately; connect again from the client to restore access.',
+  mcpNoConnections: 'No AI tools are connected.',
+  mcpNoConnectionsHint:
+    'Follow the setup guide on the dashboard to connect an MCP client.',
+  mcpUnnamedClient: 'Unnamed client',
+  mcpScopes: 'Scopes',
+  mcpConnectedAt: 'Connected',
+  mcpLastUsedAt: 'Last used',
+  mcpNeverUsed: 'Not yet',
+  mcpDisconnect: 'Disconnect',
+  mcpDisconnectConfirm:
+    'Disconnect this AI tool? It loses access to GYMS right away.',
+  mcpAuditLog: 'MCP activity',
+  mcpAuditLogDescription:
+    'Recent write and admin tool calls made through MCP (read-only calls are not recorded).',
+  mcpAuditLogMine: 'My activity',
+  mcpAuditLogAll: 'All members',
+  mcpAuditTime: 'Time',
+  mcpAuditTool: 'Tool',
+  mcpAuditResult: 'Result',
+  mcpAuditClient: 'Client',
+  mcpAuditTarget: 'Target',
+  mcpAuditUser: 'Member',
+  mcpAuditOk: 'OK',
+  mcpAuditError: 'Error',
+  mcpAuditEmpty: 'No MCP activity yet.',
   // ── 404 ──
   notFoundTitle: 'Page not found',
   notFoundHint: 'The item may have been deleted, or the address is wrong.',
