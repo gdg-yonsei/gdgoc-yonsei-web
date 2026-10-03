@@ -1,10 +1,19 @@
 # GDGoC Yonsei 공식 웹사이트
 
-연세대학교 Google Developer Groups on Campus(GDGoC Yonsei)의 공식 웹사이트와 동아리 관리 시스템(GYMS)이다.
+연세대학교 Google Developer Groups on Campus(GDGoC Yonsei)의 공식 웹사이트와 동아리 관리 시스템(GYMS)입니다. 
 
 - 공개 사이트: https://gdgoc.yonsei.ac.kr — 세션·프로젝트·멤버 기록, 세션 캘린더(한국어/영어)
 - GYMS(`/admin`): 멤버·기수·파트·세션·프로젝트 관리, 세션 참가 신청
 - GYMS MCP(`/api/mcp`): MCP 클라이언트(Claude, Codex, ChatGPT 등)에서 GYMS 기능 사용
+
+## 프로젝트 소개
+본 프로젝트는 GDGoC Yonsei 동아리의 공식 웹사이트 구축을 통해 GDGoC Yonsei의 활동을 외부에 알리고, 활동 기록을 남기기 위해 시작하였습니다. 외부에 공개하는 동아리 홍보용 웹사이트 특성을 반영하여 SEO 최적화에 유리한 Next.js를 사용하였으며, 프로젝트 관리 복잡도 관리 및 학교 도메인 사용 등의 문제로 인해 Next.js 프레임워크에서 제공하는 Server Action을 사용하여 웹사이트 기능 구현에 필요한 백엔드 파트를 구현하였습니다. 
+
+이전에도 여러 공식 웹사이트 프로젝트가 있었지만, 오래 지속되지 못했습니다. 지속적인 관리와 관심을 통해 본 프로젝트가 계속 유지되어 GDGoC Yonsei를 알리고 홍보하는데 도움이 되었으면 합니다.
+
+## Open Source 정책
+이 프로젝트를 지속적을 유지 보수하고 다른 GDGoC에서 참고할 수 있도록 Open Sourc로 관로하기로 결정하였습니다. 
+
 
 ## 기술 스택
 
@@ -19,7 +28,7 @@
 | UI         | Tailwind CSS 4, Jotai(관리자 전역 UI 상태), anime.js·WebGL(홈 연출), motion(관리자 애니메이션) |
 | 검증       | Zod                                                                                            |
 | 테스트     | Vitest, Testing Library, Playwright                                                            |
-| 배포       | Dokploy(Nixpacks), GitHub Actions                                                              |
+| 배포       | Dokploy(Nixpacks)                                                       |
 
 ## 빠른 시작
 
@@ -67,11 +76,11 @@ pnpm dev               # http://localhost:3000
 - Claude.ai / Desktop: Customize → Connectors → Add custom connector → `https://gdgoc.yonsei.ac.kr/api/mcp`
 - Cursor: `mcp.json`에 `{ "mcpServers": { "gyms": { "url": "https://gdgoc.yonsei.ac.kr/api/mcp" } } }`
 
-평소 계정으로 로그인하고 동의 화면에서 스코프를 고른다. 역할 범위 안에서만 동작한다.
+MCP는 자신의 계정 권한 안에서만 작동합니다.
 
 ## 기여
 
-이슈와 PR을 환영한다. 외부 기여자는 PR 전에 이슈를 먼저 열어 주세요.
+이슈와 PR을 환영합니다. 외부 기여자는 PR 전에 이슈를 먼저 열어 주세요.
 
 ## 라이선스
 
