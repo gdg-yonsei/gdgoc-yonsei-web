@@ -75,7 +75,7 @@ function buildMemberships(
 /** 범위(기수)의 파트 목록. */
 export async function listParts(
   actor: Actor,
-  { generation }: { generation?: number | 'all' } = {}
+  { generation }: { generation?: number | 'all' | undefined } = {}
 ): Promise<ServiceResult<AdminPartListItem[]>> {
   const authorization = authorize(actor, 'get', 'partsPage')
   if (!authorization.ok) return authorization

@@ -205,11 +205,9 @@ describe('admin selection components', () => {
     fireEvent.change(search, { target: { value: 'nobody' } })
     expect(screen.getByText('No results')).toBeTruthy()
     expect(
-      (
-        screen.getByRole('button', {
-          name: 'Select all shown (0)',
-        }) as HTMLButtonElement
-      ).disabled
+      screen.getByRole<HTMLButtonElement>('button', {
+        name: 'Select all shown (0)',
+      }).disabled
     ).toBe(true)
   })
 
@@ -225,12 +223,12 @@ describe('admin selection components', () => {
     const participantInput = container.querySelector(
       'input[name="participantId"]'
     ) as HTMLInputElement
-    const generationSelect = screen.getByRole('combobox', {
+    const generationSelect = screen.getByRole<HTMLSelectElement>('combobox', {
       name: 'Generation filter',
-    }) as HTMLSelectElement
-    const partSelect = screen.getByRole('combobox', {
+    })
+    const partSelect = screen.getByRole<HTMLSelectElement>('combobox', {
       name: 'Part filter',
-    }) as HTMLSelectElement
+    })
 
     // 최신 기수가 먼저 나옵니다.
     expect(

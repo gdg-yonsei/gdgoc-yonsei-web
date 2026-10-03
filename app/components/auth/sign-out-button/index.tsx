@@ -19,9 +19,9 @@ function SubmitButton({
   spinnerClassName,
   label = 'Sign Out',
 }: {
-  className?: string
-  spinnerClassName?: string
-  label?: string
+  className?: string | undefined
+  spinnerClassName?: string | undefined
+  label?: string | undefined
 }) {
   const { pending } = useFormStatus()
   return (
@@ -52,9 +52,9 @@ export function SignOutButton({
   spinnerClassName,
   label,
 }: {
-  className?: string
-  spinnerClassName?: string
-  label?: string
+  className?: string | undefined
+  spinnerClassName?: string | undefined
+  label?: string | undefined
 }) {
   return (
     <form action={signOutAction}>

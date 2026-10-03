@@ -5,6 +5,8 @@ import RevealSuspense from '@/app/components/site/reveal-suspense'
 const pending = new Promise<never>(() => {})
 
 function Pending(): never {
+  // Suspense는 아직 끝나지 않은 Promise를 던져 기다린다.
+  // eslint-disable-next-line @typescript-eslint/only-throw-error
   throw pending
 }
 

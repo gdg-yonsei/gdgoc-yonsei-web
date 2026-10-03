@@ -44,7 +44,7 @@ export type ToolDefinition<S extends z.ZodType = z.ZodType> = {
 export function defineTool<S extends z.ZodType>(
   definition: ToolDefinition<S>
 ): ToolDefinition {
-  return definition as unknown as ToolDefinition
+  return definition
 }
 
 /** 토큰 스코프와 역할 양쪽이 허락하는 도구만 보인다. 소유권은 호출 시점에 판정한다. */
@@ -60,5 +60,7 @@ export function isToolVisible(actor: Actor, tool: ToolDefinition): boolean {
 /** 성공 결과의 `id` 를 감사 로그 대상으로 쓴다. */
 export function idOf(data: unknown): string | undefined {
   const id = (data as { id?: unknown } | null)?.id
-  return id === undefined || id === null ? undefined : String(id)
+  return typeof id === 'string' || typeof id === 'number'
+    ? String(id)
+    : undefined
 }

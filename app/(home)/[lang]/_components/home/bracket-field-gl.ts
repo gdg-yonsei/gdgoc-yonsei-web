@@ -227,7 +227,8 @@ const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i
  */
 function isSoftwareRenderer(gl: WebGL2RenderingContext) {
   const info = gl.getExtension('WEBGL_debug_renderer_info')
-  const renderer = gl.getParameter(
+  // getParameter는 any를 돌려준다. 렌더러 이름은 문자열(또는 막힌 경우 null)이다.
+  const renderer: unknown = gl.getParameter(
     info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER
   )
   return SOFTWARE_RENDERER.test(String(renderer))

@@ -49,10 +49,7 @@ async function loadPretendardBold(): Promise<ArrayBuffer> {
   const font = await readFile(
     resolve(process.cwd(), 'lib/seo/fonts/Pretendard-Bold.subset.woff')
   )
-  return font.buffer.slice(
-    font.byteOffset,
-    font.byteOffset + font.byteLength
-  ) as ArrayBuffer
+  return font.buffer.slice(font.byteOffset, font.byteOffset + font.byteLength)
 }
 
 const LOCAL_IMAGE_CONTENT_TYPES: Record<string, string> = {

@@ -87,7 +87,7 @@ function createFilterStore(
   }
 
   return {
-    subscribe(listener: () => void) {
+    subscribe: (listener: () => void) => {
       listeners.add(listener)
       if (listeners.size === 1) {
         window.addEventListener('popstate', apply)

@@ -85,7 +85,9 @@ function toServiceFields(input: Record<string, unknown>) {
     if (!parsed) return { error: `${key} must look like 2026-10-01T19:00` }
     converted[key] = parsed
   }
-  if (partId !== undefined) converted.partId = String(partId)
+  if (typeof partId === 'number' || typeof partId === 'string') {
+    converted.partId = String(partId)
+  }
   if (participantIds !== undefined) converted.participantId = participantIds
   return { fields: converted }
 }
@@ -178,7 +180,7 @@ export const sessionTools = [
           schema.optional(),
         ])
       ),
-    }) as z.ZodType<{ sessionId: string } & Record<string, unknown>>,
+    }),
     run: async (actor, { sessionId: id, ...patch }) => {
       const converted = toServiceFields(patch)
       if ('error' in converted) return fail('VALIDATION', converted.error!)

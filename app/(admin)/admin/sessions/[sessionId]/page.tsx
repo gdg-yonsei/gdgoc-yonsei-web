@@ -314,13 +314,13 @@ export default async function SessionPage({
             enContent={
               <div className={'admin-card prose max-w-none'}>
                 <div className={'admin-field-label'}>{t.descriptionEn}</div>
-                <SafeMDX source={sessionData.description!} />
+                <SafeMDX source={sessionData.description} />
               </div>
             }
             koContent={
               <div className={'admin-card prose max-w-none'}>
                 <div className={'admin-field-label'}>{t.descriptionKo}</div>
-                <SafeMDX source={sessionData.descriptionKo!} />
+                <SafeMDX source={sessionData.descriptionKo} />
               </div>
             }
           />

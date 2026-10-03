@@ -20,8 +20,8 @@ export default function ResourceImageFields({
 }: {
   mainImageBaseUrl: string
   contentImageBaseUrl: string
-  mainImageDefaultValue?: string | null
-  contentImagesDefaultValue?: string[]
+  mainImageDefaultValue?: string | null | undefined
+  contentImagesDefaultValue?: string[] | undefined
   t: AdminMessages
 }) {
   return (

@@ -14,6 +14,7 @@ import { toLocale, type Locale } from '@/lib/i18n'
  * (`.next/types/root-params.d.ts`가 비고, 모듈은 `any`가 된다). 실행 시에는 Next가 실제 레이아웃 트리로
  * 루트 매개변수를 정한다. 공개 페이지에서는 값이 있고 관리자 루트 레이아웃 아래에서는 `undefined`다.
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- 위 설명대로 모듈 타입이 any다.
 const readLang: () => Promise<string | undefined> = lang
 
 /**

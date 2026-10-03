@@ -33,16 +33,19 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: process.env.PLAYWRIGHT_BASE_URL
-    ? undefined
+  // PLAYWRIGHT_BASE_URL이 있으면 이미 떠 있는 서버를 쓴다.
+  ...(process.env.PLAYWRIGHT_BASE_URL
+    ? {}
     : {
-        command: `pnpm exec next dev --port ${port.toString()}`,
-        url: baseURL,
-        env: {
-          ...process.env,
-          BETTER_AUTH_URL: baseURL,
+        webServer: {
+          command: `pnpm exec next dev --port ${port.toString()}`,
+          url: baseURL,
+          env: {
+            ...process.env,
+            BETTER_AUTH_URL: baseURL,
+          },
+          reuseExistingServer: false,
+          timeout: 120 * 1000,
         },
-        reuseExistingServer: false,
-        timeout: 120 * 1000,
-      },
+      }),
 })

@@ -62,7 +62,7 @@ function parseProjectInput(input: unknown) {
 /** 범위(기수)의 프로젝트 목록. */
 export async function listProjects(
   actor: Actor,
-  { generation }: { generation?: number | 'all' } = {}
+  { generation }: { generation?: number | 'all' | undefined } = {}
 ): Promise<ServiceResult<AdminProjectListItem[]>> {
   const authorization = authorize(actor, 'get', 'projectsPage')
   if (!authorization.ok) return authorization
@@ -120,11 +120,8 @@ export function projectToInput(detail: ProjectDetail): ProjectInput {
     content: detail.content,
     contentKo: detail.contentKo,
     mainImage: detail.mainImage,
-    contentImages: detail.images as [string, ...string[]],
-    participants: detail.participants.map((participant) => participant.id) as [
-      string,
-      ...string[],
-    ],
+    contentImages: detail.images,
+    participants: detail.participants.map((participant) => participant.id),
     generationId: String(detail.generationId),
     repoUrl: detail.repoUrl,
     demoUrl: detail.demoUrl,

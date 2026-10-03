@@ -58,7 +58,7 @@ async function UserProfile() {
 }
 
 /** 사용자 카드. 세션·사용자 조회가 끝날 때까지 같은 크기의 자리 표시자를 보여 준다. */
-export default async function UserAuthControlPanel() {
+export default function UserAuthControlPanel() {
   return (
     <Suspense
       fallback={

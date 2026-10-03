@@ -68,7 +68,11 @@ export async function listMembers(
     generation,
     role,
     query,
-  }: { generation?: number | 'all'; role?: Role; query?: string } = {}
+  }: {
+    generation?: number | 'all' | undefined
+    role?: Role | undefined
+    query?: string | undefined
+  } = {}
 ): Promise<ServiceResult<AdminMemberListItem[]>> {
   const authorization = authorize(actor, 'get', 'membersPage')
   if (!authorization.ok) return authorization

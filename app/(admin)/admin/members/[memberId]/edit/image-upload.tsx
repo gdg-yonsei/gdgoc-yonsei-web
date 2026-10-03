@@ -73,7 +73,8 @@ export default function ImageUpload({
         type="file"
         accept="image/*"
         ref={inputRef}
-        onChange={saveImgFile}
+        // 업로드 오류는 saveImgFile 안에서 처리한다.
+        onChange={() => void saveImgFile()}
       />
       <input
         hidden={true}

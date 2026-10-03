@@ -61,7 +61,7 @@ const nextConfig: NextConfig = {
       require.resolve('./lib/server/cache/handlers/remote-cache-handler.cjs'),
   },
   cacheLife: cacheLifeConfig,
-  cacheMaxMemorySize: hasSharedRedisCache ? 0 : undefined,
+  ...(hasSharedRedisCache ? { cacheMaxMemorySize: 0 } : {}),
   poweredByHeader: false,
   // satori 0.30 이상은 harfbuzzjs로 글자를 배치하는데, 그 Emscripten 로더가 실행 중에 자기
   // 디렉터리에서 hb.wasm을 읽는다. Turbopack으로 번들하면 경로가 /ROOT/node_modules/...로 바뀌어
@@ -128,6 +128,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Next 설정의 headers()는 Promise를 돌려줘야 한다.
+  // eslint-disable-next-line @typescript-eslint/require-await
   async headers() {
     return [
       {

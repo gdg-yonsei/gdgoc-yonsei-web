@@ -18,7 +18,7 @@ describe('DataInput readOnly', () => {
     const input = screen.getByRole('textbox', { name: 'Email' })
     expect(input).toHaveAttribute('readonly')
     expect(input).not.toBeDisabled()
-    const data = new FormData(screen.getByTestId('form') as HTMLFormElement)
+    const data = new FormData(screen.getByTestId<HTMLFormElement>('form'))
     expect(data.get('email')).toBe('lead@example.com')
   })
 })

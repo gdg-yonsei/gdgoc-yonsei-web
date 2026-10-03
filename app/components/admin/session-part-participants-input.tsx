@@ -56,10 +56,12 @@ export default function SessionPartParticipantsInput({
   members,
   parts,
 }: {
-  defaultValue?: {
-    partId: number | null
-    selectedMembers: string[]
-  }
+  defaultValue?:
+    | {
+        partId: number | null
+        selectedMembers: string[]
+      }
+    | undefined
   members: SessionMemberOption[]
   parts: SessionPartOption[]
 }) {

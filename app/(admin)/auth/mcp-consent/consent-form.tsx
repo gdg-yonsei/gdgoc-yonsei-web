@@ -68,7 +68,7 @@ export default function ConsentForm({
       const result = await authClient.oauth2.consent(
         accept ? { accept, scope } : { accept }
       )
-      const target = redirectTarget(result.data as ConsentResponse)
+      const target = redirectTarget(result.data)
       if (result.error || !target) {
         setError(result.error?.message ?? 'The authorization request failed.')
         return

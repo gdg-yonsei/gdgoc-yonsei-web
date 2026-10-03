@@ -11,9 +11,9 @@ export async function setHiddenInputValue(
 ) {
   await page.evaluate(
     ({ inputName, inputValue }) => {
-      const input = document.querySelector(
+      const input = document.querySelector<HTMLInputElement>(
         `input[name="${inputName}"]`
-      ) as HTMLInputElement | null
+      )
 
       if (!input) {
         throw new Error(`Input not found: ${inputName}`)

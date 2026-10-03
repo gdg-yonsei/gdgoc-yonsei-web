@@ -135,6 +135,6 @@ NewSession.PreviewProps = {
   part: 'Front-End',
   generation: '25-26',
   registerUrl: 'https://gdgoc.yonsei.ac.kr/admin/sessions/ddd/register',
-} as NewSessionProps
+}
 
 export default NewSession

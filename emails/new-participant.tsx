@@ -110,6 +110,6 @@ NewParticipant.PreviewProps = {
     leftCapacity: 10,
   },
   participantName: '전현우',
-} as NewParticipantProps
+}
 
 export default NewParticipant

@@ -73,9 +73,13 @@ export function parseMemberForm(formData: FormData) {
  * `NaN`(검증 오류로 이어짐)으로 구분해 넘긴다.
  */
 export function parsePartForm(formData: FormData) {
-  const rawDisplayOrder = formData.has('displayOrder')
-    ? String(formData.get('displayOrder')).trim()
-    : undefined
+  const displayOrder = formData.get('displayOrder')
+  const rawDisplayOrder =
+    displayOrder === null
+      ? undefined
+      : typeof displayOrder === 'string'
+        ? displayOrder.trim()
+        : ''
 
   return {
     name: readString(formData, 'name'),

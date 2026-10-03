@@ -115,7 +115,7 @@ export async function withAudit(
   meta: {
     tool: string
     clientName?: string | null
-    targetId?: (data: unknown) => string | undefined
+    targetId?: ((data: unknown) => string | undefined) | undefined
   },
   input: unknown,
   run: () => Promise<ServiceResult<unknown>>

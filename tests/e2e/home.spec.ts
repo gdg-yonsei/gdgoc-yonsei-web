@@ -179,10 +179,7 @@ test.describe('home page', () => {
     })
   }
 
-  for (const viewport of [
-    ...STACK_VIEWPORTS,
-    { width: 844, height: 390 },
-  ]) {
+  for (const viewport of [...STACK_VIEWPORTS, { width: 844, height: 390 }]) {
     test(`every program card can be read in full at ${viewport.width}×${viewport.height}`, async ({
       page,
     }) => {
@@ -201,7 +198,11 @@ test.describe('home page', () => {
       // the fold or under the next card for the whole way through. The end
       // is re-read each step: sections above may render late and move it.
       const leastHidden = new Map<string, number>()
-      for (let y = top - viewport.height; y < (await stackEdges())[1]; y += 40) {
+      for (
+        let y = top - viewport.height;
+        y < (await stackEdges())[1];
+        y += 40
+      ) {
         await page.evaluate((scroll) => scrollTo(0, scroll), y)
         const hidden = await page.evaluate(() => {
           const cards = [...document.querySelectorAll('.program-card')]
@@ -214,7 +215,7 @@ test.describe('home page', () => {
               .reduce((min, nextTop) => Math.min(min, nextTop), Infinity)
             const shownTo = Math.min(box.bottom, innerHeight, coveredAt)
             return [
-              card.querySelector('h3')!.textContent!,
+              card.querySelector('h3')!.textContent,
               Math.max(0, box.bottom - Math.max(shownTo, box.top)),
             ] as const
           })

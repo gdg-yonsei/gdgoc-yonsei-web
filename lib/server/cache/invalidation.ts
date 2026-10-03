@@ -90,8 +90,8 @@ export function invalidateAllPublicCache() {
 
 /** 기수가 바뀌었을 때. 바뀌기 전·후 기수 이름의 아카이브를 모두 지운다. */
 export function invalidateGenerationPublicCache(args: {
-  previousGenerationName?: string | null
-  nextGenerationName?: string | null
+  previousGenerationName?: string | null | undefined
+  nextGenerationName?: string | null | undefined
 }) {
   const generationNames = uniqueStrings([
     args.previousGenerationName,
@@ -194,8 +194,8 @@ export function invalidateMemberPublicCache(args: {
 /** 프로젝트가 생성·수정·삭제됐을 때. 이전·새 기수 목록과 상세 페이지를 지운다. */
 export function invalidateProjectPublicCache(args: {
   projectId: string
-  previousGenerationName?: string | null
-  nextGenerationName?: string | null
+  previousGenerationName?: string | null | undefined
+  nextGenerationName?: string | null | undefined
 }) {
   const generationNames = uniqueStrings([
     args.previousGenerationName,
@@ -236,8 +236,8 @@ export function invalidateProjectPublicCache(args: {
 /** 세션이 생성·수정·삭제됐을 때. 캘린더, 세션 기록, 기수 목록, 상세 페이지를 지운다. */
 export function invalidateSessionPublicCache(args: {
   sessionId: string
-  previousGenerationName?: string | null
-  nextGenerationName?: string | null
+  previousGenerationName?: string | null | undefined
+  nextGenerationName?: string | null | undefined
 }) {
   const generationNames = uniqueStrings([
     args.previousGenerationName,
