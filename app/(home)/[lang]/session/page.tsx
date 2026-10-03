@@ -32,10 +32,9 @@ import {
   sessionFacets,
   sessionTitle,
 } from '@/lib/site/session-log'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { sessionPath } from '@/lib/site/routes'
-
-type Props = { params: Promise<{ lang: string }> }
 
 const en = sessionArchiveCopy.en
 const ko = sessionArchiveCopy.ko
@@ -46,8 +45,8 @@ export function generateStaticParams() {
 }
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
   const copy = sessionArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -59,10 +58,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** 페이지 본문. */
-export default function SessionHubPage({ params }: Props) {
+export default function SessionHubPage() {
   return (
     <ArchiveHubShell
-      params={params}
       section="sessions"
       testId="session-log-shell"
       tag={en.tag}
@@ -74,13 +72,13 @@ export default function SessionHubPage({ params }: Props) {
         </ArchiveListSkeleton>
       }
     >
-      <SessionHubContent params={params} />
+      <SessionHubContent />
     </ArchiveHubShell>
   )
 }
 
-async function SessionHubContent({ params }: Props) {
-  const lang = toLocale((await params).lang)
+async function SessionHubContent() {
+  const lang = await getLocale()
   const copy = sessionArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const visibilityBucket = await getCachedSessionVisibilityBucket()

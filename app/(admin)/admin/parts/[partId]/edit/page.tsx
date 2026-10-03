@@ -32,9 +32,7 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 파트 수정 폼. */
 export default async function EditPartPage({
   params,
-}: {
-  params: Promise<{ partId: string }>
-}) {
+}: PageProps<'/admin/parts/[partId]/edit'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

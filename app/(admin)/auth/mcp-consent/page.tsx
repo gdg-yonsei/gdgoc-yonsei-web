@@ -76,9 +76,7 @@ function ConsentError({ message }: { message: string }) {
  */
 export default async function McpConsentPage({
   searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}) {
+}: PageProps<'/auth/mcp-consent'>) {
   const params = await searchParams
   const query = oauthQueryString(params)
   const clientId = typeof params.client_id === 'string' ? params.client_id : ''

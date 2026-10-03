@@ -75,6 +75,9 @@ const nextConfig: NextConfig = {
     // 링크에 마우스를 올리면 부분 프리페치를 전체 페이지 데이터로 올린다.
     dynamicOnHover: true,
     exposeTestingApiInProductionBuild: exposeTestingApi,
+    // 루트 레이아웃이 공개 사이트·관리자 두 개라, 어떤 경로와도 맞지 않는 URL의 404는
+    // app/global-not-found.tsx가 레이아웃 없이 직접 그린다.
+    globalNotFound: true,
     // Tailwind는 원자적 클래스라 페이지별 스타일이 작다. CSS를 HTML에 넣어 첫 방문자의
     // 렌더링을 막는 스타일시트 요청을 없앤다.
     inlineCss: true,

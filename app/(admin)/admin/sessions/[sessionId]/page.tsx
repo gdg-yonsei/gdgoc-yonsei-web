@@ -31,9 +31,7 @@ import { sessionWallClockNow } from '@/lib/format/datetime'
 /** 탭 제목에 세션 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ sessionId: string }>
-}): Promise<Metadata> {
+}: PageProps<'/admin/sessions/[sessionId]'>): Promise<Metadata> {
   const { sessionId } = await params
   const sessionData = await getSession(sessionId)
 
@@ -45,9 +43,7 @@ export async function generateMetadata({
 /** 세션 상세. */
 export default async function SessionPage({
   params,
-}: {
-  params: Promise<{ sessionId: string }>
-}) {
+}: PageProps<'/admin/sessions/[sessionId]'>) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { sessionId } = await params

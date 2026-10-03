@@ -34,12 +34,11 @@ import {
   toShowcaseProject,
 } from '@/lib/site/project-showcase'
 import ProjectDetailLoading from './loading'
-import { pickLocalized, toLocale } from '@/lib/i18n'
+import { pickLocalized } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { generationPath, projectPath } from '@/lib/site/routes'
 
-type Props = {
-  params: Promise<{ projectId: string; lang: string; generation: string }>
-}
+type Props = PageProps<'/[lang]/project/[generation]/[projectId]'>
 
 async function loadProject(
   projectId: string,
@@ -78,8 +77,8 @@ function fallbackDescription(
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { lang, generation, projectId } = await params
-  const locale = toLocale(lang)
+  const { generation, projectId } = await params
+  const locale = await getLocale()
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {
@@ -101,27 +100,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /** 페이지 본문. */
 export default async function ProjectDetailPage({ params }: Props) {
-  const resolved = await params
+  const { generation, projectId } = await params
 
   return (
     <PageTransition>
       <Suspense fallback={<ProjectDetailLoading />}>
-        <ProjectDetail {...resolved} />
+        <ProjectDetail generation={generation} projectId={projectId} />
       </Suspense>
     </PageTransition>
   )
 }
 
 async function ProjectDetail({
-  lang,
   generation,
   projectId,
 }: {
-  lang: string
   generation: string
   projectId: string
 }) {
-  const locale = toLocale(lang)
+  const locale = await getLocale()
   const loaded = await loadProject(projectId, generation, locale)
 
   if (!loaded) {

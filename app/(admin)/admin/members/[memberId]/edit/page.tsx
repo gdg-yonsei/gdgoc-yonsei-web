@@ -34,9 +34,7 @@ export const metadata: Metadata = {
 /** 멤버 수정 폼. 수정할 수 없으면 403, 멤버가 없으면 404. */
 export default async function EditMemberPage({
   params,
-}: {
-  params: Promise<{ memberId: string }>
-}) {
+}: PageProps<'/admin/members/[memberId]/edit'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

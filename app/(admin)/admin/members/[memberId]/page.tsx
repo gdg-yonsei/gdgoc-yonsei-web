@@ -28,9 +28,7 @@ import { Metadata } from 'next'
 /** 탭 제목에 멤버 이름을 넣는다. 멤버가 없으면 404(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ memberId: string }>
-}): Promise<Metadata> {
+}: PageProps<'/admin/members/[memberId]'>): Promise<Metadata> {
   const { memberId } = await params
 
   const memberData = await getMember(memberId)
@@ -50,9 +48,7 @@ export async function generateMetadata({
  */
 export default async function MemberPage({
   params,
-}: {
-  params: Promise<{ memberId: string }>
-}) {
+}: PageProps<'/admin/members/[memberId]'>) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { memberId } = await params

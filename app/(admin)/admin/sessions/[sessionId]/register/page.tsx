@@ -24,9 +24,7 @@ import { connection } from 'next/server'
 /** 신청이 닫혔거나 끝난 세션이면 마감 안내만, 아니면 세션 정보와 신청 버튼을 보여 준다(자리가 없으면 "정원 마감"). */
 export default async function RegisterSessionPage({
   params,
-}: {
-  params: Promise<{ sessionId: string }>
-}) {
+}: PageProps<'/admin/sessions/[sessionId]/register'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

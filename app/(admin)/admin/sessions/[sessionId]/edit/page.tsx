@@ -43,9 +43,7 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 세션 수정 폼. */
 export default async function EditSessionPage({
   params,
-}: {
-  params: Promise<{ sessionId: string }>
-}) {
+}: PageProps<'/admin/sessions/[sessionId]/edit'>) {
   await connection()
   const [{ sessionId }, locale] = await Promise.all([params, getAdminLocale()])
   const t = getAdminMessages(locale)

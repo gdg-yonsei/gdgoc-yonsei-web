@@ -1,5 +1,6 @@
 /**
- * 루트 404 화면 본문(서버 컴포넌트).
+ * 404 화면 본문(서버 컴포넌트). 전역 404(`app/global-not-found.tsx`)와 공개 사이트 안의 404
+ * (`app/(home)/[lang]/not-found.tsx`)가 함께 쓴다. `<main>`은 감싸는 쪽이 정한다.
  */
 import Link from 'next/link'
 import BracketPoster from '@/app/components/site/bracket-poster'
@@ -17,7 +18,7 @@ const links = [
  */
 export default function NotFoundView() {
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 text-center">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 text-center">
       <div className="flex items-center gap-[0.12em] text-[clamp(4.5rem,18vw,12rem)]">
         <span className="bracket-slot" aria-hidden="true">
           <BracketPoster side="left" />
@@ -48,6 +49,6 @@ export default function NotFoundView() {
           </Link>
         ))}
       </nav>
-    </main>
+    </div>
   )
 }

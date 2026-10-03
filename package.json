@@ -16,7 +16,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:prod": "E2E_SEEDED_BEFORE_BUILD=1 NEXT_EXPOSE_TESTING_API=1 playwright test --config=playwright.production.config.ts",
-    "test:types": "tsc --noEmit",
+    "test:types": "next typegen && tsc --noEmit",
     "test:e2e:install": "playwright install chromium",
     "perf:measure": "node scripts/measure-next-performance.mjs",
     "perf:instant": "node scripts/verify-instant-navigation.mjs",

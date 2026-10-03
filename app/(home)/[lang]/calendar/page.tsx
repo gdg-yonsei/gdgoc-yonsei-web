@@ -9,19 +9,18 @@ import { getCalendarSessions } from '@/lib/server/queries/public/sessions'
 import { toCalendarEvents } from '@/lib/site/calendar'
 import { toSeoulDateIso } from '@/lib/format/datetime'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import {
   calendarPageCopy,
   calendarWidgetCopy,
 } from '@/lib/contents/calendar-copy'
 
-type Props = { params: Promise<{ lang: string }> }
-
 const copy = calendarPageCopy
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
 
   return createLocalizedMetadata({
     locale,
@@ -37,10 +36,9 @@ export function generateStaticParams() {
 }
 
 /** 페이지 본문. */
-export default function CalendarPage({ params }: Props) {
+export default function CalendarPage() {
   return (
     <ArchiveHubShell
-      params={params}
       section="calendar"
       tag="<calendar />"
       title={{ en: copy.en.title, ko: copy.ko.title }}
@@ -56,13 +54,13 @@ export default function CalendarPage({ params }: Props) {
         </div>
       }
     >
-      <CalendarContent params={params} />
+      <CalendarContent />
     </ArchiveHubShell>
   )
 }
 
-async function CalendarContent({ params }: Props) {
-  const lang = toLocale((await params).lang)
+async function CalendarContent() {
+  const lang = await getLocale()
   const visibilityBucket = await getCachedSessionVisibilityBucket()
   const sessions = await getCalendarSessions()
 

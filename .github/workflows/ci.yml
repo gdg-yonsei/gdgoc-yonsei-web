@@ -50,6 +50,8 @@ jobs:
       - name: pnpm overrides match package.json
         run: node scripts/ci/check-overrides.mjs
 
+      # `next typegen` first: pages use the generated PageProps/LayoutProps
+      # globals, which do not exist in a fresh checkout.
       - name: Typecheck
         run: pnpm test:types
 

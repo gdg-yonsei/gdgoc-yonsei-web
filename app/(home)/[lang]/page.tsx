@@ -19,17 +19,14 @@ import {
   getLocalizedUrl,
   getSiteUrl,
 } from '@/lib/seo/metadata'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { siteMetadataCopy } from '@/lib/contents/site-copy'
 import { homeStructuredData } from '@/lib/site/json-ld'
 
-type Props = {
-  params: Promise<{ lang: string }>
-}
-
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
   const copy = siteMetadataCopy[locale]
 
   return createLocalizedMetadata({
@@ -51,8 +48,8 @@ export function generateStaticParams() {
  * 히어로 아래 소개·활동·파트·최근 세션·대표 프로젝트·참여 안내 섹션을 차례로 그린다.
  * 스크롤 연출(`HomeMotion`)은 클라이언트에서 유휴 시간에 따로 불러온다.
  */
-export default async function HomePage({ params }: Props) {
-  const lang = toLocale((await params).lang)
+export default async function HomePage() {
+  const lang = await getLocale()
   const copy = siteMetadataCopy[lang]
   const structuredData = homeStructuredData({
     siteRoot: getSiteUrl(),

@@ -15,7 +15,7 @@ import { getWebActor } from '@/lib/server/services/admin/web-actor'
 /** 멤버의 프로필 이미지 URL을 바꾼다. 수정 권한이 없으면 403을 돌려준다. */
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ memberId: string }> }
+  { params }: RouteContext<'/api/admin/members/[memberId]'>
 ) {
   const { memberId } = await params
 

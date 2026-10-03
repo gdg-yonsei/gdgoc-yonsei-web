@@ -39,9 +39,7 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 프로젝트 수정 폼. */
 export default async function EditProjectPage({
   params,
-}: {
-  params: Promise<{ projectId: string }>
-}) {
+}: PageProps<'/admin/projects/[projectId]/edit'>) {
   await connection()
   const [{ projectId }, locale] = await Promise.all([params, getAdminLocale()])
   const t = getAdminMessages(locale)

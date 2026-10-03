@@ -19,9 +19,7 @@ import {
 /** 탭 제목에 기수 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ generationId: string }>
-}) {
+}: PageProps<'/admin/generations/[generationId]'>) {
   const { generationId } = await params
   const generationData = await getGeneration(Number(generationId))
 
@@ -33,9 +31,7 @@ export async function generateMetadata({
 /** 기수 상세. */
 export default async function GenerationPage({
   params,
-}: {
-  params: Promise<{ generationId: string }>
-}) {
+}: PageProps<'/admin/generations/[generationId]'>) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { generationId } = await params

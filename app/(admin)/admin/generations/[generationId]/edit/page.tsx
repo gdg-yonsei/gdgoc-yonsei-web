@@ -22,9 +22,7 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 기수 수정 폼. */
 export default async function EditGenerationPage({
   params,
-}: {
-  params: Promise<{ generationId: string }>
-}) {
+}: PageProps<'/admin/generations/[generationId]/edit'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

@@ -23,9 +23,7 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 /** 탭 제목에 프로젝트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ projectId: string }>
-}) {
+}: PageProps<'/admin/projects/[projectId]'>) {
   const { projectId } = await params
   const projectData = await getProject(projectId)
 
@@ -37,9 +35,7 @@ export async function generateMetadata({
 /** 프로젝트 상세. */
 export default async function ProjectPage({
   params,
-}: {
-  params: Promise<{ projectId: string }>
-}) {
+}: PageProps<'/admin/projects/[projectId]'>) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { projectId } = await params
