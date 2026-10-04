@@ -276,6 +276,7 @@ export const en = {
   mcpLastUsedAt: 'Last used',
   mcpNeverUsed: 'Not yet',
   mcpDisconnect: 'Disconnect',
+  mcpDisconnectFailed: 'Could not disconnect this AI tool. Please try again.',
   mcpDisconnectConfirm:
     'Disconnect this AI tool? It loses access to GYMS right away.',
   mcpAuditLog: 'MCP activity',

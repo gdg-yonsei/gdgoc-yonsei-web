@@ -55,6 +55,48 @@ function setup(defaultValue: string[] = []) {
 }
 
 describe('part member filters', () => {
+  it('keeps same-named parts distinct with any generation and clears an incompatible part', () => {
+    render(
+      <PartMembersInput
+        members={[
+          members[0]!,
+          {
+            ...members[1]!,
+            usersToParts: [
+              {
+                part: {
+                  id: 3,
+                  name: 'Frontend',
+                  generationsId: 2,
+                  generation: { id: 2, name: '2nd' },
+                },
+              },
+            ],
+          },
+        ]}
+        title="Members"
+        name="membersList"
+        defaultValue={[]}
+      />
+    )
+    const part = screen.getByLabelText('Part filter')
+    fireEvent.change(part, { target: { value: '1' } })
+    expect(part).toHaveValue('1')
+    expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: /Park Bob/ })
+    ).not.toBeInTheDocument()
+    fireEvent.change(part, { target: { value: '3' } })
+    expect(screen.getByRole('button', { name: /Park Bob/ })).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: /Kim Alice/ })
+    ).not.toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Generation filter'), {
+      target: { value: '1st' },
+    })
+    expect(part).toHaveValue('')
+  })
+
   it('hides candidates initially and retains selections when filters change', () => {
     const { container } = setup(['bob'])
     expect(
@@ -93,7 +135,7 @@ describe('part member filters', () => {
       target: { value: '1st' },
     })
     fireEvent.change(screen.getByLabelText('Part filter'), {
-      target: { value: 'Frontend' },
+      target: { value: '1' },
     })
     expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
     expect(
@@ -104,7 +146,7 @@ describe('part member filters', () => {
     })
     expect(screen.getByLabelText('Part filter')).toHaveValue('')
     fireEvent.change(screen.getByLabelText('Part filter'), {
-      target: { value: 'Backend' },
+      target: { value: '2' },
     })
     expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
   })

@@ -11,7 +11,7 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import {
   NO_MEMBERSHIP,
   listMembershipGenerations,
-  listMembershipParts,
+  listMembershipPartOptions,
   matchesMembershipFilter,
   memberMatchesSearch,
   normalizeMemberSearch,
@@ -30,7 +30,8 @@ type FilterableMember = NamedMember & {
  * 기수를 바꿨을 때 고른 파트가 새 기수에 없으면 결과가 비므로 파트 필터를 비운다.
  */
 export function useMemberFilters<T extends FilterableMember>(
-  members: readonly T[]
+  members: readonly T[],
+  partKey: 'part' | 'partId' = 'part'
 ) {
   const [query, setQuery] = useState('')
   const [generation, setGeneration] = useState('')
@@ -42,7 +43,7 @@ export function useMemberFilters<T extends FilterableMember>(
     if (
       part &&
       !members.some((member) =>
-        matchesMembershipFilter(member.memberships, next, part)
+        matchesMembershipFilter(member.memberships, next, part, partKey)
       )
     ) {
       setPart('')
@@ -63,12 +64,16 @@ export function useMemberFilters<T extends FilterableMember>(
     parts:
       generation === NO_MEMBERSHIP
         ? []
-        : listMembershipParts(members, generation),
+        : listMembershipPartOptions(members, generation, partKey),
     /** 필터와 검색어에 맞는 멤버. */
     matches: members.filter(
       (member) =>
-        matchesMembershipFilter(member.memberships, generation, part) &&
-        memberMatchesSearch(member, normalizedQuery)
+        matchesMembershipFilter(
+          member.memberships,
+          generation,
+          part,
+          partKey
+        ) && memberMatchesSearch(member, normalizedQuery)
     ),
   }
 }
@@ -138,8 +143,8 @@ export default function MemberFilterControls({
             <option value={NO_MEMBERSHIP}>{t.noMembership}</option>
           )}
           {filters.parts.map((part) => (
-            <option key={part} value={part}>
-              {part}
+            <option key={part.value} value={part.value}>
+              {part.label}
             </option>
           ))}
         </select>

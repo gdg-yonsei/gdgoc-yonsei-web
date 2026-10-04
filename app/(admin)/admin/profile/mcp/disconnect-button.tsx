@@ -3,6 +3,7 @@
 /**
  * MCP 연결 끊기 버튼(클라이언트 컴포넌트). 실수로 누르지 않도록 확인한 뒤 제출한다.
  */
+import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
@@ -33,15 +34,19 @@ export default function DisconnectButton({
   clientId,
   clientName,
 }: {
-  action: (formData: FormData) => Promise<void>
+  action: (
+    previousState: { failed: boolean },
+    formData: FormData
+  ) => Promise<{ failed: boolean }>
   clientId: string
   clientName: string
 }) {
   const { messages: t } = useAdminI18n()
+  const [state, formAction] = useActionState(action, { failed: false })
 
   return (
     <form
-      action={action}
+      action={formAction}
       onSubmit={(event) => {
         if (!window.confirm(t.mcpDisconnectConfirm)) {
           event.preventDefault()
@@ -49,6 +54,11 @@ export default function DisconnectButton({
       }}
     >
       <input type={'hidden'} name={'clientId'} value={clientId} />
+      {state.failed && (
+        <p role="alert" className="text-danger text-sm">
+          {t.mcpDisconnectFailed}
+        </p>
+      )}
       <SubmitDisconnect
         text={t.mcpDisconnect}
         label={`${t.mcpDisconnect}: ${clientName}`}

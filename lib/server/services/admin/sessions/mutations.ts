@@ -390,10 +390,19 @@ export async function deleteSession(
     async () => {
       const sessionCacheContext = await getSessionCacheContext(sessionId)
       await db.delete(sessions).where(eq(sessions.id, sessionId))
-      invalidateSessionPublicCache({
-        sessionId,
-        previousGenerationName: sessionCacheContext.generationName,
-      })
+      try {
+        invalidateSessionPublicCache({
+          sessionId,
+          previousGenerationName: sessionCacheContext.generationName,
+        })
+      } catch (error) {
+        // 이미 커밋된 삭제는 성공이다. 캐시 실패가 이미지 정리를 막지 않게 한다.
+        logger.error('admin.delete-resource.cache-invalidation', error, {
+          dataType: 'sessions',
+          dataId: sessionId,
+          rowDeleted: true,
+        })
+      }
 
       // R2는 트랜잭션에 묶을 수 없다. 행을 먼저 지우고 이미지는 커밋 뒤에 지운다. R2 삭제가 실패해도
       // 쓰지 않는 객체가 남을 뿐이므로 삭제는 성공으로 처리하고, 남은 키를 로그로 남겨 손으로 치울 수 있게 한다.

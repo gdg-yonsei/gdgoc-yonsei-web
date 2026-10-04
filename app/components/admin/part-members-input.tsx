@@ -46,7 +46,7 @@ export default function PartMembersInput({
     ...member,
     memberships: toMemberships(member.usersToParts),
   }))
-  const filters = useMemberFilters(options)
+  const filters = useMemberFilters(options, 'partId')
   const label = (member: PartMemberOption) =>
     formatUserName(
       member.name,

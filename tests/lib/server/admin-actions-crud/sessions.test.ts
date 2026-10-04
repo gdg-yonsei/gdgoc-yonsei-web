@@ -482,4 +482,29 @@ describe('sessions CRUD server actions', () => {
     })
     expect(mockRedirect).toHaveBeenCalledWith('/admin/sessions')
   })
+  it('cleans up images and succeeds when cache invalidation throws after deletion', async () => {
+    mockQuery.sessions.findFirst.mockResolvedValue({
+      images: ['https://cdn.example/sessions/image.png'],
+      mainImage: 'https://cdn.example/sessions/main.png',
+    })
+    mockDeleteR2Images.mockResolvedValue(true)
+    mockGetSessionCacheContext.mockResolvedValue({ generationName: 'seed-gen' })
+    mockInvalidateSessionPublicCache.mockImplementationOnce(() => {
+      throw new Error('cache unavailable')
+    })
+    const { deleteSession } =
+      await import('@/lib/server/services/admin/sessions')
+    const result = await deleteSession(
+      { userId: 'lead', role: 'LEAD', via: 'web', scopes: 'session' },
+      '00000000-0000-4000-8000-000000000555'
+    )
+    expect(result).toEqual({
+      ok: true,
+      data: { id: '00000000-0000-4000-8000-000000000555' },
+    })
+    expect(mockDeleteR2Images).toHaveBeenCalledWith([
+      'sessions/image.png',
+      'sessions/main.png',
+    ])
+  })
 })

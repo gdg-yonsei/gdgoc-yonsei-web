@@ -270,6 +270,7 @@ export const ko = {
   mcpLastUsedAt: '마지막 사용',
   mcpNeverUsed: '아직 없음',
   mcpDisconnect: '연결 끊기',
+  mcpDisconnectFailed: 'AI 도구 연결을 끊지 못했습니다. 다시 시도해 주세요.',
   mcpDisconnectConfirm:
     '이 AI 도구의 연결을 끊을까요? GYMS 접근이 바로 막힙니다.',
   mcpAuditLog: 'MCP 활동 기록',

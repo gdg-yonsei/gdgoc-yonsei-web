@@ -400,4 +400,29 @@ describe('projects CRUD server actions', () => {
     })
     expect(mockRedirect).toHaveBeenCalledWith('/admin/projects')
   })
+  it('cleans up images and succeeds when cache invalidation throws after deletion', async () => {
+    mockQuery.projects.findFirst.mockResolvedValue({
+      images: ['https://cdn.example/projects/image.png'],
+      mainImage: 'https://cdn.example/projects/main.png',
+    })
+    mockDeleteR2Images.mockResolvedValue(true)
+    mockGetProjectCacheContext.mockResolvedValue({ generationName: 'seed-gen' })
+    mockInvalidateProjectPublicCache.mockImplementationOnce(() => {
+      throw new Error('cache unavailable')
+    })
+    const { deleteProject } =
+      await import('@/lib/server/services/admin/projects')
+    const result = await deleteProject(
+      { userId: 'lead', role: 'LEAD', via: 'web', scopes: 'session' },
+      '00000000-0000-4000-8000-000000000555'
+    )
+    expect(result).toEqual({
+      ok: true,
+      data: { id: '00000000-0000-4000-8000-000000000555' },
+    })
+    expect(mockDeleteR2Images).toHaveBeenCalledWith([
+      'projects/image.png',
+      'projects/main.png',
+    ])
+  })
 })

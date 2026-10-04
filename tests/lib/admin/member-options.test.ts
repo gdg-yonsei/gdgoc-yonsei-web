@@ -130,16 +130,17 @@ describe('toMemberships', () => {
       toMemberships([
         {
           part: {
+            id: 8,
             name: 'BE',
             generationsId: 12,
             generation: { id: 12, name: '12th' },
           },
         },
-        { part: { name: 'FE', generationsId: 3, generation: null } },
+        { part: { id: 9, name: 'FE', generationsId: 3, generation: null } },
       ])
     ).toEqual([
-      { generationId: 12, generation: '12th', part: 'BE' },
-      { generationId: 3, generation: null, part: 'FE' },
+      { generationId: 12, generation: '12th', part: 'BE', partId: 8 },
+      { generationId: 3, generation: null, part: 'FE', partId: 9 },
     ])
   })
 })

@@ -8,6 +8,7 @@
  */
 import 'server-only'
 
+import { z } from 'zod'
 import { and, desc, eq, inArray, isNull, max } from 'drizzle-orm'
 import { db } from '@/db'
 import { mcpAuditLog } from '@/db/schema/mcp-audit-log'
@@ -17,6 +18,7 @@ import {
   oauthConsent,
   oauthRefreshToken,
 } from '@/db/schema/oauth'
+import { verification } from '@/db/schema/verification-tokens'
 import { users } from '@/db/schema/users'
 import { authorize } from '@/lib/server/services/admin/authorize'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
@@ -29,6 +31,13 @@ import {
 
 /** 감사 로그 화면에 보여 줄 최근 기록 수. */
 export const AUDIT_LOG_PAGE_SIZE = 50
+
+// @better-auth/oauth-provider의 authorization_code verification 값에서 소유자만 읽는다.
+const authorizationCodeOwner = z.object({
+  type: z.literal('authorization_code'),
+  userId: z.string(),
+  query: z.object({ client_id: z.string() }),
+})
 
 /** 연결된 MCP 클라이언트 하나. */
 export type McpConnection = {
@@ -147,7 +156,7 @@ export async function listMcpConnections(
 
 /**
  * 로그인한 사용자의 MCP 연결 하나를 끊는다: 동의 기록을 지우고, 아직 폐기되지 않은 리프레시·액세스
- * 토큰을 폐기한다. 다른 사용자의 연결은 건드리지 않는다.
+ * 토큰과 아직 교환하지 않은 인가 코드를 폐기한다. 다른 사용자의 연결은 건드리지 않는다.
  */
 export async function revokeMcpConnection(
   actor: Actor,
@@ -172,6 +181,30 @@ export async function revokeMcpConnection(
           .returning({ id: oauthConsent.id })
         if (removed.length === 0) {
           return fail('NOT_FOUND', 'This MCP connection no longer exists.')
+        }
+
+        // Better Auth OAuth provider의 인가 코드는 공용 verification 테이블의 JSON 값이다.
+        // 이메일 인증 등 다른 용도의 비 JSON 값은 그대로 둔다. identifier는 코드의 해시이므로
+        // 코드 본문에 저장된 사용자·클라이언트로 범위를 확인한다.
+        const values = await tx
+          .select({ id: verification.id, value: verification.value })
+          .from(verification)
+        const codeIds = values
+          .filter(({ value }) => {
+            try {
+              const parsed = authorizationCodeOwner.safeParse(JSON.parse(value))
+              return (
+                parsed.success &&
+                parsed.data.userId === actor.userId &&
+                parsed.data.query.client_id === clientId
+              )
+            } catch {
+              return false
+            }
+          })
+          .map(({ id }) => id)
+        if (codeIds.length > 0) {
+          await tx.delete(verification).where(inArray(verification.id, codeIds))
         }
 
         const now = new Date()

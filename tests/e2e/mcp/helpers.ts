@@ -106,7 +106,8 @@ export async function connectAs(
   browser: Browser,
   baseURL: string,
   storageState: string,
-  scopes: string[]
+  scopes: string[],
+  beforeExchange?: () => Promise<void>
 ): Promise<McpConnection> {
   const client = { client_id: await registeredClientId(baseURL) }
 
@@ -167,6 +168,8 @@ export async function connectAs(
   const callback = new URL(callbackUrl!)
   const code = callback.searchParams.get('code')
   if (!code) throw new Error(`no authorization code: ${callbackUrl}`)
+
+  await beforeExchange?.()
 
   const tokenResponse = await fetch(`${baseURL}/api/auth/oauth2/token`, {
     method: 'POST',
