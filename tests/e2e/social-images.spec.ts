@@ -86,3 +86,30 @@ test.describe('event-specific social images', () => {
     await expectOptimizedSocialImage(request, metadata.twitterImage)
   })
 })
+
+for (const locale of ['ko', 'en']) {
+  test(`${locale} home social metadata points to image responses`, async ({
+    request,
+  }) => {
+    const home = await request.get(`/${locale}`)
+    expect(home.status()).toBe(200)
+    const html = await home.text()
+
+    for (const pattern of [
+      /<meta[^>]+property="og:image"[^>]+content="([^"]+)"/,
+      /<meta[^>]+name="twitter:image"[^>]+content="([^"]+)"/,
+    ]) {
+      const imageUrl = html.match(pattern)?.[1]
+      expect(imageUrl, 'home must advertise a social image').toBeTruthy()
+      // Follow the advertised path on this test server, even when metadata
+      // uses the production origin.
+      const url = new URL(imageUrl!)
+      const response = await request.get(`${url.pathname}${url.search}`, {
+        maxRedirects: 0,
+      })
+      expect(response.status(), imageUrl).toBe(200)
+      expect(response.headers()['content-type'], imageUrl).toMatch(/^image\//)
+      expect((await response.body()).byteLength, imageUrl).toBeGreaterThan(0)
+    }
+  })
+}

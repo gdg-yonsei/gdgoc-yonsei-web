@@ -189,5 +189,8 @@ test('invalid duplicate routes are 404 and private routes are noindex', async ({
   ]) {
     const response = await request.get(asset, { maxRedirects: 0 })
     expect(response.status(), asset).toBe(200)
+    if (asset.endsWith('.png') || asset.endsWith('.ico')) {
+      expect(response.headers()['content-type'], asset).toMatch(/^image\//)
+    }
   }
 })
