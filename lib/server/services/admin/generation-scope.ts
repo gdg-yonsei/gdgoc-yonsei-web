@@ -6,7 +6,7 @@ import 'server-only'
 import {
   resolveScopeFromOptions,
   type AdminGenerationScope,
-} from '@/lib/server/admin-generation-scope'
+} from '@/lib/admin/generation-scope'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 import {
   fail,
@@ -42,8 +42,8 @@ export async function resolveRequestedGenerationScope(
   if (requested === 'all' && actor.role !== 'LEAD') {
     return fail('FORBIDDEN', 'Only a LEAD can list every generation.')
   }
+  const accessible = await loadAccessibleGenerations(actor)
   if (typeof requested === 'number') {
-    const accessible = await loadAccessibleGenerations(actor)
     if (!accessible.some((generation) => generation.id === requested)) {
       return fail(
         'FORBIDDEN',
@@ -51,5 +51,11 @@ export async function resolveRequestedGenerationScope(
       )
     }
   }
-  return ok(await resolveGenerationScope(actor, requested))
+  return ok(
+    resolveScopeFromOptions(
+      accessible,
+      actor.role === 'LEAD',
+      requested === undefined ? undefined : String(requested)
+    )
+  )
 }

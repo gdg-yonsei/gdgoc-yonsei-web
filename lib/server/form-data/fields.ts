@@ -24,6 +24,17 @@ export function readTrimmedOrNull(
   return value ? value : null
 }
 
+/** 선택 숫자 필드. 누락은 `undefined`(기존 값 유지), 빈 값·파일은 `NaN`(검증 실패)이다. */
+export function readOptionalNumber(
+  formData: FormData,
+  key: string
+): number | undefined {
+  const value = formData.get(key)
+  if (value === null) return undefined
+  if (typeof value !== 'string' || value.trim() === '') return NaN
+  return Number(value)
+}
+
 /** 체크박스·토글 필드. 폼은 켜짐을 문자열 `'true'`로 보낸다. */
 export function readBoolean(formData: FormData, key: string): boolean {
   return formData.get(key) === 'true'

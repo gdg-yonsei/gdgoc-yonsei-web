@@ -19,7 +19,7 @@ const options = [
 
 describe('resolveGenerationScope', () => {
   beforeEach(() => {
-    mockLoadAccessibleGenerations.mockResolvedValue(options)
+    mockLoadAccessibleGenerations.mockReset().mockResolvedValue(options)
   })
 
   it('lets LEAD request all generations', async () => {
@@ -56,7 +56,7 @@ describe('resolveGenerationScope', () => {
 
 describe('resolveRequestedGenerationScope', () => {
   beforeEach(() => {
-    mockLoadAccessibleGenerations.mockResolvedValue(options)
+    mockLoadAccessibleGenerations.mockReset().mockResolvedValue(options)
   })
 
   it('refuses an explicit generation the user cannot access', async () => {
@@ -87,5 +87,6 @@ describe('resolveRequestedGenerationScope', () => {
       ok: true,
       data: { kind: 'generation', generationId: 11 },
     })
+    expect(mockLoadAccessibleGenerations).toHaveBeenCalledTimes(1)
   })
 })

@@ -16,14 +16,13 @@ import {
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/services/admin/shared'
-import { deleteImages, deleteRemovedImages } from '@/lib/server/storage/r2'
+import { deleteRemovedImages } from '@/lib/server/storage/r2'
 import { invalidateSessionPublicCache } from '@/lib/server/cache'
 import { runAfterResponse } from '@/lib/server/after-response'
-import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
+import { cleanupDeletedResource } from '@/lib/server/services/admin/deleted-resource-cleanup'
 import {
   authorize,
   canAccessGeneration,
@@ -390,39 +389,17 @@ export async function deleteSession(
     async () => {
       const sessionCacheContext = await getSessionCacheContext(sessionId)
       await db.delete(sessions).where(eq(sessions.id, sessionId))
-      try {
-        invalidateSessionPublicCache({
-          sessionId,
-          previousGenerationName: sessionCacheContext.generationName,
-        })
-      } catch (error) {
-        // 이미 커밋된 삭제는 성공이다. 캐시 실패가 이미지 정리를 막지 않게 한다.
-        logger.error('admin.delete-resource.cache-invalidation', error, {
-          dataType: 'sessions',
-          dataId: sessionId,
-          rowDeleted: true,
-        })
-      }
-
-      // R2는 트랜잭션에 묶을 수 없다. 행을 먼저 지우고 이미지는 커밋 뒤에 지운다. R2 삭제가 실패해도
-      // 쓰지 않는 객체가 남을 뿐이므로 삭제는 성공으로 처리하고, 남은 키를 로그로 남겨 손으로 치울 수 있게 한다.
-      const sessionImageKeys = uniqueStrings([
-        ...sessionImageList.images
-          .map((image) => normalizeR2ImageObjectKey(image, 'sessions'))
-          .filter(Boolean),
-        normalizeR2ImageObjectKey(sessionImageList.mainImage, 'sessions'),
-      ])
-      if (!(await deleteImages(sessionImageKeys))) {
-        logger.warn(
-          'admin.delete-resource.r2-cleanup',
-          'Row deleted but its images could not be removed from R2',
-          {
-            dataType: 'sessions',
-            dataId: sessionId,
-            imageKeys: sessionImageKeys,
-          }
-        )
-      }
+      await cleanupDeletedResource({
+        dataType: 'sessions',
+        dataId: sessionId,
+        images: sessionImageList.images,
+        mainImage: sessionImageList.mainImage,
+        invalidateCache: () =>
+          invalidateSessionPublicCache({
+            sessionId,
+            previousGenerationName: sessionCacheContext.generationName,
+          }),
+      })
 
       return ok({ id: sessionId })
     },

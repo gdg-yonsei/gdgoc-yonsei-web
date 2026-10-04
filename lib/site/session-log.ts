@@ -91,7 +91,9 @@ export function groupSessionLog(
         const key = session.startAt
           ? sessionMonthKey(session.startAt)
           : TBA_MONTH
-        months.set(key, [...(months.get(key) ?? []), session])
+        const month = months.get(key) ?? []
+        month.push(session)
+        months.set(key, month)
       }
       return {
         name,
@@ -105,12 +107,6 @@ export function groupSessionLog(
     })
 }
 
-function counts(values: readonly string[]): Map<string, number> {
-  const map = new Map<string, number>()
-  for (const value of values) map.set(value, (map.get(value) ?? 0) + 1)
-  return map
-}
-
 /** 필터 선택지: 활동 분류, 파트, 기수와 각 개수. */
 export function sessionFacets(
   sessions: readonly LogSession[],
@@ -120,14 +116,31 @@ export function sessionFacets(
   parts: FacetOption[]
   generations: FacetOption[]
 } {
-  const categoryCounts = counts(sessions.map((session) => session.category))
+  const categoryCounts = new Map<string, number>()
+  const partCounts = new Map<string, number>()
+  const generations = new Map<string, { startDate: string; count: number }>()
+  for (const session of sessions) {
+    categoryCounts.set(
+      session.category,
+      (categoryCounts.get(session.category) ?? 0) + 1
+    )
+    if (session.partName) {
+      partCounts.set(
+        session.partName,
+        (partCounts.get(session.partName) ?? 0) + 1
+      )
+    }
+    const generation = generations.get(session.generationName) ?? {
+      startDate: session.generationStartDate,
+      count: 0,
+    }
+    generation.count += 1
+    generations.set(session.generationName, generation)
+  }
   const categoryOrder = [
     ...SESSION_CATEGORIES.filter((category) => categoryCounts.has(category)),
     ...[...categoryCounts.keys()].filter((key) => !isSessionCategory(key)),
   ]
-  const partCounts = counts(
-    sessions.flatMap((session) => (session.partName ? [session.partName] : []))
-  )
 
   return {
     categories: categoryOrder.map((value) => ({
@@ -138,11 +151,9 @@ export function sessionFacets(
     parts: [...partCounts.entries()]
       .sort(([a, x], [b, y]) => y - x || a.localeCompare(b))
       .map(([value, count]) => ({ value, label: value, count })),
-    generations: groupSessionLog(sessions).map((generation) => ({
-      value: generation.name,
-      label: generation.name,
-      count: generation.count,
-    })),
+    generations: [...generations.entries()]
+      .sort(([, a], [, b]) => b.startDate.localeCompare(a.startDate))
+      .map(([value, { count }]) => ({ value, label: value, count })),
   }
 }
 

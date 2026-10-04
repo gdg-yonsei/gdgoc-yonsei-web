@@ -11,6 +11,7 @@ import 'server-only'
 import type { Role } from '@/db/schema/users'
 import {
   readBoolean,
+  readOptionalNumber,
   readString,
   readStringArray,
   readTrimmedOrNull,
@@ -73,24 +74,11 @@ export function parseMemberForm(formData: FormData) {
  * `NaN`(검증 오류로 이어짐)으로 구분해 넘긴다.
  */
 export function parsePartForm(formData: FormData) {
-  const displayOrder = formData.get('displayOrder')
-  const rawDisplayOrder =
-    displayOrder === null
-      ? undefined
-      : typeof displayOrder === 'string'
-        ? displayOrder.trim()
-        : ''
-
   return {
     name: readString(formData, 'name'),
     description: readString(formData, 'description'),
     generationId: Number(readString(formData, 'generationId')),
-    displayOrder:
-      rawDisplayOrder === undefined
-        ? undefined
-        : rawDisplayOrder === ''
-          ? NaN
-          : Number(rawDisplayOrder),
+    displayOrder: readOptionalNumber(formData, 'displayOrder'),
     membersList: readStringArray(formData, 'membersList', 'form-data.part'),
     doubleBoardMembersList: readStringArray(
       formData,

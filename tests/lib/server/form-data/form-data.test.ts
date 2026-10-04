@@ -112,6 +112,25 @@ describe('form-data parsers', () => {
     })
   })
 
+  it.each([
+    [undefined, undefined],
+    ['', NaN],
+    ['  ', NaN],
+    ['0', 0],
+    [' 12 ', 12],
+    ['invalid', NaN],
+  ])('preserves optional displayOrder semantics for %s', (value, expected) => {
+    const formData = new FormData()
+    if (value !== undefined) formData.set('displayOrder', value)
+    expect(parsePartForm(formData).displayOrder).toBe(expected)
+  })
+
+  it('rejects file data as a display order', () => {
+    const formData = new FormData()
+    formData.set('displayOrder', new File(['12'], 'order.txt'))
+    expect(parsePartForm(formData).displayOrder).toBeNaN()
+  })
+
   it('returns empty member arrays when part json fields are invalid', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const formData = createFormData({

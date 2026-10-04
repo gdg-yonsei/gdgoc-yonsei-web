@@ -3,8 +3,8 @@
 /**
  * 여러 장 이미지 업로드 입력(클라이언트 컴포넌트).
  *
- * 업로드한 공개 URL 목록을 JSON 문자열로 숨은 필드에 넣어 제출한다. 미리보기(dataURL)와
- * 전송 값(공개 URL)을 같은 인덱스로 맞춰 두어야 삭제 버튼이 올바른 항목을 지운다.
+ * 업로드한 공개 URL 목록을 JSON 문자열로 숨은 필드에 넣어 제출한다.
+ * 미리보기와 공개 URL은 하나의 항목으로 관리하여 업로드 중 삭제도 같은 이미지를 가리킨다.
  */
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
@@ -12,25 +12,13 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import { useAtom } from 'jotai'
 import { uploadMultipleImagesState } from '@/lib/admin/atoms'
 import { uploadMultipleImages } from '@/lib/upload-image'
+import { readImagePreview } from '@/lib/read-image-preview'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
-/**
- * 선택한 파일들을 프리뷰용 dataURL 로 읽는다. 결과 순서는 입력 순서와 같다.
- */
-function readFilesAsDataURLs(files: FileList): Promise<string[]> {
-  const arr = Array.from(files)
-  return Promise.all(
-    arr.map(
-      (file) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => resolve(reader.result as string)
-          reader.onerror = () =>
-            reject(reader.error ?? new Error('Could not read the file'))
-          reader.readAsDataURL(file)
-        })
-    )
-  )
+type ImageEntry = {
+  id: number
+  previewUrl: string
+  publicUrl: string | null
 }
 
 /**
@@ -51,43 +39,51 @@ export default function DataMultipleImageInput({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [prevImageUrls, setPrevImageUrls] = useState<string[]>(defaultValue)
+  const nextImageId = useRef(defaultValue.length)
+  const [images, setImages] = useState<ImageEntry[]>(() =>
+    defaultValue.map((url, id) => ({ id, previewUrl: url, publicUrl: url }))
+  )
   const [isLoading, setIsLoading] = useAtom(uploadMultipleImagesState)
-  const [imageUrls, setImageUrls] = useState<string[]>(defaultValue)
   const [hasFailed, setHasFailed] = useState(false)
   const { t } = useAdminI18n()
 
   /**
    * 선택한 이미지 파일 리스트를 주소 리스트로 변환하는 함수
    */
-  const saveImgFile = async () => {
+  const uploadSelectedImages = async () => {
     const files = inputRef.current?.files
     if (!files || files.length === 0) return
 
-    const filesArr = Array.from(files)
-    let addedPreviewCount = 0
+    const selectedFiles = Array.from(files)
+    const ids = selectedFiles.map(() => nextImageId.current++)
+    const batchIds = new Set(ids)
 
     setIsLoading(true)
     setHasFailed(false)
     try {
-      // 1) 프리뷰용 dataURL을 "파일 순서대로" 모두 읽어서 한 번에 set
-      const previews = await readFilesAsDataURLs(files)
-      addedPreviewCount = previews.length
-      setPrevImageUrls((prev) => [...prev, ...previews])
+      const previews = await Promise.all(selectedFiles.map(readImagePreview))
+      setImages((current) => [
+        ...current,
+        ...previews.map((previewUrl, index) => ({
+          id: ids[index]!,
+          previewUrl,
+          publicUrl: null,
+        })),
+      ])
 
-      // 2) 업로드 후 공개 URL을 입력 순서 그대로 추가
-      const publicUrls = await uploadMultipleImages(baseUrl, filesArr)
-      setImageUrls((prev) => [...prev, ...publicUrls])
+      const publicUrls = await uploadMultipleImages(baseUrl, selectedFiles)
+      const uploaded = new Map(ids.map((id, index) => [id, publicUrls[index]!]))
+      // 업로드 중 삭제된 항목은 다시 추가하지 않는다.
+      setImages((current) =>
+        current.map((image) =>
+          uploaded.has(image.id)
+            ? { ...image, publicUrl: uploaded.get(image.id)! }
+            : image
+        )
+      )
     } catch (error) {
       console.error(error)
-      // 업로드에 실패했으면 방금 추가한 프리뷰만 되돌린다.
-      // 그대로 두면 저장되지 않은 이미지가 저장된 것처럼 보이고,
-      // prevImageUrls 와 imageUrls 의 인덱스가 어긋나 삭제 버튼이 엉뚱한 항목을 지운다.
-      if (addedPreviewCount > 0) {
-        setPrevImageUrls((prev) =>
-          prev.slice(0, prev.length - addedPreviewCount)
-        )
-      }
+      setImages((current) => current.filter((image) => !batchIds.has(image.id)))
       setHasFailed(true)
     } finally {
       setIsLoading(false)
@@ -96,13 +92,9 @@ export default function DataMultipleImageInput({
     }
   }
 
-  /**
-   * 프리뷰와 전송 값에서 같은 인덱스의 이미지를 함께 제거한다.
-   */
-  function deleteContentImage(targetIndex: number) {
-    setPrevImageUrls((prev) => prev.filter((_, index) => index !== targetIndex))
-    setImageUrls((prev) => prev.filter((_, index) => index !== targetIndex))
-  }
+  const imageUrls = images.flatMap((image) =>
+    image.publicUrl ? [image.publicUrl] : []
+  )
 
   return (
     <div className={'admin-form-grid-full flex flex-col gap-2'}>
@@ -113,8 +105,8 @@ export default function DataMultipleImageInput({
         accept="image/*"
         multiple={true}
         hidden={true}
-        // 업로드 오류는 saveImgFile 안에서 처리한다.
-        onChange={() => void saveImgFile()}
+        // 업로드 오류는 uploadSelectedImages 안에서 처리한다.
+        onChange={() => void uploadSelectedImages()}
       />
       <input
         name={name}
@@ -122,10 +114,13 @@ export default function DataMultipleImageInput({
         value={JSON.stringify(imageUrls)}
         readOnly={true}
       />
-      {prevImageUrls.length > 0 && (
+      {images.length > 0 && (
         <div className={'grid w-full grid-cols-1 gap-2'}>
-          {prevImageUrls.map((url, index) => (
-            <div key={index} className={'notice-scale-enter relative w-full'}>
+          {images.map((image) => (
+            <div
+              key={image.id}
+              className={'notice-scale-enter relative w-full'}
+            >
               <button
                 type={'button'}
                 aria-label={t('delete')}
@@ -133,12 +128,16 @@ export default function DataMultipleImageInput({
                 className={
                   'bg-danger focus-visible:outline-primary absolute top-2 right-2 cursor-pointer rounded-md p-1.5 text-white transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2'
                 }
-                onClick={() => deleteContentImage(index)}
+                onClick={() =>
+                  setImages((current) =>
+                    current.filter((entry) => entry.id !== image.id)
+                  )
+                }
               >
                 <TrashIcon className={'size-5'} aria-hidden={'true'} />
               </button>
               <Image
-                src={url}
+                src={image.previewUrl}
                 alt={'Project Main Image'}
                 width={600}
                 height={400}

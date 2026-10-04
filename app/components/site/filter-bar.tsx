@@ -12,7 +12,7 @@ import { countLabel } from '@/lib/format/text'
 import {
   EMPTY_FILTER,
   isFilterActive,
-  matchesFilter,
+  createFilterMatcher,
   parseFilterState,
   readFilterableItem,
   serializeFilterState,
@@ -62,14 +62,14 @@ function createFilterStore(
 
   function apply() {
     const search = window.location.search
-    const state = parseFilterState(search, keys)
+    const matches = createFilterMatcher(parseFilterState(search, keys), modes)
     const root = document.getElementById(scope)
     let visible = root ? 0 : total
 
     root
       ?.querySelectorAll<HTMLElement>('[data-filter-item]')
       .forEach((item) => {
-        const show = matchesFilter(readFilterableItem(item, keys), state, modes)
+        const show = matches(readFilterableItem(item, keys))
         item.hidden = !show
         if (show) visible += 1
       })

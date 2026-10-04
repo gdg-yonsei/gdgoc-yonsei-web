@@ -93,16 +93,28 @@ export function matchesFilter(
   state: FilterState,
   modes: Readonly<Record<string, FacetMode>> = {}
 ): boolean {
-  const terms = normalizeSearchText(state.q).split(' ').filter(Boolean)
-  if (!terms.every((term) => item.search.includes(term))) return false
+  return createFilterMatcher(state, modes)(item)
+}
 
-  return Object.entries(state.selected).every(([key, values]) => {
-    if (values.length === 0) return true
-    const own = item.facets[key] ?? []
-    return modes[key] === 'all'
-      ? values.every((value) => own.includes(value))
-      : values.some((value) => own.includes(value))
-  })
+/** 같은 조건으로 여러 행을 검사할 때 검색어와 선택 조건을 한 번만 준비한다. */
+export function createFilterMatcher(
+  state: FilterState,
+  modes: Readonly<Record<string, FacetMode>> = {}
+): (item: FilterableItem) => boolean {
+  const terms = normalizeSearchText(state.q).split(' ').filter(Boolean)
+  const selected = Object.entries(state.selected).filter(
+    ([, values]) => values.length > 0
+  )
+
+  return (item) => {
+    if (!terms.every((term) => item.search.includes(term))) return false
+    return selected.every(([key, values]) => {
+      const own = item.facets[key] ?? []
+      return modes[key] === 'all'
+        ? values.every((value) => own.includes(value))
+        : values.some((value) => own.includes(value))
+    })
+  }
 }
 
 /** 분류 키의 `data-*` 속성 이름(`data-f-<키>`). */

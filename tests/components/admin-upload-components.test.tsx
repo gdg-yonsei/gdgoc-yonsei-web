@@ -11,9 +11,8 @@ describe('admin upload components', () => {
     vi.stubGlobal('fetch', vi.fn())
   })
 
-  it('uploads a single image, deletes previous hosted image, and stores uploaded url', async () => {
+  it('uploads a replacement without deleting the saved image before form submission', async () => {
     vi.mocked(fetch)
-      .mockResolvedValueOnce(new Response(null, { status: 200 }))
       .mockResolvedValueOnce(
         new Response(
           JSON.stringify({
@@ -45,25 +44,18 @@ describe('admin upload components', () => {
     await userEvent.upload(fileInput, file, { applyAccept: false })
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3)
+      expect(fetch).toHaveBeenCalledTimes(2)
     })
 
     expect(fetch).toHaveBeenNthCalledWith(
       1,
       '/api/admin/projects/main-image',
       expect.objectContaining({
-        method: 'DELETE',
-      })
-    )
-    expect(fetch).toHaveBeenNthCalledWith(
-      2,
-      '/api/admin/projects/main-image',
-      expect.objectContaining({
         method: 'POST',
       })
     )
     expect(fetch).toHaveBeenNthCalledWith(
-      3,
+      2,
       'https://upload.example/signed-url',
       expect.objectContaining({
         method: 'PUT',
@@ -164,6 +156,7 @@ describe('admin upload components', () => {
       <DataImageInput
         name="mainImage"
         title="Main Image"
+        defaultValue="https://cdn.example/projects/saved.png"
         baseUrl="/api/admin/projects/main-image"
       >
         Upload main image
@@ -186,7 +179,8 @@ describe('admin upload components', () => {
     const hiddenInput = container.querySelector(
       'input[name="mainImage"]'
     ) as HTMLInputElement
-    expect(hiddenInput.value).toBe('')
+    expect(hiddenInput.value).toBe('https://cdn.example/projects/saved.png')
+    expect(screen.getByRole('img')).toHaveAttribute('src', hiddenInput.value)
     expect(hiddenInput.value).not.toContain('undefined')
 
     // 사전 서명 URL 발급이 실패했으므로 스토리지로의 PUT 은 시도조차 하지 않는다.
@@ -241,4 +235,80 @@ describe('admin upload components', () => {
     // 저장되지 않은 이미지가 저장된 것처럼 남아 있으면 안 된다.
     expect(screen.queryAllByRole('button', { name: 'Delete' })).toHaveLength(0)
   })
+  it.each([true, false])(
+    'keeps deletion aligned when a pending batch succeeds=%s',
+    async (succeeds) => {
+      let finishUpload!: (response: Response) => void
+      vi.mocked(fetch)
+        .mockImplementationOnce(
+          () =>
+            new Promise<Response>((resolve) => {
+              finishUpload = resolve
+            })
+        )
+        .mockResolvedValue(new Response(null, { status: 200 }))
+
+      const saved = 'https://cdn.example/projects/saved.png'
+      const { container } = render(
+        <DataMultipleImageInput
+          name="images"
+          title="Images"
+          baseUrl="/upload"
+          defaultValue={[saved]}
+        >
+          Upload images
+        </DataMultipleImageInput>
+      )
+      await userEvent.upload(
+        container.querySelector<HTMLInputElement>('input[type="file"]')!,
+        [
+          new File(['one'], 'one.png', { type: 'image/png' }),
+          new File(['two'], 'two.png', { type: 'image/png' }),
+        ]
+      )
+      await waitFor(() =>
+        expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(
+          3
+        )
+      )
+      // Remove a pending image while retaining the saved image and the second pending image.
+      fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]!)
+      finishUpload(
+        new Response(
+          JSON.stringify(
+            succeeds
+              ? {
+                  uploadUrls: [
+                    {
+                      fileName: 'projects/one.png',
+                      uploadUrl: 'https://upload.example/one',
+                    },
+                    {
+                      fileName: 'projects/two.png',
+                      uploadUrl: 'https://upload.example/two',
+                    },
+                  ],
+                }
+              : { error: 'Forbidden' }
+          ),
+          { status: succeeds ? 200 : 403 }
+        )
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('button', { name: 'Upload images' })
+        ).toBeEnabled()
+      )
+      expect(
+        JSON.parse(
+          container.querySelector<HTMLInputElement>('input[name="images"]')!
+            .value
+        )
+      ).toEqual(
+        succeeds ? [saved, 'https://cdn.example/projects/two.png'] : [saved]
+      )
+      expect(screen.getAllByRole('img')).toHaveLength(succeeds ? 2 : 1)
+    }
+  )
 })
