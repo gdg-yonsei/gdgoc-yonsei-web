@@ -163,9 +163,7 @@ describe('admin selection components', () => {
     const participantInput = container.querySelector(
       'input[name="participantId"]'
     ) as HTMLInputElement
-    const search = screen.getByRole('searchbox', {
-      name: 'Search by name...',
-    })
+    const search = screen.getByRole('textbox', { name: 'Search name' })
 
     // 공백을 섞어 입력해도 한글 이름을 찾습니다.
     fireEvent.change(search, { target: { value: '박 밥' } })
@@ -180,7 +178,7 @@ describe('admin selection components', () => {
     })
 
     fireEvent.change(search, { target: { value: '' } })
-    fireEvent.change(screen.getByRole('combobox', { name: 'Part' }), {
+    fireEvent.change(screen.getByRole('combobox', { name: 'Part filter' }), {
       target: { value: 'Frontend' },
     })
     expect(screen.queryByTitle('박밥')).toBeNull()
@@ -207,11 +205,9 @@ describe('admin selection components', () => {
     fireEvent.change(search, { target: { value: 'nobody' } })
     expect(screen.getByText('No results')).toBeTruthy()
     expect(
-      (
-        screen.getByRole('button', {
-          name: 'Select all shown (0)',
-        }) as HTMLButtonElement
-      ).disabled
+      screen.getByRole<HTMLButtonElement>('button', {
+        name: 'Select all shown (0)',
+      }).disabled
     ).toBe(true)
   })
 
@@ -227,12 +223,12 @@ describe('admin selection components', () => {
     const participantInput = container.querySelector(
       'input[name="participantId"]'
     ) as HTMLInputElement
-    const generationSelect = screen.getByRole('combobox', {
-      name: 'Generation',
-    }) as HTMLSelectElement
-    const partSelect = screen.getByRole('combobox', {
-      name: 'Part',
-    }) as HTMLSelectElement
+    const generationSelect = screen.getByRole<HTMLSelectElement>('combobox', {
+      name: 'Generation filter',
+    })
+    const partSelect = screen.getByRole<HTMLSelectElement>('combobox', {
+      name: 'Part filter',
+    })
 
     // 최신 기수가 먼저 나옵니다.
     expect(

@@ -16,15 +16,15 @@ main ──► CD (cd.yml): CI (같은 workflow) ──► Dokploy 배포 ──
 
 ## CI 작업
 
-| 작업                            | 잡아내는 것                                                                                                                                                                                                                                                                                  |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Typecheck, lint, format, schema | `tsc`, ESLint(경고 0), PR이 바꾼 파일의 Prettier. `db/schema`를 바꾸고 마이그레이션을 커밋하지 않은 경우(그러면 Dokploy의 `pnpm build`가 검토 없이 마이그레이션을 만들어 적용한다), `package.json`과 다른 버전을 조용히 고정하는 `pnpm-workspace.yaml` overrides, 위험한 마이그레이션(아래). |
-| Unit tests                      | Vitest와 커버리지 보고(작업 요약, `coverage` 아티팩트).                                                                                                                                                                                                                                      |
-| Migration upgrade path          | 운영과 같은 상태를 다시 만든다: Postgres 18을 **base** 리비전까지 마이그레이션하고 base 코드로 시드한 뒤, 이 리비전의 마이그레이션을 얹는다. 다시 한 번 실행해(멱등이어야 함) 새 코드로 시드한다.                                                                                            |
-| E2E (production build)          | 일회용 Postgres에서 `pnpm test:e2e:prod`. 실패하면 trace·영상·보고서를 올린다. 같은 빌드로 성능 예산도 측정하지만 **보고만 하고 막지 않는다**(공유 러너의 시간 측정은 잡음이 크다).                                                                                                          |
-| Dependency security             | `dependency-review`가 high/critical 취약점이 있는 의존성을 추가하는 PR을 실패시킨다. `pnpm audit`은 보고만 한다.                                                                                                                                                                             |
-| Workflow lint                   | `.github/workflows`에 `actionlint`.                                                                                                                                                                                                                                                          |
-| CI passed                       | 위 작업들을 모은다. 브랜치 보호에는 **이 체크 하나만** 필수로 지정한다.                                                                                                                                                                                                                      |
+| 작업                            | 잡아내는 것                                                                                                                                                                                                                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Typecheck, lint, format, schema | `tsc`, ESLint(경고 0), PR이 바꾼 파일의 Prettier. `db/schema`를 바꾸고 마이그레이션을 커밋하지 않은 경우(배포는 커밋된 마이그레이션만 적용하므로 새 코드가 운영 DB에 없는 컬럼을 읽게 된다), `package.json`과 다른 버전을 조용히 고정하는 `pnpm-workspace.yaml` overrides, 위험한 마이그레이션(아래). |
+| Unit tests                      | Vitest와 커버리지 보고(작업 요약, `coverage` 아티팩트).                                                                                                                                                                                                                                               |
+| Migration upgrade path          | 운영과 같은 상태를 다시 만든다: Postgres 18을 **base** 리비전까지 마이그레이션하고 base 코드로 시드한 뒤, 이 리비전의 마이그레이션을 얹는다. 다시 한 번 실행해(멱등이어야 함) 새 코드로 시드한다.                                                                                                     |
+| E2E (production build)          | 일회용 Postgres에서 `pnpm test:e2e:prod`. 실패하면 trace·영상·보고서를 올린다. 같은 빌드로 성능 예산도 측정하지만 **보고만 하고 막지 않는다**(공유 러너의 시간 측정은 잡음이 크다).                                                                                                                   |
+| Dependency security             | `dependency-review`가 high/critical 취약점이 있는 의존성을 추가하는 PR을 실패시킨다. `pnpm audit`은 보고만 한다.                                                                                                                                                                                      |
+| Workflow lint                   | `.github/workflows`에 `actionlint`.                                                                                                                                                                                                                                                                   |
+| CI passed                       | 위 작업들을 모은다. 브랜치 보호에는 **이 체크 하나만** 필수로 지정한다.                                                                                                                                                                                                                               |
 
 CI는 실제 비밀값을 보지 않는다. `ci.yml`의 값은 모두 자리 표시자이고, DB 쓰기는 작업 자체의 Postgres 서비스
 (`127.0.0.1`)로 간다. `scripts/lib/disposable-database.ts`가 이 주소만 허용한다.
@@ -63,6 +63,7 @@ CI는 실제 비밀값을 보지 않는다. `ci.yml`의 값은 모두 자리 표
 ## 배포 환경 메모
 
 - Dokploy는 Nixpacks로 빌드한다(`nixpacks.toml`: Node 버전과 corepack 버전 고정 이유가 주석에 있다).
-- `pnpm build`는 `drizzle-kit generate && drizzle-kit migrate && pnpm auth:prepare && next build`다.
-  **빌드가 곧 운영 DB 마이그레이션**이므로, 운영 DB를 가리키는 `.env`로 로컬에서 `pnpm build`를 실행하면 안 된다.
-  빌드만 확인하려면 `pnpm exec next build`를 쓴다(그래도 정적 경로 생성을 위해 DB를 읽는다).
+- 배포 빌드 명령은 `nixpacks.toml`의 `[phases.build]`에 있는 `pnpm build:production`
+  (`drizzle-kit migrate && pnpm build`)이다. 마이그레이션은 **배포에서만** 적용된다.
+- `pnpm build`는 `pnpm auth:prepare && next build`다. 마이그레이션은 하지 않지만 정적 경로를 만들려고 DB를 읽는다.
+  `drizzle-kit generate`는 빌드에서 돌리지 않는다. 스키마와 커밋된 마이그레이션이 맞는지는 CI가 확인한다.

@@ -88,7 +88,11 @@ export async function createPartAction(
   effect 안에서 최신 콜백이 필요하면 `useEffectEvent`를 쓴다(`lib/hooks/use-dialog-focus.ts` 참고).
 - 폼은 `DataForm`(`useActionState`) + Server Action. 제출 중 표시는 `useFormStatus`.
 - 페이지 데이터는 서버에서 읽고, 느린 부분은 `<Suspense>`로 감싸 스트리밍한다. 공개 사이트의 정적 셸은
-  `params`를 읽지 않는 부분과 읽는 부분을 나눠 둔다(`ArchiveHubShell`).
+  언어를 읽지 않는 부분과 읽는 부분을 나눠 둔다(`ArchiveHubShell`).
+- 공개 사이트의 언어는 루트 매개변수다. 서버 컴포넌트는 `params`를 넘겨받지 않고 `getLocale()`(`lib/i18n/server.ts`)로
+  읽는다. 그 밖의 경로 매개변수는 `PageProps<'/경로'>`/`LayoutProps<'/경로'>`(Next 생성 타입)의 `params`로 읽는다.
+- 생성·수정 화면은 리소스별 `*FormFields` 컴포넌트(`app/(admin)/admin/<리소스>/_components/`)를 함께 쓰고, 수정 폼에는
+  `savedVersionKey(updatedAt)`를 `key`로 준다(저장 후 돌아왔을 때 이전 입력이 남지 않게).
 - 링크 경로는 `lib/site/routes.ts`(`localeHref`, `sessionPath` …)로 만든다. 관리자 경로는 `localizeAdminHref`.
 - Next 16의 새 API를 쓰기 전에 `node_modules/next/dist/docs/`의 해당 문서를 확인한다(AGENTS.md).
 
@@ -112,7 +116,8 @@ export async function createPartAction(
 
 ## 7. 스타일과 CSS
 
-- Tailwind 4. 관리자 화면은 `app/globals.css`의 토큰과 `admin-*` 유틸리티, 공개 사이트는 `app/styles/site-*.css`.
+- Tailwind 4. 공용 기반은 `app/globals.css`(Tailwind, Pretendard, `prose`)이고, 관리자 화면은 `app/admin.css`의 토큰과
+  `admin-*` 유틸리티, 공개 사이트는 `app/site.css`(`app/styles/site-*.css`)를 각 루트 레이아웃이 불러온다.
 - 클래스 조합은 `cn()`(clsx + tailwind-merge). 단, 서로 충돌하는 색 클래스를 일부러 겹치는 경우(로딩 스피너)는 쓰지 않는다.
 - 홈 전용 CSS(`site-home.css`)는 홈 페이지만 import한다. 전역 CSS에 넣지 않는다(테스트가 확인).
 - 서식은 Prettier(`pnpm format`). CI는 PR에서 바뀐 파일만 검사한다. `app/pretendard.css`는 외부 배포본이라 제외.

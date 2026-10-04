@@ -16,6 +16,7 @@ export type MemberMembership = {
   generationId: number | null
   generation: string | null
   part: string | null
+  partId?: number | null
 }
 
 /** getMembers는 (멤버, 기수)마다 한 행을 돌려주므로, 멤버별로 소속 기수·파트를 모은다. */
@@ -29,8 +30,13 @@ export function groupMemberships<T extends { id: string } & MemberMembership>(
     Omit<T, keyof MemberMembership> & { memberships: MemberMembership[] }
   >()
 
-  for (const { generationId, generation, part, ...member } of rows) {
-    const membership = { generationId, generation, part }
+  for (const { generationId, generation, part, partId, ...member } of rows) {
+    const membership = {
+      generationId,
+      generation,
+      part,
+      ...(partId === undefined ? {} : { partId }),
+    }
     const existing = grouped.get(member.id)
     if (existing) {
       existing.memberships.push(membership)
@@ -91,10 +97,11 @@ export function memberMatchesSearch(
     [
       memberDisplayName(member),
       member.name,
-      member.firstName,
-      member.lastName,
-      member.firstNameKo,
-      member.lastNameKo,
+      // "이름 성"과 "성 이름" 어느 순서로 입력해도 찾는다.
+      `${member.firstName ?? ''}${member.lastName ?? ''}`,
+      `${member.lastName ?? ''}${member.firstName ?? ''}`,
+      `${member.lastNameKo ?? ''}${member.firstNameKo ?? ''}`,
+      `${member.firstNameKo ?? ''}${member.lastNameKo ?? ''}`,
     ]
       .filter(Boolean)
       .join(' ')
@@ -105,13 +112,63 @@ export function memberMatchesSearch(
 export function findMembership(
   memberships: readonly MemberMembership[],
   generation: string,
-  part: string
+  part: string,
+  partKey: 'part' | 'partId' = 'part'
 ): MemberMembership | undefined {
   return memberships.find(
     (membership) =>
       (!generation || membership.generation === generation) &&
-      (!part || membership.part === part)
+      (!part ||
+        (membership[partKey] != null && String(membership[partKey]) === part))
   )
+}
+
+/**
+ * 기수·파트 필터의 "소속 없음" 값. 어느 기수·파트에도 속하지 않은 멤버만 고른다. 실제 기수·파트 이름과
+ * 겹치지 않도록 이름으로 쓸 수 없는 값을 쓴다.
+ */
+export const NO_MEMBERSHIP = '__none__'
+
+/**
+ * 멤버의 소속이 기수·파트 필터에 맞는지. 빈 필터는 모두 맞고, `NO_MEMBERSHIP`은 기수·파트가 모두 비어
+ * 있는(소속이 없는) 멤버에만 맞는다.
+ */
+export function matchesMembershipFilter(
+  memberships: readonly MemberMembership[],
+  generation: string,
+  part: string,
+  partKey: 'part' | 'partId' = 'part'
+): boolean {
+  if (generation === NO_MEMBERSHIP || part === NO_MEMBERSHIP) {
+    return (
+      (!generation || generation === NO_MEMBERSHIP) &&
+      (!part || part === NO_MEMBERSHIP) &&
+      memberships.every(
+        (membership) => !membership.generation && !membership.part
+      )
+    )
+  }
+  if (!generation && !part) return true
+  return Boolean(findMembership(memberships, generation, part, partKey))
+}
+
+/** 파트 구성원 조회 결과(`usersToParts`)를 선택기의 소속 목록으로 바꾼다. */
+export function toMemberships(
+  usersToParts: readonly {
+    part: {
+      id: number
+      name: string
+      generationsId: number | null
+      generation: { id: number; name: string } | null
+    }
+  }[]
+): MemberMembership[] {
+  return usersToParts.map(({ part }) => ({
+    generationId: part.generation?.id ?? part.generationsId,
+    generation: part.generation?.name ?? null,
+    part: part.name,
+    partId: part.id,
+  }))
 }
 
 /** 멤버들이 속한 기수 이름 목록. 최신 기수(ID가 큰 순)가 먼저 온다. */
@@ -145,4 +202,38 @@ export function listMembershipParts(
         .filter((part): part is string => Boolean(part))
     ),
   ].sort((left, right) => left.localeCompare(right))
+}
+
+/** 필터 값과 표시명. 파트 구성원은 DB ID, 세션 참가자는 기존처럼 이름으로 고른다. */
+export function listMembershipPartOptions(
+  members: readonly { memberships: readonly MemberMembership[] }[],
+  generation: string,
+  partKey: 'part' | 'partId' = 'part'
+): { value: string; label: string }[] {
+  if (partKey === 'part') {
+    return listMembershipParts(members, generation).map((part) => ({
+      value: part,
+      label: part,
+    }))
+  }
+  const options = new Map<string, string>()
+  for (const { memberships } of members) {
+    for (const membership of memberships) {
+      if (
+        membership.partId == null ||
+        !membership.part ||
+        (generation && membership.generation !== generation)
+      )
+        continue
+      options.set(
+        String(membership.partId),
+        membership.generation
+          ? `${membership.part} · ${membership.generation}`
+          : membership.part
+      )
+    }
+  }
+  return [...options]
+    .map(([value, label]) => ({ value, label }))
+    .sort((left, right) => left.label.localeCompare(right.label))
 }

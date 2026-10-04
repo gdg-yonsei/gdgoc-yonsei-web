@@ -124,7 +124,8 @@ const manifesto: Scene = ({ root, scope, matches, belowFold }) => {
     const lede = root.querySelector<HTMLElement>('.manifesto-lede')
     if (lede && belowFold(lede)) {
       const split = splitText(lede, { lines: { wrap: 'clip' } })
-      split.addEffect(({ lines }) =>
+      // anime.js는 split의 줄 목록을 any[]로 둔다. 실제로는 줄마다 감싼 요소다.
+      split.addEffect(({ lines }: { lines: HTMLElement[] }) =>
         animate(lines, {
           y: ['100%', '0%'],
           duration: 900,
@@ -218,14 +219,14 @@ const manifesto: Scene = ({ root, scope, matches, belowFold }) => {
         )
         if (!stroke || !target) continue
         animate(stroke, {
-          d: svg.morphTo(target as SVGPathElement),
+          d: svg.morphTo(target),
           duration: 460,
           ease: 'out(3)',
         })
       }
     })
-    const open = () => scope.methods.braces?.(true)
-    const close = () => scope.methods.braces?.(false)
+    const open = () => void scope.methods.braces?.(true)
+    const close = () => void scope.methods.braces?.(false)
     tech.addEventListener('pointerenter', open)
     tech.addEventListener('pointerleave', close)
     cleanups.push(() => {

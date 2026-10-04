@@ -27,7 +27,7 @@
 
 - 언어는 항상 마지막 세그먼트: `<resource>[:scope][:id]:<locale>`
 - 목록 태그는 고정 범위: `project:list:ko`
-- 상세 태그는 고정 식별자: `project:item:<projectId>:en`
+- 상세 태그는 고정 식별자: `project:item:<projectId>:en`. 모든 상세에 공용 태그 `project:items:en`도 붙는다
 - 기수 태그는 기수 이름 포함: `session:generation:25-26:ko`
 - 두 언어를 함께 담는 공개 조회 모델은 언어와 무관한 캐시 키 하나를 쓰고, 기존 언어별 무효화 계약을 지키기 위해
   두 언어 태그를 모두 붙인다.
@@ -37,8 +37,8 @@
 - `home:<locale>`
 - `generation:list:<locale>`, `generation:latest:<locale>`
 - `member:list:<locale>`, `member:generation:<generation>:<locale>`, `member:item:<memberId>:<locale>`
-- `project:list:<locale>`, `project:generation:<generation>:<locale>`, `project:item:<projectId>:<locale>`
-- `session:list:<locale>`, `session:generation:<generation>:<locale>`, `session:item:<sessionId>:<locale>`
+- `project:list:<locale>`, `project:generation:<generation>:<locale>`, `project:item:<projectId>:<locale>`, `project:items:<locale>`
+- `session:list:<locale>`, `session:generation:<generation>:<locale>`, `session:item:<sessionId>:<locale>`, `session:items:<locale>`
 - `sitemap:<locale>`
 
 ## 수명(TTL) 정책
@@ -73,6 +73,8 @@ Redis에 저장하는 항목에는 위 `expire`를 Redis TTL(`EX`)로 함께 건
 - 한 렌더링 안의 메타데이터·페이지 중복 호출은 React `cache()`가 없애고, 요청·인스턴스 간 공유는 remote 캐시가 맡는다.
 - 형식이 틀린 UUID는 캐시 함수에 들어가기 전에 거부한다. 공격자가 캐시 키를 무한히 늘리지 못하게 하기 위해서다.
 - `proxy.ts`는 공개 기수·상세 페이지에 대한 HTML 직접 요청에서 최소한의 존재 확인 쿼리를 한다(상세는 기본 키 조회).
+- 관리자 상세 화면(`/admin/<리소스>/<id>`)도 승인된 사용자의 HTML 직접 요청이면 proxy가 세션 토큰과 항목 존재를 확인하고,
+  없으면 전역 404로 rewrite해 상태 코드 404를 돌려준다(`lib/server/admin-route-exists.ts`).
   Cache Components 스트리밍에서도 진짜 HTTP 404를 돌려주기 위해서다. RSC·prefetch 요청은 건너뛰고, 페이지도 렌더링
   전에 따로 검증한다.
 - 세션·프로젝트 페이지는 두 개의 공용 조회 모델을 쓴다.
@@ -100,8 +102,11 @@ Redis에 저장하는 항목에는 위 `expire`를 Redis TTL(`EX`)로 함께 건
 - `invalidateMemberPublicCache`
 - `invalidateProjectPublicCache`
 - `invalidateSessionPublicCache`
-- `invalidateAllPublicCache` (사이드바의 새로고침 버튼, CORE·LEAD). 목록 캐시(홈, 허브(세션·프로젝트·멤버·캘린더), 기수 목록, 사이트맵)만 지우고
-  상세 페이지(`*:item:*`)는 지우지 않는다.
+- `invalidateAllPublicCache` (사이드바의 새로고침 버튼, CORE·LEAD). 목록 캐시(홈, 허브(세션·프로젝트·멤버·캘린더), 기수 목록, 사이트맵)는
+  즉시(`updateTag`) 지운다. 세션·프로젝트 상세는 공용 태그(`*:items:*`)를 `revalidateTag(..., 'max')`로 오래된 것으로
+  표시한다. id를 읽을 필요가 없고 상세 페이지를 한꺼번에 다시 만들지도 않는다. 대신 누른 뒤 첫 방문은 이전 내용을 받으며
+  백그라운드에서 새로 만들고, 그다음 방문부터 새 내용이 보인다. 공용 태그가 없던 때 Redis에 저장된 상세 캐시는 수명이
+  끝날 때까지 이 버튼으로 지워지지 않는다.
 
 쓰기의 기본 순서:
 

@@ -6,14 +6,14 @@ import {
   renderSessionSocialImage,
   type SessionSocialImageParams,
 } from '@/lib/seo/social-image-routes'
+import {
+  SOCIAL_IMAGE_CONTENT_TYPE,
+  SOCIAL_IMAGE_SIZE,
+} from '@/lib/seo/social-image-config'
 
-/**
- * 이미지 크기. `lib/seo/social-image-config.ts`의 `SOCIAL_IMAGE_SIZE`와 같은 값이어야 한다
- * (Next가 이 파일의 export를 직접 읽으므로 리터럴로 둔다).
- */
-export const size = { width: 1200, height: 630 }
-/** 이미지 형식(`SOCIAL_IMAGE_CONTENT_TYPE`과 같은 값). */
-export const contentType = 'image/jpeg'
+/** 이미지 크기와 형식. 모든 소셜 이미지가 `lib/seo/social-image-config.ts`의 규격을 함께 쓴다. */
+export const size = SOCIAL_IMAGE_SIZE
+export const contentType = SOCIAL_IMAGE_CONTENT_TYPE
 
 /** 언어·버전별 이미지 id와 대체 텍스트. 내용이 바뀌면 id(버전)가 바뀌어 SNS 캐시를 우회한다. */
 export function generateImageMetadata({

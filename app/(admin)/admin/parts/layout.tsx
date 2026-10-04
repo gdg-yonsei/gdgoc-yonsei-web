@@ -1,17 +1,6 @@
 /**
- * 파트 관리 영역(목록·상세·생성·수정 전체)의 권한 경계(서버 레이아웃). `partsPage` 리소스에 `get` 권한이 없으면 403(`forbidden()`).
- * 권한 표는 `lib/server/permission/policy.ts`에 있다.
+ * 파트 관리 영역(목록·상세·생성·수정 전체)의 권한 경계. `partsPage` 리소스에 `get` 권한이 없으면 403(`forbidden()`).
  */
-import { ReactNode } from 'react'
-import { requirePermission } from '@/lib/server/permission/require-permission'
+import { permissionLayout } from '@/lib/server/permission/permission-layout'
 
-/** 권한을 확인한 뒤 하위 페이지를 그대로 렌더링한다. */
-export default async function PartsLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
-  await requirePermission('get', 'partsPage')
-
-  return <>{children}</>
-}
+export default permissionLayout('get', 'partsPage')

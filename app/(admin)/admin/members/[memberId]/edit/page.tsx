@@ -22,6 +22,7 @@ import MemberRoleManager from '@/app/(admin)/admin/members/[memberId]/edit/membe
 import DataInput from '@/app/components/admin/data-input'
 import DataForm from '@/app/components/admin/data-form'
 import { Metadata } from 'next'
+import { savedVersionKey } from '@/lib/admin/form-version'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { connection } from 'next/server'
@@ -34,9 +35,7 @@ export const metadata: Metadata = {
 /** 멤버 수정 폼. 수정할 수 없으면 403, 멤버가 없으면 404. */
 export default async function EditMemberPage({
   params,
-}: {
-  params: Promise<{ memberId: string }>
-}) {
+}: PageProps<'/admin/members/[memberId]/edit'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -74,7 +73,9 @@ export default async function EditMemberPage({
         )}
       </div>
       <div className={'flex flex-col gap-4'}>
+        {/* 저장된 버전마다 key를 바꿔, 저장 후 돌아왔을 때 이전 편집 내용 대신 저장된 값을 보여 준다. */}
         <DataForm
+          key={savedVersionKey(memberData.updatedAt)}
           action={updateMemberActionWithMemberId}
           className={'admin-form-grid w-full gap-4'}
         >

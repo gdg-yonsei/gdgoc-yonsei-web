@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import PartMembersInput from '@/app/components/admin/part-members-input'
+import { NO_MEMBERSHIP } from '@/lib/admin/member-options'
 
 const members = [
   {
@@ -54,6 +55,48 @@ function setup(defaultValue: string[] = []) {
 }
 
 describe('part member filters', () => {
+  it('keeps same-named parts distinct with any generation and clears an incompatible part', () => {
+    render(
+      <PartMembersInput
+        members={[
+          members[0]!,
+          {
+            ...members[1]!,
+            usersToParts: [
+              {
+                part: {
+                  id: 3,
+                  name: 'Frontend',
+                  generationsId: 2,
+                  generation: { id: 2, name: '2nd' },
+                },
+              },
+            ],
+          },
+        ]}
+        title="Members"
+        name="membersList"
+        defaultValue={[]}
+      />
+    )
+    const part = screen.getByLabelText('Part filter')
+    fireEvent.change(part, { target: { value: '1' } })
+    expect(part).toHaveValue('1')
+    expect(screen.getByRole('button', { name: /Kim Alice/ })).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: /Park Bob/ })
+    ).not.toBeInTheDocument()
+    fireEvent.change(part, { target: { value: '3' } })
+    expect(screen.getByRole('button', { name: /Park Bob/ })).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: /Kim Alice/ })
+    ).not.toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Generation filter'), {
+      target: { value: '1st' },
+    })
+    expect(part).toHaveValue('')
+  })
+
   it('hides candidates initially and retains selections when filters change', () => {
     const { container } = setup(['bob'])
     expect(
@@ -89,7 +132,7 @@ describe('part member filters', () => {
     })
     expect(screen.getAllByRole('button', { name: /Kim Alice/ })).toHaveLength(1)
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: '1' },
+      target: { value: '1st' },
     })
     fireEvent.change(screen.getByLabelText('Part filter'), {
       target: { value: '1' },
@@ -99,7 +142,7 @@ describe('part member filters', () => {
       screen.queryByRole('option', { name: 'Backend' })
     ).not.toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: '2' },
+      target: { value: '2nd' },
     })
     expect(screen.getByLabelText('Part filter')).toHaveValue('')
     fireEvent.change(screen.getByLabelText('Part filter'), {
@@ -111,7 +154,7 @@ describe('part member filters', () => {
   it('finds unassigned members and hides candidates again when filters clear', () => {
     setup()
     fireEvent.change(screen.getByLabelText('Generation filter'), {
-      target: { value: 'none' },
+      target: { value: NO_MEMBERSHIP },
     })
     expect(screen.getByRole('button', { name: /Park Bob/ })).toBeVisible()
     expect(

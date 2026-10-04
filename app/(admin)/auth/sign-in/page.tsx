@@ -26,9 +26,7 @@ export const metadata: Metadata = {
  */
 export default async function SignInPage({
   searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}) {
+}: PageProps<'/auth/sign-in'>) {
   // MCP 클라이언트의 OAuth 요청으로 왔다면 로그인 뒤 그 요청을 이어 간다.
   const query = oauthQueryString(await searchParams)
   const callbackURL = postLoginPath(query)

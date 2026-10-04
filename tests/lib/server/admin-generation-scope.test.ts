@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockHeaders = vi.fn()
+const mockCookies = vi.fn()
 const mockGetUserRole = vi.fn()
 const mockSelect = vi.fn()
 const mockSelectDistinct = vi.fn()
 
 vi.mock('next/headers', () => ({
-  headers: mockHeaders,
+  cookies: mockCookies,
 }))
 
 vi.mock('@/lib/server/fetcher/admin/get-user-role', () => ({
@@ -43,8 +43,8 @@ function createSelectDistinctOrderByChain(result: unknown) {
 describe('admin generation scope', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockHeaders.mockResolvedValue({
-      get: vi.fn(() => null),
+    mockCookies.mockResolvedValue({
+      get: vi.fn(() => undefined),
     })
   })
 
@@ -56,9 +56,9 @@ describe('admin generation scope', () => {
         { id: 11, name: '11th' },
       ])
     )
-    mockHeaders.mockResolvedValue({
+    mockCookies.mockResolvedValue({
       get: vi.fn((name: string) =>
-        name === 'cookie' ? 'admin-generation-scope=all' : null
+        name === 'admin-generation-scope' ? { name, value: 'all' } : undefined
       ),
     })
 
@@ -84,9 +84,9 @@ describe('admin generation scope', () => {
         { id: 10, name: '10th' },
       ])
     )
-    mockHeaders.mockResolvedValue({
+    mockCookies.mockResolvedValue({
       get: vi.fn((name: string) =>
-        name === 'cookie' ? 'admin-generation-scope=999' : null
+        name === 'admin-generation-scope' ? { name, value: '999' } : undefined
       ),
     })
 

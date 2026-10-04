@@ -180,14 +180,15 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
           .add(beneath, { scale: [1, 0.94], ...recede }, start)
           .add(shade, { opacity: [0, 0.28], ...recede }, start)
       }
-      scrubs.push(() =>
+      // scrub()이 돌려주는 애니메이션은 then이 있는 객체라 반환값으로 흘리지 않는다.
+      scrubs.push(() => {
         scrub(timeline, {
           target: stack,
           enter: `${landing.enter} ${inFlow(index)}`,
           leave: `${landing.leave} ${inFlow(index)}`,
           sync: true,
         })
-      )
+      })
     })
     scrubs.forEach((start) => start())
 

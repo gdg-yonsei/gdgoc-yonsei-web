@@ -20,20 +20,22 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   const { t } = useAdminI18n()
   const [copied, setCopied] = useState(false)
 
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // 클립보드 권한이 없으면 사용자가 직접 선택해 복사할 수 있다.
+    }
+  }
+
   return (
     <button
       type={'button'}
       className={'admin-btn-ghost min-h-8 px-2 py-1'}
       aria-label={`${t('copy')}: ${label}`}
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(value)
-          setCopied(true)
-          setTimeout(() => setCopied(false), 2000)
-        } catch {
-          // 클립보드 권한이 없으면 사용자가 직접 선택해 복사할 수 있다.
-        }
-      }}
+      onClick={() => void copy()}
     >
       {copied ? (
         <CheckIcon className={'text-success size-4'} aria-hidden={'true'} />

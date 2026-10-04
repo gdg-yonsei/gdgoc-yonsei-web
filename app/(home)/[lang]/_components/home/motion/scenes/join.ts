@@ -114,7 +114,7 @@ const join: Scene = ({ root, scope, matches }) => {
     for (const bracket of [left, right]) {
       const poster = bracket.querySelector<HTMLElement>('.bracket-poster')
       if (!poster) continue
-      const grip = () => scope.methods.grip?.(poster)
+      const grip = () => void scope.methods.grip?.(poster)
       poster.addEventListener('pointerenter', grip, { once: true })
       grips.push(() => poster.removeEventListener('pointerenter', grip))
     }

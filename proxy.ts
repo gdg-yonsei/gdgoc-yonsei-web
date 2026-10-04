@@ -8,6 +8,8 @@
  * 3. 존재하지 않는 기수·상세 페이지를 DB로 확인해 404 HTML을 바로 돌려준다. Cache Components는
  *    페이지를 스트리밍하므로 페이지 안에서 `notFound()`를 부르면 상태 코드가 이미 200으로 나간
  *    뒤일 수 있다. 실제 404 상태 코드를 보장하려고 여기서 막는다.
+ * 4. 관리자 상세 화면도 같은 이유로, 승인된 사용자의 요청이면 항목이 있는지 확인하고 없으면 전역
+ *    404로 rewrite한다(`lib/server/admin-route-exists.ts`).
  *
  * API, 인증, `.well-known`, 폰트, 루트 정적 파일은 건드리지 않는다.
  */
@@ -30,6 +32,11 @@ import {
   type BracketSide,
 } from '@/lib/site/bracket-geometry'
 import { CAPSULE_HEX } from '@/lib/site/brand'
+import {
+  adminRouteExists,
+  getAdminRouteIdentity,
+  hasApprovedSession,
+} from '@/lib/server/admin-route-exists'
 
 import { match as matchLocale } from '@formatjs/intl-localematcher'
 import Negotiator from 'negotiator'
@@ -80,18 +87,45 @@ type PublicRouteIdentity =
   | { kind: 'session'; generation: string; id: string }
 
 /**
- * 요청이 존재 확인 대상 페이지인지 판별한다. HTML 문서 요청(GET/HEAD)만 대상이며,
- * 클라이언트 내비게이션의 RSC 요청(`text/x-component`)은 페이지가 처리하게 둔다.
+ * HTML 문서 요청(GET/HEAD)인지. 클라이언트 내비게이션의 RSC 요청(`text/x-component`)은 상태 코드가
+ * 화면에 드러나지 않으므로 존재 확인 없이 페이지가 처리하게 둔다.
  */
-function getPublicRouteIdentity(
-  request: NextRequest
-): PublicRouteIdentity | null {
-  if (!['GET', 'HEAD'].includes(request.method)) {
+function isDocumentRequest(request: NextRequest) {
+  return (
+    ['GET', 'HEAD'].includes(request.method) &&
+    !(request.headers.get('accept') ?? '').includes('text/x-component')
+  )
+}
+
+/** 어떤 라우트와도 맞지 않는 주소. rewrite하면 `app/global-not-found.tsx`가 404 상태로 응답한다. */
+const ADMIN_NOT_FOUND_PATH = '/admin/__not-found'
+
+/**
+ * 존재하지 않는 관리자 상세 화면이면 일치하는 라우트가 없는 주소로 rewrite해 전역 404를 진짜 404 상태로
+ * 돌려준다. 확인 대상이 아니거나 항목이 있으면 `null`.
+ * @param adminPathname 언어 접두사를 뗀 `/admin/...` 경로
+ */
+async function adminRouteNotFound(request: NextRequest, adminPathname: string) {
+  const identity = getAdminRouteIdentity(adminPathname)
+  if (
+    !identity ||
+    !isDocumentRequest(request) ||
+    !(await hasApprovedSession(request)) ||
+    (await adminRouteExists(identity))
+  ) {
     return null
   }
 
-  const accept = request.headers.get('accept') ?? ''
-  if (accept.includes('text/x-component')) {
+  const notFoundUrl = request.nextUrl.clone()
+  notFoundUrl.pathname = ADMIN_NOT_FOUND_PATH
+  return NextResponse.rewrite(notFoundUrl)
+}
+
+/** 요청이 존재 확인 대상 공개 페이지인지 판별한다. HTML 문서 요청만 대상이다. */
+function getPublicRouteIdentity(
+  request: NextRequest
+): PublicRouteIdentity | null {
+  if (!isDocumentRequest(request)) {
     return null
   }
 
@@ -261,6 +295,14 @@ export async function proxy(request: NextRequest) {
     isLocale(localeFromPath) && pathnameSegments[2] === 'admin'
 
   if (isLocalizedAdminPath) {
+    const adminNotFound = await adminRouteNotFound(
+      request,
+      `/${pathnameSegments.slice(2).join('/')}`
+    )
+    if (adminNotFound) {
+      return adminNotFound
+    }
+
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set('x-admin-locale', localeFromPath)
     const rewriteUrl = request.nextUrl.clone()
@@ -284,6 +326,11 @@ export async function proxy(request: NextRequest) {
   const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
 
   if (isAdminPath) {
+    const adminNotFound = await adminRouteNotFound(request, pathname)
+    if (adminNotFound) {
+      return adminNotFound
+    }
+
     const localeFromCookie = request.cookies.get(ADMIN_LOCALE_COOKIE)?.value
     const locale = isLocale(localeFromCookie)
       ? localeFromCookie

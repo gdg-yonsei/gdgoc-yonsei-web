@@ -96,7 +96,7 @@ test.describe('Better Auth passkey lifecycle', () => {
           await dialog.accept()
           resolve()
         } catch (error) {
-          reject(error)
+          reject(error instanceof Error ? error : new Error(String(error)))
         }
       })
     })

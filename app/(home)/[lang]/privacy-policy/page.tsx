@@ -7,12 +7,9 @@ import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import { Metadata } from 'next'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { localeHref } from '@/lib/site/routes'
-
-type Props = {
-  params: Promise<{ lang: string }>
-}
 
 /** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
@@ -20,8 +17,8 @@ export function generateStaticParams() {
 }
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const lang = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLocale()
 
   if (lang === 'ko') {
     return createLocalizedMetadata({
@@ -43,8 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** 페이지 본문. */
-export default async function PrivacyPolicyPage({ params }: Props) {
-  const lang = toLocale((await params).lang)
+export default async function PrivacyPolicyPage() {
+  const lang = await getLocale()
   const common = archiveCommonCopy[lang]
   const isKorean = lang === 'ko'
 

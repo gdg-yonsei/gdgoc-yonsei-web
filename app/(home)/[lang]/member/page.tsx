@@ -22,10 +22,9 @@ import {
 } from '@/lib/seo/metadata'
 import { fillTemplate } from '@/lib/format/text'
 import { breadcrumbList, collectionPage } from '@/lib/site/json-ld'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { generationPath, localeHref } from '@/lib/site/routes'
-
-type Props = { params: Promise<{ lang: string }> }
 
 const en = memberArchiveCopy.en
 const ko = memberArchiveCopy.ko
@@ -36,8 +35,8 @@ export function generateStaticParams() {
 }
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
   const copy = memberArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -49,10 +48,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** 페이지 본문. */
-export default function MemberIndex({ params }: Props) {
+export default function MemberIndex() {
   return (
     <ArchiveHubShell
-      params={params}
       section="members"
       testId="member-directory-shell"
       tag={en.tag}
@@ -64,13 +62,13 @@ export default function MemberIndex({ params }: Props) {
         </ArchiveListSkeleton>
       }
     >
-      <MemberHubContent params={params} />
+      <MemberHubContent />
     </ArchiveHubShell>
   )
 }
 
-async function MemberHubContent({ params }: Props) {
-  const lang = toLocale((await params).lang)
+async function MemberHubContent() {
+  const lang = await getLocale()
   const copy = memberArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const generations = [...(await getGenerationSummaries())].sort((a, b) =>

@@ -25,7 +25,8 @@ function readFilesAsDataURLs(files: FileList): Promise<string[]> {
         new Promise<string>((resolve, reject) => {
           const reader = new FileReader()
           reader.onload = () => resolve(reader.result as string)
-          reader.onerror = () => reject(reader.error)
+          reader.onerror = () =>
+            reject(reader.error ?? new Error('Could not read the file'))
           reader.readAsDataURL(file)
         })
     )
@@ -46,7 +47,7 @@ export default function DataMultipleImageInput({
   name: string
   title: string
   baseUrl: string
-  defaultValue?: string[]
+  defaultValue?: string[] | undefined
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -112,7 +113,8 @@ export default function DataMultipleImageInput({
         accept="image/*"
         multiple={true}
         hidden={true}
-        onChange={saveImgFile}
+        // 업로드 오류는 saveImgFile 안에서 처리한다.
+        onChange={() => void saveImgFile()}
       />
       <input
         name={name}

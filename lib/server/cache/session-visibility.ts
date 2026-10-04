@@ -20,6 +20,8 @@ import { sessionWallClockNow } from '@/lib/format/datetime'
  * `sessionWallClockNow()`로 버킷을 만든다. 그렇지 않으면 세션이 끝나고 약 9시간 뒤에야
  * 공개 사이트에 나타난다.
  */
+// 'use cache' 함수는 await가 없어도 async여야 한다.
+// eslint-disable-next-line @typescript-eslint/require-await
 async function getSharedSessionVisibilityBucket(): Promise<string> {
   'use cache: remote'
 

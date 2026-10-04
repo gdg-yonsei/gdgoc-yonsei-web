@@ -78,7 +78,7 @@ const parts: Scene = ({ root, scope, matches, belowFold }) => {
       })
     })
     for (const card of modules) {
-      const light = () => scope.methods.light?.(card)
+      const light = () => void scope.methods.light?.(card)
       card.addEventListener('pointerenter', light, { once: true })
       cleanups.push(() => card.removeEventListener('pointerenter', light))
     }
@@ -104,8 +104,8 @@ const parts: Scene = ({ root, scope, matches, belowFold }) => {
         alternate: true,
       })
     })
-    const start = () => scope.methods.ride?.(true)
-    const stop = () => scope.methods.ride?.(false)
+    const start = () => void scope.methods.ride?.(true)
+    const stop = () => void scope.methods.ride?.(false)
     curveModule.addEventListener('pointerenter', start)
     curveModule.addEventListener('pointerleave', stop)
     curveModule.addEventListener('focusin', start)

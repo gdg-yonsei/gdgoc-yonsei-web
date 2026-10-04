@@ -94,5 +94,5 @@ export const getMembers = cache(async (scope?: AdminGenerationScope | null) => {
     }
 
     return (left.name ?? '').localeCompare(right.name ?? '')
-  }) as AdminMemberListItem[]
+  })
 })

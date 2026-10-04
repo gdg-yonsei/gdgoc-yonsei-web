@@ -11,6 +11,9 @@ export default defineConfig({
       'next/font/google': fileURLToPath(
         new URL('./tests/mocks/next-font-google.ts', import.meta.url)
       ),
+      'next/root-params': fileURLToPath(
+        new URL('./tests/mocks/next-root-params.ts', import.meta.url)
+      ),
     },
   },
   test: {

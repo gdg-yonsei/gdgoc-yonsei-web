@@ -6,7 +6,7 @@
  */
 import 'server-only'
 
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { i18n, type Locale } from '@/lib/i18n'
 import { getSiteEnv } from '@/lib/server/env'
 
@@ -14,6 +14,27 @@ import { getSiteEnv } from '@/lib/server/env'
 const OPEN_GRAPH_LOCALES: Record<Locale, string> = {
   en: 'en_US',
   ko: 'ko_KR',
+}
+
+/**
+ * 모든 루트 레이아웃(공개 사이트, 관리자, 전역 404)이 공유하는 메타데이터(상대 URL의 기준 주소 등).
+ * 루트 레이아웃이 여럿이고 그 위에 공통 레이아웃이 없으므로 각 루트 레이아웃이 이 값을 펼쳐 쓴다.
+ */
+export function rootMetadata(): Metadata {
+  return {
+    metadataBase: new URL(getSiteEnv().NEXT_PUBLIC_SITE_URL),
+    applicationName: 'GDGoC Yonsei',
+    creator: 'GDGoC Yonsei',
+    publisher: 'GDGoC Yonsei',
+    category: 'technology',
+    referrer: 'origin-when-cross-origin',
+  }
+}
+
+/** 모든 루트 레이아웃이 공유하는 모바일 뷰포트 설정. */
+export const rootViewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 /** 앞뒤 슬래시를 정리해 `/a/b` 또는 빈 문자열로 맞춘다. */

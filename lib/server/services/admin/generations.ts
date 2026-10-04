@@ -15,6 +15,7 @@ import { invalidateGenerationPublicCache } from '@/lib/server/cache'
 import { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import { getGenerations } from '@/lib/server/fetcher/admin/get-generations'
 import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import {
   authorize,
   canAccessGeneration,
@@ -116,7 +117,7 @@ export async function createGeneration(
   const parsed = parseGenerationInput(input)
   if (!parsed.ok) return parsed
 
-  try {
+  return withDbErrors('admin.generations.create', async () => {
     const created = await db
       .insert(generations)
       .values({
@@ -133,10 +134,7 @@ export async function createGeneration(
     })
 
     return ok({ id: created[0]?.id ?? 0 })
-  } catch (e) {
-    logger.error('admin.generations.create', e)
-    return fail('INTERNAL', 'DB Update Error')
-  }
+  })
 }
 
 /** 기수 이름·기간을 고친다. 이름이 바뀌면 이전·새 이름의 공개 캐시를 모두 지운다. */
@@ -152,37 +150,38 @@ export async function updateGeneration(
   const parsed = parseGenerationInput(input)
   if (!parsed.ok) return parsed
 
-  try {
-    const previousGeneration = await db.query.generations.findFirst({
-      where: eq(generations.id, generationId),
-      columns: {
-        name: true,
-      },
-    })
-    if (!previousGeneration) return fail('NOT_FOUND', NOT_FOUND)
-
-    await db
-      .update(generations)
-      .set({
-        name: parsed.data.name,
-        startDate: parsed.data.startDate,
-        endDate: parsed.data.endDate,
-        updatedAt: new Date(),
+  return withDbErrors(
+    'admin.generations.update',
+    async () => {
+      const previousGeneration = await db.query.generations.findFirst({
+        where: eq(generations.id, generationId),
+        columns: {
+          name: true,
+        },
       })
-      .where(eq(generations.id, generationId))
+      if (!previousGeneration) return fail('NOT_FOUND', NOT_FOUND)
 
-    invalidateGenerationPublicCache({
-      previousGenerationName: previousGeneration.name,
-      nextGenerationName: parsed.data.name,
-    })
-  } catch (e) {
-    logger.error('admin.generations.update', e, {
+      await db
+        .update(generations)
+        .set({
+          name: parsed.data.name,
+          startDate: parsed.data.startDate,
+          endDate: parsed.data.endDate,
+          updatedAt: new Date(),
+        })
+        .where(eq(generations.id, generationId))
+
+      invalidateGenerationPublicCache({
+        previousGenerationName: previousGeneration.name,
+        nextGenerationName: parsed.data.name,
+      })
+
+      return ok({ id: generationId })
+    },
+    {
       generationId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: generationId })
+    }
+  )
 }
 
 /** 기수를 지운다. 파트·프로젝트도 DB 제약(cascade)으로 함께 지워진다. */

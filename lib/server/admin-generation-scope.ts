@@ -8,7 +8,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import { headers } from 'next/headers'
+import { cookies } from 'next/headers'
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import { loadAccessibleGenerations } from '@/lib/server/services/admin/authorize'
 
@@ -97,28 +97,6 @@ export function resolveScopeFromOptions(
   )
 }
 
-/** `Cookie` 헤더에서 쿠키 하나의 값을 꺼낸다. */
-function getCookieFromHeader(
-  cookieHeader: string | null,
-  cookieName: string
-): string | undefined {
-  if (!cookieHeader) {
-    return undefined
-  }
-
-  const encodedCookieName = `${cookieName}=`
-  const cookie = cookieHeader
-    .split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(encodedCookieName))
-
-  if (!cookie) {
-    return undefined
-  }
-
-  return decodeURIComponent(cookie.slice(encodedCookieName.length))
-}
-
 /** 사용자가 접근할 수 있는 기수 목록(LEAD는 전체). */
 async function loadAccessibleGenerationOptions(
   userId: string,
@@ -157,14 +135,11 @@ export const resolveAdminGenerationScope = cache(async function (
     return { canAccessAll, options, scope: null, selectedGeneration: null }
   }
 
-  const headerStore = await headers()
+  const cookieStore = await cookies()
   const scope = resolveScopeFromOptions(
     options,
     canAccessAll,
-    getCookieFromHeader(
-      headerStore.get('cookie'),
-      ADMIN_GENERATION_SCOPE_COOKIE
-    )
+    cookieStore.get(ADMIN_GENERATION_SCOPE_COOKIE)?.value
   )
   const selectedGeneration =
     scope?.kind === 'generation'

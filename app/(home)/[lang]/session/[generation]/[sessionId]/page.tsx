@@ -38,12 +38,11 @@ import {
   sessionTitle,
 } from '@/lib/site/session-log'
 import SessionDetailLoading from './loading'
-import { pickLocalized, toLocale } from '@/lib/i18n'
+import { pickLocalized } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { generationPath, sessionPath } from '@/lib/site/routes'
 
-type Props = {
-  params: Promise<{ lang: string; generation: string; sessionId: string }>
-}
+type Props = PageProps<'/[lang]/session/[generation]/[sessionId]'>
 
 async function loadSession(sessionId: string, generation: string) {
   const visibilityBucket = await getCachedSessionVisibilityBucket()
@@ -70,8 +69,8 @@ function fallbackDescription(
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { lang, generation, sessionId } = await params
-  const locale = toLocale(lang)
+  const { generation, sessionId } = await params
+  const locale = await getLocale()
   const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {
@@ -105,27 +104,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /** 페이지 본문. */
 export default async function SessionDetailPage({ params }: Props) {
-  const resolved = await params
+  const { generation, sessionId } = await params
 
   return (
     <PageTransition>
       <Suspense fallback={<SessionDetailLoading />}>
-        <SessionDetail {...resolved} />
+        <SessionDetail generation={generation} sessionId={sessionId} />
       </Suspense>
     </PageTransition>
   )
 }
 
 async function SessionDetail({
-  lang,
   generation,
   sessionId,
 }: {
-  lang: string
   generation: string
   sessionId: string
 }) {
-  const locale = toLocale(lang)
+  const locale = await getLocale()
   const loaded = await loadSession(sessionId, generation)
 
   if (!loaded) {

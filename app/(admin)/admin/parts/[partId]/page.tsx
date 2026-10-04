@@ -21,9 +21,7 @@ import {
 /** 탭 제목에 파트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ partId: string }>
-}): Promise<Metadata> {
+}: PageProps<'/admin/parts/[partId]'>): Promise<Metadata> {
   const { partId } = await params
   const partData = await getPart(Number(partId))
 
@@ -35,9 +33,7 @@ export async function generateMetadata({
 /** 파트 상세. */
 export default async function PartPage({
   params,
-}: {
-  params: Promise<{ partId: string }>
-}) {
+}: PageProps<'/admin/parts/[partId]'>) {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params

@@ -87,7 +87,7 @@ describe('admin api route validations', () => {
       }
     )
 
-    const response = await POST(request as never)
+    const response = await POST(request)
 
     expect(response.status).toBe(400)
     expect(mockHandlePermission).not.toHaveBeenCalled()
@@ -108,7 +108,7 @@ describe('admin api route validations', () => {
       }
     )
 
-    const response = await POST(request as never)
+    const response = await POST(request)
     const json = await response.json()
 
     expect(response.status).toBe(200)
@@ -133,7 +133,7 @@ describe('admin api route validations', () => {
       }
     )
 
-    const response = await POST(request as never)
+    const response = await POST(request)
 
     expect(response.status).toBe(400)
   })

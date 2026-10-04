@@ -9,7 +9,7 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
 
 /** 선택지로 보여 줄 멤버. */
-type MemberOption = {
+export type ProjectMemberOption = {
   id: string
   name: string | null
   firstName: string | null
@@ -31,7 +31,7 @@ export default function MembersSelectInput({
   members,
 }: {
   defaultValue: string[]
-  members: MemberOption[]
+  members: ProjectMemberOption[]
 }) {
   const { t } = useAdminI18n()
   const [participants, setParticipants] = useState<string[]>(defaultValue)

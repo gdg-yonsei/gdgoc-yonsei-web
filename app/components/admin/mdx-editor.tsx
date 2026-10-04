@@ -22,7 +22,7 @@ export default function MDXEditor({
   title: string
   name: string
   placeholder: string
-  defaultValue?: string | null
+  defaultValue?: string | null | undefined
 }) {
   const { t } = useAdminI18n()
   const [content, setContent] = useState<string | null>(defaultValue)

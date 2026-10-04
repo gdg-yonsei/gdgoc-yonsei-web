@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import PrivacyPolicyPage from '@/app/(home)/[lang]/privacy-policy/page'
 import TermsOfServicePage from '@/app/(home)/[lang]/terms-of-service/page'
+import { setRootParams } from '@/tests/mocks/next-root-params'
 
 const pages = [
   ['privacy', PrivacyPolicyPage],
@@ -12,9 +13,8 @@ describe.each(pages)('%s page', (_, Page) => {
   it.each(['en', 'ko'] as const)(
     '%s: one h1, a breadcrumb and no hard-coded light surfaces',
     async (lang) => {
-      const { container } = render(
-        await Page({ params: Promise.resolve({ lang }) })
-      )
+      setRootParams({ lang })
+      const { container } = render(await Page())
 
       expect(container.querySelectorAll('h1')).toHaveLength(1)
       expect(

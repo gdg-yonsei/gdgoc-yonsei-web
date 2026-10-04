@@ -3,6 +3,9 @@
  */
 import 'server-only'
 
+import { and, eq } from 'drizzle-orm'
+import { db } from '@/db'
+import { oauthConsent } from '@/db/schema/oauth'
 import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import {
   SCOPES,
@@ -13,10 +16,24 @@ import {
 /** `requireMcpAuth` 가 검증을 마친 access token 클레임. */
 export type AccessTokenClaims = Record<string, unknown>
 
+/** 사용자가 그 클라이언트에 준 동의가 아직 있는지. */
+async function hasConsent(userId: string, clientId: string) {
+  const consent = await db
+    .select({ id: oauthConsent.id })
+    .from(oauthConsent)
+    .where(
+      and(eq(oauthConsent.userId, userId), eq(oauthConsent.clientId, clientId))
+    )
+    .limit(1)
+  return consent.length > 0
+}
+
 /**
  * 검증된 토큰 클레임을 Actor 로 바꾼다.
  * 역할은 토큰에 넣지 않고 매 요청 DB 에서 읽는다 — 강등·삭제가 즉시 반영된다.
- * 사용자가 없거나 UNVERIFIED 면 null(= 401).
+ * 사용자가 그 클라이언트에 준 동의도 매 요청 확인한다 — 관리자 화면에서 연결을 끊으면
+ * (`lib/server/services/admin/mcp-connections.ts`) 아직 만료되지 않은 JWT 도 바로 거절된다.
+ * 사용자가 없거나 UNVERIFIED 거나 동의가 없으면 null(= 401).
  */
 export async function actorFromClaims(
   claims: AccessTokenClaims
@@ -39,11 +56,13 @@ export async function actorFromClaims(
         ? claims.client_id
         : undefined
 
+  if (!clientId || !(await hasConsent(userId, clientId))) return null
+
   return {
     userId,
     role,
     scopes,
     via: 'mcp',
-    ...(clientId ? { clientId } : {}),
+    clientId,
   }
 }

@@ -31,10 +31,9 @@ import {
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { projectPath } from '@/lib/site/routes'
-
-type Props = { params: Promise<{ lang: string }> }
 
 const en = projectArchiveCopy.en
 const ko = projectArchiveCopy.ko
@@ -45,8 +44,8 @@ export function generateStaticParams() {
 }
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
   const copy = projectArchiveCopy[locale]
 
   return createLocalizedMetadata({
@@ -58,10 +57,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** 페이지 본문. */
-export default function ProjectHubPage({ params }: Props) {
+export default function ProjectHubPage() {
   return (
     <ArchiveHubShell
-      params={params}
       section="projects"
       testId="project-showcase-shell"
       tag={en.tag}
@@ -73,13 +71,13 @@ export default function ProjectHubPage({ params }: Props) {
         </ArchiveListSkeleton>
       }
     >
-      <ProjectHubContent params={params} />
+      <ProjectHubContent />
     </ArchiveHubShell>
   )
 }
 
-async function ProjectHubContent({ params }: Props) {
-  const lang = toLocale((await params).lang)
+async function ProjectHubContent() {
+  const lang = await getLocale()
   const copy = projectArchiveCopy[lang]
   const common = archiveCommonCopy[lang]
   const [showcase, generations] = await Promise.all([

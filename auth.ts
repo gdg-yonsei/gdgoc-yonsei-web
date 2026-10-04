@@ -76,9 +76,11 @@ export const auth = betterAuth({
   }),
   hooks: {
     // MCP 클라이언트 동적 등록 요청을 보정한다(`lib/mcp/registration.ts`).
+    // Better Auth 훅은 Promise를 돌려줘야 해서 await가 없어도 async로 둔다.
+    // eslint-disable-next-line @typescript-eslint/require-await
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== '/oauth2/register') return
-      const body = withLoopbackApplicationType(ctx.body)
+      const body = withLoopbackApplicationType<unknown>(ctx.body)
       if (body !== ctx.body) {
         return { context: { ...ctx, body } }
       }

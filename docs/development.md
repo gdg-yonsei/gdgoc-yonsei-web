@@ -21,8 +21,9 @@ pnpm db:seed              # (선택) 개발용 데이터
 pnpm dev                  # http://localhost:3000
 ```
 
-> **주의: `.env`가 운영 DB를 가리키면 안 된다.** `pnpm build`, `pnpm db:migrate`, `pnpm db:push`는 `.env`의 DB에
-> 바로 마이그레이션을 적용한다. 시드와 e2e는 로컬 DB가 아니면 실행을 거부하지만, 마이그레이션과 빌드는 막지 않는다.
+> **주의: `.env`가 운영 DB를 가리키면 안 된다.** `pnpm db:migrate`, `pnpm db:push`, `pnpm build:production`(배포 전용)은
+> `.env`의 DB에 바로 마이그레이션을 적용한다. 시드와 e2e는 로컬 DB가 아니면 실행을 거부하지만, 마이그레이션은 막지 않는다.
+> `pnpm build`는 마이그레이션을 하지 않지만 정적 경로를 만들려고 DB를 읽고, `auth:prepare`가 MCP 리소스 행을 넣는다.
 
 ## 3. 환경 변수
 
@@ -105,4 +106,4 @@ pnpm test:e2e             # next dev를 3100 포트로 띄우고 실행
 | 관리자 화면 목록이 비어 있음            | 사이드바의 기수 범위. LEAD가 아니면 자신이 속한 파트의 기수만 보인다                         |
 | 공개 페이지에 수정이 안 보임            | 개발 모드에서도 캐시가 동작한다. 관리자 사이드바의 새로고침 버튼(CORE·LEAD) 또는 서버 재시작 |
 | 이미지 업로드 실패                      | R2 환경 변수, 버킷 CORS(PUT 허용), `next.config.ts`의 `images.remotePatterns`                |
-| `pnpm build`가 DB 오류                  | 빌드는 마이그레이션부터 한다. 운영 DB를 가리키고 있지 않은지 먼저 확인                       |
+| `pnpm build`가 DB 오류                  | 빌드는 DB를 읽는다. 대상 DB에 마이그레이션이 적용됐는지(`pnpm db:migrate`) 확인              |

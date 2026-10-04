@@ -257,6 +257,36 @@ export const ko = {
   editor: '에디터',
   preview: '미리보기',
   displayOrderHint: '작은 숫자의 파트부터 표시됩니다.',
+  // ── MCP 연결 관리 ──
+  mcpConnections: '연결된 AI 도구',
+  mcpConnectionsDescription:
+    '내 권한으로 GYMS를 쓰도록 허락한 MCP 클라이언트(Claude, Codex, ChatGPT, Cursor …)입니다. 연결을 끊으면 바로 접근이 막히고, 다시 쓰려면 클라이언트에서 다시 연결합니다.',
+  mcpNoConnections: '연결된 AI 도구가 없습니다.',
+  mcpNoConnectionsHint:
+    '대시보드의 설치 안내를 따라 MCP 클라이언트를 연결하세요.',
+  mcpUnnamedClient: '이름 없는 클라이언트',
+  mcpScopes: '권한 범위',
+  mcpConnectedAt: '연결',
+  mcpLastUsedAt: '마지막 사용',
+  mcpNeverUsed: '아직 없음',
+  mcpDisconnect: '연결 끊기',
+  mcpDisconnectFailed: 'AI 도구 연결을 끊지 못했습니다. 다시 시도해 주세요.',
+  mcpDisconnectConfirm:
+    '이 AI 도구의 연결을 끊을까요? GYMS 접근이 바로 막힙니다.',
+  mcpAuditLog: 'MCP 활동 기록',
+  mcpAuditLogDescription:
+    'MCP로 실행한 최근 쓰기·관리 도구 호출입니다(조회 도구는 기록하지 않습니다).',
+  mcpAuditLogMine: '내 기록',
+  mcpAuditLogAll: '모든 멤버',
+  mcpAuditTime: '시각',
+  mcpAuditTool: '도구',
+  mcpAuditResult: '결과',
+  mcpAuditClient: '클라이언트',
+  mcpAuditTarget: '대상',
+  mcpAuditUser: '멤버',
+  mcpAuditOk: '성공',
+  mcpAuditError: '실패',
+  mcpAuditEmpty: 'MCP 활동 기록이 없습니다.',
   // ── 404 ──
   notFoundTitle: '페이지를 찾을 수 없습니다',
   notFoundHint: '항목이 삭제되었거나 주소가 잘못되었을 수 있습니다.',

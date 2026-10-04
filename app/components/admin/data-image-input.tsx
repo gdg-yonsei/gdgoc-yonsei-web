@@ -32,7 +32,7 @@ export default function DataImageInput({
   name: string
   title: string
   baseUrl: string
-  defaultValue?: string
+  defaultValue?: string | undefined
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -90,7 +90,8 @@ export default function DataImageInput({
         accept={'image/*'}
         hidden={true}
         ref={inputRef}
-        onChange={saveImgFile}
+        // 업로드 오류는 saveImgFile 안에서 처리한다.
+        onChange={() => void saveImgFile()}
       />
       <input
         hidden={true}

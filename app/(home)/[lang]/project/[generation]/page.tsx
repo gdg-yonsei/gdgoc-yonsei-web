@@ -31,12 +31,10 @@ import {
   projectTitle,
   sortShowcase,
 } from '@/lib/site/project-showcase'
-import { toLocale } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { generationPath, projectPath } from '@/lib/site/routes'
 
-type Props = {
-  params: Promise<{ lang: string; generation: string }>
-}
+type Props = PageProps<'/[lang]/project/[generation]'>
 
 /** 빌드 시 미리 렌더링할 경로 매개변수(공개 데이터에서 만든다). */
 export async function generateStaticParams() {
@@ -51,8 +49,8 @@ async function generationProjects(generation: string) {
 
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { lang, generation } = await params
-  const locale = toLocale(lang)
+  const { generation } = await params
+  const locale = await getLocale()
   const [generations, projects] = await Promise.all([
     getGenerationSummaries(),
     generationProjects(generation),
@@ -74,8 +72,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /** 페이지 본문. */
 export default async function ProjectGenerationPage({ params }: Props) {
-  const { lang, generation } = await params
-  const locale = toLocale(lang)
+  const { generation } = await params
+  const locale = await getLocale()
   const generations = await getGenerationSummaries()
   const current = generations.find(({ name }) => name === generation)
 

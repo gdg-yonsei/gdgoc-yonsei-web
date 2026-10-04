@@ -690,7 +690,7 @@ test.describe('home motion', () => {
         Number(field.dataset.columns),
         Number(field.dataset.rows),
       ])
-    const centre = [Math.floor(columns! / 2), Math.floor(rows! / 2)] as const
+    const centre = [Math.floor(columns / 2), Math.floor(rows / 2)] as const
 
     // Scroll just past the point where the brackets clamp shut, then note
     // when the centre dot and a corner dot first swell.

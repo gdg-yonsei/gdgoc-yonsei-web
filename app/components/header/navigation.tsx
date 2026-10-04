@@ -46,7 +46,7 @@ function DesktopNavigation({
         <Link
           key={href}
           href={href}
-          prefetch={prefetch}
+          prefetch={prefetch ?? null}
           aria-current={isCurrentPath(pathname, href) ? 'page' : undefined}
           className={
             utility ? 'site-nav-link site-nav-utility' : 'site-nav-link'
@@ -124,7 +124,7 @@ function MobileMenu({
               >
                 <Link
                   href={link.href}
-                  prefetch={link.prefetch}
+                  prefetch={link.prefetch ?? null}
                   onClick={closeMenu}
                   aria-current={
                     isCurrentPath(pathname, link.href) ? 'page' : undefined

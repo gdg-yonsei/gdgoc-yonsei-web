@@ -7,16 +7,13 @@ import { archiveCommonCopy } from '@/lib/contents/archive-copy'
 import { chromeCopy } from '@/lib/contents/site-copy'
 import type { Metadata } from 'next'
 import { createLocalizedMetadata } from '@/lib/seo/metadata'
-import { localeStaticParams, toLocale } from '@/lib/i18n'
+import { localeStaticParams } from '@/lib/i18n'
+import { getLocale } from '@/lib/i18n/server'
 import { localeHref } from '@/lib/site/routes'
 
-type Props = {
-  params: Promise<{ lang: string }>
-}
-
 /** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const locale = toLocale((await params).lang)
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
 
   return createLocalizedMetadata({
     locale,
@@ -35,8 +32,8 @@ export function generateStaticParams() {
 }
 
 /** 페이지 본문. */
-export default async function TermsOfServicePage({ params }: Props) {
-  const lang = toLocale((await params).lang)
+export default async function TermsOfServicePage() {
+  const lang = await getLocale()
   const common = archiveCommonCopy[lang]
   const isKorean = lang === 'ko'
 

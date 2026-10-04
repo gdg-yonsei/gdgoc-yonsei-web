@@ -4,7 +4,7 @@
  * 태그 이름은 이 파일의 함수로만 만든다(직접 문자열을 쓰지 않는다).
  * - 언어는 항상 마지막 세그먼트: `<resource>[:scope][:id]:<locale>`
  * - 목록 태그: `project:list:ko`처럼 고정 범위
- * - 상세 태그: `project:item:<id>:ko`처럼 식별자 포함
+ * - 상세 태그: `project:item:<id>:ko`처럼 식별자 포함. 모든 상세에는 `project:items:ko`도 함께 단다
  * - 기수 단위 태그: `session:generation:<기수>:en`
  *
  * 캐시 데이터 자체는 두 언어 필드를 모두 담아 언어와 무관하게 하나지만, 기존 무효화
@@ -74,6 +74,13 @@ export function projectGenerationTag(
   return buildLocaleTag(locale, 'project', 'generation', generationName)
 }
 
+/**
+ * 모든 프로젝트 상세에 함께 다는 태그. 새로고침 버튼이 id를 읽지 않고 상세 캐시를 한 번에 지울 때 쓴다.
+ */
+export function projectDetailsTag(locale: Locale): string {
+  return buildLocaleTag(locale, 'project', 'items')
+}
+
 /** 프로젝트 상세 태그. */
 export function projectTag(projectId: string, locale: Locale): string {
   return buildLocaleTag(locale, 'project', 'item', projectId)
@@ -90,6 +97,11 @@ export function sessionGenerationTag(
   locale: Locale
 ): string {
   return buildLocaleTag(locale, 'session', 'generation', generationName)
+}
+
+/** 모든 세션 상세에 함께 다는 태그(`projectDetailsTag`와 같은 용도). */
+export function sessionDetailsTag(locale: Locale): string {
+  return buildLocaleTag(locale, 'session', 'items')
 }
 
 /** 세션 상세 태그. */

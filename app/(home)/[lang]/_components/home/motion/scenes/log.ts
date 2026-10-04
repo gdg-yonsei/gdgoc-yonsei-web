@@ -79,8 +79,10 @@ const log: Scene = ({ root, scope, belowFold }) => {
       .init()
   })
 
-  const stop = whenPresent(root, '.log-rows', (rows) =>
-    scope.methods.arm?.(rows)
+  const stop = whenPresent(
+    root,
+    '.log-rows',
+    (rows) => void scope.methods.arm?.(rows)
   )
   return () => {
     stop()

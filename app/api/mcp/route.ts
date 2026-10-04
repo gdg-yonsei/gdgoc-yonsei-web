@@ -50,7 +50,7 @@ export const POST = requireMcpAuth(
           token: '',
           clientId: actor.clientId ?? '',
           scopes: actor.scopes === 'session' ? [] : actor.scopes,
-          expiresAt: typeof claims.exp === 'number' ? claims.exp : undefined,
+          ...(typeof claims.exp === 'number' ? { expiresAt: claims.exp } : {}),
           extra: { actor },
         },
       })

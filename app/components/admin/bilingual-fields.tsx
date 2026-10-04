@@ -72,8 +72,8 @@ export function BilingualInputField({
   koTitle: string
   enPlaceholder: string
   koPlaceholder: string
-  enDefaultValue?: string | null
-  koDefaultValue?: string | null
+  enDefaultValue?: string | null | undefined
+  koDefaultValue?: string | null | undefined
   required?: boolean
 }) {
   return (
@@ -121,8 +121,8 @@ export function BilingualTextareaField({
   koName: string
   enPlaceholder: string
   koPlaceholder: string
-  enDefaultValue?: string | null
-  koDefaultValue?: string | null
+  enDefaultValue?: string | null | undefined
+  koDefaultValue?: string | null | undefined
 }) {
   return (
     <BilingualFieldShell
@@ -169,8 +169,8 @@ export function BilingualMdxField({
   koTitle: string
   enPlaceholder: string
   koPlaceholder: string
-  enDefaultValue?: string | null
-  koDefaultValue?: string | null
+  enDefaultValue?: string | null | undefined
+  koDefaultValue?: string | null | undefined
 }) {
   return (
     <BilingualFieldShell
@@ -182,7 +182,7 @@ export function BilingualMdxField({
         <MDXEditor
           title={enTitle}
           name={enName}
-          defaultValue={enDefaultValue ?? undefined}
+          defaultValue={enDefaultValue}
           placeholder={enPlaceholder}
         />
       }
@@ -190,7 +190,7 @@ export function BilingualMdxField({
         <MDXEditor
           title={koTitle}
           name={koName}
-          defaultValue={koDefaultValue ?? undefined}
+          defaultValue={koDefaultValue}
           placeholder={koPlaceholder}
         />
       }

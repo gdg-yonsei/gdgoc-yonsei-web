@@ -103,14 +103,16 @@ const releases: Scene = ({ root, scope, matches, belowFold }) => {
       })
     })
     for (const item of items) {
-      const lean = () => scope.methods.lean?.(item)
+      const lean = () => void scope.methods.lean?.(item)
       item.addEventListener('pointerenter', lean, { once: true })
       cleanups.push(() => item.removeEventListener('pointerenter', lean))
     }
   })
 
-  const stop = whenPresent(root, '.release-grid', (grid) =>
-    scope.methods.arm?.(grid)
+  const stop = whenPresent(
+    root,
+    '.release-grid',
+    (grid) => void scope.methods.arm?.(grid)
   )
   return () => {
     stop()

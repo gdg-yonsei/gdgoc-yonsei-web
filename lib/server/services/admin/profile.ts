@@ -12,7 +12,7 @@ import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { invalidateMemberPublicCache } from '@/lib/server/cache'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
-import { logger } from '@/lib/server/logger'
+import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { authorize } from '@/lib/server/services/admin/authorize'
 import type { MemberRecord } from '@/lib/server/services/admin/members'
 import {
@@ -67,41 +67,43 @@ export async function updateMyProfile(
     profileImage,
   } = parsed.data
 
-  try {
-    const generationNames = await getGenerationNamesForUserId(actor.userId)
+  return withDbErrors(
+    'admin.profile.update',
+    async () => {
+      const generationNames = await getGenerationNamesForUserId(actor.userId)
 
-    await db
-      .update(users)
-      .set({
-        name,
-        firstName,
-        firstNameKo,
-        lastName,
-        lastNameKo,
-        email,
-        githubId,
-        instagramId,
-        linkedInId,
-        major,
-        studentId: studentId ? Number(studentId) : null,
-        telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
-        isForeigner,
-        image: profileImage,
+      await db
+        .update(users)
+        .set({
+          name,
+          firstName,
+          firstNameKo,
+          lastName,
+          lastNameKo,
+          email,
+          githubId,
+          instagramId,
+          linkedInId,
+          major,
+          studentId: studentId ? Number(studentId) : null,
+          telephone: telephone?.replaceAll('-', '').replaceAll(' ', ''),
+          isForeigner,
+          updatedAt: new Date(),
+          image: profileImage,
+        })
+        .where(eq(users.id, actor.userId))
+
+      invalidateMemberPublicCache({
+        memberId: actor.userId,
+        generationNames,
       })
-      .where(eq(users.id, actor.userId))
 
-    invalidateMemberPublicCache({
+      return ok({ id: actor.userId })
+    },
+    {
       memberId: actor.userId,
-      generationNames,
-    })
-  } catch (e) {
-    logger.error('admin.profile.update', e, {
-      memberId: actor.userId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
-
-  return ok({ id: actor.userId })
+    }
+  )
 }
 
 /** 새 세션 안내 메일 수신 여부를 바꾼다. */
@@ -112,17 +114,18 @@ export async function setSessionNotificationEmail(
   const authorization = authorize(actor, 'put', 'members', actor.userId)
   if (!authorization.ok) return authorization
 
-  try {
-    await db
-      .update(users)
-      .set({ sessionNotiEmail: enabled })
-      .where(eq(users.id, actor.userId))
-  } catch (error) {
-    logger.error('admin.profile.toggle-session-notification', error, {
-      userId: actor.userId,
-    })
-    return fail('INTERNAL', 'DB Update Error')
-  }
+  return withDbErrors(
+    'admin.profile.toggle-session-notification',
+    async () => {
+      await db
+        .update(users)
+        .set({ sessionNotiEmail: enabled })
+        .where(eq(users.id, actor.userId))
 
-  return ok({ sessionNotiEmail: enabled })
+      return ok({ sessionNotiEmail: enabled })
+    },
+    {
+      userId: actor.userId,
+    }
+  )
 }

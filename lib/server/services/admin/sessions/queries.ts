@@ -27,7 +27,7 @@ import {
 /** 범위(기수)의 세션 목록. */
 export async function listSessions(
   actor: Actor,
-  { generation }: { generation?: number | 'all' } = {}
+  { generation }: { generation?: number | 'all' | undefined } = {}
 ): Promise<ServiceResult<AdminSessionListItem[]>> {
   const authorization = authorize(actor, 'get', 'sessionsPage')
   if (!authorization.ok) return authorization

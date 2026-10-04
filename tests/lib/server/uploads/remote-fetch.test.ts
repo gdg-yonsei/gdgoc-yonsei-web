@@ -170,6 +170,8 @@ describe('fetchPublicImage', () => {
       (_url: URL, init: { signal: AbortSignal }) =>
         new Promise<Response>((_, reject) => {
           init.signal.addEventListener('abort', () =>
+            // fetch처럼 abort 사유(타임아웃 오류)를 그대로 거절 사유로 넘긴다.
+            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             reject(init.signal.reason)
           )
         })

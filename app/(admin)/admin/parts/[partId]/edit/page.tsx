@@ -6,15 +6,14 @@ import AdminNavigationButton from '@/app/components/admin/admin-navigation-butto
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { notFound } from 'next/navigation'
 import { requireGenerationAccess } from '@/lib/server/permission/require-permission'
-import DataInput from '@/app/components/admin/data-input'
 import SubmitButton from '@/app/components/admin/submit-button'
 import { getPart } from '@/lib/server/fetcher/admin/get-part'
 import { updatePartAction } from '@/app/(admin)/admin/parts/[partId]/edit/actions'
-import DataTextarea from '@/app/components/admin/data-textarea'
 import DataForm from '@/app/components/admin/data-form'
 import { getPartMemberOptions } from '@/lib/server/fetcher/admin/get-part-member-options'
-import PartMembersInput from '@/app/components/admin/part-members-input'
 import { Metadata } from 'next'
+import { savedVersionKey } from '@/lib/admin/form-version'
+import PartFormFields from '@/app/(admin)/admin/parts/_components/part-form-fields'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import { getAuthSession } from '@/auth'
 import {
@@ -32,26 +31,12 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 파트 수정 폼. */
 export default async function EditPartPage({
   params,
-}: {
-  params: Promise<{ partId: string }>
-}) {
+}: PageProps<'/admin/parts/[partId]/edit'>) {
   await connection()
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { partId } = await params
   const partData = await getPart(Number(partId))
-  const membersIdList = partData
-    ? partData.usersToParts
-        .filter((userToPart) => userToPart.userType === 'Primary')
-        .map((user) => user.user.id)
-    : []
-
-  const doubleBoardMembersIdList = partData
-    ? partData.usersToParts
-        .filter((userToPart) => userToPart.userType === 'Secondary')
-        .map((user) => user.user.id)
-    : []
-
   if (!partData) {
     notFound()
   }
@@ -91,41 +76,16 @@ export default async function EditPartPage({
       {/* Next는 방문한 페이지를 마운트된 채 유지한다. 저장된 버전마다 key를 바꿔, 비제어 입력이
           이전 편집 내용 대신 저장된 값으로 다시 채워지게 한다. */}
       <DataForm
-        key={partData.updatedAt?.toISOString() ?? 'new'}
+        key={savedVersionKey(partData.updatedAt)}
         action={updatePartActionWithPartId}
         className={'admin-form-grid w-full gap-4'}
       >
-        <input
-          hidden={true}
-          name={'generationId'}
-          readOnly={true}
-          value={String(actualGeneration?.id ?? partData.generationsId ?? '')}
-        />
-        <DataInput
-          title={t.name}
-          defaultValue={partData.name}
-          name={'name'}
-          placeholder={'Name'}
-        />
-        <DataInput
-          title={t.displayOrder}
-          name="displayOrder"
-          type="number"
-          required
-          defaultValue={partData.displayOrder}
-          placeholder="10"
-        />
-        <p className="text-ink-muted text-sm">{t.displayOrderHint}</p>
-        <DataTextarea
-          defaultValue={partData.description}
-          name={'description'}
-          placeholder={'Description'}
-        />
-        <div className={'admin-form-grid-full admin-card'}>
-          <div className={'admin-field-label'}>{t.generation}</div>
-          <div className={'admin-field-value'}>{actualGeneration?.name}</div>
-        </div>
-        <PartMembersInput
+        <PartFormFields
+          t={t}
+          generation={{
+            id: actualGeneration?.id ?? partData.generationsId,
+            name: actualGeneration?.name,
+          }}
           members={membersData.filter(
             (member) =>
               !partData.usersToParts.some(
@@ -135,23 +95,7 @@ export default async function EditPartPage({
                   membership.userType !== 'Secondary'
               )
           )}
-          name={'membersList'}
-          title={t.members}
-          defaultValue={membersIdList}
-        />
-        <PartMembersInput
-          members={membersData.filter(
-            (member) =>
-              !partData.usersToParts.some(
-                (membership) =>
-                  membership.userId === member.id &&
-                  membership.userType !== 'Primary' &&
-                  membership.userType !== 'Secondary'
-              )
-          )}
-          name={'doubleBoardMembersList'}
-          title={t.doubleBoardMembers}
-          defaultValue={doubleBoardMembersIdList}
+          part={partData}
         />
         <SubmitButton />
       </DataForm>

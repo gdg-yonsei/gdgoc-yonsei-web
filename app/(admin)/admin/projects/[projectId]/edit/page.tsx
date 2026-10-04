@@ -9,10 +9,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { updateProjectAction } from '@/app/(admin)/admin/projects/[projectId]/edit/actions'
 import DataForm from '@/app/components/admin/data-form'
 import SubmitButton from '@/app/components/admin/submit-button'
-import DataInput from '@/app/components/admin/data-input'
-import MembersSelectInput from '@/app/components/admin/member-select-input'
 import { getMembers } from '@/lib/server/fetcher/admin/get-members'
-import TagsInput from '@/app/components/admin/tags-input'
 import { getTagNames } from '@/lib/server/services/admin/project-tags'
 import { Metadata } from 'next'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
@@ -22,13 +19,9 @@ import {
   canSwitchToGeneration,
 } from '@/lib/server/admin-generation-scope'
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
-import ResourceImageFields from '@/app/components/admin/resource-image-fields'
-import GenerationField from '@/app/components/admin/generation-field'
-import {
-  BilingualInputField,
-  BilingualMdxField,
-} from '@/app/components/admin/bilingual-fields'
 import { dedupeById } from '@/lib/admin/member-options'
+import { savedVersionKey } from '@/lib/admin/form-version'
+import ProjectFormFields from '@/app/(admin)/admin/projects/_components/project-form-fields'
 import { connection } from 'next/server'
 
 /** 브라우저 탭 제목. */
@@ -39,9 +32,7 @@ export const metadata: Metadata = {
 /** 기존 값을 채운 프로젝트 수정 폼. */
 export default async function EditProjectPage({
   params,
-}: {
-  params: Promise<{ projectId: string }>
-}) {
+}: PageProps<'/admin/projects/[projectId]/edit'>) {
   await connection()
   const [{ projectId }, locale] = await Promise.all([params, getAdminLocale()])
   const t = getAdminMessages(locale)
@@ -76,7 +67,6 @@ export default async function EditProjectPage({
         name: projectData.generation.name,
       }
     : null
-  const uniqueMembers = dedupeById(membersList)
 
   return (
     <AdminDefaultLayout>
@@ -97,80 +87,21 @@ export default async function EditProjectPage({
       <div className={'admin-title py-4'}>
         {t.edit} {projectData.name} {t.project}
       </div>
+      {/* 저장된 버전마다 key를 바꿔, 저장 후 돌아왔을 때 이전 편집 내용 대신 저장된 값을 보여 준다. */}
       <DataForm
+        key={savedVersionKey(projectData.updatedAt)}
         action={updateProjectActionWithProjectId}
         className={'admin-form-grid w-full gap-4'}
       >
-        <BilingualInputField
+        <ProjectFormFields
           t={t}
-          fieldLabel={t.name}
-          enName={'name'}
-          koName={'nameKo'}
-          enTitle={t.nameEn}
-          koTitle={t.nameKo}
-          enPlaceholder={t.nameEn}
-          koPlaceholder={t.nameKo}
-          enDefaultValue={projectData.name}
-          koDefaultValue={projectData.nameKo}
-        />
-        <BilingualInputField
-          t={t}
-          fieldLabel={t.description}
-          enName={'description'}
-          koName={'descriptionKo'}
-          enTitle={t.descriptionEn}
-          koTitle={t.descriptionKo}
-          enPlaceholder={t.descriptionEn}
-          koPlaceholder={t.descriptionKo}
-          enDefaultValue={projectData.description}
-          koDefaultValue={projectData.descriptionKo}
-        />
-        <DataInput
-          title={'Repository URL'}
-          defaultValue={projectData.repoUrl}
-          name={'repoUrl'}
-          placeholder={'https://github.com/gdg-yonsei/...'}
-          type={'url'}
-        />
-        <DataInput
-          title={'Demo URL'}
-          defaultValue={projectData.demoUrl}
-          name={'demoUrl'}
-          placeholder={'https://...'}
-          type={'url'}
-        />
-        <TagsInput
-          defaultValue={projectData.projectsToTags.map(({ tag }) => tag.name)}
-          suggestions={tagNames}
-        />
-        <GenerationField
-          title={t.generation}
-          value={actualGeneration?.name}
-          inputName={'generationId'}
-          inputValue={actualGeneration?.id ?? projectData.generationId}
-        />
-        <MembersSelectInput
-          defaultValue={projectData.usersToProjects.map((user) => user.userId)}
-          members={uniqueMembers}
-        />
-        <ResourceImageFields
-          mainImageBaseUrl={'/api/admin/projects/main-image'}
-          contentImageBaseUrl={'/api/admin/projects/content-image'}
-          mainImageDefaultValue={projectData.mainImage}
-          contentImagesDefaultValue={projectData.images.map((image) => image)}
-          t={t}
-        />
-        <BilingualMdxField
-          t={t}
-          fieldLabel={t.content}
-          enName={'content'}
-          koName={'contentKo'}
-          enTitle={t.contentEn}
-          koTitle={t.contentKo}
-          enPlaceholder={'Please write content'}
-          koPlaceholder={'한국어 본문을 작성하세요.'}
-          enDefaultValue={projectData.content}
-          koDefaultValue={projectData.contentKo}
+          generation={{
+            id: actualGeneration?.id ?? projectData.generationId,
+            name: actualGeneration?.name,
+          }}
+          members={dedupeById(membersList)}
+          tagNames={tagNames}
+          project={projectData}
         />
         <SubmitButton />
       </DataForm>

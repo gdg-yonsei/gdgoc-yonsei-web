@@ -73,6 +73,9 @@ describe('cache utilities', () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith('/en/')
     expect(mockRevalidatePath).toHaveBeenCalledWith('/ko/calendar')
     expect(mockRevalidatePath).toHaveBeenCalledWith('/sitemap.xml')
+    // 상세는 id를 읽지 않고 공용 태그로 오래된 것으로 표시한다.
+    expect(mockRevalidateTag).toHaveBeenCalledWith('project:items:en', 'max')
+    expect(mockRevalidateTag).toHaveBeenCalledWith('session:items:ko', 'max')
   })
 
   it('tags query results after the fact, 128 tags per cacheTag call', async () => {
