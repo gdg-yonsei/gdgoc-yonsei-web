@@ -126,7 +126,14 @@ export default function DataForm({
   const errorMessage = clientError || state.error
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className={className}>
+    <form
+      action={formAction}
+      onSubmit={handleSubmit}
+      // React는 검증 오류를 반환한 액션도 정상 종료로 보고 폼을 초기화한다.
+      // 성공 시에는 redirect하므로 입력값은 유지해 오류 수정·재제출을 돕는다.
+      onReset={(event) => event.preventDefault()}
+      className={className}
+    >
       {children}
       {errorMessage ? (
         <p className={'m-auto text-red-500'}>{errorMessage}</p>
