@@ -10,7 +10,8 @@ import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
 import { uploadSingleImageState } from '@/lib/admin/atoms'
-import { deleteUploadedImage, uploadSingleImage } from '@/lib/upload-image'
+import { uploadSingleImage } from '@/lib/upload-image'
+import { readImagePreview } from '@/lib/read-image-preview'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
 /**
@@ -45,7 +46,7 @@ export default function DataImageInput({
   /**
    * 선택한 이미지 파일을 업로드하고 공개 URL 을 폼 값으로 반영하는 함수
    */
-  const saveImgFile = async () => {
+  const uploadSelectedImage = async () => {
     const fileData = inputRef.current?.files?.[0]
     if (!fileData) return
 
@@ -54,20 +55,8 @@ export default function DataImageInput({
     setIsLoading(true)
     setHasFailed(false)
     try {
-      const reader = new FileReader()
-      reader.readAsDataURL(fileData)
-      reader.onloadend = () => {
-        setPreviewImageUrl(reader.result as string)
-      }
-
-      if (previousImageUrl.startsWith('http')) {
-        // 이전 이미지 정리는 실패해도 새 업로드를 막지 않는다.
-        // 최악의 경우 R2 에 고아 객체가 남을 뿐이고, 사용자가 할 수 있는 조치도 없다.
-        await deleteUploadedImage(baseUrl, previousImageUrl).catch((error) => {
-          console.warn('Failed to delete the previous image', error)
-        })
-      }
-
+      setPreviewImageUrl(await readImagePreview(fileData))
+      // 저장된 이미지는 폼 저장이 성공한 뒤 서버 서비스가 정리한다.
       setUploadedImageUrl(await uploadSingleImage(baseUrl, fileData))
     } catch (error) {
       console.error(error)
@@ -90,8 +79,8 @@ export default function DataImageInput({
         accept={'image/*'}
         hidden={true}
         ref={inputRef}
-        // 업로드 오류는 saveImgFile 안에서 처리한다.
-        onChange={() => void saveImgFile()}
+        // 업로드 오류는 uploadSelectedImage 안에서 처리한다.
+        onChange={() => void uploadSelectedImage()}
       />
       <input
         hidden={true}

@@ -35,9 +35,7 @@ export async function sendNewSessionEmails({
 }) {
   const partGeneration = await db.query.parts.findFirst({
     where: eq(parts.id, partId),
-    with: {
-      generation: true,
-    },
+    columns: { name: true, generationsId: true },
   })
 
   if (!partGeneration?.generationsId) {
@@ -45,13 +43,16 @@ export async function sendNewSessionEmails({
   }
 
   const generationUsers = await db.query.generations.findFirst({
-    where: eq(generations.id, Number(partGeneration.generationsId)),
+    where: eq(generations.id, partGeneration.generationsId),
+    columns: { name: true },
     with: {
       parts: {
+        columns: {},
         with: {
           usersToParts: {
+            columns: { userId: true },
             with: {
-              user: true,
+              user: { columns: { email: true, sessionNotiEmail: true } },
             },
           },
         },
@@ -59,18 +60,15 @@ export async function sendNewSessionEmails({
     },
   })
 
-  const userEmailList: string[] = []
-  generationUsers?.parts.forEach((part) => {
-    part.usersToParts.forEach((userToPart) => {
-      if (
-        !participantId.includes(userToPart.userId) &&
-        userToPart.user.email &&
-        userToPart.user.sessionNotiEmail
-      ) {
-        userEmailList.push(userToPart.user.email)
+  const participantIds = new Set(participantId)
+  const recipientEmails = new Set<string>()
+  for (const part of generationUsers?.parts ?? []) {
+    for (const { userId, user } of part.usersToParts) {
+      if (!participantIds.has(userId) && user.email && user.sessionNotiEmail) {
+        recipientEmails.add(user.email)
       }
-    })
-  })
+    }
+  }
 
   const [{ default: NewSession }, { getSiteEnv }] = await Promise.all([
     import('@/emails/new-session'),
@@ -79,7 +77,7 @@ export async function sendNewSessionEmails({
   const siteEnv = getSiteEnv()
 
   await sendEmails(
-    userEmailList.map((email) => ({
+    [...recipientEmails].map((email) => ({
       to: email,
       subject: `[GDGoC Yonsei] ${name} 세션 참가 신청`,
       react: NewSession({

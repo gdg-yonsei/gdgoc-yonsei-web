@@ -160,15 +160,16 @@ export function projectFacets(projects: readonly ShowcaseProject[]): {
     { startDate: string; count: number }
   >()
   const tagCounts = new Map<string, number>()
+  const links = { demo: 0, source: 0 }
   for (const project of projects) {
+    if (project.demoUrl) links.demo += 1
+    if (project.repoUrl) links.source += 1
     const entry = generationCounts.get(project.generationName) ?? {
       startDate: project.generationStartDate,
       count: 0,
     }
-    generationCounts.set(project.generationName, {
-      ...entry,
-      count: entry.count + 1,
-    })
+    entry.count += 1
+    generationCounts.set(project.generationName, entry)
     for (const tag of project.tags)
       tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
   }
@@ -180,10 +181,7 @@ export function projectFacets(projects: readonly ShowcaseProject[]): {
     tags: [...tagCounts.entries()]
       .sort(([a, x], [b, y]) => y - x || a.localeCompare(b))
       .map(([value, count]) => ({ value, label: value, count })),
-    links: {
-      demo: projects.filter((project) => project.demoUrl).length,
-      source: projects.filter((project) => project.repoUrl).length,
-    },
+    links,
   }
 }
 

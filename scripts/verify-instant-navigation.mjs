@@ -6,6 +6,7 @@
  */
 import { chromium } from '@playwright/test'
 import { instant } from '@next/playwright'
+import { firstGenerationWithDetail } from './lib/public-route-discovery.mjs'
 
 const baseURL = process.env.PERF_BASE_URL ?? 'http://127.0.0.1:3100'
 
@@ -21,30 +22,6 @@ async function assertVisible(locator, label) {
       cause: error,
     })
   }
-}
-
-async function firstGenerationWithDetail(page, indexPath) {
-  await page.goto(absolute(indexPath), { waitUntil: 'domcontentloaded' })
-  const generationLinks = await page
-    .locator(`a[href^="${indexPath}/"]`)
-    .evaluateAll((links) => [
-      ...new Set(
-        links.map((link) => link.getAttribute('href')).filter(Boolean)
-      ),
-    ])
-
-  for (const generation of generationLinks) {
-    await page.goto(absolute(generation), { waitUntil: 'domcontentloaded' })
-    const detailLink = page.locator(`a[href^="${generation}/"]`).first()
-    if ((await detailLink.count()) > 0) {
-      return {
-        detail: await detailLink.getAttribute('href'),
-        generation,
-      }
-    }
-  }
-
-  throw new Error(`No detail route is available below ${indexPath}`)
 }
 
 async function verifyNavigation(
@@ -73,8 +50,8 @@ const context = await browser.newContext()
 const page = await context.newPage()
 
 try {
-  const project = await firstGenerationWithDetail(page, '/en/project')
-  const session = await firstGenerationWithDetail(page, '/en/session')
+  const project = await firstGenerationWithDetail(page, baseURL, '/en/project')
+  const session = await firstGenerationWithDetail(page, baseURL, '/en/session')
 
   await page.goto(absolute('/en/member'), { waitUntil: 'domcontentloaded' })
   const memberGeneration = await page

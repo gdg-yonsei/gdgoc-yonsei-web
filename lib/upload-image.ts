@@ -169,29 +169,3 @@ export async function uploadMultipleImages(
 
   return presignedUploads.map((upload) => toPublicImageUrl(upload.fileName))
 }
-
-/**
- * 업로드된 이미지를 삭제한다.
- */
-export async function deleteUploadedImage(
-  baseUrl: string,
-  imageUrl: string
-): Promise<void> {
-  let response: Response
-
-  try {
-    response = await fetch(baseUrl, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageUrl }),
-    })
-  } catch (cause) {
-    throw new ImageUploadError('Could not reach the upload API', { cause })
-  }
-
-  if (!response.ok) {
-    throw new ImageUploadError(await readErrorMessage(response), {
-      status: response.status,
-    })
-  }
-}

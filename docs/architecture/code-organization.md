@@ -94,6 +94,8 @@ export async function createPartAction(
 - 생성·수정 화면은 리소스별 `*FormFields` 컴포넌트(`app/(admin)/admin/<리소스>/_components/`)를 함께 쓰고, 수정 폼에는
   `savedVersionKey(updatedAt)`를 `key`로 준다(저장 후 돌아왔을 때 이전 입력이 남지 않게).
 - 링크 경로는 `lib/site/routes.ts`(`localeHref`, `sessionPath` …)로 만든다. 관리자 경로는 `localizeAdminHref`.
+- 기수 범위의 순수 해석 규칙·타입은 `lib/admin/generation-scope.ts`에 둔다. 웹 쿠키 처리는
+  `lib/server/admin-generation-scope.ts`, MCP 요청 검증은 `services/admin/generation-scope.ts`가 맡는다.
 - Next 16의 새 API를 쓰기 전에 `node_modules/next/dist/docs/`의 해당 문서를 확인한다(AGENTS.md).
 
 ## 5. 이름과 export

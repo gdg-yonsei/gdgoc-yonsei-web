@@ -42,8 +42,9 @@ export async function generateStaticParams() {
 }
 
 async function generationProjects(generation: string) {
-  return sortShowcase(await getProjectShowcase()).filter(
-    (project) => project.generationName === generation
+  const projects = await getProjectShowcase()
+  return sortShowcase(
+    projects.filter((project) => project.generationName === generation)
   )
 }
 

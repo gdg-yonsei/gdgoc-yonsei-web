@@ -7,6 +7,7 @@
  */
 import { writeFile } from 'node:fs/promises'
 import { chromium, devices } from '@playwright/test'
+import { firstGenerationWithDetail } from './lib/public-route-discovery.mjs'
 
 const baseURL = process.env.PERF_BASE_URL ?? 'http://127.0.0.1:3100'
 const outputPath = process.env.PERF_OUTPUT
@@ -45,34 +46,8 @@ async function discoverRepresentativeRoutes(browser) {
     return href
   }
 
-  async function firstGenerationWithDetail(indexPath) {
-    await page.goto(absolute(indexPath), { waitUntil: 'domcontentloaded' })
-    const generationLinks = await page
-      .locator(`a[href^="${indexPath}/"]`)
-      .evaluateAll((links) => [
-        ...new Set(
-          links.map((link) => link.getAttribute('href')).filter(Boolean)
-        ),
-      ])
-
-    for (const generationLink of generationLinks) {
-      await page.goto(absolute(generationLink), {
-        waitUntil: 'domcontentloaded',
-      })
-      const detail = page.locator(`a[href^="${generationLink}/"]`).first()
-      if ((await detail.count()) > 0) {
-        return {
-          generation: generationLink,
-          detail: await detail.getAttribute('href'),
-        }
-      }
-    }
-
-    throw new Error(`No generation with a detail link below ${indexPath}`)
-  }
-
-  const project = await firstGenerationWithDetail('/ko/project')
-  const session = await firstGenerationWithDetail('/ko/session')
+  const project = await firstGenerationWithDetail(page, baseURL, '/ko/project')
+  const session = await firstGenerationWithDetail(page, baseURL, '/ko/session')
   const memberGeneration = await firstLink('/ko/member', '/ko/member/')
 
   await context.close()
