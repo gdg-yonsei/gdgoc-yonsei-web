@@ -1,7 +1,8 @@
 # Corepack 0.34.0은 bin/pnpm.cjs를 실행하지만 pnpm 12는 네이티브 실행 파일을 사용한다.
 # npm이 패키지의 bin과 플랫폼별 의존성을 설치하도록 Corepack 대신 pnpm을 직접 설치한다.
 # 버전은 package.json의 packageManager에서 읽고 Corepack용 무결성 해시(+sha512...)만 제거한다.
-# --force는 빌드 이미지에 Corepack shim이 남아 있어도 pnpm 실행 파일로 교체하기 위한 옵션이다.
+# Nix 이미지의 npm 기본 전역 설치 경로는 PATH에 없을 수 있다.
+# /opt/pnpm에 설치하고 Nixpacks paths로 설치·빌드·실행 단계의 PATH에 추가한다.
 
 # Node는 명시적으로 고정한다. engines.node를 ">=22.13.0 <=24"로 올렸기 때문에
 # nixpacks의 자동 추론에 맡기면 선택되는 메이저가 달라질 수 있다.
@@ -11,8 +12,9 @@ nixPkgs = ["nodejs_22", "openssl"]
 
 [phases.install]
 dependsOn = ["setup"]
+paths = ["/opt/pnpm/bin", "..."]
 cmds = [
-  "npm install -g --force \"$(node -p \"require('./package.json').packageManager.split('+')[0]\")\"",
+  "npm install -g --prefix /opt/pnpm \"$(node -p \"require('./package.json').packageManager.split('+')[0]\")\"",
   "pnpm --version",
   "pnpm install --frozen-lockfile",
 ]
