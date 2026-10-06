@@ -1,10 +1,5 @@
 'use client'
 
-/**
- * 관리자 멤버 선택기(세션 참가자, 파트 구성원)가 함께 쓰는 검색·기수·파트 필터(클라이언트 컴포넌트).
- * 필터 상태와 결과는 `useMemberFilters`가, 화면은 `MemberFilterControls`가 맡는다. 순수 규칙은
- * `lib/admin/member-options.ts`에 있다.
- */
 import { useState } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
@@ -19,16 +14,11 @@ import {
   type NamedMember,
 } from '@/lib/admin/member-options'
 
-/** 필터할 수 있는 멤버: 이름 필드와 소속 목록. */
 type FilterableMember = NamedMember & {
   memberships: readonly MemberMembership[]
 }
 
-/**
- * 멤버 목록의 검색어·기수·파트 필터 상태와 그 결과.
- *
- * 기수를 바꿨을 때 고른 파트가 새 기수에 없으면 결과가 비므로 파트 필터를 비운다.
- */
+/** 새 기수에 없는 파트 필터는 비워, 결과가 없는 상태에 갇히지 않게 한다. */
 export function useMemberFilters<T extends FilterableMember>(
   members: readonly T[],
   partKey: 'part' | 'partId' = 'part'
@@ -57,15 +47,15 @@ export function useMemberFilters<T extends FilterableMember>(
     changeGeneration,
     part,
     setPart,
-    /** 검색어나 필터가 하나라도 있는지. */
+
     active: Boolean(normalizedQuery || generation || part),
     generations: listMembershipGenerations(members),
-    // 기수를 고르면 그 기수에 있는 파트만 보여 준다.
+
     parts:
       generation === NO_MEMBERSHIP
         ? []
         : listMembershipPartOptions(members, generation, partKey),
-    /** 필터와 검색어에 맞는 멤버. */
+
     matches: members.filter(
       (member) =>
         matchesMembershipFilter(
@@ -78,12 +68,7 @@ export function useMemberFilters<T extends FilterableMember>(
   }
 }
 
-/**
- * 이름 검색 입력과 기수·파트 선택.
- *
- * @param filters `useMemberFilters`의 반환값
- * @param allowNoMembership 기수·파트 선택지에 "소속 없음"을 넣는다(파트 구성원 선택기)
- */
+/** allowNoMembership은 파트 구성원 선택기에 소속 없음 선택지를 추가한다. */
 export default function MemberFilterControls({
   filters,
   allowNoMembership = false,

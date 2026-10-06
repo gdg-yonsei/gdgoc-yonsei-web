@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import McpInstallGuide from '@/app/components/admin/mcp-install-guide'
@@ -69,6 +69,21 @@ describe('McpInstallGuide', () => {
     expect(
       screen.getByRole('button', { name: 'Copy: MCP server URL' })
     ).toHaveTextContent('Copied')
+  })
+
+  it('announces a clipboard failure and allows retry', async () => {
+    const user = userEvent.setup()
+    renderGuide()
+    const write = vi.spyOn(navigator.clipboard, 'writeText')
+    write.mockRejectedValueOnce(new Error('Clipboard unavailable'))
+    const button = screen.getByRole('button', { name: 'Copy: MCP server URL' })
+    await user.click(button)
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Copy failed. Try again.'
+    )
+    await user.click(button)
+    expect(button).toHaveTextContent('Copied')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('renders Korean copy', () => {

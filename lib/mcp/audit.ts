@@ -1,10 +1,4 @@
-/**
- * MCP 도구 호출 감사 로그.
- *
- * 조회가 아닌 도구(쓰기·관리)를 실행하면 누가, 어떤 클라이언트로, 무엇을 했는지 기록한다.
- * 비밀값과 연락처는 가리고, URL의 쿼리 문자열과 긴 문자열은 잘라서 저장한다. 1년이 지난
- * 기록은 한 시간에 한 번씩 지운다.
- */
+// 비밀값·연락처·URL 쿼리는 가리고 긴 입력은 자른다. 1년 지난 감사 기록은 시간마다 정리한다.
 import 'server-only'
 
 import { eq, lt } from 'drizzle-orm'
@@ -42,10 +36,7 @@ function stripQuery(value: string): string {
   }
 }
 
-/**
- * 서명된 URL 같은 비밀이 쿼리에 실려 오므로, 문자열 안의 모든 URL 을 origin + path 만
- * 남긴다(설명 같은 긴 텍스트에 붙여 넣은 URL 포함). URL 뒤 문장부호는 보존한다.
- */
+// 서명 URL의 쿼리 비밀값은 긴 텍스트 안에서도 제거한다. origin·path와 뒤 문장부호는 남긴다.
 function withoutQuery(value: string): string {
   return value.replace(URL_IN_TEXT, (match) => {
     const trailing = match.match(/[.,;:!?]+$/)?.[0] ?? ''
@@ -106,10 +97,7 @@ export async function pruneAuditLog(now = Date.now()) {
     .where(lt(mcpAuditLog.createdAt, new Date(now - RETENTION_MS)))
 }
 
-/**
- * 도구 실행 결과를 감사 로그에 남긴다. 실패한 호출도 기록하고,
- * 기록 자체가 실패해도 도구 결과는 그대로 돌려준다.
- */
+// 실패한 도구 호출도 감사 기록한다. 기록 실패가 도구 결과를 바꾸지는 않는다.
 export async function withAudit(
   actor: Actor,
   meta: {

@@ -68,10 +68,7 @@ export async function mcpRequest(
 
 const registeredClients = new Map<string, Promise<string>>()
 
-/**
- * DCR 은 분당 5회로 제한되므로 스위트 전체가 클라이언트 하나를 같이 쓴다.
- * 같은 사용자가 이미 동의했다면 authorize 가 동의 화면 없이 바로 콜백으로 보낸다.
- */
+/** DCR 분당 5회 제한으로 클라이언트를 공유한다. 이미 동의한 사용자는 동의 화면 없이 콜백으로 간다. */
 function registeredClientId(baseURL: string): Promise<string> {
   let pending = registeredClients.get(baseURL)
   if (!pending) {
@@ -98,10 +95,7 @@ function registeredClientId(baseURL: string): Promise<string> {
   return pending
 }
 
-/**
- * 역할별 로그인 세션(storage state)으로 실제 OAuth 흐름을 돈다:
- * DCR → authorize → 동의 화면 승인 → PKCE 토큰 교환.
- */
+/** 역할별 세션으로 DCR, authorize, 동의 승인, PKCE 토큰 교환을 수행한다. */
 export async function connectAs(
   browser: Browser,
   baseURL: string,

@@ -1,22 +1,15 @@
 'use client'
 
-/**
- * 버튼 모양 단일 선택 입력(클라이언트 컴포넌트). 선택지가 적을 때 `<select>` 대신 쓴다.
- */
 import { useState } from 'react'
 import { cn } from '@/lib/cn'
 
-/**
- * 버튼 목록에서 하나를 고르는 단일 선택 입력.
- * 선택한 값은 숨은 입력(`name`)으로 폼에 실린다.
- */
+/** 선택 값은 숨은 입력 name으로 폼에 제출한다. */
 export default function DataSelectInput({
   data,
   name,
   title,
   defaultValue,
 }: {
-  /** 선택지. `name`은 버튼에 보일 이름, `value`는 폼에 실릴 값이다. */
   data: { name: string; value: string }[]
   name: string
   title: string

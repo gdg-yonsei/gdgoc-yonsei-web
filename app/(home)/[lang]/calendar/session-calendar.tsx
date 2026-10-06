@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 공개 세션 월 달력(클라이언트 컴포넌트). 문구는 현재 언어 것만 prop으로 받는다(`lib/contents/calendar-copy.ts`).
- */
 import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import ChevronLeftIcon from '@heroicons/react/24/outline/ChevronLeftIcon'
@@ -26,7 +23,6 @@ import { partHue } from '@/lib/site/labels'
 import type { CalendarWidgetCopy } from '@/lib/contents/calendar-copy'
 import { countLabel, fillTemplate } from '@/lib/format/text'
 
-/** 날짜 칸 접근성 라벨에 들어갈 세션 개수 문구. */
 function sessionCount(copy: CalendarWidgetCopy, count: number) {
   return count === 0
     ? copy.countNone
@@ -42,10 +38,7 @@ const readSeoulToday = () => toSeoulDateIso(new Date())
 const longDate = (day: string, lang: Locale) =>
   formatSessionLongDate(new Date(`${day}T00:00:00Z`), lang)
 
-/*
- * 서버는 `serverToday`(한 시간 단위 공개 기준 시각, 그래야 셸을 캐시할 수 있다)의 달을 그린다.
- * 하이드레이션 후에는 "오늘"이 방문자의 실제 서울 날짜로 바뀐다.
- */
+/* 캐시 가능한 서버 셸은 한 시간 단위 serverToday의 달을 표시하고, 하이드레이션 뒤에는 실제 서울 날짜로 바꾼다. */
 export default function SessionCalendar({
   lang,
   copy: t,
@@ -53,7 +46,7 @@ export default function SessionCalendar({
   serverToday,
 }: {
   lang: Locale
-  /** 현재 언어의 위젯 문구(`calendarWidgetCopy[lang]`). */
+
   copy: CalendarWidgetCopy
   events: CalendarEvent[]
   serverToday: string

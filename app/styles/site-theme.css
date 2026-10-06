@@ -1,19 +1,6 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * 공개 사이트 디자인 시스템 — "Inside the Brackets"
- * 명세: docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md
- *
- * 색 값은 `html.site`에 둔다. 이 클래스는 공개 [lang] 레이아웃과 루트 not-found 페이지만 그린다.
- * 관리자 셸은 자체 :root 토큰(--canvas, --surface, --ink …)을 쓰며 이 값들을 보지 않는다.
- * `@theme inline`이 이 값들을 현재 색 모드에 맞춰 해석되는 유틸리티(bg-paper, text-fg …)로 노출한다.
- * ═══════════════════════════════════════════════════════════════
- */
+/* 공개 html.site의 색 토큰은 관리자 :root와 분리한다. @theme inline이 현재 모드의 유틸리티 색으로 연결한다. */
 
-/*
- * 글자 폭을 맞춘 대체 글꼴(폰트의 hhea/hmtx 표에서 next/font의 capsize 데이터처럼 영어 글자 빈도로 가중해
- * 계산). 대체 글꼴로 그린 글자가 Google Sans와 같은 상자를 차지하므로, 폰트가 바뀌어도 줄바꿈이나
- * 레이아웃 이동이 생기지 않는다.
- */
+/* 영어 빈도로 가중한 hhea/hmtx 글자 폭을 대체 글꼴에 맞춰 Google Sans 교체 시 줄바꿈·레이아웃 이동을 줄인다. */
 @font-face {
   font-family: 'Google Sans Flex Fallback';
   src:
@@ -52,11 +39,9 @@
     --s-fg-muted: #555555;
     --s-fg-subtle: #6b6b6b;
     --s-rule: #d4d4d2;
+    --s-control-border: #848484;
 
-    /*
-     * GDG 색. soft = 옅게 칠한 면, ink = 종이와 자기 soft 면 위에서 AA 대비를 통과하는 글자색
-     * (tests/lib/site/theme-contrast.test.ts가 검증).
-     */
+    /* GDG soft는 옅은 면, ink는 paper·soft 위 AA 대비를 충족하는 글자색이다. */
     --s-blue-soft: #d3e3fd;
     --s-blue-ink: #0b57d0;
     --s-sky-soft: #c3ecf6;
@@ -72,10 +57,7 @@
 
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-    /*
-     * lib/motion/springs.ts의 스프링을 anime.js가 그리는 그대로(waapi.convertEase) 옮긴 값.
-     * tests/lib/motion/springs.test.ts가 두 값을 같게 유지한다.
-     */
+    /* lib/motion/springs.ts의 waapi.convertEase 곡선과 같아야 CSS·anime.js 전환이 일치한다. */
     --ease-spring: linear(
       0,
       0.0314,
@@ -212,10 +194,7 @@
     /* 페이지 양 끝을 넘어 오버스크롤하면 무대가 보인다(헤더, 히어로, 푸터, 404가 모두 무대). 페이지 자체는 종이다. */
     background-color: var(--s-stage);
     color: var(--s-fg);
-    /*
-     * 라틴 글자는 Google Sans Flex, 한글은 Pretendard(app/pretendard.css의 unicode-range 서브셋, 페이지에 있는
-     * 글자만 내려받음). 폰트 교체 동안은 플랫폼 한글 글꼴이 대신한다.
-     */
+    /* Google Sans Flex는 라틴, unicode-range Pretendard는 사용된 한글을 맡으며 로드 중에는 플랫폼 한글 글꼴을 쓴다. */
     font-family:
       var(--font-flex), 'Pretendard Variable', 'Apple SD Gothic Neo',
       'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-sans-serif,
@@ -224,10 +203,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /*
-   * 공개 사이트는 시스템 색 모드를 따른다. 레이아웃이 data-color-scheme="auto"로 켠다. 무대 면은 두 모드
-   * 모두에서 어둡다.
-   */
+  /* 공개 사이트는 data-color-scheme=auto로 시스템 모드를 따른다. 무대 면은 두 모드 모두 어둡다. */
   @media (prefers-color-scheme: dark) {
     html.site[data-color-scheme='auto'] {
       color-scheme: dark;
@@ -240,6 +216,7 @@
       --s-fg-muted: #b8b8b8;
       --s-fg-subtle: #8f8f8f;
       --s-rule: #333333;
+      --s-control-border: #848484;
       --s-blue-soft: color-mix(in oklab, #4285f4 24%, #1f1f1f);
       --s-blue-ink: #8ab4f8;
       --s-sky-soft: color-mix(in oklab, #57caff 20%, #1f1f1f);
@@ -274,9 +251,7 @@
     text-wrap: pretty;
   }
 
-  /* Visually hidden text (e.g. the "한국어" in the language switch) never
-     needs a web font; without this every English page fetched a Pretendard
-     subset for it. */
+  /* Visually hidden language labels use system fonts to avoid downloading an otherwise unused Pretendard subset. */
   html.site .sr-only {
     font-family: ui-sans-serif, system-ui, sans-serif;
   }
@@ -322,10 +297,7 @@
     var(--font-flex), 'Pretendard Variable', 'Apple SD Gothic Neo',
     'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-sans-serif,
     system-ui, sans-serif;
-  /*
-   * 고정폭 글꼴 바로 뒤에 한글 글꼴을 두어, 고정폭 라벨(날짜, 메타 띠) 안의 한글이 한글 글리프 없는
-   * 고정폭 글꼴로 떨어지지 않게 한다.
-   */
+  /* 고정폭 라벨의 한글이 글리프 없는 글꼴로 떨어지지 않도록 바로 뒤에 한글 글꼴을 둔다. */
   --font-code:
     var(--font-code-mono), 'Pretendard Variable', 'Apple SD Gothic Neo',
     'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace,
@@ -333,7 +305,7 @@
 }
 
 @theme {
-  /* GDG 브랜드 색 — 모든 색 모드에서 같다. */
+  /* GDG 브랜드 색은 모든 색 모드에서 같다. */
   --color-g-blue: #4285f4;
   --color-g-sky: #57caff;
   --color-g-red: #ea4335;

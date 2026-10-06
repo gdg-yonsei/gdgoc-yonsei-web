@@ -1,10 +1,3 @@
-/**
- * 멤버 관리 서비스(목록, 상세, 수정, 가입 승인, 역할 변경, 삭제).
- *
- * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
- * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
- * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
- */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -38,9 +31,7 @@ import { acceptMemberValidation } from '@/lib/validations/accept-member'
 import { updateMemberProfileImageValidation } from '@/lib/validations/admin-api'
 import { memberValidation } from '@/lib/validations/member'
 
-/** 멤버 입력(검증 전) 타입. */
 export type MemberInput = z.input<typeof memberValidation>
-/** 멤버 상세 레코드(연락처 포함). */
 export type MemberRecord = NonNullable<Awaited<ReturnType<typeof getMember>>>
 
 /** 연락처는 같은 기수·본인·LEAD 에게만 보인다. */
@@ -61,7 +52,6 @@ const APPROVAL_ROLES = {
   alumni: 'ALUMNUS',
 } as const satisfies Record<string, Role>
 
-/** 범위(기수)의 멤버 목록. */
 export async function listMembers(
   actor: Actor,
   {
@@ -146,7 +136,6 @@ export async function getMemberDetail(
   return ok({ ...member, email: null, telephone: null, studentId: null })
 }
 
-/** 고칠 권한이 있는 사람에게 연락처를 포함한 전체 기록을 준다(부분 수정 병합용). */
 export async function getMemberForEdit(
   actor: Actor,
   memberId: string
@@ -158,7 +147,6 @@ export async function getMemberForEdit(
   return member ? ok(member) : fail('NOT_FOUND', NOT_FOUND)
 }
 
-/** 상세 레코드를 멤버 입력 형태로 되돌린다(MCP 부분 수정 병합용). */
 export function memberToInput(detail: MemberRecord): MemberInput {
   return {
     name: detail.name,
@@ -179,10 +167,7 @@ export function memberToInput(detail: MemberRecord): MemberInput {
   }
 }
 
-/**
- * 이 멤버의 정보(프로필 이미지 포함)를 고칠 수 있는지 확인하고 대상을 돌려준다.
- * 역할 매트릭스 + 대상 역할 제한(CORE 는 낮은 역할만)을 함께 본다.
- */
+// 멤버 수정은 역할 매트릭스와 대상 역할 제한을 함께 본다. CORE는 낮은 역할만 고친다.
 export async function authorizeMemberEdit(
   actor: Actor,
   memberId: string
@@ -290,10 +275,7 @@ export async function updateMember(
   )
 }
 
-/**
- * 멤버의 프로필 이미지 URL만 바꾼다(관리자 화면의 이미지 업로드 버튼).
- * 권한 규칙은 멤버 정보 수정과 같고, 권한을 먼저 확인한 뒤 입력을 검증한다.
- */
+// 프로필 이미지 변경도 멤버 수정 권한을 먼저 확인한 뒤 입력을 검증한다.
 export async function updateMemberProfileImage(
   actor: Actor,
   memberId: string,
@@ -350,7 +332,6 @@ async function setRole(
   )
 }
 
-/** 가입 대기(UNVERIFIED) 사용자를 승인한다. */
 export async function approveMember(
   actor: Actor,
   input: unknown
@@ -399,10 +380,7 @@ export async function updateMemberRole(
   return setRole(userId, role, 'admin.members.role')
 }
 
-/**
- * 사용자 계정을 지운다(가입 대기 화면의 거절 버튼이 쓴다).
- * 역할 변경 권한(LEAD)이 필요하고, 자기 자신은 지울 수 없다.
- */
+// 가입 거절은 계정 삭제다. LEAD만 가능하며 자기 자신은 지울 수 없다.
 export async function deleteMember(
   actor: Actor,
   userId: string

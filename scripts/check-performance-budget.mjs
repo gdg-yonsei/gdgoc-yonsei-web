@@ -1,9 +1,4 @@
-/**
- * 성능 예산 검사(`pnpm perf:budget <report.json> [baseline.json]`).
- *
- * `measure-next-performance.mjs`가 만든 측정 보고서를 읽어 라우트별 절대 상한(JS·RSC 전송량, 요청 수,
- * LCP·CLS·INP·TBT)과 기준선 대비 JS 증가율(5%)을 넘으면 실패한다. CI(`ci.yml`)의 성능 단계에서 실행된다.
- */
+// 보고서의 라우트별 절대 상한과 기준선 대비 JS 증가율 5%를 검사한다: pnpm perf:budget <report.json> [baseline.json].
 import { readFile } from 'node:fs/promises'
 
 const [reportPath, baselinePath] = process.argv.slice(2)
@@ -20,10 +15,8 @@ const baseline = baselinePath
   : null
 const failures = []
 
-// 2026-09-25 승인: anime.js 엔진과 랜딩 장면(docs/superpowers/specs/2026-09-25-landing-motion-design.md)은
-// 홈 라우트에서만, 첫 페인트 이후에 불러온다. 측정값은 인코딩 기준 37,674바이트(홈 전체 195,911B)라
-// 홈 상한은 그 합계에 5KB 미만을 더한 값이다. 이 청크가 없던 기준선과 처음 비교할 때는 평소의 5%에
-// 더해 청크 크기만큼 늘어날 수 있다.
+// 홈 전용 첫 페인트 이후 모션 청크는 37,674B, 홈 합계 195,911B다. 절대 상한은 합계에 5KB 미만 여유를 둔다.
+// 청크 없는 기준선과 최초 비교할 때는 평소 5% 증가 허용량에 이 청크 크기를 더한다.
 const HOME_ROUTES = new Set(['/en', '/ko'])
 const HOME_JS_CAP = 200_000
 const HOME_MOTION_ALLOWANCE = 37_000
@@ -79,8 +72,7 @@ for (const result of report.results) {
     )
   }
 
-  // 한국어 글자용 Pretendard unicode-range 서브셋은 승인된 비용이다(2026-09-24). 그래도 위의 요청 수
-  // 절대 상한(75개)에는 포함된다.
+  // 승인된 한국어 Pretendard 서브셋은 회귀 비용에서 빼지만 요청 수 절대 상한 75개에는 포함한다.
   const withoutPretendard = (sample) =>
     sample.requestCount - (sample.pretendardRequestCount ?? 0)
   const requestRegressionBudget = withoutPretendard(before) + 4

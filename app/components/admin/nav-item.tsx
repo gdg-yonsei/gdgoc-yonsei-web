@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 관리자 사이드바·드로어·하단 탭이 공유하는 내비게이션 항목, 아이콘 표, 활성 판정(클라이언트 컴포넌트).
- */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -26,10 +23,7 @@ import { cn } from '@/lib/cn'
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
-/**
- * 메뉴 키별 아이콘. 아이콘을 라벨 문자열과 분리해 두어야 접근 가능한 이름에
- * 장식 기호가 섞이지 않는다.
- */
+/** 장식 아이콘을 라벨과 분리해 접근 가능한 이름에 기호가 섞이지 않게 한다. */
 export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   home: HomeIcon,
   members: UsersIcon,
@@ -40,11 +34,7 @@ export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   profile: UserCircleIcon,
 }
 
-/**
- * 경로 앞의 언어 세그먼트를 제거한다.
- * `proxy.ts`가 `/ko/admin/*`를 `/admin/*`로 rewrite하지만 브라우저 URL은 로케일이
- * 붙은 채 남아 있으므로, 두 형태를 같은 값으로 정규화해 비교한다.
- */
+/** proxy가 경로를 rewrite해도 브라우저에는 언어가 남아, 비교 전에 언어 접두사를 제거한다. */
 function stripLocale(pathname: string) {
   const segments = pathname.split('/')
   const maybeLocale = segments[1] ?? ''
@@ -54,12 +44,7 @@ function stripLocale(pathname: string) {
   return pathname
 }
 
-/**
- * 현재 경로에서 메뉴 항목이 활성인지. 언어 접두사 유무와 끝 슬래시를 무시하고 비교한다.
- *
- * @param pathname 브라우저의 현재 경로
- * @param href 메뉴 항목 경로
- */
+/** 활성 판정은 언어 접두사와 끝 슬래시를 무시한다. */
 export function isNavItemActive(pathname: string, href: string) {
   const current = stripLocale(pathname).replace(/\/$/, '') || '/'
   const target = stripLocale(href).replace(/\/$/, '') || '/'
@@ -69,11 +54,7 @@ export function isNavItemActive(pathname: string, href: string) {
   return current === target || current.startsWith(`${target}/`)
 }
 
-/**
- * 사이드바 · 드로어의 네비게이션 행.
- *
- * DESIGN.md `ex-app-shell-row`: 활성 표시는 브랜드 primary 인디케이터를 쓴다.
- */
+/** DESIGN.md ex-app-shell-row에 따라 활성 표시는 브랜드 primary 인디케이터를 쓴다. */
 export default function NavItem({ item }: { item: NavigationItem }) {
   const pathname = usePathname()
   const setMenuOpen = useSetAtom(menuBarState)
@@ -83,11 +64,11 @@ export default function NavItem({ item }: { item: NavigationItem }) {
   return (
     <Link
       href={item.path}
-      // 모바일 드로어 안에서 눌렀을 때 드로어를 닫는다. 데스크톱에서는 영향이 없다.
+
       onClick={() => setMenuOpen(false)}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'type-body-sm relative flex min-h-10 items-center gap-3 rounded-sm px-3 py-1.5 transition-colors',
+        'type-body-sm relative flex min-h-11 items-center gap-3 rounded-sm px-3 py-1.5 transition-colors',
         'focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2',
         active
           ? 'bg-primary-soft text-primary font-semibold'

@@ -1,7 +1,3 @@
-/**
- * 성능 측정·즉시 이동 검증에서 쓸 대표 공개 경로를 찾는다.
- */
-
 /** 기수 허브에서 상세 페이지가 있는 첫 기수를 찾는다. 빈 기수는 건너뛴다. */
 export async function firstGenerationWithDetail(page, baseURL, indexPath) {
   await page.goto(new URL(indexPath, baseURL).href, {

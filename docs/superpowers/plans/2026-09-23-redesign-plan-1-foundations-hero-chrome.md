@@ -1,10 +1,11 @@
-# Redesign Plan 1 — Foundations, Signature Hero, Global Chrome
+# Redesign Plan 1: Foundations, Signature Hero, Global Chrome
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Land the "Inside the Brackets" design system (tokens, fonts, motion), the `< GDGoC Yonsei >` hero with its idle-loaded WebGL halftone field, and the new header, mobile menu, footer, and 404/error pages. The home page keeps its old About/Activities/Parts sections below the hero until Plan 3.
 
 **Architecture:**
+
 - Public-only tokens live in `app/styles/*.css` on `html.site`. The admin shell never renders that class, so its `:root` tokens are unaffected.
 - The hero is a server-rendered SVG "poster" that draws the real GDG capsule geometry, so LCP is the H1 text and doesn't depend on JS.
 - A tiny client island imports a ~5 KB raw WebGL2 module when the browser is idle. The module draws the same capsules as a live halftone field and hides the poster.
@@ -17,6 +18,7 @@
 **Series:** Plan 1 of 3. Plan 2 covers data, admin tags, Sessions and Projects. Plan 3 covers the landing sections, restyles, OG images, ⌘K and final verification.
 
 **Deliberate deviations from the spec** (each confirmed from the codebase):
+
 - **Style location.** Styles live in `app/styles/site-{theme,hero,chrome}.css`, split by responsibility, instead of a single `app/site-theme.css`.
 - **Nav order.** Sessions · Projects · **Calendar · Members**, as set by the team in commit `348835e`. The spec listed Members before Calendar.
 - **Dark scheme.** It's gated behind `data-color-scheme='auto'`, which Plan 3 sets once every page is restyled.
@@ -57,36 +59,36 @@
 
 ## File Structure
 
-| File | Status | Responsibility |
-|---|---|---|
-| `app/styles/site-theme.css` | create | Scheme tokens on `html.site`, base type, `@theme` utilities |
-| `app/styles/site-chrome.css` | create | Header capsule, mobile menu dialog, footer, locale switch |
-| `app/styles/site-hero.css` | create | Hero layout, bracket slots, entrance and parting animations |
-| `app/globals.css` | modify | Import the three files; later remove the shooting-star and legacy home CSS |
-| `app/fonts.ts` | create | `next/font/google` instances shared by the public layout and the root 404 |
-| `app/(home)/[lang]/layout.tsx` | modify | `html.site`, fonts, skip link, `#main`, theme color |
-| `lib/contents/site-copy.ts` | create | EN/KO strings for chrome and hero |
-| `lib/site/bracket-geometry.ts` | create | Capsule model derived from the logo, SVG paths, rect mapping, parting math |
-| `lib/site/localized-path.ts` | create | Swap the locale segment of a pathname |
-| `app/components/site/bracket-poster.tsx` | create | Server SVG halftone bracket (one side) |
-| `app/components/site/button-link.tsx` | create | Capsule CTA link with tones |
-| `app/components/site/locale-switch.tsx` | create | EN/KO segmented links (hook-free view) |
-| `app/components/site/footer-locale-switch.tsx` | create | Client leaf that feeds `usePathname()` into `LocaleSwitch` |
-| `app/components/site/seoul-clock.tsx` | create | Client leaf: live HH:MM KST |
-| `app/(home)/[lang]/_components/home/hero.tsx` | create | Hero section |
-| `app/(home)/[lang]/_components/home/bracket-stage.tsx` | create | Client island: capability gate, idle-imports the GL module |
-| `app/(home)/[lang]/_components/home/bracket-field-gl.ts` | create | WebGL2 program, uniform packing, runtime wiring |
-| `app/(home)/[lang]/page.tsx` | modify | Hero replaces `WelcomePage` |
-| `app/components/header/index.tsx` | rewrite | Floating stage capsule (server) |
-| `app/components/header/navigation.tsx` | rewrite | Desktop nav, locale switch, `<dialog>` mobile menu (client) |
-| `app/components/header/navigation-links.ts` | modify | Link list built from `chromeCopy`; GYMS marked as a utility link |
-| `app/components/footer.tsx` | rewrite | Stage footer, columns, wordmark, clock, locale switch |
-| `app/not-found.tsx` | rewrite | `< 404 >` page |
-| `app/(home)/[lang]/error.tsx` | rewrite | Bilingual error boundary in the site system |
-| `proxy.ts` | modify | Restyled inline 404 HTML with capsule SVGs |
-| `vitest.setup.ts` | modify | jsdom `<dialog>` polyfill |
-| `app/(home)/[lang]/welcome-page.tsx`, `home-page-background.tsx` | delete | Replaced by the hero |
-| Tests | create or modify | `tests/lib/site/*.test.ts`, `tests/components/hero.test.tsx`, `tests/components/bracket-stage.test.tsx`, `tests/components/header-navigation.test.tsx`, `tests/components/seoul-clock.test.tsx`, `tests/components/common-components.test.tsx`, `tests/e2e/public-flows.spec.ts` |
+| File                                                             | Status           | Responsibility                                                                                                                                                                                                                                                                   |
+| ---------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/styles/site-theme.css`                                      | create           | Scheme tokens on `html.site`, base type, `@theme` utilities                                                                                                                                                                                                                      |
+| `app/styles/site-chrome.css`                                     | create           | Header capsule, mobile menu dialog, footer, locale switch                                                                                                                                                                                                                        |
+| `app/styles/site-hero.css`                                       | create           | Hero layout, bracket slots, entrance and parting animations                                                                                                                                                                                                                      |
+| `app/globals.css`                                                | modify           | Import the three files; later remove the shooting-star and legacy home CSS                                                                                                                                                                                                       |
+| `app/fonts.ts`                                                   | create           | `next/font/google` instances shared by the public layout and the root 404                                                                                                                                                                                                        |
+| `app/(home)/[lang]/layout.tsx`                                   | modify           | `html.site`, fonts, skip link, `#main`, theme color                                                                                                                                                                                                                              |
+| `lib/contents/site-copy.ts`                                      | create           | EN/KO strings for chrome and hero                                                                                                                                                                                                                                                |
+| `lib/site/bracket-geometry.ts`                                   | create           | Capsule model derived from the logo, SVG paths, rect mapping, parting math                                                                                                                                                                                                       |
+| `lib/site/localized-path.ts`                                     | create           | Swap the locale segment of a pathname                                                                                                                                                                                                                                            |
+| `app/components/site/bracket-poster.tsx`                         | create           | Server SVG halftone bracket (one side)                                                                                                                                                                                                                                           |
+| `app/components/site/button-link.tsx`                            | create           | Capsule CTA link with tones                                                                                                                                                                                                                                                      |
+| `app/components/site/locale-switch.tsx`                          | create           | EN/KO segmented links (hook-free view)                                                                                                                                                                                                                                           |
+| `app/components/site/footer-locale-switch.tsx`                   | create           | Client leaf that feeds `usePathname()` into `LocaleSwitch`                                                                                                                                                                                                                       |
+| `app/components/site/seoul-clock.tsx`                            | create           | Client leaf: live HH:MM KST                                                                                                                                                                                                                                                      |
+| `app/(home)/[lang]/_components/home/hero.tsx`                    | create           | Hero section                                                                                                                                                                                                                                                                     |
+| `app/(home)/[lang]/_components/home/bracket-stage.tsx`           | create           | Client island: capability gate, idle-imports the GL module                                                                                                                                                                                                                       |
+| `app/(home)/[lang]/_components/home/bracket-field-gl.ts`         | create           | WebGL2 program, uniform packing, runtime wiring                                                                                                                                                                                                                                  |
+| `app/(home)/[lang]/page.tsx`                                     | modify           | Hero replaces `WelcomePage`                                                                                                                                                                                                                                                      |
+| `app/components/header/index.tsx`                                | rewrite          | Floating stage capsule (server)                                                                                                                                                                                                                                                  |
+| `app/components/header/navigation.tsx`                           | rewrite          | Desktop nav, locale switch, `<dialog>` mobile menu (client)                                                                                                                                                                                                                      |
+| `app/components/header/navigation-links.ts`                      | modify           | Link list built from `chromeCopy`; GYMS marked as a utility link                                                                                                                                                                                                                 |
+| `app/components/footer.tsx`                                      | rewrite          | Stage footer, columns, wordmark, clock, locale switch                                                                                                                                                                                                                            |
+| `app/not-found.tsx`                                              | rewrite          | `< 404 >` page                                                                                                                                                                                                                                                                   |
+| `app/(home)/[lang]/error.tsx`                                    | rewrite          | Bilingual error boundary in the site system                                                                                                                                                                                                                                      |
+| `proxy.ts`                                                       | modify           | Restyled inline 404 HTML with capsule SVGs                                                                                                                                                                                                                                       |
+| `vitest.setup.ts`                                                | modify           | jsdom `<dialog>` polyfill                                                                                                                                                                                                                                                        |
+| `app/(home)/[lang]/welcome-page.tsx`, `home-page-background.tsx` | delete           | Replaced by the hero                                                                                                                                                                                                                                                             |
+| Tests                                                            | create or modify | `tests/lib/site/*.test.ts`, `tests/components/hero.test.tsx`, `tests/components/bracket-stage.test.tsx`, `tests/components/header-navigation.test.tsx`, `tests/components/seoul-clock.test.tsx`, `tests/components/common-components.test.tsx`, `tests/e2e/public-flows.spec.ts` |
 
 ---
 
@@ -115,10 +117,12 @@ Expected: 22 JSON lines are printed, and `perf-baseline.json` is written. Stop t
 ### Task 1: Design tokens, fonts and the public layout shell
 
 **Files:**
+
 - Create: `app/styles/site-theme.css`, `app/fonts.ts`, `lib/contents/site-copy.ts`
 - Modify: `app/globals.css` (imports at the top), `app/(home)/[lang]/layout.tsx`
 
 **Interfaces:**
+
 - Produces:
   - **Utilities:** `bg-stage` `bg-stage-raised` `text-on-stage` `text-on-stage-muted` `bg-paper` `bg-sheet` `bg-sheet-sunken` `text-fg` `text-fg-muted` `text-fg-subtle` `border-rule`, plus `bg-g-{blue|sky|red|pink|yellow|green}`, `bg-g-{hue}-soft`, `text-g-{hue}-ink`, and `font-display` / `font-code`.
   - **CSS variables:** `--ease-out`, `--ease-in-out`, `--ease-spring`, `--dur-fast|base|slow`.
@@ -129,7 +133,7 @@ Expected: 22 JSON lines are printed, and `perf-baseline.json` is written. Stop t
 
 ```css
 /* ═══════════════════════════════════════════════════════════════
-   Public site design system — "Inside the Brackets"
+   Public site design system: "Inside the Brackets"
    Spec: docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md
 
    Scheme values live on `html.site`, which only the public [lang] layout and
@@ -294,7 +298,7 @@ Expected: 22 JSON lines are printed, and `perf-baseline.json` is written. Stop t
 }
 
 @theme {
-  /* GDG brand fills — identical in every scheme. */
+  /* GDG brand fills: identical in every scheme. */
   --color-g-blue: #4285f4;
   --color-g-sky: #57caff;
   --color-g-red: #ea4335;
@@ -404,7 +408,7 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     calendar: 'Calendar',
     members: 'Members',
     footerBlurb:
-      "GDG on Campus Yonsei — Yonsei University's student developer community in Sinchon, Seoul.",
+      "GDG on Campus Yonsei, Yonsei University's student developer community in Sinchon, Seoul.",
     footerExplore: 'Explore',
     footerConnect: 'Connect',
     footerSite: 'Site',
@@ -459,7 +463,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
   en: {
     eyebrow: 'Google Developer Groups on Campus · Yonsei University',
     tagline:
-      "Yonsei University's student developer community. We connect, learn, and grow — then ship what we build.",
+      "Yonsei University's student developer community. We connect, learn, and grow, then ship what we build.",
     primaryCta: 'Explore sessions',
     secondaryCta: 'See projects',
     metaLabel: 'At a glance',
@@ -469,7 +473,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
   ko: {
     eyebrow: 'Google Developer Groups on Campus · 연세대학교',
     tagline:
-      '연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 — 만든 것을 세상에 내놓습니다.',
+      '연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 만든 것을 세상에 내놓습니다.',
     primaryCta: '세션 둘러보기',
     secondaryCta: '프로젝트 보기',
     metaLabel: '한눈에 보기',
@@ -547,10 +551,12 @@ Stage: `app/styles/site-theme.css app/globals.css app/fonts.ts lib/contents/site
 ### Task 2: Bracket geometry
 
 **Files:**
+
 - Create: `lib/site/bracket-geometry.ts`
 - Test: `tests/lib/site/bracket-geometry.test.ts`
 
 **Interfaces:**
+
 - Produces (all pure, client-safe):
   - `BRACKET: { armDx: 113.6; armDy: 80.2; radius: 52.78 }`
   - `BRACKET_VIEWBOX: { width: 219.16; height: 265.96 }`
@@ -580,7 +586,9 @@ import {
 
 describe('bracket geometry', () => {
   it('sizes a single bracket view box from the logo capsule measurements', () => {
-    expect(BRACKET_VIEWBOX.width).toBeCloseTo(BRACKET.armDx + BRACKET.radius * 2)
+    expect(BRACKET_VIEWBOX.width).toBeCloseTo(
+      BRACKET.armDx + BRACKET.radius * 2
+    )
     expect(BRACKET_VIEWBOX.height).toBeCloseTo(
       BRACKET.armDy * 2 + BRACKET.radius * 2
     )
@@ -605,9 +613,9 @@ describe('bracket geometry', () => {
   })
 
   it('writes a stadium path whose caps bulge away from the body', () => {
-    expect(
-      capsulePath({ hue: 'red', ax: 0, ay: 0, bx: 10, by: 0, r: 2 })
-    ).toBe('M0 2L10 2A2 2 0 0 0 10 -2L0 -2A2 2 0 0 0 0 2Z')
+    expect(capsulePath({ hue: 'red', ax: 0, ay: 0, bx: 10, by: 0, r: 2 })).toBe(
+      'M0 2L10 2A2 2 0 0 0 10 -2L0 -2A2 2 0 0 0 0 2Z'
+    )
   })
 
   it('maps rendered bracket boxes into canvas space and parts them', () => {
@@ -781,12 +789,14 @@ Stage: `lib/site/bracket-geometry.ts tests/lib/site/bracket-geometry.test.ts`. C
 ### Task 3: Hero section with the SVG poster
 
 **Files:**
+
 - Create: `app/components/site/bracket-poster.tsx`, `app/components/site/button-link.tsx`, `app/styles/site-hero.css`, `app/(home)/[lang]/_components/home/hero.tsx`
 - Create (placeholder, completed in Task 4): `app/(home)/[lang]/_components/home/bracket-stage.tsx`
 - Modify: `app/globals.css` (import `site-hero.css`), `app/(home)/[lang]/page.tsx`
 - Test: `tests/components/hero.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `bracketCapsulesInViewBox`, `capsulePath`, `BRACKET_VIEWBOX`, `BracketSide` (Task 2); `heroCopy` (Task 1).
 - Produces:
   - `<BracketPoster side id className? />`
@@ -963,7 +973,7 @@ export default function ButtonLink({
 Add `@import './styles/site-hero.css';` under the `site-theme.css` import in `app/globals.css`, then create:
 
 ```css
-/* Hero — "< GDGoC Yonsei >" */
+/* Hero: "< GDGoC Yonsei >" */
 @layer components {
   .hero {
     position: relative;
@@ -1320,6 +1330,7 @@ Expected: PASS (3 tests).
 
 With `pnpm dev` running, open `/en` and `/ko` at 1440×900 and 390×844.
 Expected:
+
 - The brackets sit tight around "GDGoC Yonsei", on one line on desktop and two lines on mobile.
 - The halftone dots show inside four colored capsules.
 - The CTAs and the meta strip are visible above the fold.
@@ -1337,11 +1348,13 @@ Stage: the hero files, `bracket-poster.tsx`, `button-link.tsx`, `site-hero.css`,
 ### Task 4: WebGL halftone field (idle-loaded)
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/bracket-field-gl.ts`
 - Replace: `app/(home)/[lang]/_components/home/bracket-stage.tsx`
 - Test: `tests/lib/site/bracket-field-gl.test.ts`, `tests/components/bracket-stage.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `capsulesFromBracketRects`, `partingOffset`, `scrollProgress`, `Capsule`, `CapsuleHue`, `Rect` (Task 2); the hero DOM contract (Task 3).
 - Produces:
   - `packCapsules(capsules: readonly Capsule[], dpr: number): { positions: Float32Array; colors: Float32Array; radius: number }`
@@ -1432,7 +1445,10 @@ describe('mountBracketField', () => {
   it('restores the poster when the GPU context is lost', () => {
     const { hero, canvas } = heroFixture()
     vi.stubGlobal('ResizeObserver', ResizeObserverStub)
-    vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1))
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn(() => 1)
+    )
     vi.stubGlobal('cancelAnimationFrame', vi.fn())
     const field = fakeField()
     mountBracketField(canvas, hero, () => field)
@@ -1733,7 +1749,12 @@ export function createBracketField(
       gl.uniform1f(uniforms.time, time)
       gl.uniform1f(uniforms.cell, cell * dpr)
       gl.uniform1f(uniforms.lens, lens * dpr)
-      gl.uniform3f(uniforms.pointer, pointer[0] * dpr, pointer[1] * dpr, pointer[2])
+      gl.uniform3f(
+        uniforms.pointer,
+        pointer[0] * dpr,
+        pointer[1] * dpr,
+        pointer[2]
+      )
       gl.uniform4fv(uniforms.caps, packed.positions)
       gl.uniform1f(uniforms.radius, packed.radius)
       gl.uniform3fv(uniforms.colors, packed.colors)
@@ -1762,7 +1783,9 @@ const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
 export function mountBracketField(
   canvas: HTMLCanvasElement,
   hero: HTMLElement,
-  create: (canvas: HTMLCanvasElement) => BracketField | null = createBracketField
+  create: (
+    canvas: HTMLCanvasElement
+  ) => BracketField | null = createBracketField
 ): () => void {
   const left = hero.querySelector<HTMLElement>('[data-bracket="left"]')
   const right = hero.querySelector<HTMLElement>('[data-bracket="right"]')
@@ -1801,7 +1824,10 @@ export function mountBracketField(
       origin.height,
       Math.min(window.devicePixelRatio || 1, dprCap)
     )
-    anchors = { left: relativeTo(left, origin), right: relativeTo(right, origin) }
+    anchors = {
+      left: relativeTo(left, origin),
+      right: relativeTo(right, origin),
+    }
   }
 
   const running = () =>
@@ -1963,7 +1989,9 @@ export default function BracketStage() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="bracket-canvas" />
+  return (
+    <canvas ref={canvasRef} aria-hidden="true" className="bracket-canvas" />
+  )
 }
 ```
 
@@ -1976,6 +2004,7 @@ Expected: PASS (6 tests).
 
 With `pnpm dev`, open `/en` in Chromium.
 Expected:
+
 - About 1–2 s after load, a radial dot sweep prints the four colored capsules exactly where the SVG brackets were, and the SVG fades out.
 - Moving the mouse grows and brightens nearby dots.
 - Scrolling moves the brackets apart and the loop stops once the hero has scrolled away (DevTools Performance: no rAF activity while scrolled past).
@@ -1998,12 +2027,14 @@ Stage: `bracket-field-gl.ts`, `bracket-stage.tsx` and both tests. Commit only on
 ### Task 5: Header, mobile menu and locale switch
 
 **Files:**
+
 - Create: `lib/site/localized-path.ts`, `app/components/site/locale-switch.tsx`, `app/styles/site-chrome.css`
 - Rewrite: `app/components/header/index.tsx`, `app/components/header/navigation.tsx`
 - Modify: `app/components/header/navigation-links.ts`, `app/globals.css` (import `site-chrome.css`), `vitest.setup.ts`, `tests/e2e/public-flows.spec.ts`
 - Test: `tests/lib/site/localized-path.test.ts`, `tests/components/header-navigation.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `chromeCopy` (Task 1).
 - Produces:
   - `localizedPath(pathname: string | null, locale: Locale): string`
@@ -2075,10 +2106,9 @@ describe('HeaderNavigation', () => {
     render(<HeaderNavigation lang="en" />)
     const [group] = screen.getAllByRole('group', { name: 'Language' })
 
-    expect(within(group!).getByRole('link', { name: '한국어' })).toHaveAttribute(
-      'href',
-      '/ko/session/25-26'
-    )
+    expect(
+      within(group!).getByRole('link', { name: '한국어' })
+    ).toHaveAttribute('href', '/ko/session/25-26')
   })
 
   it('opens the menu dialog and closes it when a link is chosen', async () => {
@@ -2204,7 +2234,11 @@ export default function LocaleSwitch({
   className?: string
 }) {
   return (
-    <div role="group" aria-label={label} className={cn('locale-switch', className)}>
+    <div
+      role="group"
+      aria-label={label}
+      className={cn('locale-switch', className)}
+    >
       {LOCALES.map(({ code, short, name }) =>
         code === lang ? (
           <span key={code} className="locale-switch-item" data-current="">
@@ -2263,17 +2297,19 @@ function DesktopNavigation({
       aria-label={chromeCopy[lang].primaryNav}
       className="flex items-center gap-0.5 not-md:hidden"
     >
-      {getHeaderNavigationLinks(lang).map(({ href, label, prefetch, utility }) => (
-        <Link
-          key={href}
-          href={href}
-          prefetch={prefetch}
-          aria-current={isCurrentPath(pathname, href) ? 'page' : undefined}
-          className={cn('site-nav-link', utility && 'site-nav-utility')}
-        >
-          {label}
-        </Link>
-      ))}
+      {getHeaderNavigationLinks(lang).map(
+        ({ href, label, prefetch, utility }) => (
+          <Link
+            key={href}
+            href={href}
+            prefetch={prefetch}
+            aria-current={isCurrentPath(pathname, href) ? 'page' : undefined}
+            className={cn('site-nav-link', utility && 'site-nav-utility')}
+          >
+            {label}
+          </Link>
+        )
+      )}
     </nav>
   )
 }
@@ -2311,7 +2347,10 @@ function MobileMenu({ lang, pathname }: { lang: Locale; pathname: string }) {
         className="mobile-menu"
       >
         <div className="flex h-14 items-center justify-between pl-3">
-          <span aria-hidden="true" className="font-code text-xs tracking-[0.18em] text-on-stage-muted uppercase">
+          <span
+            aria-hidden="true"
+            className="font-code text-on-stage-muted text-xs tracking-[0.18em] uppercase"
+          >
             {'<menu />'}
           </span>
           <button
@@ -2335,11 +2374,19 @@ function MobileMenu({ lang, pathname }: { lang: Locale; pathname: string }) {
                   href={link.href}
                   prefetch={link.prefetch}
                   onClick={closeMenu}
-                  aria-current={isCurrentPath(pathname, link.href) ? 'page' : undefined}
-                  className={cn('mobile-menu-link', link.utility && 'mobile-menu-utility')}
+                  aria-current={
+                    isCurrentPath(pathname, link.href) ? 'page' : undefined
+                  }
+                  className={cn(
+                    'mobile-menu-link',
+                    link.utility && 'mobile-menu-utility'
+                  )}
                 >
                   <span>{link.label}</span>
-                  <span aria-hidden="true" className="font-code text-sm text-on-stage-muted">
+                  <span
+                    aria-hidden="true"
+                    className="font-code text-on-stage-muted text-sm"
+                  >
                     {String(index + 1).padStart(2, '0')}
                   </span>
                 </Link>
@@ -2364,7 +2411,12 @@ export function NavigationFallback({ lang }: { lang: Locale }) {
   return (
     <div className="flex items-center gap-1">
       <DesktopNavigation lang={lang} pathname={null} />
-      <LocaleSwitch lang={lang} pathname={null} label={copy.language} className="not-md:hidden" />
+      <LocaleSwitch
+        lang={lang}
+        pathname={null}
+        label={copy.language}
+        className="not-md:hidden"
+      />
       <button
         type="button"
         disabled
@@ -2377,13 +2429,24 @@ export function NavigationFallback({ lang }: { lang: Locale }) {
   )
 }
 
-function NavigationForPath({ lang, pathname }: { lang: Locale; pathname: string }) {
+function NavigationForPath({
+  lang,
+  pathname,
+}: {
+  lang: Locale
+  pathname: string
+}) {
   const copy = chromeCopy[lang]
 
   return (
     <div className="flex items-center gap-1">
       <DesktopNavigation lang={lang} pathname={pathname} />
-      <LocaleSwitch lang={lang} pathname={pathname} label={copy.language} className="not-md:hidden" />
+      <LocaleSwitch
+        lang={lang}
+        pathname={pathname}
+        label={copy.language}
+        className="not-md:hidden"
+      />
       <MobileMenu lang={lang} pathname={pathname} />
     </div>
   )
@@ -2417,7 +2480,11 @@ export default function Header({ lang }: { lang: Locale }) {
           aria-label={chromeCopy[lang].home}
           className="site-header-logo pressable"
         >
-          <GDGLogo svgKey="header" aria-hidden="true" className="h-[22px] w-auto" />
+          <GDGLogo
+            svgKey="header"
+            aria-hidden="true"
+            className="h-[22px] w-auto"
+          />
           <span className="font-display text-[15px] font-semibold tracking-tight [font-variation-settings:'ROND'_100] max-[359px]:sr-only">
             GDGoC Yonsei
           </span>
@@ -2671,12 +2738,14 @@ Stage: the header files, `navigation-links.ts`, `locale-switch.tsx`, `localized-
 ### Task 6: Footer and Seoul clock
 
 **Files:**
+
 - Create: `app/components/site/seoul-clock.tsx`, `app/components/site/footer-locale-switch.tsx`
 - Rewrite: `app/components/footer.tsx`
 - Modify: `app/styles/site-chrome.css` (footer rules), `tests/components/common-components.test.tsx`
 - Test: `tests/components/seoul-clock.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `LocaleSwitch`, `chromeCopy`.
 - Produces: `<SeoulClock label />`, `<FooterLocaleSwitch lang label />`, `<Footer lang />`. The footer keeps its link names.
 
@@ -2712,9 +2781,10 @@ vi.mock('next/navigation', () => ({
 At the end of `it('renders footer links', …)`, add:
 
 ```ts
-expect(
-  screen.getAllByRole('link', { name: '한국어' }).at(-1)
-).toHaveAttribute('href', '/ko/project')
+expect(screen.getAllByRole('link', { name: '한국어' }).at(-1)).toHaveAttribute(
+  'href',
+  '/ko/project'
+)
 expect(
   screen.getByRole('link', { name: '2026 Freshman Orientation' })
 ).toHaveAttribute('href', '/en/2026-freshman-ot')
@@ -2801,10 +2871,16 @@ const CHAPTER_URL =
   'https://gdg.community.dev/gdg-on-campus-yonsei-university-sinchon-campus-seoul-south-korea/'
 const SOURCE_URL = 'https://github.com/gdg-yonsei/gdgoc-yonsei-web'
 
-function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
+function FooterColumn({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
   return (
     <div>
-      <h2 className="font-code text-xs tracking-[0.16em] text-on-stage-muted uppercase">
+      <h2 className="font-code text-on-stage-muted text-xs tracking-[0.16em] uppercase">
         {title}
       </h2>
       <ul className="mt-5 flex flex-col gap-3">{children}</ul>
@@ -2826,58 +2902,139 @@ export default function Footer({ lang }: { lang: Locale }) {
       <div className="mx-auto max-w-6xl px-5 pt-20 pb-10 sm:px-8">
         <div className="grid gap-12 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))]">
           <div className="flex flex-col gap-5">
-            <GDGLogo svgKey="footer" aria-hidden="true" className="h-9 w-auto self-start" />
-            <p className="max-w-xs text-sm leading-6 text-on-stage-muted">
+            <GDGLogo
+              svgKey="footer"
+              aria-hidden="true"
+              className="h-9 w-auto self-start"
+            />
+            <p className="text-on-stage-muted max-w-xs text-sm leading-6">
               {copy.footerBlurb}
             </p>
           </div>
           <FooterColumn title={copy.footerExplore}>
-            <li><Link href={`/${lang}/session`} className="site-footer-link">{copy.sessions}</Link></li>
-            <li><Link href={`/${lang}/project`} className="site-footer-link">{copy.projects}</Link></li>
-            <li><Link href={`/${lang}/calendar`} className="site-footer-link">{copy.calendar}</Link></li>
-            <li><Link href={`/${lang}/member`} className="site-footer-link">{copy.members}</Link></li>
+            <li>
+              <Link href={`/${lang}/session`} className="site-footer-link">
+                {copy.sessions}
+              </Link>
+            </li>
+            <li>
+              <Link href={`/${lang}/project`} className="site-footer-link">
+                {copy.projects}
+              </Link>
+            </li>
+            <li>
+              <Link href={`/${lang}/calendar`} className="site-footer-link">
+                {copy.calendar}
+              </Link>
+            </li>
+            <li>
+              <Link href={`/${lang}/member`} className="site-footer-link">
+                {copy.members}
+              </Link>
+            </li>
           </FooterColumn>
           <FooterColumn title={copy.footerConnect}>
             <li>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer noopener" aria-label="GDGoC Yonsei Instagram" className="site-footer-link">
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="GDGoC Yonsei Instagram"
+                className="site-footer-link"
+              >
                 Instagram <External />
               </a>
             </li>
             <li>
-              <a href={LINKEDIN_URL} target="_blank" rel="noreferrer noopener" aria-label="GDGoC Yonsei LinkedIn" className="site-footer-link">
+              <a
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="GDGoC Yonsei LinkedIn"
+                className="site-footer-link"
+              >
                 LinkedIn <External />
               </a>
             </li>
             <li>
-              <a href={`mailto:${EMAIL}`} rel="noreferrer noopener" aria-label="Email GDGoC Yonsei" className="site-footer-link">
+              <a
+                href={`mailto:${EMAIL}`}
+                rel="noreferrer noopener"
+                aria-label="Email GDGoC Yonsei"
+                className="site-footer-link"
+              >
                 Email
               </a>
             </li>
             <li>
-              <a href={CHAPTER_URL} target="_blank" rel="noreferrer noopener" className="site-footer-link">
+              <a
+                href={CHAPTER_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="site-footer-link"
+              >
                 {copy.chapterPage} <External />
               </a>
             </li>
           </FooterColumn>
           <FooterColumn title={copy.footerSite}>
-            <li><Link href={`/${lang}/privacy-policy`} className="site-footer-link">{copy.privacy}</Link></li>
-            <li><Link href={`/${lang}/terms-of-service`} className="site-footer-link">{copy.terms}</Link></li>
-            <li><Link href={`/${lang}/2026-freshman-ot`} prefetch={false} className="site-footer-link">{copy.freshmanOt}</Link></li>
             <li>
-              <a href={SOURCE_URL} target="_blank" rel="noreferrer noopener" className="site-footer-link">
+              <Link
+                href={`/${lang}/privacy-policy`}
+                className="site-footer-link"
+              >
+                {copy.privacy}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/${lang}/terms-of-service`}
+                className="site-footer-link"
+              >
+                {copy.terms}
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/${lang}/2026-freshman-ot`}
+                prefetch={false}
+                className="site-footer-link"
+              >
+                {copy.freshmanOt}
+              </Link>
+            </li>
+            <li>
+              <a
+                href={SOURCE_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="site-footer-link"
+              >
                 {copy.source} <External />
               </a>
             </li>
-            <li><Link href={`/${lang}/admin`} prefetch={false} className="site-footer-link">{copy.gyms}</Link></li>
+            <li>
+              <Link
+                href={`/${lang}/admin`}
+                prefetch={false}
+                className="site-footer-link"
+              >
+                {copy.gyms}
+              </Link>
+            </li>
           </FooterColumn>
         </div>
         <p aria-hidden="true" className="site-footer-wordmark">
           GDGoC Yonsei
         </p>
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-6 font-code text-xs text-on-stage-muted">
+        <div className="font-code text-on-stage-muted flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/10 pt-6 text-xs">
           <p>© {COPYRIGHT_YEAR} GDG on Campus Yonsei. All rights reserved.</p>
           <SeoulClock label={copy.clockLabel} />
-          <Suspense fallback={<LocaleSwitch lang={lang} pathname={null} label={copy.language} />}>
+          <Suspense
+            fallback={
+              <LocaleSwitch lang={lang} pathname={null} label={copy.language} />
+            }
+          >
             <FooterLocaleSwitch lang={lang} label={copy.language} />
           </Suspense>
         </div>
@@ -2890,47 +3047,47 @@ export default function Footer({ lang }: { lang: Locale }) {
 - [ ] **Step 5: Append the footer rules to `app/styles/site-chrome.css`, inside `@layer components`**
 
 ```css
-  .site-footer {
-    overflow: hidden;
-    background-color: var(--s-stage);
-    color: var(--s-on-stage);
-  }
+.site-footer {
+  overflow: hidden;
+  background-color: var(--s-stage);
+  color: var(--s-on-stage);
+}
 
-  .site-footer-link {
-    display: inline-flex;
-    min-height: 1.75rem;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.9375rem;
-    color: var(--s-on-stage);
-    text-decoration-color: rgb(255 255 255 / 0.3);
-    text-underline-offset: 0.3em;
-  }
+.site-footer-link {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+  color: var(--s-on-stage);
+  text-decoration-color: rgb(255 255 255 / 0.3);
+  text-underline-offset: 0.3em;
+}
 
-  .site-footer-wordmark {
-    margin-block: 4.5rem 2rem;
-    font-family: var(--font-display);
-    font-size: clamp(3rem, 11.4vw, 10rem);
-    font-weight: 700;
-    line-height: 0.8;
-    letter-spacing: -0.055em;
-    white-space: nowrap;
-    user-select: none;
-    font-variation-settings: 'ROND' 0;
-    transition: font-variation-settings 900ms var(--ease-spring);
-  }
+.site-footer-wordmark {
+  margin-block: 4.5rem 2rem;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 11.4vw, 10rem);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  user-select: none;
+  font-variation-settings: 'ROND' 0;
+  transition: font-variation-settings 900ms var(--ease-spring);
+}
 ```
 
 Then add these to the existing `@media (hover: hover)` block:
 
 ```css
-  .site-footer-link:hover {
-    text-decoration-line: underline;
-  }
+.site-footer-link:hover {
+  text-decoration-line: underline;
+}
 
-  .site-footer-wordmark:hover {
-    font-variation-settings: 'ROND' 100;
-  }
+.site-footer-wordmark:hover {
+  font-variation-settings: 'ROND' 100;
+}
 ```
 
 - [ ] **Step 6: Run the tests**
@@ -2947,12 +3104,14 @@ Stage: `footer.tsx`, `seoul-clock.tsx`, `footer-locale-switch.tsx`, `site-chrome
 ### Task 7: 404 and error pages
 
 **Files:**
+
 - Create: `app/components/site/not-found-view.tsx`
 - Rewrite: `app/not-found.tsx`, `app/(home)/[lang]/error.tsx`
 - Modify: `proxy.ts` (`publicRouteNotFound` HTML only)
 - Test: `tests/proxy.test.ts` (existing: must stay green), `tests/components/not-found-view.test.tsx` (new)
 
 **Interfaces:**
+
 - Consumes: `BracketPoster`, `googleSansFlex`, `googleSansCode`, `bracketCapsulesInViewBox`, `capsulePath`, `BRACKET_VIEWBOX`.
 - Produces: `<NotFoundView />` (the `<main>` content, without `<html>` or `<body>`).
 
@@ -3016,12 +3175,15 @@ export default function NotFoundView() {
           <BracketPoster side="right" id="not-found-right" />
         </span>
       </div>
-      <p className="max-w-md text-on-stage-muted">
+      <p className="text-on-stage-muted max-w-md">
         This page slipped out of the brackets.
         <br />
         <span lang="ko">페이지를 찾을 수 없어요.</span>
       </p>
-      <nav aria-label="Helpful links" className="flex flex-wrap justify-center gap-3">
+      <nav
+        aria-label="Helpful links"
+        className="flex flex-wrap justify-center gap-3"
+      >
         {links.map((link) => (
           <Link
             key={link.href}
@@ -3083,13 +3245,16 @@ export default function PublicError({
 
   return (
     <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 pt-28 pb-20 text-center">
-      <p aria-hidden="true" className="font-code text-xs tracking-[0.18em] text-fg-subtle uppercase">
+      <p
+        aria-hidden="true"
+        className="font-code text-fg-subtle text-xs tracking-[0.18em] uppercase"
+      >
         {'<error />'}
       </p>
       <h2 className="font-display text-4xl font-bold tracking-tight [font-variation-settings:'ROND'_100]">
         <LocalizedText en="Something went wrong" ko="문제가 발생했어요" />
       </h2>
-      <p className="max-w-md text-fg-muted">
+      <p className="text-fg-muted max-w-md">
         <LocalizedText
           en="An unexpected error occurred. Please try again."
           ko="예기치 않은 오류가 발생했어요. 다시 시도해 주세요."
@@ -3098,7 +3263,7 @@ export default function PublicError({
       <button
         type="button"
         onClick={reset}
-        className="pressable inline-flex min-h-12 items-center rounded-full bg-fg px-6 font-semibold text-paper"
+        className="pressable bg-fg text-paper inline-flex min-h-12 items-center rounded-full px-6 font-semibold"
       >
         <LocalizedText en="Try again" ko="다시 시도" />
       </button>
@@ -3132,12 +3297,18 @@ const BRACKET_FILL = {
 
 function bracketSvg(side: BracketSide) {
   const paths = bracketCapsulesInViewBox(side)
-    .map((capsule) => `<path d="${capsulePath(capsule)}" fill="${BRACKET_FILL[capsule.hue]}"/>`)
+    .map(
+      (capsule) =>
+        `<path d="${capsulePath(capsule)}" fill="${BRACKET_FILL[capsule.hue]}"/>`
+    )
     .join('')
   return `<svg aria-hidden="true" viewBox="0 0 ${BRACKET_VIEWBOX.width} ${BRACKET_VIEWBOX.height}">${paths}</svg>`
 }
 
-const NOT_FOUND_BRACKETS = { left: bracketSvg('left'), right: bracketSvg('right') }
+const NOT_FOUND_BRACKETS = {
+  left: bracketSvg('left'),
+  right: bracketSvg('right'),
+}
 ```
 
 Inside `publicRouteNotFound`, replace the `<style>` and `<body>` contents of the `html` template, keeping the `<head>` meta and title:
@@ -3177,6 +3348,7 @@ Stage: `app/not-found.tsx`, `app/components/site/not-found-view.tsx`, `app/(home
 ### Task 8: Legacy cleanup and Plan 1 verification
 
 **Files:**
+
 - Delete: `app/(home)/[lang]/welcome-page.tsx`, `app/(home)/[lang]/home-page-background.tsx`
 - Modify: `app/globals.css`: remove `.h-home-screen`, the `/* Home shooting star … */` block through `.shooting-star-br`, and the `.shooting-star` rule inside the trailing `prefers-reduced-motion` block.
 
@@ -3201,6 +3373,7 @@ If `/en` or `/ko` JS regresses by more than 5%: confirm `bracket-field-gl` is a 
 - [ ] **Step 4: Browser QA (Playwright MCP or chrome-devtools MCP against `next start`)**
 
 Check each of these:
+
 - Widths 320, 360, 390, 768, 1280 and 1920 on `/en` and `/ko`: `document.documentElement.scrollWidth === window.innerWidth`.
 - Tab from the top of the page: the skip link appears, and Enter moves focus to `#main`.
 - 390 px: the menu opens, Escape closes it, focus returns to the trigger, and a link navigates and closes the menu.

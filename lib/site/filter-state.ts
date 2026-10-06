@@ -1,35 +1,25 @@
-/**
- * 세션 로그·프로젝트 허브의 필터 상태(순수 함수).
- *
- * 서버는 각 행의 필터 값을 `data-f-<key>` 속성(값은 `|`로 이어 붙임)과 정규화한 `data-search` 문자열로
- * 적어 두고, 클라이언트 `FilterBar`가 이를 읽어 상태를 쿼리 문자열에 반영한다.
- */
+// 서버의 data-f-<key> 값은 |로 잇는다. FilterBar가 이 값과 data-search를 읽어 쿼리에 반영한다.
 
-/** 필터 선택지(값, 표시 이름, 해당 개수). */
 export type FacetOption = { value: string; label: string; count: number }
 
 /** 여러 값을 고를 때 하나라도 맞으면(any) / 모두 맞아야(all) 통과. */
 export type FacetMode = 'any' | 'all'
 
-/** 필터 상태: 검색어와 분류별 선택 값. */
 export type FilterState = {
   q: string
   selected: Readonly<Record<string, readonly string[]>>
 }
 
-/** 필터 대상 행: 정규화된 검색 문자열과 분류별 값. */
 export type FilterableItem = {
   search: string
   facets: Readonly<Record<string, readonly string[]>>
 }
 
-/** 아무 필터도 없는 상태. */
 export const EMPTY_FILTER: FilterState = { q: '', selected: {} }
 
 /** `data-f-*` 속성과 쿼리 문자열에서 여러 값을 잇는 구분자. */
 export const VALUE_DELIMITER = '|'
 
-/** 검색 비교용 정규화(소문자, 공백 정리). */
 export function normalizeSearchText(text: string): string {
   return text.normalize('NFKC').toLowerCase().replace(/\s+/g, ' ').trim()
 }
@@ -66,7 +56,6 @@ export function serializeFilterState(
   return query ? `?${query}` : ''
 }
 
-/** 검색어나 선택 값이 하나라도 있는지. */
 export function isFilterActive(state: FilterState): boolean {
   return (
     normalizeSearchText(state.q) !== '' ||
@@ -74,7 +63,6 @@ export function isFilterActive(state: FilterState): boolean {
   )
 }
 
-/** 분류 값 하나를 켜거나 끈 새 상태를 돌려준다. */
 export function toggleFacetValue(
   state: FilterState,
   key: string,
@@ -87,7 +75,6 @@ export function toggleFacetValue(
   return { ...state, selected: { ...state.selected, [key]: next } }
 }
 
-/** 행이 검색어와 모든 분류 조건을 만족하는지. */
 export function matchesFilter(
   item: FilterableItem,
   state: FilterState,
@@ -117,19 +104,16 @@ export function createFilterMatcher(
   }
 }
 
-/** 분류 키의 `data-*` 속성 이름(`data-f-<키>`). */
 export function facetAttribute(key: string): string {
   return `data-f-${key}`
 }
 
-/** 값 목록을 `data-f-*` 속성 값으로 잇는다. */
 export function joinFacetValues(
   values: readonly (string | null | undefined)[]
 ): string {
   return values.filter(Boolean).join(VALUE_DELIMITER)
 }
 
-/** DOM 요소의 `data-*` 속성에서 필터 대상 정보를 읽는다. */
 export function readFilterableItem(
   element: Element,
   keys: readonly string[]

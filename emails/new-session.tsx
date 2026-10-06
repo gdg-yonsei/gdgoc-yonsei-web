@@ -1,6 +1,4 @@
-/**
- * React Email 템플릿: 새 세션 개설 안내 메일(같은 기수 멤버에게). `pnpm email:dev`로 미리 볼 수 있다.
- */
+// 새 세션 메일은 pnpm email:dev로 미리 볼 수 있다.
 import {
   Tailwind,
   pixelBasedPreset,
@@ -18,7 +16,6 @@ import {
   Hr,
 } from 'react-email'
 
-/** 메일에 넣을 세션 정보와 신청 링크. */
 interface NewSessionProps {
   session: {
     name: string
@@ -32,8 +29,7 @@ interface NewSessionProps {
   registerUrl: string
 }
 
-// 세션 날짜 포맷을 위한 options — 세션 시간은 Seoul 벽시계를 UTC 라벨로
-// 저장한 값이므로 서버 타임존과 무관하게 UTC 로 표시한다.
+// 세션은 서울 벽시계에 UTC 라벨을 붙여 저장하므로 서버 타임존과 무관하게 UTC로 표시한다.
 const formatOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -44,7 +40,6 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
 }
 
-/** 새 세션 안내 메일 본문. */
 const NewSession = ({
   session,
   part,
@@ -123,7 +118,6 @@ const NewSession = ({
   )
 }
 
-// 테스트 데이터
 NewSession.PreviewProps = {
   session: {
     name: 'Front-End 세션',

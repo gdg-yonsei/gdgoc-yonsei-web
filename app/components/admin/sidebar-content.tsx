@@ -1,6 +1,3 @@
-/**
- * 관리자 사이드바 본문(서버 컴포넌트): 기수 범위, 메뉴, 사용자 카드, 유틸리티 버튼.
- */
 import Link from 'next/link'
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import GDGLogo from '@/app/components/svg/gdg-logo'
@@ -13,15 +10,12 @@ import { Locale } from '@/lib/i18n'
 import { getAdminMessages, localizeAdminHref } from '@/lib/admin-i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
-/**
- * 관리자 브랜드 표시(GDG 로고 + "GYMS"). 누르면 관리자 홈으로 간다.
- */
 export function AdminBrand({ locale }: { locale: Locale }) {
   return (
     <Link
       href={localizeAdminHref('/admin', locale)}
       className={
-        'text-ink focus-visible:outline-primary flex items-center gap-2 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2'
+        'text-ink focus-visible:outline-primary flex min-h-11 items-center gap-2 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2'
       }
     >
       <GDGLogo className={'h-6 w-11'} />
@@ -30,13 +24,6 @@ export function AdminBrand({ locale }: { locale: Locale }) {
   )
 }
 
-/**
- * 데스크톱 사이드바와 모바일 드로어가 공유하는 내비게이션 본문.
- *
- * 두 곳이 같은 컴포넌트를 써야 메뉴 구성과 스타일이 어긋나지 않는다.
- * @param navigations 권한으로 걸러진 메뉴 목록
- * @param resolvedScope 서버에서 해석한 기수 범위
- */
 export default function SidebarContent({
   navigations,
   locale,

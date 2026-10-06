@@ -1,7 +1,3 @@
-/**
- * 홈 프로그램(활동) 섹션 문구(두 언어).
- */
-
 /** 활동별 소개. `key`는 프로그램 카드와 짝을 맞추는 식별자다. */
 export const activitySectionContents = [
   {
@@ -14,28 +10,28 @@ export const activitySectionContents = [
   {
     key: 'Part Session',
     content: {
-      en: 'GDG Yonsei is divided into six specialized departments—Front-End, Back-End, ML/AI, Cloud, UI/UX, and Developer Relations—each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
+      en: 'GDG Yonsei is divided into six specialized departments (Front-End, Back-End, ML/AI, Cloud, UI/UX, and Developer Relations), each consisting of a small, select group. These departments conduct studies and workshops to develop advanced technical skills.',
       ko: 'GDG Yonsei는 프론트엔드, 백엔드, ML/AI, Cloud, UI/UX, Developer Relations의 여섯 개 전문 파트로 구성되어 있으며, 각 파트는 소수의 선발된 인원으로 이루어져 있습니다. 이들은 고급 기술 역량 강화를 위해 스터디와 워크숍을 진행합니다.',
     },
   },
   {
     key: 'Solution Challenge',
     content: {
-      en: "We participated in the Solution Challenge, an annual international student development competition organized by Google for Developers, designing and building products that contribute to the UN's Sustainable Development Goals (SDGs). In 2023, 2,100 teams from university GDG chapters worldwide took part, six of them from GDG Yonsei; three of our teams reached the Top 100 and one was selected as a Top 10 finalist. GDG Yonsei achieved the highest award rate among university chapters in South Korea, a result that highlights our group's technical capabilities and social impact.",
-      ko: 'Google for Developers가 주최하는 국제 대학생 개발 대회인 Solution Challenge에 참가합니다. 이 대회는 UN의 지속가능발전목표(SDGs) 달성에 기여할 수 있는 제품을 설계하고 개발하는 것을 목표로 합니다. 2023년 대회에서 전 세계 GDG 대학 챕터에서 총 2,100개 팀이 참가하였으며 GDG Yonsei에서 6개 팀이 참가하였습니다. 이 중 3개 팀이 Top 100에 선정되었고 1개 팀은 Top 10 파이널리스트로 선정되었습니다. GDGoC Yonsei는 한국 내 대학 챕터 중 가장 높은 수상률을 기록했습니다.',
+      en: "We participated in Google's Solution Challenge by building products that contribute to the UN's Sustainable Development Goals. In 2023, A-eye, Connecting-the-Dots and HearSitter from Yonsei reached the Top 100; HearSitter was also a Top 10 finalist.",
+      ko: 'Google의 Solution Challenge에 참가해 UN의 지속가능발전목표 달성에 기여하는 제품을 개발합니다. 2023년에는 연세대학교의 A-eye, Connecting-the-Dots, HearSitter가 Top 100에 선정되었고, HearSitter는 Top 10 파이널리스트에도 선정되었습니다.',
     },
   },
   {
     key: 'oTP',
     content: {
-      en: 'oTP (Open Tech Project) is a project where teams freely choose a topic and develop a service based on it. The goal is to actively utilize various technologies and solve real-world problems. Ultimately, teams present and share their results at a demo day, fostering growth through the experience.',
+      en: 'In oTP (Open Tech Project), teams choose a topic, build a service to solve a practical problem, and share their results at a demo day.',
       ko: 'oTP(Open Tech Project)는 팀이 자유롭게 주제를 선정하고 이를 바탕으로 서비스를 개발하는 프로젝트입니다. 다양한 기술을 적극적으로 활용하고 실제 문제를 해결하는 것을 목표로 하며, 최종적으로 데모 데이에서 결과물을 발표하고 공유함으로써 경험을 통한 성장을 추구합니다.',
     },
   },
   {
     key: 'Yonsei X Korea Demo Day',
     content: {
-      en: 'Yonsei X Korea Demo Day is an event jointly hosted by GDGoC Yonsei and GDGoC Korea, where participants share their experiences and projects. The goal is to broaden perspectives and foster a wide-reaching network through this collaborative exchange.',
+      en: 'GDGoC Yonsei and GDGoC Korea host Yonsei X Korea Demo Day together. Participants present their projects, share what they learned, and meet developers from the other chapter.',
       ko: 'Yonsei X Korea Demo Day는 GDGoC Yonsei과 GDGoC Korea가 공동으로 주최하는 행사로, 참가자들이 경험과 프로젝트를 공유하는 자리입니다. 이 협력 교류를 통해 시야를 넓히고 폭넓은 네트워크를 형성하는 것을 목표로 합니다.',
     },
   },

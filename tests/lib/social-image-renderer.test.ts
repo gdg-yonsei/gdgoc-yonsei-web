@@ -66,12 +66,10 @@ describe('social image renderer', () => {
       return [data[index]!, data[index + 1]!, data[index + 2]!] as const
     }
 
-    // A neutral near-black corner, not the old navy.
     const [r, g, b] = pixel(8, 8)
     expect(Math.max(r, g, b)).toBeLessThan(48)
     expect(Math.abs(b - r)).toBeLessThan(10)
 
-    // Capsule colours show through on the right-hand side.
     let colourful = 0
     for (let x = 700; x < 1190; x += 7) {
       for (let y = 100; y < 560; y += 7) {
@@ -88,7 +86,6 @@ describe('social image renderer', () => {
       generation: '25-26',
       category: 'Project',
       date: '',
-      // A light grey placeholder, like a bright photograph.
       representativeImage: '/default-image.png',
       version: 'photo-contrast',
       locale: 'en',
@@ -100,8 +97,7 @@ describe('social image renderer', () => {
       .toBuffer({ resolveWithObject: true })
     const index = (398 * info.width + 40) * info.channels
 
-    // The meta line (#b4b4b4, 26px bold) needs ≥ 3:1: a background at or
-    // below 70 gives it about 4.5:1.
+    // 메타 문구(#b4b4b4, 26px bold)는 대비 ≥3:1이 필요하다. 배경값 ≤70이면 약 4.5:1이다.
     expect(
       Math.max(data[index]!, data[index + 1]!, data[index + 2]!)
     ).toBeLessThan(70)

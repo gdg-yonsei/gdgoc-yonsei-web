@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Usage: e2e-prod.sh <log-path> [playwright args…]
-# Seeds the local DB, builds, starts and runs Playwright's production config
-# with CI's fake credentials (.github/workflows/performance.yml).
+# Usage: e2e-prod.sh <log-path> [playwright args…]. Seeds the local DB, builds and runs production Playwright with fake credentials.
 set -u
 cd "$(git rev-parse --show-toplevel)"
 HOST=${E2E_HOST:-localhost}

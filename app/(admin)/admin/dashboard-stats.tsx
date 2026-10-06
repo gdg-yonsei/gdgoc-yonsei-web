@@ -1,6 +1,3 @@
-/**
- * 관리자 대시보드 통계 타일 묶음(서버 컴포넌트). 숫자는 현재 기수 범위 기준으로 SQL `count()`로 센다.
- */
 import {
   BookOpenIcon,
   CodeBracketIcon,
@@ -14,12 +11,7 @@ import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { localizeAdminHref, type AdminMessages } from '@/lib/admin-i18n'
 import { Locale } from '@/lib/i18n'
 
-/**
- * 멤버·세션·프로젝트·파트 수 타일과, 승인 권한이 있으면 가입 대기 수 타일.
- *
- * @param scope 현재 기수 범위(null이면 전체)
- * @param showPendingApprovals 가입 대기 타일을 보일지(멤버 승인 권한)
- */
+/** scope가 null이면 전체 기수 통계이며, 가입 대기 수는 승인 권한이 있는 관리자에게만 표시한다. */
 export default async function DashboardStats({
   scope,
   locale,
@@ -64,7 +56,6 @@ export default async function DashboardStats({
     },
   ]
 
-  // 승인 권한이 있는 관리자에게만 대기 중인 가입 요청 수를 보여 준다.
   if (showPendingApprovals) {
     tiles.push({
       key: 'pendingApprovals',
@@ -90,24 +81,34 @@ export default async function DashboardStats({
   )
 }
 
-/** 통계 타일 로딩 스켈레톤(타일 5개 자리). */
-export function DashboardStatsSkeleton() {
+export function DashboardStatsSkeleton({ label }: { label: string }) {
   return (
-    <div
-      className={'grid grid-cols-2 gap-3 lg:grid-cols-5'}
-      aria-hidden={'true'}
-    >
-      {Array.from({ length: 5 }).map((_, index) => (
-        <div
-          key={index}
-          className={
-            'border-hairline bg-surface flex flex-col gap-2 rounded-lg border p-4'
-          }
-        >
-          <div className={'bg-surface-sunken h-3 w-16 animate-pulse rounded'} />
-          <div className={'bg-surface-sunken h-9 w-12 animate-pulse rounded'} />
-        </div>
-      ))}
+    <div role={'status'}>
+      <span className={'sr-only'}>{label}</span>
+      <div
+        className={'grid grid-cols-2 gap-3 lg:grid-cols-5'}
+        aria-hidden={'true'}
+      >
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className={
+              'border-hairline bg-surface flex flex-col gap-2 rounded-lg border p-4'
+            }
+          >
+            <div
+              className={
+                'bg-surface-sunken h-3 w-16 animate-pulse rounded motion-reduce:animate-none'
+              }
+            />
+            <div
+              className={
+                'bg-surface-sunken h-9 w-12 animate-pulse rounded motion-reduce:animate-none'
+              }
+            />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

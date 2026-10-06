@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import BracketStage from '@/app/(home)/[lang]/_components/home/bracket-stage'
 
-// A stale or blocked chunk: the dynamic import rejects.
 vi.mock('@/app/(home)/[lang]/_components/home/bracket-field-gl', () => {
   throw new Error('stale chunk')
 })

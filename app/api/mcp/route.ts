@@ -1,6 +1,3 @@
-/**
- * GYMS MCP 엔드포인트 라우트(`/api/mcp`).
- */
 import { requireMcpAuth } from '@better-auth/mcp'
 import {
   OAuthError,
@@ -18,14 +15,8 @@ import { runWithRouteHandlerInvalidation } from '@/lib/server/cache/invalidation
 const resource = getMcpResourceUrl()
 const mcp = createGymsMcpHandler(ALL_TOOLS)
 
-/**
- * GYMS MCP 엔드포인트 (Streamable HTTP, 무상태).
- *
- * `requireMcpAuth` 가 JWT 서명·issuer·audience·만료를 검증하고 없거나 틀리면
- * RFC 9728 `WWW-Authenticate` 로 401 을 돌려준다. 통과한 토큰은 DB 의 현재 역할로
- * Actor 를 만들고, 서비스의 캐시 무효화가 Route Handler 에서도 동작하도록
- * 무효화 컨텍스트 안에서 실행한다. GET/DELETE 는 내보내지 않아 405 가 된다.
- */
+/** 무상태 Streamable HTTP: JWT 서명·issuer·audience·만료를 확인하고, 실패 시 RFC 9728 인증 헤더와 401을 반환한다.
+ * 현재 DB 역할로 Actor를 만들고 캐시 무효화 컨텍스트에서 실행한다. GET/DELETE는 405다. */
 export const POST = requireMcpAuth(
   auth,
   async (request, claims) => {

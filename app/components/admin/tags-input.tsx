@@ -1,8 +1,6 @@
 'use client'
 
-/**
- * 프로젝트 기술 스택 태그 입력(클라이언트 컴포넌트). 개수·길이 제한과 중복 제거 규칙은 서버와 같은 `lib/validations/project-tags`를 쓴다.
- */
+/** 태그 개수·길이·중복 제거는 서버와 같은 project-tags 검증 규칙을 쓴다. */
 import { useId, useState, type KeyboardEvent } from 'react'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
@@ -12,13 +10,7 @@ import {
   dedupeTags,
 } from '@/lib/validations/project-tags'
 
-/**
- * 칩 형태의 태그 입력. 결과는 JSON 배열로 `tags` 필드에 싣는다.
- *
- * Enter·쉼표로 추가하고, 빈 입력에서 Backspace를 누르면 마지막 태그를 지운다.
- * @param defaultValue 기존 태그
- * @param suggestions 자동완성 후보(이미 고른 태그는 빼고 보여 준다)
- */
+/** Enter·쉼표로 추가하고 빈 입력에서 Backspace로 마지막 태그를 지운다. tags 필드는 JSON 배열이다. */
 export default function TagsInput({
   defaultValue,
   suggestions,
@@ -78,7 +70,9 @@ export default function TagsInput({
                 onClick={() =>
                   setTags((current) => current.filter((item) => item !== tag))
                 }
-                className={'hover:bg-canvas rounded-full p-1'}
+                className={
+                  'hover:bg-canvas inline-flex size-11 items-center justify-center rounded-full'
+                }
               >
                 <XMarkIcon aria-hidden={'true'} className={'size-3.5'} />
               </button>

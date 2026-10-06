@@ -20,8 +20,7 @@ export default defineConfig({
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    // Next.js 16's larger cold module graph can exceed Vitest's 5s default
-    // when the suite starts many isolated workers at once.
+    // The cold Next module graph can exceed Vitest's 5s default when isolated workers start together.
     testTimeout: 15_000,
     coverage: {
       provider: 'v8',

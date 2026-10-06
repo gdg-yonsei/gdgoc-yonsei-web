@@ -2,15 +2,16 @@
 - Status: approved (direction: Inside the Brackets; July revert reason: wrong identity; admin tag editing in scope)
 - Branch: `new-landing-page`
 
-# GDGoC Yonsei — "Inside the Brackets" public-site redesign
+# GDGoC Yonsei: "Inside the Brackets" public-site redesign
 
 ## Context
 
-The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is being rebuilt visually from scratch so that it *is* a showcase of what the community can build. The current landing (welcome / about / activities carousel / parts) and the generation-first Sessions and Projects flows are replaced. Written content is reused from `lib/contents/*` and the DB.
+The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is being rebuilt visually from scratch so that it _is_ a showcase of what the community can build. The current landing (welcome / about / activities carousel / parts) and the generation-first Sessions and Projects flows are replaced. Written content is reused from `lib/contents/*` and the DB.
 
 **Decisions made with you**
-- **Direction — Inside the Brackets.** The GDG `< >` chevrons organize everything. The hero is an immersive dark "stage" where the H1 "GDGoC Yonsei" literally sits between the two brackets. Scrolling parts the brackets, and the page opens onto light, readable document sheets. Dark mode follows the system setting.
-- **Identity guardrail.** The July redesign was reverted for *wrong identity*. So use only real GDG / Google brand assets:
+
+- **Direction: Inside the Brackets.** The GDG `< >` chevrons organize everything. The hero is an immersive dark "stage" where the H1 "GDGoC Yonsei" literally sits between the two brackets. Scrolling parts the brackets, and the page opens onto light, readable document sheets. Dark mode follows the system setting.
+- **Identity guardrail.** The July redesign was reverted for _wrong identity_. So use only real GDG / Google brand assets:
   - the actual chevron capsule geometry from `app/components/svg/gdg-logo.tsx`
   - the GDG palette already in `app/globals.css` (core `*-300`, bright `*-200`, pastel `*-100`, neutrals `#1E1E1E` / `#F0F0F0`)
   - the GDG halftone-dot motif
@@ -19,6 +20,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 - **Admin gains tech-stack tag editing**, so Projects can be filtered by technology.
 
 **Constraints found in the repo and on production**
+
 - **Performance budgets** (`docs/performance/nextjs-16.3-performance.md`, `scripts/check-performance-budget.mjs`):
   - ≤170 KB encoded JS per route (routes are at 149–162 KB today), ≤70 KB RSC
   - LCP ≤2.5 s at 200 KB/s with 4× CPU slowdown, CLS ≤0.05
@@ -43,14 +45,16 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 ## 1. Design system
 
 ### Identity anchors
-| Asset | Source | Where it shows up |
-|---|---|---|
-| Chevrons: 4 capsules (red + blue = `<`, green + yellow = `>`) | `gdg-logo.tsx`, viewBox 512×321 | hero field, bookend CTA, section tags, 404, small marks |
-| Palette | `gdg-*` tokens in `globals.css` | core colors for fills and graphics, bright colors on dark, pastels for chips and tints |
-| Halftone dots | GDG brand pattern | WebGL field, SVG poster, textures |
-| Type | Google Sans Flex (`wght`, `wdth`, `ROND`), Google Sans Code, Pretendard Variable | Latin display and body, mono meta, Hangul |
+
+| Asset                                                         | Source                                                                           | Where it shows up                                                                      |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Chevrons: 4 capsules (red + blue = `<`, green + yellow = `>`) | `gdg-logo.tsx`, viewBox 512×321                                                  | hero field, bookend CTA, section tags, 404, small marks                                |
+| Palette                                                       | `gdg-*` tokens in `globals.css`                                                  | core colors for fills and graphics, bright colors on dark, pastels for chips and tints |
+| Halftone dots                                                 | GDG brand pattern                                                                | WebGL field, SVG poster, textures                                                      |
+| Type                                                          | Google Sans Flex (`wght`, `wdth`, `ROND`), Google Sans Code, Pretendard Variable | Latin display and body, mono meta, Hangul                                              |
 
 ### Tokens: new `app/site-theme.css`, imported by `globals.css` and scoped to `html.site`
+
 - The admin's `:root` tokens (`--canvas`, `--surface`, `--ink`, …) stay untouched. New names are exposed through `@theme inline` so nothing collides: `bg-stage`, `bg-paper`, `bg-sheet`, `text-fg`, `text-fg-muted`, `text-on-stage`, `border-rule`, `bg-g-blue|red|yellow|green`, plus `-bright`, `-pastel` and `-ink` variants. The `-ink` variants are text colors that pass AA contrast.
 - **Surfaces:** `stage` #1E1E1E (hero and footer), `paper` (page), `sheet` (cards), `rule` (hairlines). `@media (prefers-color-scheme: dark)` swaps paper, sheet and fg.
 - **Color maps, with a single source in `lib/site/labels.ts`:**
@@ -61,6 +65,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - "Sticker" elevation for featured cards: a 1.5 px ink outline plus a hard offset shadow, matching the GDG 2024 outlined style. Everything else uses soft shadows.
 
 ### Typography
+
 - **Fonts in the public layout:**
   - Load `Google_Sans_Flex({ subsets: ['latin'], axes: ['wdth','ROND'], display: 'swap', variable })` and `Google_Sans_Code({ subsets: ['latin'] })` through `next/font/google`.
   - Pretendard stays self-hosted in `app/pretendard.css`, and the admin keeps its local Google Sans.
@@ -74,6 +79,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 - **Font weight check:** measure the Flex Latin woff2 early; the target is about 120 KB. If it's larger, drop `ROND` or `wdth` from the body face and keep them only for display text.
 
 ### Motion (CSS first)
+
 - **Easing:** tokens include a spring curve built with CSS `linear()`. Durations are 150, 250 and 400 ms.
 - **Scroll-driven effects** (`animation-timeline: view() | scroll()`), all behind `@supports` with static fallbacks that still show everything:
   - reveal on enter
@@ -94,16 +100,16 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 
 ## 2. Information architecture (URLs unchanged)
 
-| Route | Becomes |
-|---|---|
-| `/[lang]` | Narrative landing (§3) |
-| `/[lang]/session` | **Session Log.** Every public session from all generations, grouped by generation and then month, drawn as git-log lanes, with facet filters and search |
-| `/[lang]/session/[generation]` | The same log for one generation, plus a chapter header and previous/next generation links. When empty: a designed empty state and `noindex, follow` |
-| `/[lang]/session/[generation]/[id]` | Session page: breadcrumb, a "commit" header, a metadata list, content, a gallery or a generated poster, related sessions, previous/next |
-| `/[lang]/project` | **Releases.** A showcase grid of all projects, filtered by generation, tech stack, live demo and open source, plus search |
-| `/[lang]/project/[generation]` | The showcase for one generation. `noindex` when empty |
-| `/[lang]/project/[generation]/[id]` | Case study: hero, cover, content with a sticky sidebar (team, stack, links), gallery, next project |
-| member / calendar / policy pages / 404 | Restyled in the new system |
+| Route                                  | Becomes                                                                                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/[lang]`                              | Narrative landing (§3)                                                                                                                                  |
+| `/[lang]/session`                      | **Session Log.** Every public session from all generations, grouped by generation and then month, drawn as git-log lanes, with facet filters and search |
+| `/[lang]/session/[generation]`         | The same log for one generation, plus a chapter header and previous/next generation links. When empty: a designed empty state and `noindex, follow`     |
+| `/[lang]/session/[generation]/[id]`    | Session page: breadcrumb, a "commit" header, a metadata list, content, a gallery or a generated poster, related sessions, previous/next                 |
+| `/[lang]/project`                      | **Releases.** A showcase grid of all projects, filtered by generation, tech stack, live demo and open source, plus search                               |
+| `/[lang]/project/[generation]`         | The showcase for one generation. `noindex` when empty                                                                                                   |
+| `/[lang]/project/[generation]/[id]`    | Case study: hero, cover, content with a sticky sidebar (team, stack, links), gallery, next project                                                      |
+| member / calendar / policy pages / 404 | Restyled in the new system                                                                                                                              |
 
 - **Header navigation:** Sessions · Projects · Calendar · Members (the order set in commit `348835e`), plus EN/KO, a ⌘K search button and a small GYMS link.
 - **Language switch** (header and footer): now keeps the current path. It uses a plain `<a hrefLang>`, because changing locale is a root-layout reload.
@@ -113,6 +119,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 ## 3. Pages
 
 ### Global chrome
+
 - **Header:** a floating capsule bar that is always dark `stage`, with a hairline border and a small `backdrop-filter`. It stays legible over both the dark hero and the paper pages, so no scroll-state logic is needed.
   - **Mobile:** a full-screen overlay menu with large type.
   - **Kept contract:** the "Open/Close navigation menu" labels, Escape closing the menu and returning focus, and `aria-current`.
@@ -124,6 +131,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - "View source" pointing to github.com/gdg-yonsei/gdgoc-yonsei-web
 
 ### Landing `/[lang]`
+
 1. **Hero `< GDGoC Yonsei >`.**
    - **Text:**
      - H1 "GDGoC Yonsei" between the two chevrons, rendered as an animated halftone field.
@@ -135,8 +143,8 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
      - The WebGL2 canvas fades in over it once the browser is idle.
    - **Scroll:** the brackets part, and the paper sheet rises over the stage with a capsule-radius top edge.
    - **Draft copy** (for your review):
-     - EN tagline: "Yonsei University's student developer community. We connect, learn, and grow — then ship what we build."
-     - KO tagline: "연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 — 만든 것을 세상에 내놓습니다."
+     - EN tagline: "Yonsei University's student developer community. We connect, learn, and grow, then ship what we build."
+     - KO tagline: "연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 만든 것을 세상에 내놓습니다."
 2. **`<about>` manifesto.**
    - The GDGoC Yonsei statement set at display size, with each word highlighting as you scroll.
    - A short "What is GDG on Campus?" aside.
@@ -152,9 +160,11 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 7. **`<join>`.** The brackets close around the CTA as a bookend to the hero.
    - Copy: "Recruiting news goes out on Instagram first" (no invented schedule).
    - Links to the channels and the calendar.
+
 - **JSON-LD:** keep the existing Organization, WebSite and WebPage graph.
 
 ### Sessions
+
 - **Hub header:** a breadcrumb, the H1, a description and counts. A generation strip shows non-empty generations as pills with counts, linking to the generation pages; empty generations appear muted as "no public records yet".
 - **Filter bar** (sticky below the header):
   - Search (title EN and KO, part, location).
@@ -177,6 +187,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - Hub and generation pages get `CollectionPage`, `ItemList` and `BreadcrumbList`.
 
 ### Projects
+
 - **Hub:**
   - A breadcrumb, the H1 and counts.
   - Filters for search, Generation, Tech stack (tags), Live demo and Open source.
@@ -193,6 +204,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 - **JSON-LD:** `CreativeWork`, plus `SoftwareSourceCode` with `codeRepository` when a repo URL exists. `keywords` come from the tags, creators are `Person` entries, and there's a `BreadcrumbList`.
 
 ### Other pages
+
 - **Members:** a generation switcher, part sections using the part colors, refined cards and social links.
 - **Calendar:** a page header and a framed iframe.
 - **Privacy / Terms:** the shared prose styles.
@@ -202,6 +214,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 ---
 
 ## 4. SEO and semantics (all pages)
+
 - **Semantics:** one H1 per page, landmarks, and a skip link. Breadcrumbs use `<nav aria-label="Breadcrumb"><ol>`. Use `<time datetime>`, `<dl>` for metadata, and `<figure>`/`<figcaption>`. Alt text comes from titles, and mixed-language snippets carry a `lang` attribute.
 - **Metadata:** reuse `createLocalizedMetadata` in `lib/seo/metadata.ts` (canonical, hreflang, x-default). Add a `noindex` option for empty generation pages.
 - **Sitemap** (`lib/server/queries/public/sitemap.ts`):
@@ -210,13 +223,14 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - list `images` for covers that aren't placeholders
 - **Internal links:** the home page links to the latest sessions and projects. Detail pages link to related items, previous/next, their generation and the members page. Breadcrumbs appear everywhere.
 - **Other:** refresh `app/llms.txt/route.ts`.
-- **Social cards:** restyle `lib/seo/social-image.tsx` to the new identity (stage, halftone chevrons, palette; Pretendard stays for Korean). *Optional:* generated OG images for the home page and hubs.
+- **Social cards:** restyle `lib/seo/social-image.tsx` to the new identity (stage, halftone chevrons, palette; Pretendard stays for Korean). _Optional:_ generated OG images for the home page and hubs.
 
 ---
 
 ## 5. Technical architecture
 
 ### Files
+
 - **Styles:** `app/site-theme.css` holds tokens, the dark scheme, motion utilities and view-transition CSS. `app/globals.css` imports it, and the shooting-star and legacy home CSS are removed. Any new root-level public asset must be added to `UNLOCALIZED_PUBLIC_PATHS` in `proxy.ts`.
 - **Layout:** `app/(home)/[lang]/layout.tsx` adds the fonts, `html.site`, the skip link, the new header and footer.
 - **Landing sections:** `app/(home)/[lang]/_components/home/*`:
@@ -248,7 +262,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - **Projects** (`lib/server/queries/public/projects.ts`):
     - Add `getProjectShowcase()`: generation, tags, repo/demo URLs and contributors.
     - Extend `getProjectById` with tags, repo/demo URLs and contributors' GitHub handles and avatars.
-  - **Cache tags stay read-your-own-writes.** Because generation pages now derive from the archive and showcase entries, those two cached functions call `cacheTag` *after* the query. They attach the list tag, `session|project:generation:<name>:*` for every generation in the result, and `generation:list:*`. That way the immediate `updateTag` calls in `lib/server/cache/invalidation.ts` still hit them.
+  - **Cache tags stay read-your-own-writes.** Because generation pages now derive from the archive and showcase entries, those two cached functions call `cacheTag` _after_ the query. They attach the list tag, `session|project:generation:<name>:*` for every generation in the result, and `generation:list:*`. That way the immediate `updateTag` calls in `lib/server/cache/invalidation.ts` still hit them.
   - Home data regions also attach `homeTag`.
 - **Removed once their consumers are migrated** (grep before deleting):
   - the old home sections: `welcome-page`, `about-page`, `activities-*`, `activity-card`, `parts-page`, `part-card`, `home-page-background`
@@ -257,18 +271,20 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
   - Admin uses its own `AdminNavigationButton`, which is not affected.
 
 ### Client islands and JS budget (target: no more than 15 KB added to any route)
-| Island | Where | Est. size |
-|---|---|---|
-| Header nav (rewritten) | all pages | ~2.5 KB |
-| Bracket stage: loader + WebGL2 module (loaded with idle `import()`) | home | ~1 + ~5 KB |
-| KST clock | footer | <1 KB |
-| Log/grid filter (shared core) | hubs | ~3 KB |
-| Gallery controller | detail pages | existing |
-| ⌘K palette (optional) | all pages | ~1 KB, plus ~5 KB only when opened |
+
+| Island                                                              | Where        | Est. size                          |
+| ------------------------------------------------------------------- | ------------ | ---------------------------------- |
+| Header nav (rewritten)                                              | all pages    | ~2.5 KB                            |
+| Bracket stage: loader + WebGL2 module (loaded with idle `import()`) | home         | ~1 + ~5 KB                         |
+| KST clock                                                           | footer       | <1 KB                              |
+| Log/grid filter (shared core)                                       | hubs         | ~3 KB                              |
+| Gallery controller                                                  | detail pages | existing                           |
+| ⌘K palette (optional)                                               | all pages    | ~1 KB, plus ~5 KB only when opened |
 
 - **Rendering pattern:** the static shells (headers, hero, static sections) prerender. DB-driven regions sit behind Suspense with fallbacks of matching size, as in the current session and project pages.
 
 ### WebGL hero (`bracket-stage.tsx` + `bracket-field-gl.ts`)
+
 - **Shader inputs:** a full-screen-triangle fragment shader. Each halftone cell's dot radius is computed from:
   - signed-distance fields for the 4 logo capsules, passed as uniforms from `bracket-geometry.ts`
   - low-frequency noise that makes the field "breathe"
@@ -283,6 +299,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 - **SVG poster** (`bracket-poster.tsx`): the same composition, built from an SVG `<pattern>` of dots clipped by the capsule paths, with CSS scroll-driven parting.
 
 ### Admin tag editing
+
 - **Validation:** `lib/validations/project.ts` gets `tags: z.array(z.string().trim().min(1).max(32)).max(12)`, plus case-insensitive de-duplication.
 - **Form data:** `lib/server/form-data/get-project-form-data.ts` parses a `tags` JSON field, the same way `participants` is parsed.
 - **Input component:** new `app/components/admin/tags-input.tsx`, a client component styled with the admin design tokens.
@@ -298,6 +315,7 @@ The public site (Next.js 16.3, `cacheComponents`, bilingual `/en` · `/ko`) is b
 ---
 
 ## 6. Phases
+
 Each phase ends with lint, types and tests passing. I'll commit checkpoints only if you ask; work continues on `new-landing-page`. Once you approve, I'll save this design as `docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md`, expand it into a task-level plan, and execute phase by phase.
 
 0. **Baseline.**
@@ -319,6 +337,7 @@ Each phase ends with lint, types and tests passing. I'll commit checkpoints only
 ---
 
 ## 7. Verification
+
 - **Automated checks:** `pnpm lint --max-warnings=0`, `pnpm test:types`, `pnpm test`.
 - **New unit tests** for:
   - `lib/site/*`
@@ -347,6 +366,7 @@ Each phase ends with lint, types and tests passing. I'll commit checkpoints only
   - `llms.txt`
 
 ## 8. Risks and mitigations
+
 - **Little JS headroom.** Measure the hero in Phase 2, load the shader when idle, and load the palette only on demand.
 - **Google Sans Flex file size.** Measure it, trim axes if needed, and rely on next/font's `adjustFontFallback` plus `swap`.
 - **`next/font/google` downloads fonts at build time.** CI and nixpacks have network access. If that ever becomes a problem, commit the generated woff2 files and switch to `next/font/local`.
@@ -357,6 +377,7 @@ Each phase ends with lint, types and tests passing. I'll commit checkpoints only
 - **E2E contracts** (button names, headings, test ids). Update them deliberately, in the same phase that changes them.
 
 ## 9. Out of scope
+
 - Admin UI beyond tag editing
 - The 2026 freshman OT deck and the email templates
 - DB schema changes and URL changes

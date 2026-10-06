@@ -140,7 +140,6 @@ describe('public queries', () => {
     expect(result).toEqual({ id: projectId })
     expect(mockCacheQuery).toHaveBeenCalledWith('projectDetail', [
       `project:item:${projectId}:en`,
-      // 새로고침 버튼이 상세 전체를 한 번에 지울 때 쓰는 공용 태그.
       'project:items:en',
       `project:item:${projectId}:ko`,
       'project:items:ko',
@@ -207,7 +206,6 @@ describe('public queries', () => {
     expect(result).toEqual({ id: sessionId })
     expect(mockCacheQuery).toHaveBeenCalledWith('sessionDetail', [
       `session:item:${sessionId}:en`,
-      // 새로고침 버튼이 상세 전체를 한 번에 지울 때 쓰는 공용 태그.
       'session:items:en',
       `session:item:${sessionId}:ko`,
       'session:items:ko',

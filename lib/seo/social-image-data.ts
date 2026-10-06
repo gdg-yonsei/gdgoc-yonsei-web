@@ -1,6 +1,3 @@
-/**
- * 소셜 미리보기 이미지에 들어갈 내용(제목, 기수, 분류, 날짜, 대표 이미지) 조회.
- */
 import 'server-only'
 
 import type { Locale } from '@/lib/i18n'
@@ -27,12 +24,10 @@ export type SocialImageContent = {
   locale: Locale
 }
 
-/** 수정 시각으로 짧은 버전 문자열을 만든다. */
 function versionFor(date: Date): string {
   return date.getTime().toString(36)
 }
 
-/** 데이터를 찾지 못했을 때 쓰는 기본 카드 내용. */
 export function createFallbackSocialImageContent(
   locale: Locale,
   kind: 'project' | 'session',
@@ -136,7 +131,6 @@ export async function getProjectSocialImageContent({
   }
 }
 
-/** 소셜 이미지 대체 텍스트. */
 export function getSocialImageAlt(content: SocialImageContent): string {
   return [content.title, content.generation, content.category]
     .filter(Boolean)

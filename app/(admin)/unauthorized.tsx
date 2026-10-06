@@ -1,9 +1,5 @@
-/**
- * 관리자 영역의 401 화면. `unauthorized()`가 호출되면 Next가 이 파일을 렌더링한다.
- */
 import BackToPageButton from '@/app/components/admin/back-to-page-button'
 
-/** 인증이 필요하다는 안내와 뒤로 가기 버튼. */
 export default function Unauthorized() {
   return (
     <div

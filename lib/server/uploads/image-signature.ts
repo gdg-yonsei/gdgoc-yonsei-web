@@ -1,6 +1,3 @@
-/**
- * 이미지 형식 판별(매직 바이트). MCP 업로드가 저장 전에 실제 파일 내용을 확인할 때 쓴다.
- */
 import 'server-only'
 
 /** 허용하는 이미지 형식. SVG는 스크립트를 담을 수 있어 받지 않는다. */
@@ -18,7 +15,6 @@ export const IMAGE_TYPE_EXTENSIONS: Record<
   avif: ['avif'],
 }
 
-/** 형식별 Content-Type. */
 export const IMAGE_TYPE_MIME: Record<DetectedImageType, string> = {
   jpeg: 'image/jpeg',
   png: 'image/png',
@@ -27,18 +23,13 @@ export const IMAGE_TYPE_MIME: Record<DetectedImageType, string> = {
   avif: 'image/avif',
 }
 
-/** `bytes`의 `start` 위치부터 `text`의 ASCII 바이트가 나오는지. */
 function asciiAt(bytes: Uint8Array, start: number, text: string) {
   return [...text].every(
     (char, index) => bytes[start + index] === char.charCodeAt(0)
   )
 }
 
-/**
- * 파일 앞부분(매직 바이트)으로 이미지 형식을 판별한다.
- * 확장자·Content-Type 은 클라이언트가 정하므로 저장 전 실제 내용을 확인한다.
- * SVG 는 스크립트를 담을 수 있고 시그니처가 없어 받지 않는다.
- */
+// 확장자·Content-Type은 클라이언트가 정하므로 매직 바이트를 검사한다. 스크립트를 담는 SVG는 거부한다.
 export function detectImageType(bytes: Uint8Array): DetectedImageType | null {
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
     return 'jpeg'

@@ -2,14 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-/*
- * Public pages follow the system colour scheme (site-theme.css), so their
- * surfaces and text must come from the scheme tokens (bg-paper, text-fg …).
- * Tailwind's fixed neutrals or a solid white would leave light islands in the
- * dark scheme. White-alpha on stage surfaces is fine: the stage is dark in
- * both schemes, and state variants such as `hover:bg-white` on a stage button
- * are allowed.
- */
+/* Use system-scheme tokens for public text and surfaces to avoid light islands in dark mode.
+ * Stage surfaces stay dark in both schemes, so white-alpha and hover:bg-white states are allowed. */
 const ROOTS = [
   'app/(home)/[lang]',
   'app/components/site',

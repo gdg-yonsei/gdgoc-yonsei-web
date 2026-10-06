@@ -1,9 +1,5 @@
-/**
- * GitHub 로고(SVG). GitHub 로그인 버튼에서 쓴다.
- */
 import { SVGProps } from 'react'
 
-/** GitHub 로고. `fill`을 넘기지 않으면 검은색으로 그린다. */
 export default function Github({ ...rest }: SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96" {...rest}>

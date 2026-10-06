@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 기수 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
- */
 import { useState } from 'react'
 import AdminDataTable, {
   type AdminColumn,
@@ -18,10 +15,7 @@ import { formatAdminDate, localizeAdminHref } from '@/lib/admin-i18n'
 import type { Locale } from '@/lib/i18n'
 import type { AdminGenerationListItem } from '@/lib/server/fetcher/admin/get-generations'
 
-/**
- * 기수 날짜(`YYYY-MM-DD`)를 표시한다. 이 형식은 UTC 자정으로 파싱되므로
- * UTC로 표시해야 로컬 타임존에서 하루가 밀리지 않는다.
- */
+/** `YYYY-MM-DD`는 UTC 자정으로 파싱되므로, 로컬 날짜가 하루 밀리지 않게 UTC로 표시한다. */
 function formatGenerationDate(value: string | null, locale: Locale) {
   if (!value) return null
   return formatAdminDate(value, locale, {
@@ -32,10 +26,7 @@ function formatGenerationDate(value: string | null, locale: Locale) {
   })
 }
 
-/**
- * 기수 목록 표(검색·정렬·CSV 내보내기).
- * 기수 자체가 그룹 기준이므로 다른 목록과 달리 기수별로 묶지 않는다.
- */
+/** 기수 자체가 그룹 기준이라 다른 목록과 달리 기수별로 다시 묶지 않는다. */
 export default function GenerationsTableClient({
   generationsData,
 }: {

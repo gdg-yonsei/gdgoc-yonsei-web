@@ -51,7 +51,7 @@ The build follows the design below except where noted here. Each change was made
 
 ---
 
-## Part A — Solution Challenge stacking (first, independent)
+## Part A: Solution Challenge stacking (first, independent)
 
 **Root cause (confirmed in code and history)**
 
@@ -95,7 +95,7 @@ The build follows the design below except where noted here. Each change was made
 
 ---
 
-## Part B — Motion system (landing only)
+## Part B: Motion system (landing only)
 
 **Dependency and budget**
 
@@ -155,7 +155,7 @@ The build follows the design below except where noted here. Each change was made
 
 ---
 
-## Part C — Landing scenes
+## Part C: Landing scenes
 
 | Section       | Choreography                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | anime.js                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -179,7 +179,7 @@ The build follows the design below except where noted here. Each change was made
 
 ---
 
-## Part D — Global chrome (CSS + View Transitions only, zero JS on other routes)
+## Part D: Global chrome (CSS + View Transitions only, zero JS on other routes)
 
 - **Nav links:** hover or focus wraps the label in code-style `<` `>` that slide in on the shared spring. The current-page pill pops in via `@starting-style` after each navigation.
 - **Header capsule:** a 2 px four-colour GDG progress line along its bottom edge (`animation-timeline: scroll(root)`), off under reduced motion.

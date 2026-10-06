@@ -1,6 +1,3 @@
-/**
- * 세션 상세의 Twitter 카드 이미지. Open Graph 이미지와 같은 그림을 쓴다.
- */
 import {
   generateSessionSocialImageMetadata,
   renderSessionSocialImage,
@@ -11,7 +8,6 @@ import {
   SOCIAL_IMAGE_SIZE,
 } from '@/lib/seo/social-image-config'
 
-/** 이미지 크기와 형식. 모든 소셜 이미지가 `lib/seo/social-image-config.ts`의 규격을 함께 쓴다. */
 export const size = SOCIAL_IMAGE_SIZE
 export const contentType = SOCIAL_IMAGE_CONTENT_TYPE
 
@@ -24,7 +20,6 @@ export function generateImageMetadata({
   return generateSessionSocialImageMetadata(params)
 }
 
-/** 이미지를 생성한다. */
 export default function Image({
   params,
   id,

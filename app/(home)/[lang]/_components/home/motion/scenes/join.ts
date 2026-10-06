@@ -1,8 +1,3 @@
-/**
- * 참여(join) 섹션의 연출: 괄호 등장, 망점 물결, 괄호 드래그.
- *
- * 장면 함수 규칙은 `../scene.ts` 참고.
- */
 import { createDraggable, spring, stagger } from 'animejs'
 import { fieldShape, nearestCell } from '@/lib/motion/field'
 import { SPRINGS } from '@/lib/motion/springs'
@@ -19,12 +14,6 @@ const DOT_COLOURS = Object.values(CAPSULE_HEX)
 const DOT_SPACING = 52
 const DOT_CAP = 220
 
-/**
- * `<join>` 장면(페이지의 마지막 장). 섹션이 들어오면 괄호가 양쪽 끝에서 날아와 살짝 지나쳤다가
- * 제목을 감싸며 닫히고, 제목 단어가 튀어 오른다. 이어서 행동 유도 버튼 뒤의 GDG 망점 필드가
- * 가운데에서 물결치고, 무대를 탭한 곳에서도 물결이 퍼진다. 정밀 포인터로는 괄호를 끌어당길 수
- * 있고, 놓으면 제자리로 튕겨 돌아간다.
- */
 const join: Scene = ({ root, scope, matches }) => {
   const inner = root.querySelector<HTMLElement>('.join-inner')
   const [left, right] = root.querySelectorAll<HTMLElement>('.join-bracket')
@@ -82,10 +71,8 @@ const join: Scene = ({ root, scope, matches }) => {
   const waveFrom = (point: { x: number; y: number }) =>
     field.wave(nearestCell(point, root.getBoundingClientRect(), columns, rows))
 
-  // 괄호가 닫히고 나면 필드가 가운데에서 물결친다.
   arrival(root, 'center center', () => field.wave('center'))
 
-  // 무대를 탭하면(링크나 괄호가 아닌 곳) 그 자리에서 물결이 퍼진다.
   const onTap = (event: PointerEvent) => {
     const target = event.target as Element | null
     if (target?.closest('a, button, .bracket-poster')) return
@@ -93,9 +80,8 @@ const join: Scene = ({ root, scope, matches }) => {
   }
   root.addEventListener('pointerdown', onTap)
 
-  // 정밀 포인터로 괄호를 끌어당길 수 있고, 놓으면 제자리로 튕겨 돌아간다.
-  // 포인터가 처음 닿을 때 드래그를 붙인다. 장면을 준비할 때 두 괄호 모두를 위해 무대를 측정하면
-  // 스크롤 중에 긴 프레임이 생겼기 때문이다.
+  // 처음 포인터가 닿을 때 드래그를 붙여, 장면 준비 중 두 괄호의 무대를 측정하지 않게 한다.
+
   const grips: Array<() => void> = []
   if (matches.fine) {
     scope.add('grip', (poster: HTMLElement) => {

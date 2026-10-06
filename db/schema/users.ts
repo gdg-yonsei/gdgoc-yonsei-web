@@ -1,9 +1,3 @@
-/**
- * 사용자 테이블(`user`).
- *
- * Better Auth가 관리하는 계정이면서 GDGoC 멤버 프로필이다. 가입하면 `UNVERIFIED`로
- * 시작하고, 운영진이 승인하면 멤버가 된다.
- */
 import {
   boolean,
   integer,
@@ -17,14 +11,8 @@ import { usersToParts } from '@/db/schema/users-to-parts'
 import { usersToProjects } from '@/db/schema/users-to-projects'
 import { userToSession } from '@/db/schema/user-to-session'
 
-/**
- * 사용자 역할. 권한 정책은 `lib/server/permission/policy.ts`에 있다.
- * - MEMBER: 일반 멤버
- * - CORE: 파트장 등 운영진
- * - LEAD: 오거나이저(모든 권한)
- * - ALUMNUS: 졸업생(알럼나이)
- * - UNVERIFIED: 가입 직후 상태. 운영진 승인 전에는 관리자 화면에 들어갈 수 없다.
- */
+// 가입 직후 UNVERIFIED는 운영진 승인 전까지 관리자 화면에 접근할 수 없다.
+// 역할별 권한은 lib/server/permission/policy.ts에서 정한다.
 export const roleEnum = pgEnum('role', [
   'MEMBER',
   'CORE',
@@ -33,14 +21,9 @@ export const roleEnum = pgEnum('role', [
   'UNVERIFIED',
 ])
 
-/** 사용자 역할 유니온 타입. 역할 목록의 단일 출처는 위 `roleEnum`이다. */
 export type Role = (typeof roleEnum.enumValues)[number]
 
-/**
- * 사용자(멤버 프로필 포함).
- * - `studentId`: 학번(숫자). `telephone`: 하이픈·공백을 뺀 전화번호
- * - `sessionNotiEmail`: 새 세션 안내 메일 수신 여부
- */
+// 전화번호는 하이픈·공백을 뺀 값으로 저장한다.
 export const users = pgTable('user', {
   id: text('id')
     .primaryKey()
@@ -70,7 +53,6 @@ export const users = pgTable('user', {
   sessionNotiEmail: boolean('sessionNotiEmail').default(true).notNull(),
 })
 
-/** 사용자의 파트 소속, 프로젝트 참가, 세션 참가 관계. */
 export const usersRelations = relations(users, ({ many }) => ({
   usersToParts: many(usersToParts),
   usersToProjects: many(usersToProjects),

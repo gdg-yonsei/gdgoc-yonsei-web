@@ -1,8 +1,3 @@
-/**
- * 프로그램 섹션의 연출: sticky 카드 묶음과 Solution Challenge 깔때기.
- *
- * 장면 함수 규칙은 `../scene.ts` 참고.
- */
 import { animate, stagger, utils, type Timeline } from 'animejs'
 import { formatCount, parseCount } from '@/lib/motion/count'
 import { stackPhases } from '@/lib/motion/stack'
@@ -14,11 +9,7 @@ import { sceneTimeline } from '../timeline'
 
 const BURST_COLOURS = Object.values(CAPSULE_HEX)
 
-/**
- * Solution Challenge 깔때기 연출(한 번만 재생). 띠가 괄호가 벌어지듯 가운데에서 차례로 열리고, 숫자가
- * 올라가며, Top 10 띠가 망점으로 터진다. 숫자는 aria-hidden 오버레이에서 세므로 문서 안의 실제 숫자는
- * 바뀌지 않는다. 오버레이와 점은 연출이 끝나면 사라진다.
- */
+/** 숫자는 aria-hidden 오버레이에서 세어 문서의 실제 숫자를 유지하며, 오버레이·점은 연출 뒤 제거한다. */
 function funnelTimeline(funnel: HTMLElement): {
   timeline: Timeline
   settle: () => void
@@ -107,11 +98,7 @@ function funnelTimeline(funnel: HTMLElement): {
   return { timeline, settle }
 }
 
-/**
- * `<programs>` 장면. sticky 카드 묶음에서 카드가 스티커처럼 붙고(기울기가 바로잡히고 번호가 뒤집혀
- * 나타남) 다음 카드 아래로 물러난다. Solution Challenge 카드가 자리를 잡을 때 깔때기 연출이 한 번
- * 재생된다. 휴대폰과 낮은 화면에서는 카드가 단순히 떠오르기만 한다.
- */
+/** 휴대폰·낮은 화면에서는 카드를 쌓지 않고 등장 연출만 적용한다. */
 const programs: Scene = ({ root, scope, matches, belowFold }) => {
   const cleanups: Array<() => void> = []
   const cards = [...root.querySelectorAll<HTMLElement>('.program-card')]
@@ -121,9 +108,8 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
   const stack = matches.stack
     ? root.querySelector<HTMLElement>('.program-stack')
     : null
-  // 스크롤 기준선은 sticky 카드가 아니라 묶음(stack)에서 잰다. anime.js는 sticky 대상을 재려고 sticky를
-  // 잠시 풀기 때문에 새로 고칠 때마다 전체 레이아웃이 일어난다. 행의 높이가 모두 같으므로 묶음 흐름에서
-  // 카드의 위치는 정확히 계산된다.
+  // sticky 대상을 측정하면 anime.js가 고정을 풀어 전체 레이아웃이 일어나므로, 같은 높이의 카드 위치를 stack에서 계산한다.
+
   const row =
     stack && cards[0]
       ? cards[0].getBoundingClientRect().height +
@@ -139,8 +125,8 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
       viewport: innerHeight,
     })
 
-    // 다음 카드가 덮을 때 각 카드는 자기 그림자 레이어로 어두워진다(카드의 CSS 변수를 움직이면 카드 안
-    // 내용 전체의 스타일이 다시 계산됐다).
+    // 별도 그림자 레이어를 움직여, 카드 안 내용 전체의 스타일 재계산을 피한다.
+
     const shades = sheets.map((sheet) => {
       if (!sheet) return null
       const shade = document.createElement('span')
@@ -151,9 +137,8 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
     })
     cleanups.push(() => shades.forEach((shade) => shade?.remove()))
 
-    // 카드마다 스크롤에 맞춘 타임라인 하나: 카드가 붙고(기울기 정리, 번호 뒤집힘), 같은 접근 구간의 뒷부분에서
-    // 덮이는 카드가 물러난다. observer가 열한 개가 아니라 여섯 개다. 여섯 개 모두 페이지를 읽어 만든 뒤에
-    // 시작 상태를 그리므로 스타일 재계산은 카드마다가 아니라 한 번이다.
+    // 카드당 observer 하나를 쓰고 여섯 카드의 측정을 모두 끝낸 뒤 시작 상태를 그려, 스타일 재계산을 한 번으로 모은다.
+
     const scrubs: Array<() => void> = []
     phases.forEach(({ landing }, index) => {
       const sheet = sheets[index]
@@ -232,7 +217,6 @@ const programs: Scene = ({ root, scope, matches, belowFold }) => {
       timeline.play()
     }
     if (stack) {
-      // 카드가 자리를 잡기 직전.
       const slot = parseFloat(getComputedStyle(funnelCard).top)
       arrival(stack, `${slot + 2} ${inFlow(cards.indexOf(funnelCard))}`, play)
     } else {

@@ -1,11 +1,6 @@
 'use client'
 
-/**
- * 관리자 전역 확인 모달(클라이언트 컴포넌트).
- *
- * `modalState` atom에 문구와 확인 동작을 넣으면 열린다(삭제 버튼 등). 레이아웃에 한 번만
- * 렌더링해 두고 어디서든 atom으로 띄운다.
- */
+/** 레이아웃에 한 번 렌더링하고, modalState에 문구·확인 동작을 넣어 어디서든 연다. */
 import { useAtom } from 'jotai'
 import { useRef } from 'react'
 import { modalState } from '@/lib/admin/atoms'
@@ -14,7 +9,7 @@ import { useReducedMotion } from '@/lib/hooks/use-reduced-motion'
 import { useDialogFocus } from '@/lib/hooks/use-dialog-focus'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
-/** 확인/취소 모달. 문구가 비어 있으면 닫힌 상태다. */
+/** 문구가 비어 있으면 닫힌 상태다. */
 export default function Modal() {
   const [modal, setModal] = useAtom(modalState)
   const { t } = useAdminI18n()
@@ -43,8 +38,8 @@ export default function Modal() {
 
   const isOpen = Boolean(modal.text)
 
-  // 확인 모달은 파괴적 동작(삭제)을 감싸므로 키보드만으로도 안전하게 취소할 수 있어야 한다.
-  // 기본 포커스는 "취소"에 두어 Enter 한 번에 삭제되지 않게 한다.
+  // 파괴적 동작은 기본 포커스를 취소에 두어 Enter 한 번에 실행되지 않게 한다.
+
   useDialogFocus({
     isOpen,
     panelRef,
@@ -63,7 +58,7 @@ export default function Modal() {
           transition={{ duration: 0.2 }}
           onClick={closeModal}
           className={
-            'fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm'
+            'fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4'
           }
         >
           <motion.div

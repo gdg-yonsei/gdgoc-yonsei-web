@@ -1,13 +1,10 @@
-/**
- * 소셜 카드 제목 줄바꿈·글자 크기 계산(Satori는 브라우저의 줄 자르기 규칙을 모두 지원하지 않는다).
- */
+// Satori가 브라우저 줄 자르기를 모두 지원하지 않아 제목 배치를 직접 계산한다.
 import { toIntlLocale, type Locale } from '@/lib/i18n'
 
 const TITLE_WIDTH_PX = 1_050
 const TITLE_WIDTH_SAFETY_FACTOR = 0.94
 const ELLIPSIS = '…'
 
-/** 제목 배치: 글자 크기, 최대 두 줄, 잘렸는지. */
 export type SocialTitleLayout = {
   fontSize: 48 | 58 | 70
   lines: readonly [string] | readonly [string, string]
@@ -85,10 +82,7 @@ function takeLine(
   return { line, consumed }
 }
 
-/**
- * 제목을 최대 두 줄로 직접 나눈다. Satori가 브라우저의 줄 자르기 규칙을 모두 구현하지
- * 않으므로, 여기서 줄을 나눠야 긴 한글·영어·이모지 제목이 1200×630 카드를 넘치지 않는다.
- */
+// 1200×630 카드에 넘치지 않게 한글·영어·이모지 제목을 최대 두 줄로 직접 나눈다.
 export function layoutSocialTitle(
   title: string,
   locale: Locale

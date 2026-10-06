@@ -1,8 +1,5 @@
 'use server'
 
-/**
- * 세션 참가 취소(본인)·참가자 제거(관리자) Server Action.
- */
 import {
   runAdminFormAction,
   type AdminFormState,
@@ -12,10 +9,7 @@ import {
   unregisterFromSession,
 } from '@/lib/server/services/admin/sessions'
 
-/**
- * 참가자 본인이 세션 등록을 취소한다. 폼에서 `bind`로 `sessionId`를 고정해 부른다.
- * 이미 끝난 세션처럼 취소할 수 없는 경우는 폼에 이유를 보여 준다.
- */
+/** `sessionId`는 `bind`로 고정하고, 종료된 세션 등 취소 불가 사유는 폼에 표시한다. */
 export async function unregisterSessionAction(
   sessionId: string
 ): Promise<AdminFormState> {

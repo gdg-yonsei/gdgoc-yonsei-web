@@ -1,10 +1,4 @@
-/**
- * 세션(행사) 테이블(`sessions`).
- *
- * 기술 세션·파트 세션·해커톤 등 활동 기록. 로그인 세션 테이블(`auth-sessions.ts`)과는
- * 다르다. 시작·종료 시각은 "서울 벽시계 시각을 UTC 라벨로" 저장한다
- * (`lib/format/datetime.ts` 참고).
- */
+// 행사 시각은 서울 벽시계 시각에 UTC 라벨을 붙여 저장한다(lib/format/datetime.ts).
 import {
   boolean,
   integer,
@@ -36,12 +30,6 @@ export const activityCategoryEnum = pgEnum('activityCategory', [
   'devrel',
 ])
 
-/**
- * 세션.
- * - `internalOpen`/`publicOpen`: 멤버 내부 신청·외부 공개 신청 허용 여부
- * - `displayOnWebsite`: 공개 사이트 세션 기록에 보일지
- * - `startAt`/`endAt`: 서울 벽시계 시각(UTC 라벨)
- */
 export const sessions = pgTable('sessions', {
   id: uuid('id').defaultRandom().notNull().primaryKey(),
   name: text('name').notNull(),
@@ -71,7 +59,6 @@ export const sessions = pgTable('sessions', {
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })
 
-/** 세션의 파트, 참가자, 작성자 관계. */
 export const sessionRelations = relations(sessions, ({ one, many }) => ({
   part: one(parts, {
     fields: [sessions.partId],

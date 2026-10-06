@@ -1,10 +1,5 @@
 'use client'
 
-/**
- * 허브 목록(세션·프로젝트·멤버)의 검색·필터 막대(클라이언트 컴포넌트).
- *
- * 순수 필터 규칙(쿼리 문자열 파싱·직렬화, 일치 판정)은 `lib/site/filter-state.ts`에 있다.
- */
 import { useState, useSyncExternalStore } from 'react'
 import MagnifyingGlassIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon'
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon'
@@ -31,25 +26,15 @@ export type FilterFacet = {
   options: FacetOption[]
 }
 
-/*
- * 상태는 URL 쿼리 문자열 하나뿐이다. 서버는 모든 행을 렌더링하고, 하이드레이션 후 이
- * 스토어가 쿼리 문자열을 행에 적용(`hidden` 속성)한다. React는 그 결과를
- * useSyncExternalStore로 읽는다. 그래서 행 데이터가 RSC payload에 중복으로 실리지 않고,
- * effect 안에서 state를 바꾸는 일도 없다.
- */
+/* URL 쿼리를 외부 스토어로 읽고 서버 렌더링 행의 hidden 속성을 갱신한다.
+ * 행 데이터를 RSC payload에 중복으로 싣거나 effect에서 state를 바꾸지 않는다. */
 
 /** `history.replaceState`는 이벤트를 내지 않으므로, 필터를 바꿀 때 직접 쏘는 사용자 정의 이벤트. */
 const FILTER_EVENT = 'site:filterchange'
 
-/** 스토어 스냅숏: 현재 쿼리 문자열과 보이는 행 수. */
 type Snapshot = { search: string; visible: number }
 
-/**
- * `scope` id 요소 안의 `[data-filter-item]` 행에 필터를 적용하는 외부 스토어.
- *
- * 모든 행이 숨겨진 `[data-filter-group]`(기수 묶음 등)도 함께 숨긴다. 뒤로/앞으로 가기
- * (`popstate`)와 필터 변경 이벤트에 반응한다.
- */
+/** 모든 행이 숨은 그룹도 숨기고, 뒤로·앞으로 가기와 필터 변경 이벤트에 반응한다. */
 function createFilterStore(
   scope: string,
   keys: readonly string[],
@@ -118,14 +103,7 @@ function commit(state: FilterState, keys: readonly string[]) {
   window.dispatchEvent(new Event(FILTER_EVENT))
 }
 
-/**
- * 검색 입력, 필터 체크박스, 결과 수, 초기화 버튼.
- *
- * @param scope 필터를 적용할 목록 요소의 id
- * @param facets 필터 묶음
- * @param copy 현재 언어 문구
- * @param total 전체 행 수(서버 렌더링·하이드레이션 전 결과 수)
- */
+/** scope는 목록 id이며, total은 서버 렌더링·하이드레이션 전 결과 수다. */
 export default function FilterBar({
   scope,
   facets,

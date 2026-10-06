@@ -1,6 +1,4 @@
-/**
- * 관리자 화면 언어 결정(서버 전용). proxy가 붙인 헤더, 쿠키, 기본 언어 순으로 본다.
- */
+// 관리자 언어는 proxy 헤더, 쿠키, 기본 언어 순으로 정한다.
 import 'server-only'
 
 import { cookies, headers } from 'next/headers'
@@ -10,10 +8,6 @@ import { localizeAdminHref } from '@/lib/admin-i18n'
 
 export * from '@/lib/admin-i18n'
 
-/**
- * 현재 요청의 관리자 화면 언어.
- * `/ko/admin/...` 경로는 proxy가 `/admin/...`으로 바꾸면서 `x-admin-locale` 헤더로 언어를 넘긴다.
- */
 export async function getAdminLocale(): Promise<Locale> {
   const headerStore = await headers()
   const localeFromHeader = headerStore.get('x-admin-locale')
@@ -31,7 +25,6 @@ export async function getAdminLocale(): Promise<Locale> {
   return i18n.defaultLocale
 }
 
-/** `/admin` 경로에 현재 언어를 붙인다(Server Action의 redirect용). */
 export async function getLocalizedAdminPath(path: string): Promise<string> {
   if (!path.startsWith('/admin')) {
     return path

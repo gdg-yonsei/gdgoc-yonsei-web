@@ -1,7 +1,4 @@
-/**
- * MCP URL 가져오기: 서버가 공개 URL의 이미지를 받아 R2로 스트리밍한다(셸이 없는 클라이언트용).
- * 내려받기는 `lib/server/uploads/remote-fetch.ts`가 SSRF를 막는다.
- */
+// URL 이미지는 서버에서 R2로 스트리밍한다. 내려받기의 SSRF 검사는 uploads/remote-fetch.ts가 맡는다.
 import 'server-only'
 
 import { logger } from '@/lib/server/logger'
@@ -38,7 +35,6 @@ import {
 /** URL 가져오기 기록의 만료. 전체 전송 한도(10분)보다 조금 길게. */
 const IMPORT_RECORD_TTL_MS = 15 * 60 * 1000
 
-/** 서버가 공개 URL 의 이미지를 받아 R2 에 스트리밍으로 저장한다(셸이 없는 클라이언트용). */
 export async function importImageFromUrl(
   actor: Actor,
   input: { target: ImageTarget; url: string }

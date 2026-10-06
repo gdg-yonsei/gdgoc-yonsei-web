@@ -1,6 +1,3 @@
-/**
- * 모든 MCP 도구 목록. 새 도구를 만들면 여기에 추가한다.
- */
 import 'server-only'
 
 import type { ToolDefinition } from '@/lib/mcp/registry'

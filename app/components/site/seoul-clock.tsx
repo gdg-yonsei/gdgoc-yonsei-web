@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 푸터의 서울 시각 표시(클라이언트 컴포넌트).
- */
 import { useSyncExternalStore } from 'react'
 
 /** 서울 기준 24시간제 `HH:mm` 포매터. 매 렌더마다 만들지 않도록 모듈에 하나만 둔다. */
@@ -19,15 +16,11 @@ function subscribe(onChange: () => void) {
   return () => window.clearInterval(id)
 }
 
-/** 클라이언트 스냅숏: 현재 서울 시각. */
 const readSeoulTime = () => formatter.format(new Date())
 /** 서버 스냅숏: 시각을 모른다(정적 셸이 렌더링 시점의 시각을 굳혀 버리지 않게). */
 const readNothing = () => null
 
-/**
- * 서버 렌더링과 하이드레이션에서는 "--:--"를 그리고, 이후 클라이언트에서 KST로 갱신한다.
- * @param label 시계 앞에 붙는 문구
- */
+/** 정적 서버 셸·하이드레이션에서는 "--:--"를 표시하고, 이후 클라이언트에서 서울 시각을 갱신한다. */
 export default function SeoulClock({ label }: { label: string }) {
   const time = useSyncExternalStore(subscribe, readSeoulTime, readNothing)
 

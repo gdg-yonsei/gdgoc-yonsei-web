@@ -1,22 +1,14 @@
-/**
- * 망점(halftone) 물결 효과를 캔버스에 그리는 헬퍼. 참여(join) 장면 배경에 쓴다.
- */
 import { createTimer, eases, stagger } from 'animejs'
 
-/** 쉬는 점은 지름 4px에 흐릿하고, 물결의 정점에서는 2.4배 크기에 거의 불투명하다. */
 const RADIUS = 2
 const REST = { scale: 1, opacity: 0.16 }
 const PEAK = { scale: 2.4, opacity: 0.85 }
-/**
- * 점은 차례가 오면 250ms 동안 부풀고 750ms 동안 가라앉는다. 차례는 물결이 시작된 칸에서
- * 한 칸 멀어질 때마다 26ms씩 늦게 온다.
- */
+/** 점은 250ms 동안 부풀고 750ms 동안 가라앉으며, 물결 시작점에서 한 칸마다 26ms 늦어진다. */
 const RISE = 250
 const FALL = 750
 const SPREAD = 26
 const ease = eases.out(4)
 
-/** 물결에서 차례가 온 뒤 `ms`가 지났을 때 점이 부푼 정도(쉬면 0, 정점이면 1). */
 const swell = (ms: number) =>
   ms <= 0 || ms >= RISE + FALL
     ? 0
@@ -26,16 +18,7 @@ const swell = (ms: number) =>
 
 type Wave = { start: number; turns: number[]; end: number }
 
-/**
- * `columns` × `rows`개의 망점 필드. `root`의 첫 자식 캔버스 하나에 그린다.
- *
- * 물결은 한 칸에서 시작해 점을 차례로 부풀리고(anime.js 격자 stagger가 각 점의 차례를 정함), 물결이
- * 겹치면 더 크게 부푼 쪽을 따른다. 점을 DOM 요소로 두었을 때는 물결의 매 프레임마다 스타일과 레이어를
- * 다시 계산했고, 점마다 tween을 걸어 물결의 첫 프레임이 길어졌다. 그래서 프레임마다 각 점의 차례로부터
- * 모든 점을 캔버스에 직접 그린다.
- * @param root 캔버스를 넣을 요소
- * @param columns/rows 격자 크기
- */
+/** 겹친 물결은 더 크게 부푼 값을 따르며, DOM 스타일·레이어 비용을 피하려고 캔버스 하나에 직접 그린다. */
 export function createDotField(
   root: HTMLElement,
   {
@@ -94,7 +77,6 @@ export function createDotField(
     })
   }
 
-  // 물결이 진행 중일 때만 프레임을 돈다.
   const ticker = createTimer({
     autoplay: false,
     onUpdate: () => {

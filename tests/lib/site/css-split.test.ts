@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 const read = (path: string) => readFileSync(path, 'utf8')
-/** The `@import` / `import` lines of a stylesheet or module (comments ignored). */
+
 const imports = (path: string) =>
   read(path)
     .split('\n')

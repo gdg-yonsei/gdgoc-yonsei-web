@@ -1,14 +1,7 @@
-/**
- * 기수 목록 가공(순수 함수): 기수별 개수, 기수 띠, 이전/다음 기수.
- */
-
-/** 기수 이름과 시작일. */
 export type GenerationRef = { name: string; startDate: string }
 
-/** 기수 띠의 한 칸: 이름과 공개 항목 수. */
 export type StripGeneration = { name: string; count: number }
 
-/** 항목들을 기수 이름별로 센다. */
 export function countByGeneration(
   items: readonly { generationName: string }[]
 ): Map<string, number> {

@@ -1,7 +1,4 @@
-/**
- * 프로젝트·세션 삭제가 커밋된 뒤 공개 캐시와 R2 이미지를 정리한다.
- * 캐시 실패가 이미지 정리를 막지 않으며, R2 실패는 삭제 결과 대신 로그에 남긴다.
- */
+// DB 삭제 커밋 후 정리한다. 캐시 실패도 R2 정리를 막지 않으며 R2 실패는 로그에만 남긴다.
 import 'server-only'
 
 import { uniqueStrings } from '@/lib/server/cache/utils'
@@ -9,7 +6,6 @@ import { logger } from '@/lib/server/logger'
 import { normalizeR2ImageObjectKey } from '@/lib/server/storage/object-key'
 import { deleteImages } from '@/lib/server/storage/r2'
 
-/** DB 행 삭제 후 호출한다. 캐시 무효화·이미지 삭제 순서와 실패 로그를 공통으로 관리한다. */
 export async function cleanupDeletedResource({
   dataType,
   dataId,

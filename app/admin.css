@@ -1,41 +1,31 @@
-/*
- * 관리자(GYMS)·로그인 화면 스타일시트. 관리자 루트 레이아웃(`app/(admin)/layout.tsx`)만 불러온다.
- * 디자인 토큰과 유틸리티의 기준은 `app/(admin)/DESIGN.md`.
- */
+/* 관리자 루트만 가져오는 스타일이다. 토큰·유틸리티의 기준은 app/(admin)/DESIGN.md다. */
 @import './globals.css';
 
-/*
- * 관리자 영역 래퍼에 `.dark`가 붙을 때만 켜지는 수동 다크 모드. 공개 사이트에는 `.dark`가 붙지 않으므로
- * 영향이 없다.
- */
+/* 수동 다크 모드는 관리자 래퍼의 .dark 안에서만 켜진다. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*
- * ─────────────────────────────────────────────────────────────
- * 관리자 디자인 토큰 — app/(admin)/DESIGN.md
- * 라이트/다크에 따라 바뀌는 원시 변수를 :root/.dark에 두고, 아래 `@theme inline`에서 유틸리티로
- * 노출한다. `inline`이 없으면 유틸리티가 var(--color-*)를 그대로 참조해 .dark 재정의가 상속되지 않는다.
- * ─────────────────────────────────────────────────────────────
- */
+/* @theme inline이 필요하다. 없으면 유틸리티의 var(--color-*)가 .dark 재정의를 상속하지 않는다. */
 @layer base {
   :root {
-    --canvas: #f6f5f4; /* DESIGN.md canvas-soft — 따뜻한 종이톤 페이지 바탕 */
-    --surface: #ffffff; /* 카드 · 입력 · 사이드바 */
-    --surface-sunken: #efeeec; /* URL/코드 박스 등 눌린 면 */
-    --ink: #1a1a1a; /* DESIGN.md ink (순검정 95% 근사) */
+    --canvas: #f6f5f4; /* DESIGN.md의 따뜻한 종이톤 페이지 바탕. */
+    --surface: #ffffff;
+    --surface-sunken: #efeeec;
+    --ink: #1a1a1a;
     --ink-secondary: #31302e;
     --ink-muted: #615d59;
-    --ink-faint: #a39e98;
+    --ink-faint: #6f6963;
     --hairline: #e6e6e6;
-    --primary: #0075de; /* 유일한 구조적 액센트 */
+    --control-border: #87817b;
+    --primary: #0063bd;
     --primary-active: #005bab;
     --primary-soft: #e6f1fb;
     --on-primary: #ffffff;
-    --success: #148a2e;
+    --success: #137333;
     --success-soft: #e8f7ec;
     --warning: #b34800;
     --warning-soft: #fdf0e6;
     --danger: #c92a20;
+    --on-danger: #ffffff;
     --danger-soft: #fdecea;
   }
 
@@ -46,8 +36,9 @@
     --ink: #f2f1ef;
     --ink-secondary: #d6d3ce;
     --ink-muted: #a8a29b;
-    --ink-faint: #7d7873;
+    --ink-faint: #aaa49e;
     --hairline: #37373d;
+    --control-border: #827c76;
     --primary: #6bb4f5;
     --primary-active: #98cbf9;
     --primary-soft: #16324a;
@@ -57,6 +48,7 @@
     --warning: #f2954a;
     --warning-soft: #34210f;
     --danger: #f4796a;
+    --on-danger: #29100d;
     --danger-soft: #361916;
   }
 
@@ -65,10 +57,7 @@
     color-scheme: dark;
   }
 
-  /*
-   * `.dark`는 `<html>`이 아니라 관리자 영역 래퍼에 붙는다. 오버스크롤 영역까지 어둡게 유지하려면 문서
-   * 루트도 함께 맞춰야 한다.
-   */
+  /* .dark가 html 대신 관리자 래퍼에 붙으므로 오버스크롤도 어둡게 하려면 문서 루트를 맞춰야 한다. */
   html:has(.dark) {
     color-scheme: dark;
     background-color: #18181a;
@@ -84,6 +73,7 @@
   --color-ink-muted: var(--ink-muted);
   --color-ink-faint: var(--ink-faint);
   --color-hairline: var(--hairline);
+  --color-control-border: var(--control-border);
   --color-primary: var(--primary);
   --color-primary-active: var(--primary-active);
   --color-primary-soft: var(--primary-soft);
@@ -93,6 +83,7 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
   --color-danger-soft: var(--danger-soft);
 }
 
@@ -115,10 +106,7 @@
     outline: 2px solid var(--color-logo-blue);
     outline-offset: 4px;
   }
-  /*
-   * 조건부로 나타나는 알림·미리보기가 갑자기 끼어들어 아래 내용을 밀어내지 않도록 `@starting-style`로
-   * 짧게 등장시킨다.
-   */
+  /* 조건부 알림·미리보기의 갑작스러운 등장 대신 starting-style로 짧게 전환한다. */
   .notice-enter {
     opacity: 1;
     transform: translateY(0);
@@ -145,15 +133,8 @@
   }
 }
 
-/*
- * ═══════════════════════════════════════════════════════════════
- * 관리자 디자인 시스템 — app/(admin)/DESIGN.md
- * Tailwind v4에서는 `@layer components`의 클래스를 `@apply`로 조합할 수 없다. 서로 조합해야 하는
- * 기본 요소는 `@utility`로 등록해 `lg:type-heading-1` 같은 variant까지 쓸 수 있게 한다.
- * ═══════════════════════════════════════════════════════════════
- */
+/* Tailwind v4의 components 클래스는 @apply로 조합할 수 없어 공용 기본 요소를 variant 가능한 @utility로 등록한다. */
 
-/* ───────────── 글자 크기 체계 ───────────── */
 @utility type-heading-1 {
   font-size: 40px;
   font-weight: 700;
@@ -200,7 +181,6 @@
   letter-spacing: 0.125px;
 }
 
-/* ───────────── 표면(배경) ───────────── */
 @utility admin-title {
   @apply type-heading-2 lg:type-heading-1 text-ink;
 }
@@ -223,12 +203,9 @@
   @apply col-span-full;
 }
 
-/*
- * ───────────── 입력 컨트롤 ─────────────
- * 테두리는 항상 1px로 두고 포커스는 링으로 표시한다. 포커스 때 테두리를 2px로 늘리면 레이아웃이 밀린다.
- */
+/* 테두리는 1px를 유지하고 포커스는 링으로 표시한다. 두꺼운 포커스 테두리는 레이아웃을 민다. */
 @utility admin-input {
-  @apply border-hairline bg-surface text-ink placeholder:text-ink-faint type-body w-full rounded-xs border px-3 py-2 outline-none;
+  @apply border-control-border bg-surface text-ink placeholder:text-ink-faint type-body w-full rounded-xs border px-3 py-2 outline-none;
   @apply transition-[border-color,box-shadow] duration-150;
   @apply disabled:bg-surface-sunken disabled:text-ink-faint disabled:cursor-not-allowed;
 
@@ -238,16 +215,10 @@
   }
 }
 
-/*
- * ───────────── 버튼 ─────────────
- * DESIGN.md: 마케팅용 알약 모양이 아니라 유틸리티 버튼의 8px 반경을 쓴다.
- */
+/* 관리자 버튼은 DESIGN.md의 유틸리티 버튼 반경 8px을 쓴다. */
 @utility admin-btn {
-  /*
-   * 버튼 라벨은 줄바꿈되면 안 된다. 좁은 화면에서는 버튼이 좁아지는 대신 부모가 `flex-wrap`으로 줄을
-   * 바꿔야 한다.
-   */
-  @apply type-body-sm inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md px-4 py-2 font-medium whitespace-nowrap;
+  /* 버튼 라벨은 한 줄로 유지한다. 좁은 화면의 줄바꿈은 부모 flex-wrap으로 처리해야 한다. */
+  @apply type-body-sm inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md px-4 py-2 font-medium whitespace-nowrap;
   @apply transition-[background-color,border-color,color,box-shadow,transform] duration-150;
   @apply disabled:cursor-not-allowed disabled:opacity-60;
 
@@ -263,16 +234,15 @@
   @apply admin-btn bg-primary text-on-primary hover:not-disabled:bg-primary-active;
 }
 @utility admin-btn-secondary {
-  @apply admin-btn border-hairline bg-surface text-ink hover:not-disabled:bg-canvas border;
+  @apply admin-btn border-control-border bg-surface text-ink hover:not-disabled:bg-canvas border;
 }
 @utility admin-btn-ghost {
   @apply admin-btn text-ink-secondary hover:not-disabled:bg-canvas hover:not-disabled:text-ink;
 }
 @utility admin-btn-danger {
-  @apply admin-btn bg-danger text-white hover:not-disabled:brightness-110;
+  @apply admin-btn bg-danger text-on-danger hover:not-disabled:brightness-110;
 }
 
-/* ───────────── 배지 ───────────── */
 @utility admin-badge {
   @apply type-eyebrow inline-flex items-center gap-1 rounded-full px-2 py-0.5 whitespace-nowrap;
 }
@@ -292,17 +262,13 @@
   @apply admin-badge bg-danger-soft text-danger;
 }
 
-/* ───────────── 본문 바로가기 링크 ───────────── */
 @utility admin-skip-link {
   @apply bg-surface text-ink shadow-elevated sr-only rounded-md px-4 py-2;
   @apply focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50;
+  @apply focus:min-h-11 focus:min-w-11;
 }
 
-/*
- * ───────────── 반응형 데이터 표 ─────────────
- * 하나의 DOM으로 데스크톱은 조밀한 표 행, 모바일은 카드로 바꿔 배치한다. 행마다 <a> 하나라 링크 중첩
- * 없이 행 전체를 누를 수 있다. 열 구성은 인라인 스타일 `--admin-table-cols`로 넣는다.
- */
+/* 하나의 DOM을 데스크톱 표·모바일 카드로 배치한다. 행당 링크 하나로 중첩을 피하며 열은 --admin-table-cols다. */
 @layer components {
   .admin-table {
     @apply border-hairline bg-surface overflow-hidden rounded-xl border;
@@ -317,7 +283,7 @@
     @apply border-hairline border-t;
   }
   .admin-table-row {
-    @apply text-ink type-body-sm flex flex-col gap-1 px-4 py-3 transition-colors;
+    @apply text-ink type-body-sm flex min-h-11 flex-col gap-1 px-4 py-3 transition-colors;
   }
   .admin-table-row:hover {
     @apply bg-canvas;
@@ -353,10 +319,7 @@
     .admin-table-cell[data-label]::before {
       content: none;
     }
-    /*
-     * 데스크톱 표에서는 한 행이 한 줄을 유지해야 훑어보기 쉽다. 긴 값(기수 이름 등)이 행 높이를 밀어
-     * 올리지 않도록 잘라 낸다.
-     */
+    /* 긴 값은 잘라 데스크톱 표 행이 한 줄 높이를 유지하게 한다. */
     .admin-table-cell {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -370,14 +333,14 @@
 }
 
 @theme {
-  /* DESIGN.md 모서리 반경 단계 — 입력 4px / 메뉴 행 5px / 버튼 8px / 카드 12px / 컨테이너 16px */
+  /* DESIGN.md 반경 단계: 입력 4px, 메뉴 행 5px, 버튼 8px, 카드 12px, 컨테이너 16px. */
   --radius-xs: 4px;
   --radius-sm: 5px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* DESIGN.md의 "거의 보이지 않는" 그림자 — 거의 투명한 층을 여러 겹 쌓는다. */
+  /* DESIGN.md의 미세한 그림자는 거의 투명한 층을 겹쳐 만든다. */
   --shadow-soft:
     0 0.175px 1.041px rgb(0 0 0 / 0.01), 0 0.8px 2.925px rgb(0 0 0 / 0.02),
     0 2.025px 7.847px rgb(0 0 0 / 0.027), 0 4px 18px rgb(0 0 0 / 0.04);
@@ -403,6 +366,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  button:active:not(:disabled),
+  button:hover {
+    transform: none;
+  }
   .button-black {
     transform: none;
     transition-duration: 0.01ms;
@@ -414,4 +381,13 @@
     transform: none;
     transition: opacity 120ms ease;
   }
+}
+
+/* Compact utility classes must not shrink interactive hit areas below 44px. */
+button,
+.admin-input:not([type='checkbox']),
+[class*='admin-btn'],
+.button-black {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
 }

@@ -1,16 +1,7 @@
-/**
- * 공개 사이트 공통 문구: 메타데이터 기본값, 헤더·푸터(chrome), 히어로, 홈 섹션.
- *
- * 이 파일도 클라이언트 번들에 넣지 않는다(`client-bundle-guards` 테스트). 클라이언트 컴포넌트에는
- * 필요한 문구만 prop으로 넘긴다.
- */
+// 이 사전은 클라이언트 번들에 넣지 않는다. 클라이언트에는 필요한 문구만 prop으로 넘긴다.
 import type { Locale } from '@/lib/i18n'
 
-/**
- * 페이지 제목·설명 기본값.
- * - `defaultTitle`/`defaultDescription`: 개별 설명이 없는 페이지가 물려받는 값(`[lang]/layout.tsx`)
- * - `homeDescription`: 홈 화면 메타데이터와 구조화 데이터에 쓰는 설명
- */
+// 개별 설명이 없는 페이지는 기본값을 쓴다. homeDescription은 홈 메타데이터·구조화 데이터가 공유한다.
 export const siteMetadataCopy: Record<
   Locale,
   { defaultTitle: string; defaultDescription: string; homeDescription: string }
@@ -31,7 +22,6 @@ export const siteMetadataCopy: Record<
   },
 }
 
-/** 헤더·푸터·내비게이션 문구. */
 export type ChromeCopy = {
   skipToContent: string
   home: string
@@ -58,7 +48,6 @@ export type ChromeCopy = {
   clockLabel: string
 }
 
-/** 헤더·푸터 문구(언어별). */
 export const chromeCopy: Record<Locale, ChromeCopy> = {
   en: {
     skipToContent: 'Skip to content',
@@ -75,7 +64,7 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
     calendar: 'Calendar',
     members: 'Members',
     footerBlurb:
-      "GDG on Campus Yonsei — Yonsei University's student developer community in Sinchon, Seoul.",
+      "GDG on Campus Yonsei, Yonsei University's student developer community in Sinchon, Seoul.",
     footerExplore: 'Explore',
     footerConnect: 'Connect',
     footerSite: 'Site',
@@ -114,7 +103,6 @@ export const chromeCopy: Record<Locale, ChromeCopy> = {
   },
 }
 
-/** 히어로 섹션 문구. */
 type HeroCopy = {
   eyebrow: string
   tagline: string
@@ -131,12 +119,11 @@ type HeroCopy = {
   scrollCue: string
 }
 
-/** 히어로 문구(언어별). */
 export const heroCopy: Record<Locale, HeroCopy> = {
   en: {
     eyebrow: 'Google Developer Groups on Campus · Yonsei University',
     tagline:
-      "Yonsei University's student developer community. We connect, learn, and grow — then ship what we build.",
+      "Yonsei University's student developer community. We connect, learn, and grow, then ship what we build.",
     primaryCta: 'Explore sessions',
     secondaryCta: 'See projects',
     metaLabel: 'At a glance',
@@ -152,7 +139,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
   ko: {
     eyebrow: 'Google Developer Groups on Campus · 연세대학교',
     tagline:
-      '연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 — 만든 것을 세상에 내놓습니다.',
+      '연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 만든 것을 세상에 내놓습니다.',
     primaryCta: '세션 둘러보기',
     secondaryCta: '프로젝트 보기',
     metaLabel: '한눈에 보기',
@@ -167,7 +154,6 @@ export const heroCopy: Record<Locale, HeroCopy> = {
   },
 }
 
-/** 프로그램(활동) 카드 식별자. */
 export type ProgramKey =
   | 'T19'
   | 'Part Session'
@@ -176,7 +162,6 @@ export type ProgramKey =
   | 'Yonsei X Korea Demo Day'
   | 'The Bridge Hackathon'
 
-/** 홈 화면 섹션별 문구. */
 export type LandingCopy = {
   manifesto: {
     tag: string
@@ -208,10 +193,7 @@ export type LandingCopy = {
   }
 }
 
-/*
- * 홈 화면 문구. 사실 정보(T19 일정, 여섯 개 파트, 프로그램 이름, 2023 Solution Challenge
- * 수치)는 lib/contents/*의 다른 파일과 같아야 하며, 챕터가 발표하지 않은 날짜는 약속하지 않는다.
- */
+// 홈 사실 정보는 다른 lib/contents 파일과 같아야 하며 챕터가 발표하지 않은 날짜는 약속하지 않는다.
 export const landingCopy: Record<Locale, LandingCopy> = {
   en: {
     manifesto: {
@@ -251,8 +233,6 @@ export const landingCopy: Record<Locale, LandingCopy> = {
     funnel: {
       caption: 'Solution Challenge 2023',
       steps: [
-        { value: '2,100', label: 'teams worldwide' },
-        { value: '6', label: 'teams from GDG Yonsei' },
         { value: '3', label: 'in the Top 100' },
         { value: '1', label: 'Top 10 finalist' },
       ],
@@ -326,8 +306,6 @@ export const landingCopy: Record<Locale, LandingCopy> = {
     funnel: {
       caption: 'Solution Challenge 2023',
       steps: [
-        { value: '2,100', label: '전 세계 참가 팀' },
-        { value: '6', label: 'GDG Yonsei 참가 팀' },
         { value: '3', label: 'Top 100 선정' },
         { value: '1', label: 'Top 10 파이널리스트' },
       ],

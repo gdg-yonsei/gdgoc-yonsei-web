@@ -1,9 +1,4 @@
-/**
- * 관리자 화면의 이미지 업로드 흐름(사전 서명 URL 발급 → R2 직접 업로드)을 담당한다(클라이언트 전용).
- *
- * 업로드 컴포넌트(단일·다중·프로필)는 모두 이 모듈을 거친다. 응답 상태와 모양을 여기서 검사하므로,
- * 권한 만료(403)나 검증 실패(400) 같은 오류 응답이 성공처럼 처리되어 잘못된 URL이 폼에 실리는 일이 없다.
- */
+// 업로드 응답 상태·모양을 검증해 403·400 오류나 잘못된 URL을 폼에 성공값으로 넘기지 않는다.
 import { toPublicImageUrl } from '@/lib/image-url'
 
 /** 업로드 실패. `status`가 있으면 업로드 API가 돌려준 HTTP 상태다. */
@@ -22,10 +17,7 @@ interface PresignedUpload {
   fileName: string
 }
 
-/**
- * 에러 응답 본문에서 표시 가능한 메시지를 뽑는다.
- * API는 실패 시 `{ error: string }` 형태로 응답한다.
- */
+// 업로드 API 실패 본문은 { error: string } 형태다.
 async function readErrorMessage(response: Response) {
   const body: unknown = await response.json().catch(() => null)
 
@@ -41,10 +33,7 @@ async function readErrorMessage(response: Response) {
   return `Upload API responded with ${response.status}`
 }
 
-/**
- * 응답이 실제로 사전 서명 URL 형태인지 확인한다.
- * 이 확인이 없으면 예상 밖의 응답이 `undefined`로 조용히 흘러 들어간다.
- */
+// 예상 밖의 응답이 undefined URL로 조용히 넘어가지 않도록 사전 서명 응답을 검증한다.
 function assertPresignedUpload(value: unknown): PresignedUpload {
   if (
     typeof value === 'object' &&
@@ -100,10 +89,7 @@ async function putFile(uploadUrl: string, file: File) {
   }
 }
 
-/**
- * 이미지 한 장을 업로드하고 공개 접근 URL을 반환한다.
- * @param baseUrl - 사전 서명 URL을 발급하는 API 경로
- */
+// baseUrl은 사전 서명 URL을 발급하는 API 경로다.
 export async function uploadSingleImage(
   baseUrl: string,
   file: File
@@ -117,9 +103,6 @@ export async function uploadSingleImage(
   return toPublicImageUrl(fileName)
 }
 
-/**
- * 사용자 프로필 이미지를 업로드하고 공개 접근 URL을 반환한다.
- */
 export async function uploadProfileImage(
   memberId: string,
   file: File
@@ -137,9 +120,7 @@ export async function uploadProfileImage(
   return toPublicImageUrl(fileName)
 }
 
-/**
- * 여러 장을 업로드하고 공개 접근 URL을 입력 순서대로 반환한다.
- */
+// 여러 이미지의 공개 URL은 입력 순서대로 반환한다.
 export async function uploadMultipleImages(
   baseUrl: string,
   files: readonly File[]

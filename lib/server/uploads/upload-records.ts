@@ -1,6 +1,3 @@
-/**
- * MCP 이미지 업로드 기록 저장소(시간당 한도 예약, 완료·거절 표시, 만료 정리).
- */
 import 'server-only'
 
 import { and, count, eq, gt, isNotNull, isNull, lt, or, sql } from 'drizzle-orm'
@@ -9,12 +6,7 @@ import { mcpImageUpload } from '@/db/schema/mcp-image-upload'
 
 type UploadKind = 'presigned' | 'import'
 
-/**
- * 시간당 한도 안에서 업로드 한 건을 예약한다. 한도에 닿았으면 null.
- *
- * 사용자별 advisory lock 을 트랜잭션 동안 잡고 세기와 삽입을 함께 하므로,
- * 동시에 들어온 요청이 같은 개수를 읽고 모두 통과하는 일이 없다.
- */
+// 사용자별 advisory lock 안에서 한도 확인·예약을 함께 해 동시 요청이 같은 잔여 한도를 쓰지 않게 한다.
 export async function reserveUpload(upload: {
   userId: string
   kind: UploadKind
@@ -51,7 +43,6 @@ export async function reserveUpload(upload: {
   })
 }
 
-/** URL 가져오기: 형식을 안 뒤 정해진 객체 키를 예약에 붙인다. */
 export async function assignUploadKey(id: string, objectKey: string) {
   await db
     .update(mcpImageUpload)
@@ -59,11 +50,8 @@ export async function assignUploadKey(id: string, objectKey: string) {
     .where(eq(mcpImageUpload.id, id))
 }
 
-/**
- * 검증이 끝난 업로드를 완료로 표시한다. 정리 작업이 이미 가져간(claimed) 업로드면
- * false — 그 객체는 곧 지워지므로 URL 을 돌려주면 안 된다.
- * 정리 작업은 대상 줄을 FOR UPDATE 로 잡으므로 두 쪽이 동시에 이길 수 없다.
- */
+// 정리에 임대된 객체는 곧 삭제되므로 완료가 false면 URL을 반환하지 않는다.
+// 정리의 FOR UPDATE 잠금으로 완료와 정리가 동시에 성공하지 않게 한다.
 export async function markUploadCompleted(objectKey: string): Promise<boolean> {
   const updated = await db
     .update(mcpImageUpload)
@@ -94,11 +82,8 @@ export async function markUploadRejected(
     )
 }
 
-/**
- * 완료·거절 없이 만료된 업로드를 최대 limit 개 임대한다(한 문장, SKIP LOCKED).
- * 임대가 끝난(leaseMs 지난) 줄은 이전 정리가 실패한 것이므로 다시 가져온다.
- * 호출자는 R2 객체를 지운 뒤에만 finishUploadCleanup 으로 줄을 끝낸다.
- */
+// SKIP LOCKED로 최대 limit개를 임대하며 leaseMs가 지난 실패 건은 재시도한다.
+// R2 삭제 뒤에만 finishUploadCleanup으로 완료해야 한다.
 export async function claimExpiredUploads(
   now: Date,
   limit: number,
@@ -129,11 +114,7 @@ export async function claimExpiredUploads(
     .returning({ id: mcpImageUpload.id, objectKey: mcpImageUpload.objectKey })
 }
 
-/**
- * R2 객체를 지운(또는 키가 없던) 정리 대상 줄을 끝난 것으로 표시한다.
- * 줄은 지우지 않는다: 그 시도는 한 시간 동안 한도에 계속 포함돼야 하고,
- * 끝난 줄은 pruneSettledUploads 가 나중에 지운다.
- */
+// R2 삭제 또는 키 없는 정리 건만 완료한다. 한도 계산에 1시간 더 필요하므로 기록은 나중에 지운다.
 export async function finishUploadCleanup(id: string) {
   await db
     .update(mcpImageUpload)
@@ -141,7 +122,6 @@ export async function finishUploadCleanup(id: string) {
     .where(eq(mcpImageUpload.id, id))
 }
 
-/** 한도 계산에 더 필요 없는 끝난 줄(완료·거절)을 지운다. */
 export async function pruneSettledUploads(before: Date) {
   await db
     .delete(mcpImageUpload)
@@ -156,10 +136,7 @@ export async function pruneSettledUploads(before: Date) {
     )
 }
 
-/**
- * 거절했지만 R2 객체를 지우지 못한 업로드: 거절로 닫지 않고 지금 만료시켜
- * 정리 작업이 객체 삭제를 다시 시도하게 한다(줄은 그때까지 한도에 포함된다).
- */
+// 거절 객체를 지우지 못하면 거절로 닫지 않고 즉시 만료시켜 정리에서 재시도한다. 한도에는 계속 포함된다.
 export async function expireUploadNow(
   target: { id: string } | { objectKey: string }
 ) {

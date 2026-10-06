@@ -1,6 +1,3 @@
-/**
- * 세션 생성 화면(`/admin/sessions/create`). 권한은 레이아웃이 확인한다.
- */
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -18,12 +15,10 @@ import SessionFormFields, {
   toSessionPartOptions,
 } from '@/app/(admin)/admin/sessions/_components/session-form-fields'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Create Session',
 }
 
-/** 세션 생성 폼. */
 export default async function CreateSessionPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),

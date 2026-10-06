@@ -1,9 +1,31 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ImageGallery from '@/app/components/site/gallery/image-gallery'
 
 describe('ImageGallery', () => {
+  beforeEach(() =>
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+  )
+  afterEach(() => vi.unstubAllGlobals())
+
+  it.each([true, false])(
+    'respects reduced motion = %s when advancing',
+    async (reduced) => {
+      vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: reduced }))
+      const user = userEvent.setup()
+      render(
+        <ImageGallery lang="en" images={['/a.webp', '/b.webp']} alt="Poster" />
+      )
+      await user.click(screen.getByRole('button', { name: 'Next image' }))
+      expect(HTMLElement.prototype.scrollTo).toHaveBeenCalledWith({
+        left: 0,
+        behavior: reduced ? 'instant' : 'smooth',
+      })
+      expect(screen.getByText('2 / 2')).toBeInTheDocument()
+    }
+  )
+
   it('counts images and moves with buttons, thumbnails and arrow keys', async () => {
     const user = userEvent.setup()
     render(
@@ -35,7 +57,7 @@ describe('ImageGallery', () => {
     render(<ImageGallery lang="en" images={['/a.webp']} alt="Poster" />)
 
     expect(screen.queryByRole('button', { name: 'Next image' })).toBeNull()
-    expect(screen.getByAltText('Poster — image 1 of 1')).toBeInTheDocument()
+    expect(screen.getByAltText('Poster, image 1 of 1')).toBeInTheDocument()
   })
 
   it('labels controls in Korean', () => {
@@ -47,6 +69,6 @@ describe('ImageGallery', () => {
     expect(
       screen.getByRole('button', { name: '포스터 이미지 2 보기' })
     ).toBeInTheDocument()
-    expect(screen.getByAltText('포스터 — 이미지 1/2')).toBeInTheDocument()
+    expect(screen.getByAltText('포스터, 이미지 1/2')).toBeInTheDocument()
   })
 })

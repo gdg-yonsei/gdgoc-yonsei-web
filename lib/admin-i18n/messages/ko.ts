@@ -1,11 +1,6 @@
-/**
- * 관리자 화면(GYMS) 한국어 문구.
- *
- * `en.ts`와 같은 키를 모두 가져야 한다(`satisfies`로 검사).
- */
+// 영어 사전과 같은 키를 모두 가져야 하며 satisfies가 누락을 검사한다.
 import type { AdminMessages } from '@/lib/admin-i18n'
 
-/** 한국어 관리자 문구 사전. */
 export const ko = {
   confirm: '확인',
   cancel: '취소',
@@ -37,12 +32,16 @@ export const ko = {
   registerPasskeySuccess: '패스키가 등록되었습니다.',
   registerPasskeyAlreadyRegistered: '이미 등록된 패스키입니다.',
   registerPasskeyError: '패스키를 등록하지 못했습니다. 다시 시도해 주세요.',
+  passkeySignInError:
+    '패스키로 로그인하지 못했습니다. 다시 시도하거나 다른 로그인 방법을 이용해 주세요.',
   subscribe: '구독',
   unsubscribe: '구독 취소',
   sessionNotificationEmails: '세션 알림 이메일',
   trueValue: '예',
   falseValue: '아니오',
   tbd: '미정',
+  notProvided: '미입력',
+  privateValue: '비공개',
   english: 'English',
   korean: '한국어',
   splitView: '분할 보기',
@@ -177,7 +176,6 @@ export const ko = {
   sortByUpdated: '최근 수정순',
   sortByCreated: '최근 생성순',
 
-  // ── 화면 틀(헤더·사이드바) ──
   skipToContent: '본문으로 건너뛰기',
   mainNavigation: '주요 메뉴',
   openMenu: '메뉴 열기',
@@ -189,7 +187,6 @@ export const ko = {
   darkMode: '다크 모드로 전환',
   account: '계정',
 
-  // ── 대시보드 ──
   dashboard: '대시보드',
   totalMembers: '멤버',
   totalSessions: '세션',
@@ -206,8 +203,8 @@ export const ko = {
     '승인된 멤버만 연결할 수 있습니다. 동의 화면에서 허용할 권한(읽기, 쓰기, 관리)을 직접 고르며, 연결은 클라이언트에서 언제든 삭제할 수 있습니다.',
   copy: '복사',
   copied: '복사됨',
+  copyFailed: '복사하지 못했습니다. 다시 시도해 주세요.',
 
-  // ── 빈 상태·로딩 상태 ──
   errorOccurred: '문제가 발생했습니다',
   errorOccurredHint:
     '페이지를 불러오지 못했습니다. 다시 시도해 보고, 계속 발생하면 리드에게 알려주세요.',
@@ -219,7 +216,6 @@ export const ko = {
   required: '필수',
   optional: '선택',
 
-  // ── 목록 표 헤더 ──
   columnName: '이름',
   columnPart: '파트',
   columnRole: '권한',
@@ -230,7 +226,6 @@ export const ko = {
   columnPeriod: '활동 기간',
   columnMembers: '멤버',
 
-  // ── 영어·한국어 입력 패널 ──
   written: '작성됨',
   notWritten: '미작성',
   bilingualThisField: '이 항목',
@@ -239,7 +234,6 @@ export const ko = {
   languageNameEn: '영어',
   languageNameKo: '한국어',
 
-  // ── 파트 구성원 선택기 ──
   selectedMembers: '선택된 멤버',
   removeMember: '제거',
   searchName: '이름 검색',
@@ -253,11 +247,9 @@ export const ko = {
   noMatchingMembers: '검색 결과가 없습니다.',
   searchResults: '검색 결과',
 
-  // ── 에디터·파트 폼 ──
   editor: '에디터',
   preview: '미리보기',
   displayOrderHint: '작은 숫자의 파트부터 표시됩니다.',
-  // ── MCP 연결 관리 ──
   mcpConnections: '연결된 AI 도구',
   mcpConnectionsDescription:
     '내 권한으로 GYMS를 쓰도록 허락한 MCP 클라이언트(Claude, Codex, ChatGPT, Cursor …)입니다. 연결을 끊으면 바로 접근이 막히고, 다시 쓰려면 클라이언트에서 다시 연결합니다.',
@@ -287,7 +279,6 @@ export const ko = {
   mcpAuditOk: '성공',
   mcpAuditError: '실패',
   mcpAuditEmpty: 'MCP 활동 기록이 없습니다.',
-  // ── 404 ──
   notFoundTitle: '페이지를 찾을 수 없습니다',
   notFoundHint: '항목이 삭제되었거나 주소가 잘못되었을 수 있습니다.',
   backToDashboard: '대시보드로 돌아가기',

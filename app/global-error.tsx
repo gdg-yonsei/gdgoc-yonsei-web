@@ -1,21 +1,15 @@
-'use client' // 오류 경계는 클라이언트 컴포넌트여야 한다
+'use client'
 
-/**
- * 앱 전체의 마지막 오류 경계(Next 특수 파일). 루트 레이아웃까지 실패했을 때 `<html>`부터 직접 그린다.
- */
 import './site.css'
 import { useEffect } from 'react'
 
-/**
- * 루트 레이아웃에서 난 오류를 받는 최후의 오류 경계. 모든 페이지가 불러오므로 작게 유지한다
- * (로고 그림 없이 글자만). 여기서는 언어를 알 수 없어 두 언어로 함께 보여 준다.
- */
+/** 모든 페이지가 불러오는 최후의 오류 경계라 로고 없이 작게 유지하고, 언어를 몰라 두 언어를 함께 보여 준다. */
 export default function GlobalError({
   error,
   retry,
 }: {
   error: Error & { digest?: string }
-  /** 오류 경계 안쪽을 서버에서 다시 받아 그린다(Next 16.3 권장 복구 방식). */
+
   retry: () => void
 }) {
   useEffect(() => {

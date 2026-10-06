@@ -1,19 +1,8 @@
-/**
- * 관리자 페이지 상단 헤더(제목, 설명, 뒤로 가기, 액션 버튼). 목록·상세·편집 화면이 함께 쓴다.
- */
 import Link from 'next/link'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
-/**
- * 관리자 페이지 상단 헤더.
- *
- * 모바일에서는 액션이 제목 아래로 내려가 전체 폭을 쓰고, 데스크톱에서는 같은 줄
- * 오른쪽에 붙는다.
- * @param backHref/backLabel 있으면 제목 위에 "뒤로" 링크를 보여 준다
- * @param actions 오른쪽 버튼 영역(생성·수정 버튼 등)
- */
 export default function AdminPageHeader({
   title,
   description,
@@ -28,7 +17,7 @@ export default function AdminPageHeader({
   backHref?: string
   backLabel?: string
   actions?: ReactNode
-  /** 제목 옆에 붙는 배지 등 */
+
   meta?: ReactNode
   className?: string
 }) {

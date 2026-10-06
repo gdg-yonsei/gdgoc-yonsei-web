@@ -1,11 +1,5 @@
-/**
- * MCP 클라이언트별 연결 안내 문구(정적 데이터).
- *
- * 각 서비스의 메뉴 이름이 바뀌면 이 파일을 고친다. MCP 서버 구조는 `docs/architecture/mcp.md` 참고.
- */
 import { Locale } from '@/lib/i18n'
 
-/** 안내를 제공하는 MCP 클라이언트 id. */
 export type McpClientId =
   | 'claude-code'
   | 'codex'
@@ -14,14 +8,12 @@ export type McpClientId =
   | 'chatgpt-web'
   | 'chatgpt-desktop'
 
-/** 설치 단계 하나. */
 export interface McpInstallStep {
   text: string
-  /** 복사 버튼과 함께 보여줄 명령어나 설정 */
+
   code?: string
 }
 
-/** 클라이언트 하나의 설치 안내. */
 export interface McpInstallGuide {
   id: McpClientId
   name: string
@@ -29,10 +21,7 @@ export interface McpInstallGuide {
   note?: string
 }
 
-/**
- * 클라이언트별 GYMS MCP 연결 방법.
- * 메뉴 이름은 각 서비스 UI 가 바뀌면 함께 고쳐야 한다 (docs/architecture/mcp.md 참고).
- */
+/** 클라이언트 서비스 UI가 바뀌면 설치 메뉴 이름도 함께 갱신한다(docs/architecture/mcp.md). */
 export function getMcpInstallGuides(
   locale: Locale,
   url: string

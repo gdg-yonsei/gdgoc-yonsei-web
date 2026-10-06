@@ -1,6 +1,3 @@
-/**
- * 사이트맵 항목을 모든 언어 URL로 펼친다.
- */
 import 'server-only'
 
 import type { MetadataRoute } from 'next'

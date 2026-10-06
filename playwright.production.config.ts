@@ -1,13 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
 import { assertDisposableDatabase } from './scripts/lib/disposable-database'
 
-// The global setup truncates every table and the admin specs write through
-// the app, so the whole run must target a disposable database.
+// Global setup truncates tables and admin tests write through the app, so the entire run needs a disposable DB.
 assertDisposableDatabase(process.env.AUTH_DRIZZLE_URL, 'Playwright e2e')
 
 const port = Number(process.env.PORT ?? 3100)
-// localhost, not 127.0.0.1: WebAuthn rejects IP addresses as a relying-party
-// ID, so the passkey e2e can only run on a hostname.
+// WebAuthn rejects IP relying-party IDs, so passkey e2e uses the localhost hostname.
 const baseURL = `http://localhost:${port.toString()}`
 
 export default defineConfig({
@@ -27,10 +25,8 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   projects: [
-    // Instant-navigation shells run before anything edits data. With the
-    // testing API exposed, Next never rebuilds a route's prerendered shell
-    // after an admin edit invalidates it (production rebuilds it on the next
-    // request), so these checks would see a degraded shell.
+    // Instant checks run before admin edits: the test API prevents Next from rebuilding invalidated prerender shells.
+    // Production rebuilds on the next request, so edits would give these checks an unrepresentative degraded shell.
     {
       name: 'instant-navigation',
       testMatch: 'instant-navigation.spec.ts',

@@ -1,9 +1,4 @@
-/**
- * 관리자 대시보드 통계 조회.
- *
- * 캐시하지 않는 관리자 조회다(권한·기수 범위에 따라 결과가 달라 공유 캐시를 쓰지 않는다).
- * 권한 확인은 호출부(레이아웃 가드, 서비스)가 먼저 한다.
- */
+// 권한·기수별 조회는 공유 캐시하지 않는다. 호출부가 권한을 먼저 확인해야 한다.
 import 'server-only'
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
@@ -15,7 +10,6 @@ import { getParts } from '@/lib/server/fetcher/admin/get-parts'
 import { type AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 
-/** 대시보드 숫자 타일 값. */
 export type AdminStats = {
   members: number
   sessions: number
@@ -25,13 +19,7 @@ export type AdminStats = {
   pendingApprovals: number
 }
 
-/**
- * 대시보드 통계.
- *
- * 목록 페이지가 이미 쓰는 fetcher를 그대로 재사용합니다. 이 fetcher들은 요청
- * 단위로 메모이즈되므로 같은 요청 안에서 목록과 통계가 쿼리를 공유합니다.
- * 별도의 count 쿼리를 새로 만들면 스코프 필터 로직이 이중으로 갈라집니다.
- */
+// 목록 fetcher를 재사용해 요청 내 쿼리와 스코프 규칙을 공유한다. 별도 count는 필터 로직을 중복시킨다.
 export async function getAdminStats(
   scope: AdminGenerationScope | null
 ): Promise<AdminStats> {

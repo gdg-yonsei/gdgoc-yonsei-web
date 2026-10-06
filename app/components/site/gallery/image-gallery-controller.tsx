@@ -1,11 +1,6 @@
 'use client'
 
-/**
- * 이미지 갤러리의 스크롤·버튼·썸네일·키보드 이동(클라이언트 컴포넌트).
- *
- * 가로 스크롤 스냅 트랙을 쓰고, 현재 위치는 IntersectionObserver로 화면에 절반 이상
- * 보이는 슬라이드에서 읽는다. 그래서 손가락으로 넘겨도 버튼·카운터가 맞게 갱신된다.
- */
+/** 절반 이상 보이는 슬라이드를 IntersectionObserver로 읽어, 손가락 스크롤도 컨트롤과 동기화한다. */
 import type { KeyboardEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import ChevronLeftIcon from '@heroicons/react/24/outline/ChevronLeftIcon'
@@ -13,13 +8,7 @@ import ChevronRightIcon from '@heroicons/react/24/outline/ChevronRightIcon'
 import type { GalleryCopy } from '@/lib/contents/gallery-copy'
 import { fillTemplate } from '@/lib/format/text'
 
-/**
- * 슬라이드와 썸네일 노드를 받아 캐러셀로 묶는다. 이미지가 한 장이면 컨트롤을 숨긴다.
- * @param alt 갤러리 이름(캐러셀 라벨)
- * @param copy 현재 언어의 갤러리 문구
- * @param slides 서버에서 렌더링한 슬라이드 이미지
- * @param thumbnails 슬라이드와 같은 순서의 썸네일 이미지
- */
+/** 썸네일은 서버 슬라이드와 같은 순서여야 하며, 이미지가 한 장이면 컨트롤을 숨긴다. */
 export default function ImageGalleryController({
   alt,
   copy,
@@ -61,7 +50,12 @@ export default function ImageGalleryController({
     if (!track) return
 
     setCurrentImageIndex(index)
-    track.scrollTo({ left: track.clientWidth * index, behavior: 'smooth' })
+    track.scrollTo({
+      left: track.clientWidth * index,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'instant'
+        : 'smooth',
+    })
   }
 
   function scrollByDirection(direction: -1 | 1) {

@@ -31,6 +31,7 @@
 
   .site-header-logo {
     display: flex;
+    min-height: 2.75rem;
     align-items: center;
     gap: 0.625rem;
     border-radius: 9999px;
@@ -40,7 +41,7 @@
   .site-nav-link {
     position: relative;
     display: inline-flex;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
@@ -66,10 +67,7 @@
     background-color: #4285f4;
   }
 
-  /*
-   * 링크에 마우스를 올리거나 포커스하면 코드 괄호로 감싼다. 괄호는 링크 안쪽 여백에 그려 옆 요소가 움직이지
-   * 않게 하고, 현재 페이지는 알약 표시를 유지한다.
-   */
+  /* 괄호는 링크 안쪽 여백에 그려 호버·포커스 때 옆 요소가 움직이지 않게 한다. */
   .site-nav-link:not([aria-current='page'])::before,
   .site-nav-link:not([aria-current='page'])::after {
     position: absolute;
@@ -135,8 +133,8 @@
 
   .locale-switch-item {
     display: inline-flex;
-    min-width: 2.25rem;
-    min-height: 2rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
@@ -198,7 +196,8 @@
 
   .site-footer-link {
     display: inline-flex;
-    min-height: 1.75rem;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
     align-items: center;
     gap: 0.375rem;
     font-size: 0.9375rem;

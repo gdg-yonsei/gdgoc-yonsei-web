@@ -1,17 +1,9 @@
-/**
- * 소개 섹션 세 기둥(커뮤니티·기술·성장)의 장식 아이콘(SVG).
- */
-
-/** 소개 섹션 기둥 종류. */
 export type PillarKind = 'community' | 'tech' | 'growth'
 
 const CHEVRON_LEFT = 'M18 8 6 20l12 12'
 const CHEVRON_RIGHT = 'm46 8 12 12-12 12'
 
-/**
- * manifesto 장면이 기술 기둥의 꺾쇠를 변형할 때 쓰는 숨은 윤곽선: 마우스를 올리면 `{ }` 중괄호로,
- * 떠나면 원래 꺾쇠로.
- */
+/** manifesto 장면이 꺾쇠를 중괄호로 바꾸고 되돌릴 때 쓰는 숨은 윤곽선이다. */
 const MORPH_TARGETS = {
   'brace-left': 'M18 8c-4 0-5 2-5 5v3c0 2-1 4-5 4 4 0 5 2 5 4v3c0 3 1 5 5 5',
   'brace-right': 'M46 8c4 0 5 2 5 5v3c0 2 1 4 5 4-4 0-5 2-5 4v3c0 3-1 5-5 5',
@@ -19,7 +11,6 @@ const MORPH_TARGETS = {
   'chevron-right': CHEVRON_RIGHT,
 }
 
-/** 기둥마다 붙는 작은 장식 아이콘. 마우스를 올리면 움직인다(site-home.css와 manifesto 장면). */
 export default function PillarGlyph({ kind }: { kind: PillarKind }) {
   return (
     <svg

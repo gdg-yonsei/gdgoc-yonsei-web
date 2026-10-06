@@ -1,25 +1,13 @@
-/**
- * 아카이브 허브 페이지(세션·프로젝트·구성원·캘린더) 공통 골격.
- *
- * 골격(헤더, 제목, 설명)은 언어(루트 매개변수 `lang`)를 읽지 않으므로 모든 언어 링크가 같은 즉시
- * 표시 셸(App Shell)을 공유한다. 언어는 `LocalizedText`가 CSS로 고른다.
- * URL이나 데이터에 의존하는 부분(브레드크럼, 본문)은 각자의 Suspense 경계 안에서
- * 스트리밍된다.
- */
+/** 셸은 lang을 읽지 않고 CSS LocalizedText로 언어를 골라, 모든 언어 링크가 즉시 표시 셸을 공유한다.
+ * URL·데이터에 의존하는 경로 표시와 본문은 각 Suspense 경계에서 스트리밍한다. */
 import { Suspense, type ReactNode } from 'react'
 import LocalizedText from '@/app/components/localized-text'
 import HubBreadcrumbs from '@/app/components/site/hub-breadcrumbs'
 import PageHeader from '@/app/components/site/page-header'
 import PageTransition from '@/app/components/site/page-transition'
 
-/** 두 언어 문구 쌍. */
 type Bilingual = { en: string; ko: string }
 
-/**
- * 허브 공통 골격: 경로 표시, 두 언어 제목·설명, 본문 Suspense 경계.
- *
- * @param section 허브 종류(경로 표시 라벨)
- */
 export default function ArchiveHubShell({
   section,
   testId,
@@ -30,15 +18,15 @@ export default function ArchiveHubShell({
   children,
 }: {
   section: 'sessions' | 'projects' | 'members' | 'calendar'
-  /** e2e가 셸을 찾을 때 쓰는 `data-testid`. */
+
   testId?: string
-  /** 제목 위 코드 모양 태그(예: `<sessions />`). */
+
   tag: string
   title: Bilingual
   description: Bilingual
-  /** 본문을 기다리는 동안 보일 스켈레톤. */
+
   fallback: ReactNode
-  /** 언어(`getLocale()`)와 데이터를 읽어 그리는 본문(보통 async 서버 컴포넌트). */
+
   children: ReactNode
 }) {
   return (

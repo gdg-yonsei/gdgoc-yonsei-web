@@ -28,9 +28,6 @@ const FIXTURE_IDS = {
   memberSessionToken: 'e2e-member-session-token',
 }
 
-/**
- * Wipes data from all mutable tables and inserts one deterministic dataset for E2E.
- */
 export async function resetAndSeedE2EDatabase(): Promise<SeededE2EData> {
   // The TRUNCATE below wipes every table, auth included.
   assertDisposableDatabase(process.env.AUTH_DRIZZLE_URL, 'e2e database reset')

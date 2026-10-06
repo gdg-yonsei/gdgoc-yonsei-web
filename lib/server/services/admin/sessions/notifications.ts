@@ -1,9 +1,4 @@
-/**
- * 세션 알림 메일.
- *
- * 세션 생성·참가 신청 서비스가 `runAfterResponse`로 응답 뒤에 호출한다.
- * 메일 본문은 `emails/` 디렉터리의 React Email 템플릿이다.
- */
+// 알림 메일은 생성·신청 서비스가 runAfterResponse로 응답 뒤에 보낸다.
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -96,11 +91,7 @@ export async function sendNewSessionEmails({
   )
 }
 
-/**
- * 세션 작성자에게 새 참가자가 신청했음을 알린다.
- *
- * @param session - 신청 직전에 읽은 세션. 남은 자리는 이번 신청자를 빼고 계산한다.
- */
+// 신청 직전 세션을 받으므로 남은 자리는 이번 신청자를 빼고 계산한다.
 export async function sendNewParticipantEmail({
   authorEmail,
   participantId,

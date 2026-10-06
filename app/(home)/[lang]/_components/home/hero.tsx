@@ -1,6 +1,3 @@
-/**
- * 홈 히어로(첫 화면) 섹션(서버 컴포넌트). 텍스트와 SVG 괄호는 서버에서 그려 JS 없이도 완성된 화면이다.
- */
 import type { CSSProperties, ReactNode } from 'react'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/lib/i18n'
@@ -16,7 +13,6 @@ import { localeHref } from '@/lib/site/routes'
 const rise = (delayMs: number) =>
   ({ '--rise-delay': `${delayMs}ms` }) as CSSProperties
 
-/** 히어로 메타 띠에 보일 개수. */
 export type HeroCounts = {
   sessions: number
   projects: number
@@ -60,10 +56,7 @@ export function HeroMetaList({
   )
 }
 
-/**
- * "< GDGoC Yonsei >": 동아리 이름이 GDG 괄호 두 개 사이에 놓인다. SVG 포스터는 바로 그려지고,
- * 브라우저가 한가해지면 BracketStage가 실시간 망점 필드로 바꾼다.
- */
+/** 서버 포스터를 즉시 표시하고, 브라우저 유휴 시간에 BracketStage가 실시간 필드로 바꾼다. */
 export default function Hero({
   lang,
   meta,

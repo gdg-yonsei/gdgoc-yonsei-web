@@ -1,6 +1,3 @@
-/**
- * GDG 괄호 로고(SVG). 공개 사이트 헤더·푸터와 관리자 화면에서 쓴다.
- */
 import { SVGProps } from 'react'
 
 /** `svgKey`: 한 페이지에 로고가 여러 개일 때 SVG 내부 id가 겹치지 않게 붙이는 접두사. */
@@ -8,7 +5,6 @@ interface GDGLogoProps extends SVGProps<SVGSVGElement> {
   svgKey?: string
 }
 
-/** GDG 로고. 나머지 props는 `<svg>`에 그대로 넘긴다. */
 export default function GDGLogo({ svgKey, ...rest }: GDGLogoProps) {
   const generateId = (id: string) => (svgKey ? `${svgKey}__${id}` : id)
 

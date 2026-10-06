@@ -1,13 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
 import { assertDisposableDatabase } from './scripts/lib/disposable-database'
 
-// The global setup truncates every table and the admin specs write through
-// the app, so the whole run must target a disposable database.
+// Global setup truncates tables and admin tests write through the app, so the entire run needs a disposable DB.
 assertDisposableDatabase(process.env.AUTH_DRIZZLE_URL, 'Playwright e2e')
 
 const port = Number(process.env.PORT ?? 3100)
-// localhost, not 127.0.0.1: WebAuthn rejects IP addresses as a relying-party
-// ID, so the passkey e2e can only run on a hostname.
+// WebAuthn rejects IP relying-party IDs, so passkey e2e uses the localhost hostname.
 const baseURL =
   process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${port.toString()}`
 
@@ -33,7 +31,6 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // PLAYWRIGHT_BASE_URL이 있으면 이미 떠 있는 서버를 쓴다.
   ...(process.env.PLAYWRIGHT_BASE_URL
     ? {}
     : {

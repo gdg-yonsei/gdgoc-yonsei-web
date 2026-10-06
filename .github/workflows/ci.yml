@@ -16,9 +16,7 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-# Placeholder credentials only. Real secrets never reach CI, and every job that
-# writes to a database uses the throwaway Postgres service on 127.0.0.1, which
-# the disposable-database guard accepts.
+# CI uses placeholder credentials and disposable Postgres on 127.0.0.1 for every database write.
 env:
   AUTH_DRIZZLE_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
   BETTER_AUTH_SECRET: test-secret-at-least-32-characters-long
@@ -68,9 +66,7 @@ jobs:
           git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD \
             | xargs -r -d '\n' pnpm exec prettier --check --ignore-unknown
 
-      # The deploy (`pnpm build:production` in nixpacks.toml) only applies
-      # committed migrations. A schema change without one would ship code
-      # that queries columns production does not have.
+      # Production deploys only committed migrations; schema-only changes would query columns missing from production.
       - name: Schema matches committed migrations
         run: |
           pnpm db:generate
@@ -154,10 +150,8 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup
 
-      # Production is always at the base branch's migrations with real rows in
-      # it. Rebuild that state, then apply this change's migrations on top, as
-      # the Dokploy build will (`pnpm build:production` migrates before
-      # `next build`; see nixpacks.toml).
+      # Rebuild the base migrations with real rows before testing the upgrade.
+      # Match nixpacks.toml: pnpm build:production migrates before next build.
       - name: Resolve base revision
         id: base
         env:
@@ -266,9 +260,7 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-      # Reuses the build the e2e run just produced. Report-only: shared
-      # runners are too noisy for a hard LCP/TBT gate, but regressions show
-      # up in the job summary and the uploaded report.
+      # Reuse the e2e build; noisy shared runners make LCP/TBT report-only in the summary and uploaded report.
       - name: Performance budget (report only)
         id: perf
         continue-on-error: true
@@ -320,9 +312,7 @@ jobs:
         with:
           fail-on-severity: high
 
-      # Advisories published against dependencies already on main should not
-      # block unrelated deploys; they are reported here and handled through
-      # Dependabot.
+      # Existing main-branch advisories are reported through Dependabot without blocking unrelated deploys.
       - uses: ./.github/actions/setup
       - name: Audit production dependencies (report only)
         continue-on-error: true

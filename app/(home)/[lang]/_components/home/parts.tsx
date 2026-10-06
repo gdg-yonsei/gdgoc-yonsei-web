@@ -1,6 +1,3 @@
-/**
- * 홈의 파트 소개 섹션(서버 컴포넌트). 파트 문구는 `lib/contents/parts-section.ts`에 있다.
- */
 import Link from 'next/link'
 import type { Locale } from '@/lib/i18n'
 import SectionTag from '@/app/components/site/section-tag'
@@ -20,10 +17,7 @@ const GLYPHS: Record<string, PartGlyphKind> = {
   DevRel: 'rings',
 }
 
-/**
- * `<parts>` 섹션. 파트마다 모듈 하나를 두고, 설명은 HTML에 그대로 넣으며, 그 파트로 필터링한 세션 로그
- * 링크를 단다(prefetch 안 함: 한 라우트의 쿼리 변형 여섯 개가 prefetch 예산을 낭비한다).
- */
+/** 파트별 세션 링크는 쿼리 변형 여섯 개가 prefetch 예산을 낭비하지 않도록 prefetch하지 않는다. */
 export default function Parts({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].parts
 

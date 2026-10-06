@@ -1,13 +1,4 @@
-/**
- * 운영 앱의 Dokploy 배포를 시작하고 끝날 때까지 기다린다.
- *
- * Dokploy는 `main`의 최신 커밋으로 빌드하므로, 호출하는 쪽(cd.yml)이 먼저 그 커밋이 CI가 방금 검증한
- * 커밋인지 확인한다.
- *
- * 환경 변수: DOKPLOY_URL, DOKPLOY_API_KEY, DOKPLOY_APPLICATION_ID,
- *           DEPLOY_TITLE, DEPLOY_DESCRIPTION(선택),
- *           DEPLOY_TIMEOUT_MINUTES(선택, 기본 25).
- */
+// Dokploy는 main 최신 커밋을 빌드하므로 cd.yml이 CI가 검증한 커밋인지 먼저 확인해야 한다.
 import { appendFileSync } from 'node:fs'
 
 const baseURL = (process.env.DOKPLOY_URL ?? '').replace(/\/+$/, '')
@@ -56,8 +47,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const known = new Set((await listDeployments()).map((d) => d.deploymentId))
 const started = Date.now()
 
-// Dokploy의 GitHub 자동 배포는 꺼져 있어야 한다. 켜져 있으면 push마다 두 번 빌드하고, 검증되지 않은
-// 커밋이 운영에 나간다. push로 이미 배포가 시작됐으면 크게 경고한다.
+// Dokploy GitHub 자동 배포는 꺼야 push 중복 빌드와 검증 전 운영 배포를 막는다.
 const application = await api(
   'GET',
   `application.one?applicationId=${encodeURIComponent(applicationId)}`

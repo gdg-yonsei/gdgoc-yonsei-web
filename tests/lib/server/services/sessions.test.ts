@@ -136,7 +136,6 @@ describe('sessions service', () => {
     })
     canAccessGeneration.mockResolvedValue(false)
     const result = await updateSession(core, SID, {})
-    // 권한 검사를 통과하고 입력 검증 단계까지 간다.
     expect(result).toMatchObject({ ok: false, code: 'VALIDATION' })
   })
 

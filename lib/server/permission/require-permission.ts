@@ -1,9 +1,4 @@
-/**
- * 관리자 화면(레이아웃·페이지)용 권한 가드.
- *
- * 조건을 만족하지 않으면 Next.js `forbidden()`으로 렌더링을 멈추고 403 화면을 보여 준다.
- * 쓰기 권한은 서비스 계층(`authorize`)이 다시 확인하므로, 이 가드는 화면 접근만 막는다.
- */
+// 이 가드는 화면 접근만 막는다. 쓰기 서비스는 authorize로 권한을 다시 확인해야 한다.
 import 'server-only'
 
 import { forbidden } from 'next/navigation'
@@ -16,11 +11,7 @@ import {
   type ResourceType,
 } from '@/lib/server/permission/has-permission'
 
-/**
- * 권한이 없으면 `forbidden()`으로 렌더링을 중단하고, 있으면 로그인 세션을 돌려준다.
- *
- * @param dataOwnerId - 데이터 소유자 ID. 본인 데이터만 허용하는 규칙(`'own'`)에 쓴다.
- */
+// 권한이 없으면 forbidden으로 중단한다. dataOwnerId는 own 규칙의 데이터 소유자다.
 export async function requirePermission(
   action: ActionType,
   resource: ResourceType,
@@ -37,10 +28,6 @@ export async function requirePermission(
   return session
 }
 
-/**
- * 본인 소유 데이터에 대한 권한을 확인한다.
- * 로그인한 사용자 자신이 데이터 소유자인 경우에 쓴다.
- */
 export async function requireOwnPermission(
   action: ActionType,
   resource: ResourceType
@@ -55,10 +42,7 @@ export async function requireOwnPermission(
   return session
 }
 
-/**
- * 로그인 사용자가 해당 기수의 데이터를 볼 수 있는지 확인하고, 아니면 403으로 멈춘다.
- * LEAD는 모든 기수, 그 외 역할은 자신이 속한 기수만 볼 수 있다(MCP 조회와 같은 규칙).
- */
+// 기수 접근은 LEAD에게 전체, 그 외에는 소속 기수만 허용한다. 실패는 403이다.
 export async function requireGenerationAccess(
   generationId: number | null | undefined
 ) {

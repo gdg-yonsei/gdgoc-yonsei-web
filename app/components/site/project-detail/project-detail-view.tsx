@@ -1,8 +1,3 @@
-/**
- * 프로젝트 상세 페이지 본문(서버 컴포넌트): 표지, 본문, 팀·스택·링크·날짜, 갤러리, 같은 기수 추천, 다음 프로젝트.
- *
- * 데이터 조회는 page가 하고, 이 컴포넌트는 받은 데이터를 그리기만 한다.
- */
 import Image from 'next/image'
 import Link from 'next/link'
 import { ViewTransition } from 'react'
@@ -30,22 +25,12 @@ import {
 } from '@/lib/site/project-showcase'
 import { generationPath, localeHref, projectPath } from '@/lib/site/routes'
 
-/** 상세 화면용 프로젝트: 카드 모델에 본문과 본문 이미지를 더한 것. */
 export type ProjectDetail = ShowcaseProject & {
   content: string
   images: string[]
 }
 
-/**
- * 프로젝트 상세.
- *
- * 표지 이미지는 목록 카드와 같은 `ViewTransition` 이름을 써서, 카드에서 상세로 이동할 때
- * 이미지가 이어지는 전환을 만든다.
- * @param project 현재 프로젝트
- * @param more 같은 기수의 다른 프로젝트
- * @param next 다음 프로젝트(없으면 null)
- * @param copy/common 현재 언어의 프로젝트·공통 문구
- */
+/** 표지는 목록 카드와 같은 ViewTransition 이름을 써서 목록·상세 이미지가 이어지게 한다. */
 export default function ProjectDetailView({
   lang,
   project,

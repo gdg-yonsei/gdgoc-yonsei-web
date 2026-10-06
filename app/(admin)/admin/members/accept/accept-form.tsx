@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 가입 승인 폼(클라이언트 컴포넌트). 부여할 역할을 고르고 승인한다.
- */
 import { acceptMemberAction } from '@/app/(admin)/admin/members/accept/actions'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import DataForm from '@/app/components/admin/data-form'
@@ -10,7 +7,6 @@ import SubmitButton from '@/app/components/admin/submit-button'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
 
-/** 부여할 역할 하나를 고르는 토글 버튼. */
 function RoleButton({
   role,
   value,
@@ -38,17 +34,12 @@ function RoleButton({
   )
 }
 
-/**
- * 역할(멤버·코어·졸업생) 선택과 승인 버튼. 값은 `parseAcceptMemberForm`이 역할 enum으로 바꾼다.
- *
- * @param userId 승인할 사용자 id
- */
 export default function AcceptForm({ userId }: { userId: string }) {
   const { t } = useAdminI18n()
   const [role, setRole] = useState('member')
 
   return (
-    // 모바일에서는 버튼이 좁아지지 않고 다음 줄로 넘어가야 한다.
+    // 모바일에서는 역할 버튼을 줄바꿈해 폭을 유지한다.
     <DataForm
       action={acceptMemberAction}
       className={'flex flex-wrap items-center gap-2'}

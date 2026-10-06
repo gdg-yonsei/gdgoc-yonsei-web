@@ -1,17 +1,5 @@
-/**
- * 공개 세션 기록·캘린더 조회.
- *
- * "끝난 세션만 공개"가 원칙이다. 현재 시각 대신 1시간 단위 공개 버킷(`visibilityBucket`)을
- * 받아 그 시각까지 끝난 세션만 돌려주므로, 같은 시간대의 요청이 캐시를 공유한다
- * (`lib/server/cache/session-visibility.ts`). 캘린더만 예정 세션까지 보여 준다.
- *
- * 공개 사이트 조회는 모두 같은 구조다.
- * - `getShared*`: `'use cache: remote'` 함수. 결과를 Redis(또는 메모리)에 공유 캐시한다.
- *   행에 영어·한국어 필드가 모두 있으므로 언어와 무관하게 캐시 항목 하나를 쓰고, 기존 무효화
- *   규칙을 지키려고 두 언어의 태그를 모두 단다.
- * - `get*ForRequest`: React `cache()`로 같은 요청 안의 중복 호출을 합친다.
- * - 공개 함수(`get*`): 입력 검증(UUID 등) 후 위 함수를 부른다.
- */
+// 기록은 1시간 visibilityBucket까지 끝난 세션만 공개한다. 캘린더는 예정 세션도 포함한다.
+// 두 언어 필드를 한 공유 캐시에 담되 두 언어 태그를 모두 붙이고 요청 내 중복 호출은 합친다.
 import 'server-only'
 
 import { cache } from 'react'
@@ -36,7 +24,6 @@ import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { and, asc, desc, eq, isNotNull, lte } from 'drizzle-orm'
 
-/** 공개 버킷 문자열을 비교용 Date로 바꾼다. */
 function toVisibilityDate(visibilityBucket: string): Date {
   return new Date(visibilityBucket)
 }
@@ -97,7 +84,6 @@ const getSessionArchiveForRequest = cache((visibilityBucket: string) =>
   getSharedSessionArchive(visibilityBucket)
 )
 
-/** 공개된 모든 세션(두 언어 필드 포함). 허브, 기수 페이지, 개수 표시가 함께 쓴다. */
 export function getSessionArchive(visibilityBucket: string) {
   return getSessionArchiveForRequest(visibilityBucket)
 }
@@ -181,7 +167,6 @@ async function getSharedPublishedSessionsForSitemap(visibilityBucket: string) {
     .orderBy(desc(sessions.endAt))
 }
 
-/** 사이트맵·정적 파라미터용으로 공개된 세션의 ID와 기수 이름만 읽는다. */
 export function getPublishedSessionsForSitemap(visibilityBucket: string) {
   return getPublishedSessionsForSitemapForRequest(visibilityBucket)
 }

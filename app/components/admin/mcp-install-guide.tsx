@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * GYMS 관리자 홈의 MCP 연결 안내 카드(클라이언트 컴포넌트). 클라이언트(Claude Code, Codex 등)별 탭으로 설치 단계를 보여 준다.
- */
 import { KeyboardEvent, useId, useRef, useState } from 'react'
 import {
   CheckIcon,
@@ -15,18 +12,21 @@ import {
   McpClientId,
 } from '@/app/components/admin/mcp-install-guides'
 
-/** 값을 클립보드에 복사하고 2초간 "복사됨"을 보여 주는 버튼. */
+/** 복사 후 2초 동안 성공 상태를 표시한다. */
 function CopyButton({ value, label }: { value: string; label: string }) {
   const { t } = useAdminI18n()
   const [copied, setCopied] = useState(false)
+  const [hasFailed, setHasFailed] = useState(false)
 
   async function copy() {
+    setHasFailed(false)
     try {
       await navigator.clipboard.writeText(value)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // 클립보드 권한이 없으면 사용자가 직접 선택해 복사할 수 있다.
+      setCopied(false)
+      setHasFailed(true)
     }
   }
 
@@ -42,14 +42,17 @@ function CopyButton({ value, label }: { value: string; label: string }) {
       ) : (
         <ClipboardDocumentIcon className={'size-4'} aria-hidden={'true'} />
       )}
-      <span className={'type-caption'} aria-live={'polite'}>
-        {copied ? t('copied') : t('copy')}
+      <span
+        className={'type-caption'}
+        aria-live={'polite'}
+        role={hasFailed ? 'alert' : undefined}
+      >
+        {hasFailed ? t('copyFailed') : copied ? t('copied') : t('copy')}
       </span>
     </button>
   )
 }
 
-/** 복사 버튼이 붙은 코드 블록. */
 function CodeBlock({ code, label }: { code: string; label: string }) {
   return (
     <div
@@ -69,11 +72,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
   )
 }
 
-/**
- * MCP 연결 안내. 탭은 WAI-ARIA tablist 패턴(화살표·Home·End 키 이동)을 따른다.
- *
- * @param mcpUrl MCP 서버 주소(`{사이트}/mcp`)
- */
+/** 탭은 화살표·Home·End 키로 선택과 포커스를 함께 옮기는 WAI-ARIA tablist 패턴을 따른다. */
 export default function McpInstallGuide({ mcpUrl }: { mcpUrl: string }) {
   const { t, locale } = useAdminI18n()
   const guides = getMcpInstallGuides(locale, mcpUrl)
@@ -82,7 +81,6 @@ export default function McpInstallGuide({ mcpUrl }: { mcpUrl: string }) {
   const baseId = useId()
   const guide = guides.find((g) => g.id === selected)
 
-  /** 화살표·Home·End 키로 탭을 옮기고 포커스도 함께 옮긴다. */
   const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const index = guides.findIndex((g) => g.id === selected)
     let next = index

@@ -12,7 +12,7 @@ describe('GlobalError', () => {
     expect(html).toContain('Something went wrong')
     expect(html).toContain('lang="ko"')
     expect(html).toContain('bg-stage')
-    // Every page loads this boundary: the old lockup SVG cost ~1 KB of JS.
+    // Keep this shared boundary small: every page loads its JavaScript.
     expect(html).not.toContain('<svg')
   })
 })

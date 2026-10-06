@@ -1,6 +1,3 @@
-/**
- * MCP 세션 도구(목록, 상세, 생성, 수정, 삭제, 참가 신청·취소, 참가자 제거).
- */
 import 'server-only'
 
 import { z } from 'zod'
@@ -71,7 +68,6 @@ const sessionFields = {
     .describe('User ids already registered for the session.'),
 }
 
-/** 도구 입력(문자열 일시·숫자 partId)을 서비스 입력 형태로. 일시가 틀리면 오류 메시지. */
 function toServiceFields(input: Record<string, unknown>) {
   const { startAt, endAt, partId, participantIds, ...rest } = input
   const converted: Record<string, unknown> = { ...rest }
@@ -92,7 +88,6 @@ function toServiceFields(input: Record<string, unknown>) {
   return { fields: converted }
 }
 
-/** 세션 도구 목록. */
 export const sessionTools = [
   defineTool({
     name: 'list_sessions',

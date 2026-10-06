@@ -1,9 +1,4 @@
-/**
- * MCP 도구 정의와 노출 규칙.
- *
- * 도구마다 필요한 스코프와 "이 역할이 이 도구를 쓸 수 있는지" 판단(`gate`)을 함께 정의한다.
- * 연결한 사용자가 쓸 수 없는 도구는 목록에도 보이지 않는다.
- */
+// 역할·스코프가 허용하지 않는 도구는 목록에도 노출하지 않는다.
 import 'server-only'
 
 import type { ToolAnnotations } from '@modelcontextprotocol/server'
@@ -19,13 +14,7 @@ import type {
   ServiceResult,
 } from '@/lib/server/services/admin/types'
 
-/**
- * MCP 도구 하나의 정의.
- * - scope: 필요한 OAuth 스코프
- * - gate: 노출 조건(역할 정책)
- * - input: zod 입력 스키마(설명이 도구 문서가 된다)
- * - run: 서비스 함수를 부르는 실행부
- */
+// zod input의 설명은 MCP 도구 문서로 공개된다.
 export type ToolDefinition<S extends z.ZodType = z.ZodType> = {
   name: string
   title: string
@@ -36,11 +25,9 @@ export type ToolDefinition<S extends z.ZodType = z.ZodType> = {
   input: S
   annotations?: ToolAnnotations
   run: (actor: Actor, input: z.output<S>) => Promise<ServiceResult<unknown>>
-  /** 감사 로그의 targetId. 성공 결과에서 대상 ID 를 꺼낸다. */
   targetId?: (data: unknown) => string | undefined
 }
 
-/** 도구 정의의 입력 타입을 추론하기 위한 헬퍼(값은 그대로 돌려준다). */
 export function defineTool<S extends z.ZodType>(
   definition: ToolDefinition<S>
 ): ToolDefinition {
@@ -57,7 +44,6 @@ export function isToolVisible(actor: Actor, tool: ToolDefinition): boolean {
   )
 }
 
-/** 성공 결과의 `id` 를 감사 로그 대상으로 쓴다. */
 export function idOf(data: unknown): string | undefined {
   const id = (data as { id?: unknown } | null)?.id
   return typeof id === 'string' || typeof id === 'number'

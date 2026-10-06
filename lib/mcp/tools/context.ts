@@ -1,6 +1,3 @@
-/**
- * MCP `whoami` 도구: 연결한 사용자의 역할, 스코프, 접근 가능한 기수를 알려 준다.
- */
 import 'server-only'
 
 import { z } from 'zod'

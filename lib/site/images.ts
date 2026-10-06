@@ -1,7 +1,3 @@
-/**
- * 공개 이미지 판별 헬퍼.
- */
-
 /** 관리자 폼이 이미지가 없을 때 쓰는 기본 이미지. 콘텐츠로 보여 줄 가치가 없다. */
 const PLACEHOLDER_PATHS = new Set([
   '/project-default.png',

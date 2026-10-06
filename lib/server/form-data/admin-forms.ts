@@ -1,11 +1,4 @@
-/**
- * 관리자 폼(`FormData`)을 서비스 입력 객체로 바꾸는 파서 모음.
- *
- * 각 함수는 폼 필드를 이름 그대로 읽어 서비스가 기대하는 모양으로 맞추기만 한다.
- * 필수값·형식 검사는 서비스가 zod 스키마로 다시 하므로 여기서는 하지 않는다.
- * 폼 필드를 추가하면 해당 페이지의 입력 컴포넌트, 이 파서, `lib/validations`의
- * 스키마를 함께 고친다.
- */
+// 필드 추가 시 입력 컴포넌트·폼 파서·검증 스키마를 함께 바꿔야 한다. 실제 검증은 서비스가 맡는다.
 import 'server-only'
 
 import type { Role } from '@/db/schema/users'
@@ -23,7 +16,6 @@ import {
   type SessionType,
 } from '@/lib/validations/session'
 
-/** 가입 승인 폼: 승인할 사용자와 부여할 역할. */
 export function parseAcceptMemberForm(formData: FormData) {
   return {
     userId: readString(formData, 'userId'),
@@ -31,12 +23,10 @@ export function parseAcceptMemberForm(formData: FormData) {
   }
 }
 
-/** 가입 거절(삭제) 폼: 삭제할 사용자 ID. */
 export function parseDeleteMemberForm(formData: FormData) {
   return { userId: readString(formData, 'userId') }
 }
 
-/** 기수 생성·수정 폼. 날짜는 `YYYY-MM-DD` 문자열 그대로 넘긴다. */
 export function parseGenerationForm(formData: FormData) {
   return {
     name: readString(formData, 'name'),
@@ -45,7 +35,6 @@ export function parseGenerationForm(formData: FormData) {
   }
 }
 
-/** 멤버 정보 수정 폼(관리자 수정과 본인 프로필 수정이 같은 필드를 쓴다). */
 export function parseMemberForm(formData: FormData) {
   return {
     name: readString(formData, 'name'),
@@ -67,12 +56,7 @@ export function parseMemberForm(formData: FormData) {
   }
 }
 
-/**
- * 파트 생성·수정 폼.
- *
- * `displayOrder`는 필드가 아예 없으면 `undefined`(기존 값 유지), 비어 있으면
- * `NaN`(검증 오류로 이어짐)으로 구분해 넘긴다.
- */
+// displayOrder 누락은 undefined로 기존값을 유지하고, 빈 입력은 NaN으로 검증 실패를 유도한다.
 export function parsePartForm(formData: FormData) {
   return {
     name: readString(formData, 'name'),
@@ -88,7 +72,6 @@ export function parsePartForm(formData: FormData) {
   }
 }
 
-/** 프로젝트 생성·수정 폼. 이미지·참가자·태그 목록은 JSON 배열 필드다. */
 export function parseProjectForm(formData: FormData) {
   return {
     name: readString(formData, 'name'),
@@ -115,12 +98,7 @@ export function parseProjectForm(formData: FormData) {
   }
 }
 
-/**
- * 세션 생성·수정 폼.
- *
- * 알 수 없는 세션 종류는 파트 세션으로, 알 수 없는 활동 분류는 `tech_talk`로
- * 바꿔 넘긴다(폼은 정해진 선택지만 보내므로 조작된 요청에 대한 방어다).
- */
+// 조작된 요청의 알 수 없는 세션 종류는 파트 세션, 활동 분류는 tech_talk로 바꾼다.
 export function parseSessionForm(formData: FormData) {
   const type: SessionType =
     formData.get('type') === 'General Session'

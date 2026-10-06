@@ -1,8 +1,4 @@
-/**
- * 자주 쓰는 이중 언어 필드 묶음: 한 줄 입력, 여러 줄 입력, MDX 편집기.
- *
- * 각 컴포넌트는 `BilingualPanel`에 영어·한국어 입력을 넣고 "두 언어 모두 필수"로 설정한다.
- */
+/** 세 이중 언어 필드 모두 BilingualPanel에서 두 언어 작성을 필수로 설정한다. */
 import type { ReactNode } from 'react'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import DataInput from '@/app/components/admin/data-input'
@@ -10,7 +6,6 @@ import DataTextarea from '@/app/components/admin/data-textarea'
 import MDXEditor from '@/app/components/admin/mdx-editor'
 import { type AdminMessages } from '@/lib/admin-i18n'
 
-/** 세 필드가 공유하는 패널 래퍼의 props. */
 type BilingualFieldShellProps = {
   t: AdminMessages
   fieldLabel: string
@@ -20,7 +15,6 @@ type BilingualFieldShellProps = {
   koContent: ReactNode
 }
 
-/** 폼 그리드 전체 폭을 차지하고, 두 언어 모두 필수인 `BilingualPanel`. */
 function BilingualFieldShell({
   t,
   fieldLabel,
@@ -45,12 +39,6 @@ function BilingualFieldShell({
   )
 }
 
-/**
- * 영어·한국어 한 줄 입력.
- *
- * @param enName/koName 폼 필드 이름(서버 파서가 읽는 키)
- * @param required 각 언어 `<input>`의 HTML required 여부
- */
 export function BilingualInputField({
   t,
   fieldLabel,
@@ -104,7 +92,6 @@ export function BilingualInputField({
   )
 }
 
-/** 영어·한국어 여러 줄 입력. props 의미는 `BilingualInputField`와 같다. */
 export function BilingualTextareaField({
   t,
   fieldLabel,
@@ -148,7 +135,6 @@ export function BilingualTextareaField({
   )
 }
 
-/** 영어·한국어 MDX 편집기. 본문(세션·프로젝트 설명)처럼 서식이 필요한 필드에 쓴다. */
 export function BilingualMdxField({
   t,
   fieldLabel,

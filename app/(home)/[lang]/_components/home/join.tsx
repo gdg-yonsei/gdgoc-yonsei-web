@@ -1,6 +1,3 @@
-/**
- * 홈의 참여 안내(join) 섹션(서버 컴포넌트).
- */
 import { Fragment } from 'react'
 import type { Locale } from '@/lib/i18n'
 import BracketPoster from '@/app/components/site/bracket-poster'
@@ -11,11 +8,7 @@ import { landingCopy } from '@/lib/contents/site-copy'
 import { CHANNELS } from '@/lib/site/channels'
 import { localeHref } from '@/lib/site/routes'
 
-/**
- * `<join>` 섹션(히어로와 짝을 이루는 마지막 장). 섹션이 스크롤되어 들어오면 괄호가 행동 유도 문구를
- * 감싸며 닫힌다(site-home.css 또는 join 장면). 움직임 줄이기에서는 처음부터 닫힌 채 있다. 제목 단어는
- * 장면의 마지막 튀어 오르기 연출을 위해 따로 감싼다.
- */
+/** 움직임 줄이기에서는 괄호가 처음부터 닫히며, 제목 단어 래퍼는 join 장면의 마지막 연출에 쓰인다. */
 export default function Join({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].join
 

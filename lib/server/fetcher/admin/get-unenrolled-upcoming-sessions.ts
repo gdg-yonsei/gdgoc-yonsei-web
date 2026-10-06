@@ -1,8 +1,4 @@
-/**
- * 내가 아직 신청하지 않은, 신청 가능한 다가오는 세션 조회(관리자 세션 화면의 "참여할 세션").
- *
- * 캐시하지 않는 관리자 조회다(사용자마다 결과가 다르다).
- */
+// 사용자마다 달라 신청 가능한 세션 조회는 공유 캐시하지 않는다.
 import 'server-only'
 
 import { db } from '@/db'
@@ -12,12 +8,7 @@ import { sessions } from '@/db/schema/sessions'
 import { parts } from '@/db/schema/parts'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 
-/**
- * 멤버 신청이 열려 있고(`internalOpen`) 아직 시작하지 않았으며, 사용자가 신청하지 않은 세션을
- * 시작 순으로 읽는다. 세션마다 현재 신청자 수(`participantCount`)를 함께 센다. 카드에 보이는
- * 열(두 언어 이름, 파트, 일시, 정원)만 고른다.
- * @param userId 로그인 사용자 id
- */
+// internalOpen인 미시작·미신청 세션을 시작순으로 읽고 신청자 수를 센다. 카드용 필드만 공개한다.
 export async function getUnenrolledUpcomingSessions(userId: string) {
   const participantsSub = db
     .select({

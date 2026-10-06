@@ -293,7 +293,7 @@ test.describe('home motion', () => {
         .evaluateAll((values) =>
           values.map((value) => value.firstChild?.textContent)
         )
-    const final = ['2,100', '6', '3', '1']
+    const final = ['3', '1']
 
     // The section arms within a screen of the viewport, the funnel still
     // below the fold: its figures will count on overlays.
@@ -301,7 +301,7 @@ test.describe('home motion', () => {
       const section = document.querySelector('[data-scene="programs"]')!
       scrollBy(0, section.getBoundingClientRect().top - innerHeight * 1.5)
     })
-    await expect(page.locator('.sc-funnel-count')).toHaveCount(4)
+    await expect(page.locator('.sc-funnel-count')).toHaveCount(2)
     await page.evaluate(() => {
       const card = document
         .querySelector('.sc-funnel')!
@@ -325,7 +325,7 @@ test.describe('home motion', () => {
           return open === '' ? 1 : parseFloat(open)
         })
       )
-    ).toEqual([1, 1, 1, 1])
+    ).toEqual(final.map(() => 1))
   })
 
   /** Brings a section within arming range, its content still below the fold. */
@@ -346,24 +346,24 @@ test.describe('home motion', () => {
     await motionReady(page)
     await armBelowFold(page, 'parts')
 
-    // When each module first shows past half opacity, as the grid arrives.
-    const shownAt = await page.evaluate(async () => {
+    // Compare opacity in the same frame; staggered threshold crossings can share a sampled frame.
+    const ripple = await page.evaluate(async () => {
       const modules = [...document.querySelectorAll('.part-module')]
-      const seen = modules.map(() => Infinity)
+      let centreLed = false
+      let completed = false
       const start = performance.now()
       const grid = document.querySelector('.part-grid')!
       scrollBy(0, grid.getBoundingClientRect().top - innerHeight * 0.3)
       await new Promise<void>((resolve) => {
         const tick = () => {
-          modules.forEach((module, index) => {
-            if (
-              seen[index] === Infinity &&
-              parseFloat(getComputedStyle(module).opacity) > 0.5
-            ) {
-              seen[index] = performance.now() - start
-            }
-          })
-          if (seen.every(Number.isFinite) || performance.now() - start > 4000) {
+          const opacity = modules.map((module) =>
+            parseFloat(getComputedStyle(module).opacity)
+          )
+          centreLed ||=
+            Math.min(opacity[1]!, opacity[4]!) >
+            Math.max(opacity[0]!, opacity[2]!, opacity[3]!, opacity[5]!) + 0.001
+          completed = opacity.every((value) => value >= 0.999)
+          if (completed || performance.now() - start > 4000) {
             resolve()
           } else {
             requestAnimationFrame(tick)
@@ -371,12 +371,11 @@ test.describe('home motion', () => {
         }
         requestAnimationFrame(tick)
       })
-      return seen
+      return { centreLed, completed }
     })
 
-    // Three columns here: the middle one (1 and 4) leads the four corners.
-    const [a, b, c, d, e, f] = shownAt
-    expect(Math.max(b!, e!)).toBeLessThan(Math.min(a!, c!, d!, f!))
+    expect(ripple.centreLed).toBe(true)
+    expect(ripple.completed).toBe(true)
   })
 
   test('follows a fine pointer across a part module with a spotlight', async ({
@@ -562,10 +561,7 @@ test.describe('home motion', () => {
   test('re-measures its scroll lines on a resize without re-rendering a scene', async ({
     page,
   }) => {
-    // anime.js re-measures every scroll observer after the page changes
-    // size (a section rendering as it nears, streamed rows arriving). That
-    // must stay a read: re-rendering scenes to measure forced a style
-    // recalculation per observer, long frames in the middle of a scroll.
+    // Resizes must re-measure without re-rendering scenes; writes force costly style recalculation per observer.
     await page.setViewportSize({ width: 1366, height: 768 })
     await page.goto('/en', { waitUntil: 'load' })
     await motionReady(page)
@@ -580,6 +576,25 @@ test.describe('home motion', () => {
       scrollBy(0, box.top + box.height / 2 - innerHeight / 2)
     })
     await page.waitForTimeout(2_500)
+
+    // Existing scroll scrubs must settle before the resize's writes are measured.
+    let previousStyles: string | undefined
+    let stableSamples = 0
+    await expect
+      .poll(
+        async () => {
+          const styles = await page
+            .locator('main [style]')
+            .evaluateAll((elements) =>
+              elements.map((element) => element.getAttribute('style')).join('|')
+            )
+          stableSamples = styles === previousStyles ? stableSamples + 1 : 0
+          previousStyles = styles
+          return stableSamples
+        },
+        { timeout: 10_000, intervals: [250] }
+      )
+      .toBeGreaterThanOrEqual(3)
 
     const rewritten = await page.evaluate(async () => {
       const styled = new Set<string>()
@@ -655,9 +670,7 @@ test.describe('home motion', () => {
       .toBe(true)
   })
 
-  /** Whether the dot at (column, row) of the join field has swelled: it
-      then paints 3.5px out from its centre, where a 2px dot at rest does
-      not. Negative indices count from the far end. */
+  /** Swollen dots reach 3.5px from center; resting dots stop at 2px. Negative indices count from the end. */
   const swollen = (page: Page, column: number, row: number) =>
     page.locator('.join-field').evaluate(
       (field: HTMLCanvasElement, { column, row }) => {

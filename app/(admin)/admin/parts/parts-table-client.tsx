@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 파트 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
- */
 import { useState } from 'react'
 import type { AdminColumn } from '@/app/components/admin/data-table'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
@@ -34,10 +31,7 @@ function compareParts(
   return left.displayOrder - right.displayOrder || left.id - right.id
 }
 
-/**
- * 파트 목록 표(검색·정렬·CSV 내보내기, 전체 기수 범위에서는 기수별로 묶음).
- * 기본 정렬은 공개 사이트 노출 순서(`displayOrder`)다.
- */
+/** 기본 정렬은 공개 사이트 노출 순서 displayOrder다. */
 export default function PartsTableClient({
   partsData,
   scope,
@@ -79,7 +73,7 @@ export default function PartsTableClient({
       key: 'description',
       header: t.description,
       width: 'minmax(0,2.5fr)',
-      render: (part) => part.description ?? '—',
+      render: (part) => part.description ?? t.notProvided,
     },
     {
       key: 'members',

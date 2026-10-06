@@ -1,6 +1,3 @@
-/**
- * MCP용 OAuth 2.1 인가 서버 테이블(클라이언트, 토큰, 동의, 서명 키).
- */
 import {
   boolean,
   index,
@@ -13,21 +10,14 @@ import {
 import { authSessions } from '@/db/schema/auth-sessions'
 import { users } from '@/db/schema/users'
 
-/**
- * GYMS MCP 인가 서버 테이블.
- *
- * `@better-auth/mcp`(oauth-provider), `jwt()`, `@better-auth/cimd` 1.7.6 이 요구하는
- * 모델을 `getAuthTables()` 출력에서 옮겼다. 필드 이름은 Better Auth 모델 필드와 같아야
- * 하고, pg 에서는 `string[]` 을 네이티브 배열, `json` 을 jsonb 로 저장한다.
- * 사용자 삭제 시 발급 토큰·동의 기록도 함께 지운다.
- */
+// 필드 이름은 Better Auth getAuthTables() 모델과 같아야 한다. string[]은 PG 배열, json은 jsonb다.
+// 사용자 삭제 시 발급 토큰·동의 기록도 함께 지운다.
 
 const id = () =>
   text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID())
 
-/** 액세스 토큰(JWT) 서명 키. */
 export const jwks = pgTable('jwks', {
   id: id(),
   publicKey: text('publicKey').notNull(),
@@ -107,7 +97,6 @@ export const oauthResource = pgTable('oauth_resource', {
   metadata: jsonb('metadata'),
 })
 
-/** 클라이언트와 리소스의 연결. */
 export const oauthClientResource = pgTable(
   'oauth_client_resource',
   {
@@ -168,7 +157,6 @@ export const oauthRefreshToken = pgTable(
   ]
 )
 
-/** 발급된 액세스 토큰 기록. */
 export const oauthAccessToken = pgTable(
   'oauth_access_token',
   {

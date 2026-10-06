@@ -1,12 +1,5 @@
-/**
- * 히어로 배경의 WebGL2 망점(halftone) 필드(클라이언트 전용, 별도 청크).
- *
- * `bracket-stage.tsx`가 브라우저 유휴 시간에 동적 import한다. GPU가 없거나 느리면 스스로 물러나
- * 서버가 그린 SVG 포스터가 남는다. 괄호 모양 계산은 `lib/site/bracket-geometry.ts`와 공유한다.
- *
- * 셰이더 소스(GLSL 문자열) 안의 주석은 영어로 둔다. 일부 GPU 드라이버는 ASCII가 아닌 셰이더
- * 소스를 컴파일하지 못한다.
- */
+/** 유휴 시간에 불러오며, GPU 미지원·저성능에서는 서버 포스터로 돌아간다. 괄호 기하는 `bracket-geometry`와 공유한다.
+ * 일부 GPU 드라이버가 비ASCII 셰이더를 거부하므로 GLSL 문자열의 주석은 영어로 둔다. */
 import {
   capsulesFromBracketRects,
   partingOffset,
@@ -59,10 +52,7 @@ export type Ripple = { x: number; y: number; age: number }
 /** 충격파가 무대를 가로질러 사라지는 데 걸리는 시간(초). */
 export const RIPPLE_LIFE = 1.6
 
-/**
- * 가장 최근 물결 세 개를 기기 픽셀 단위로 `into`에 쓴다. 남는 자리는 0으로 두며, 셰이더는 이를
- * "물결 없음"으로 읽는다.
- */
+/** 최근 물결 세 개를 기기 픽셀로 쓰고, 빈 자리는 셰이더가 "물결 없음"으로 읽는 0을 채운다. */
 export function packRipples(
   ripples: readonly Ripple[],
   dpr: number,
@@ -91,10 +81,7 @@ const VERTEX_SHADER = `#version 300 es
 in vec2 a_position;
 void main() { gl_Position = vec4(a_position, 0.0, 1.0); }`
 
-/*
- * 망점: 칸마다 점 하나를 그리며, 반지름은 캡슐 부호 거리장(SDF), 느린 값 노이즈, 포인터 렌즈,
- * 등장 스윕으로 정한다. 결과는 premultiplied alpha라 CSS 무대 배경색이 비쳐 보인다.
- */
+/* 점의 반지름은 캡슐 SDF·노이즈·포인터·등장 스윕으로 정한다. premultiplied alpha로 CSS 배경이 비친다. */
 const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 uniform vec2 u_resolution;
@@ -182,7 +169,6 @@ void main() {
   outColor = vec4(color * a, a);
 }`
 
-/** 한 프레임을 그리는 데 필요한 값(시간, 등장 진행도, 포인터, 캡슐, 칸 크기, 렌즈, 물결). */
 export type FieldFrame = {
   time: number
   reveal: number
@@ -196,7 +182,6 @@ export type FieldFrame = {
 /** 셰이더 준비 상태. 비동기 컴파일 중이면 `pending`. */
 export type FieldStatus = 'pending' | 'ready' | 'failed'
 
-/** WebGL 필드 핸들. */
 export type BracketField = {
   status(): FieldStatus
   resize(width: number, height: number, dpr: number): void
@@ -221,10 +206,7 @@ type Uniforms = Record<
 
 const SOFTWARE_RENDERER = /swiftshader|llvmpipe|softpipe|software|basic render/i
 
-/**
- * 일부 브라우저는 성능 경고 없이 소프트웨어 GL을 내준다. 실제 렌더러 이름을 숨기는 브라우저도
- * 일반 렌더러 이름에는 소프트웨어 래스터라이저 이름을 남긴다.
- */
+/** 성능 경고 없이 소프트웨어 GL을 내주는 브라우저도 있어, 일반·비마스킹 렌더러 이름을 함께 확인한다. */
 function isSoftwareRenderer(gl: WebGL2RenderingContext) {
   const info = gl.getExtension('WEBGL_debug_renderer_info')
   // getParameter는 any를 돌려준다. 렌더러 이름은 문자열(또는 막힌 경우 null)이다.
@@ -243,11 +225,7 @@ function allowSoftwareRendering() {
   )
 }
 
-/**
- * 캔버스에 WebGL2 필드를 만든다. WebGL2가 없거나 소프트웨어 렌더러면 null(포스터를 유지).
- *
- * @param canvas 그릴 캔버스
- */
+/** WebGL2 미지원·소프트웨어 렌더러는 null을 반환해 서버 포스터를 유지한다. */
 export function createBracketField(
   canvas: HTMLCanvasElement
 ): BracketField | null {
@@ -258,8 +236,8 @@ export function createBracketField(
     stencil: false,
     premultipliedAlpha: true,
     powerPreference: 'low-power',
-    // 소프트웨어 래스터라이저(SwiftShader, llvmpipe)는 셰이더를 CPU에서 돌려 메인 스레드를 막는다.
-    // 이런 방문자에게는 SVG 포스터를 그대로 보여 준다.
+    // 소프트웨어 GL은 셰이더로 메인 스레드를 막을 수 있어 서버 포스터를 유지한다.
+
     failIfMajorPerformanceCaveat: !allowSoftwareRendering(),
   })
   if (!gl) return null
@@ -377,8 +355,8 @@ export function createBracketField(
       gl.deleteProgram(program)
       gl.deleteShader(vertex)
       gl.deleteShader(fragment)
-      // 화면 전체 크기의 그리기 버퍼를 반납한다. 컨텍스트 자체는 유지한다. <Activity>로 숨겨진 라우트는
-      // 이 캔버스를 남겨 두었다가 다시 보일 때 필드를 다시 붙이는데, 잃어버린 컨텍스트는 돌아오지 않는다.
+      // 그리기 버퍼는 반납하되, Activity가 캔버스를 재사용하므로 컨텍스트는 유지한다.
+
       canvas.width = 1
       canvas.height = 1
     },
@@ -387,11 +365,7 @@ export function createBracketField(
 
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3
 
-/**
- * 필드를 히어로에 연결한다: 크기 조절, 괄호 기준점, 포인터 렌즈와 시차, 탭 충격파, 스크롤로 벌어지기,
- * 화면 표시 여부, GPU 컨텍스트 손실 처리.
- * @returns SVG 포스터로 되돌리는 정리 함수
- */
+/** 반환하는 정리 함수는 필드를 떼고 서버 포스터로 되돌린다. */
 export function mountBracketField(
   canvas: HTMLCanvasElement,
   hero: HTMLElement,
@@ -403,14 +377,14 @@ export function mountBracketField(
   const right = hero.querySelector<HTMLElement>('[data-bracket="right"]')
   const created = left && right ? create(canvas) : null
   if (!created || !left || !right) return () => {}
-  // 아래로 끌어올려진 정리 함수가 null이 아닌 필드를 보도록 다시 묶는다.
+
   const field: BracketField = created
 
   const coarse = window.matchMedia?.('(pointer: coarse)').matches ?? false
   // 개발용 소프트웨어 검토 모드에서는 아무리 느려도 필드를 유지한다.
   const reviewing = allowSoftwareRendering()
   const dprCap = coarse ? 1.5 : 2
-  // 히어로 크기에서 눈이 여전히 망점으로 읽는 가장 촘촘한 점 간격.
+
   const cellFor = (radius: number) => Math.min(11, Math.max(5, radius / 4))
   const lens = coarse ? 150 : 190
   const pointer = { x: 0, y: 0, strength: 0, target: 0 }
@@ -489,7 +463,6 @@ export function mountBracketField(
       pointer.strength += (pointer.target - pointer.strength) * 0.1
     }
 
-    // 괄호가 포인터 쪽으로 살짝 기울고, 포인터가 떠나면 천천히 돌아온다.
     const lean = parallaxTarget(pointer, width, hero.offsetHeight)
     parallax.x += (lean.x * pointer.strength - parallax.x) * 0.08
     parallax.y += (lean.y * pointer.strength - parallax.y) * 0.08

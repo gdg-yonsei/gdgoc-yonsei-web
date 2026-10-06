@@ -1,9 +1,4 @@
-/**
- * 즉시 이동(instant navigation) 검증(`pnpm perf:instant`).
- *
- * `@next/playwright`의 `instant()`로 서버 응답 없이 prefetch된 셸만으로 허브 → 기수 → 상세 이동 시
- * 제목·스켈레톤이 바로 보이는지 확인한다. Cache Components의 정적 셸이 깨지면 실패한다.
- */
+// 서버 응답 없이 프리페치 셸만으로 허브·기수·상세 제목과 스켈레톤이 보이는지 instant로 확인한다.
 import { chromium } from '@playwright/test'
 import { instant } from '@next/playwright'
 import { firstGenerationWithDetail } from './lib/public-route-discovery.mjs'

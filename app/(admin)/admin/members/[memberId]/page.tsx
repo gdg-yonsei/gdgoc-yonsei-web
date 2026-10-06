@@ -1,9 +1,4 @@
-/**
- * 멤버 상세 화면(`/admin/members/{id}`).
- *
- * 연락처(이메일·학번·전화)는 같은 기수 멤버·본인·LEAD에게만 보이고 그 외에는 "—"로 가린다.
- * 수정 버튼은 수정 화면과 같은 판단(`authorizeMemberEdit`)으로 보인다.
- */
+/** 연락처는 같은 기수·본인·LEAD에게만 공개하며, 수정 버튼은 authorizeMemberEdit으로 판단한다. */
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { formatUserName } from '@/lib/format/user-name'
@@ -25,7 +20,7 @@ import { authorizeMemberEdit } from '@/lib/server/services/admin/members'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
 import { Metadata } from 'next'
 
-/** 탭 제목에 멤버 이름을 넣는다. 멤버가 없으면 404(조회는 page와 React cache로 공유된다). */
+/** 멤버가 없으면 404이며, 메타데이터와 본문 조회는 React cache로 공유한다. */
 export async function generateMetadata({
   params,
 }: PageProps<'/admin/members/[memberId]'>): Promise<Metadata> {
@@ -41,11 +36,7 @@ export async function generateMetadata({
   }
 }
 
-/**
- * 멤버 프로필 상세.
- *
- * 여러 기수에 속한 멤버는 현재 선택한 기수의 소속(파트)을 보여 준다.
- */
+/** 여러 기수에 속한 멤버는 현재 선택한 기수의 소속을 표시한다. */
 export default async function MemberPage({
   params,
 }: PageProps<'/admin/members/[memberId]'>) {
@@ -66,13 +57,13 @@ export default async function MemberPage({
   if (!memberData) {
     notFound()
   }
-  // 연락처(이메일·학번·전화)는 같은 기수·본인·LEAD 에게만 보인다.
+
   const actor = await getWebActor()
   const showContact = actor
     ? await sharesGenerationWith(actor, memberId)
     : false
-  const hidden = '—'
-  // 수정 화면과 같은 판단(대상 역할·기수)으로 수정 버튼을 보인다.
+  const hidden = t.privateValue
+
   const canEdit = actor
     ? (await authorizeMemberEdit(actor, memberId)).ok
     : false

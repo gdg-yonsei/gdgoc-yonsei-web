@@ -1,9 +1,4 @@
-/**
- * 소셜 미리보기 이미지 렌더러(Satori로 SVG를 만들고 sharp로 JPEG 변환).
- *
- * sharp·satori가 무거워 `social-image-routes.ts`가 이미지 요청 때만 동적으로 불러온다.
- * 결과는 `'use cache'`로 캐시하고, 원본이 바뀌면 `version`이 달라져 새로 그린다.
- */
+// sharp·satori는 이미지 요청 시에만 불러온다. 원본 버전으로 캐시 키를 바꾼다.
 import 'server-only'
 
 import { readFile } from 'node:fs/promises'
@@ -41,10 +36,7 @@ const SOCIAL_IMAGE_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 const FALLBACK_SOCIAL_IMAGE_CACHE_CONTROL =
   'public, max-age=300, stale-while-revalidate=3600'
 
-/**
- * 제목용 한글 글꼴. Satori는 woff2를 읽지 못해 `pretendard` 배포본의 woff 서브셋을 저장소에 옮겨 두었다
- * (`lib/seo/fonts/LICENSE.txt`). 웹 페이지용 글꼴은 `public/fonts/pretendard`의 woff2를 쓴다.
- */
+// Satori가 woff2를 읽지 못해 Pretendard woff 서브셋을 보관한다(라이선스: lib/seo/fonts/LICENSE.txt).
 async function loadPretendardBold(): Promise<ArrayBuffer> {
   const font = await readFile(
     resolve(process.cwd(), 'lib/seo/fonts/Pretendard-Bold.subset.woff')
@@ -156,9 +148,7 @@ async function fetchRemoteImage(source: string): Promise<string | null> {
     return toDataUrl(transformedImage.bytes, transformedImage.contentType)
   }
 
-  // 사용자 도메인·R2 설정에 따라 Cloudflare Image Resizing이 꺼져 있을 수 있다. 그때는
-  // 허용 목록에 있는 원본에서만 받아 로컬에서 줄인 뒤 넣는다. 수 MB 원본이 Satori SVG를
-  // 부풀리지 않게 하기 위해서다.
+  // Image Resizing을 쓸 수 없으면 허용 목록 원본만 받아 로컬에서 축소해 Satori SVG 크기를 제한한다.
   if (transformedUrl.href === sourceUrl.href) {
     return null
   }
@@ -210,13 +200,11 @@ const ON_STAGE_MUTED = '#b4b4b4'
 
 const SIDES = ['left', 'right'] as const
 
-/** GDG 괄호 두 개를 괄호 폭의 `gap`배 간격으로 나란히 그린다. */
 function bracketsViewBox(gap: number) {
   const width = BRACKET_VIEWBOX.width * (2 + gap)
   return { width, height: BRACKET_VIEWBOX.height }
 }
 
-/** 칩에 들어가는 꽉 찬 `< >` 마크. */
 function BracketsMark({ height }: { height: number }) {
   const box = bracketsViewBox(0.18)
   return (
@@ -243,7 +231,6 @@ function BracketsMark({ height }: { height: number }) {
   )
 }
 
-/** 사진이 없는 카드: 히어로와 같은 하프톤 괄호 그림. */
 function HalftoneBrackets() {
   const box = bracketsViewBox(0.22)
   const width = 760
@@ -291,11 +278,8 @@ function HalftoneBrackets() {
   )
 }
 
-/*
- * 파일 시스템이나 네트워크에 닿는 작업은 모두 이 캐시 범위 안에서 실행한다. Cache Components
- * 아래에서 이미지 라우트가 캐시되지 않은 IO를 기다리면 "used IO that was not cached"(500)로
- * 실패하기 때문이다. JPEG는 내용으로 캐시되며, 원본 행이 바뀌면 `version`이 바뀐다.
- */
+// Cache Components 이미지 라우트의 비캐시 IO는 500을 내므로 파일·네트워크 작업을 이 캐시에 둔다.
+// JPEG 내용 캐시의 version은 원본 행이 바뀔 때 갱신된다.
 async function renderSocialImageJpeg(
   content: SocialImageContent
 ): Promise<Uint8Array> {
@@ -309,9 +293,7 @@ async function renderSocialImageJpeg(
   ])
   const title = layoutSocialTitle(content.title, content.locale)
 
-  // Satori는 처음 import될 때 레이아웃 엔진을 불러온다. 여기서 import해야 그 작업이 이
-  // 캐시 범위 안에 들어간다. 미리 렌더링하는 라우트에서 import하면 끝나지 않는 비캐시 IO가
-  // 되어 이미지 요청이 500으로 실패한다.
+  // Satori 초기 import의 레이아웃 엔진 IO도 캐시 안에서 실행해야 이미지 요청의 500을 피한다.
   const { default: satori } = await import('satori')
   const svg = await satori(
     <div
@@ -461,10 +443,7 @@ async function renderSocialImageJpeg(
   return new Uint8Array(jpeg)
 }
 
-/**
- * 소셜 카드 JPEG 응답을 만든다. 실제 내용이면 1년 동안 캐시하고(내용이 바뀌면 버전이 바뀌어
- * 이미지 주소도 바뀐다), 기본 카드면 데이터가 생길 수 있으니 짧게 캐시한다.
- */
+// 실제 콘텐츠는 버전 URL로 1년 캐시한다. 기본 카드는 새 데이터가 생길 수 있어 짧게 캐시한다.
 export async function createSocialImageResponse(
   content: SocialImageContent
 ): Promise<Response> {

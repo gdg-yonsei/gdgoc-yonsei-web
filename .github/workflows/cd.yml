@@ -1,14 +1,7 @@
 name: CD
 
-# main → full CI → Dokploy deploy → smoke test against production.
-#
-# Requires, in the `production` environment:
-#   secrets  DOKPLOY_API_KEY          Dokploy → Settings → Profile → API keys
-#   vars     DOKPLOY_URL              e.g. https://dokploy.example.com
-#            DOKPLOY_APPLICATION_ID   FYUWCshUbgtzPlWbQ3cIs
-# and "Auto Deploy" turned off for the app in Dokploy, so a push no longer
-# deploys before CI has passed. Until DOKPLOY_API_KEY is set the deploy step
-# is skipped with a notice and the smoke test checks whatever is live.
+# Production needs DOKPLOY_API_KEY, DOKPLOY_URL and DOKPLOY_APPLICATION_ID; disable Dokploy Auto Deploy so CI gates rollout.
+# Missing API key skips deployment, and the smoke test checks the current live app.
 on:
   push:
     branches: [main]

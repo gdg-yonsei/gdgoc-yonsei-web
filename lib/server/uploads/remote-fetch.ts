@@ -1,22 +1,13 @@
-/**
- * 외부 URL 이미지 가져오기(SSRF 방어).
- *
- * MCP `import_image_from_url` 도구가 쓴다. 서버가 임의의 URL에 접속하므로 내부망 공격(SSRF)을
- * 막기 위해 다음을 지킨다.
- * - DNS 조회 결과가 사설·루프백·링크 로컬 등 막힌 대역이면 연결하지 않는다(리다이렉트마다 다시 확인)
- * - 응답 크기와 전송 시간을 제한한다
- */
+// 리다이렉트마다 DNS가 사설·루프백·링크 로컬 등 차단 대역인지 검사하며 크기·전송 시간을 제한한다.
 import 'server-only'
 
 import { lookup as dnsLookup } from 'node:dns'
 import { BlockList, isIP } from 'node:net'
 import { Agent, fetch as undiciFetch } from 'undici'
 
-/** 외부 이미지 가져오기 실패 종류. */
 export type UploadErrorCode =
   'BLOCKED_URL' | 'TOO_LARGE' | 'NOT_IMAGE' | 'FETCH_FAILED'
 
-/** 가져오기 실패. `code`로 원인을 구분해 사용자에게 알맞은 메시지를 보여 준다. */
 export class UploadError extends Error {
   constructor(
     readonly code: UploadErrorCode,
@@ -81,10 +72,7 @@ const defaultLookup: LookupFn = (hostname) =>
     )
   )
 
-/**
- * 연결 시점에도 같은 검사를 하는 dispatcher. 검사 뒤 DNS 가 바뀌어
- * 내부 주소로 붙는 DNS rebinding 을 막는다.
- */
+// 연결 시에도 IP를 검사해 검증 후 DNS가 바뀌는 rebinding으로 내부망에 연결하지 않게 한다.
 const HEADERS_TIMEOUT_MS = 30_000
 /** 200MB 를 느린 원본에서 받는 데 필요한 전체 전송 한도. */
 const TRANSFER_TIMEOUT_MS = 10 * 60 * 1000
@@ -126,13 +114,8 @@ const defaultFetch = ((url: URL, init: RequestInit) =>
     dispatcher: pinnedDispatcher,
   })) as unknown as typeof fetch
 
-/**
- * 공개 HTTPS URL 의 이미지를 스트림으로 연다(SSRF 방어).
- * - https 만, 자격 증명이 든 URL 거절
- * - 매 홉마다 DNS 해석 결과가 공인 주소인지 확인, 리다이렉트는 maxRedirects 회까지
- * - image/* 가 아니거나 선언된 크기가 한도를 넘으면 거절
- * 실제 크기 한도는 스트림을 읽는 쪽(r2-upload)에서 다시 강제한다.
- */
+// 자격 증명 없는 HTTPS만 허용하고 매 홉 공인 DNS·maxRedirects·image/*·선언 크기를 검사한다.
+// 실제 크기 한도는 R2 업로드에서 스트림을 읽으며 다시 강제한다.
 export async function fetchPublicImage(
   rawUrl: string,
   opts: {

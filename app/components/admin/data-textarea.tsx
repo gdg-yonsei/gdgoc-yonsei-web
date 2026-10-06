@@ -1,17 +1,8 @@
 'use client'
 
-/**
- * 관리자 폼의 여러 줄 입력 필드.
- */
 import { useId } from 'react'
 
-/**
- * 라벨이 붙은 `<textarea>`. 라벨 문구로 `placeholder`를 함께 쓴다.
- *
- * @param defaultValue 초깃값
- * @param name 폼 필드 이름
- * @param placeholder 라벨 겸 입력 안내 문구
- */
+/** placeholder를 입력 안내와 라벨로 함께 쓴다. */
 export default function DataTextarea({
   defaultValue,
   name,

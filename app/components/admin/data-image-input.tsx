@@ -1,11 +1,6 @@
 'use client'
 
-/**
- * 단일 이미지 업로드 입력(클라이언트 컴포넌트).
- *
- * 파일을 고르면 presigned URL로 R2에 바로 올리고(`lib/upload-image.ts`), 받은 공개 URL을
- * 숨은 필드에 넣어 폼과 함께 제출한다. 업로드 중에는 전역 atom으로 제출 버튼을 막는다.
- */
+/** 선택 즉시 presigned URL로 R2에 올리고, 공개 URL을 숨은 필드에 넣는다. 업로드 중에는 전역 제출 상태를 잠근다. */
 import { ReactNode, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useAtom } from 'jotai'
@@ -14,14 +9,6 @@ import { uploadSingleImage } from '@/lib/upload-image'
 import { readImagePreview } from '@/lib/read-image-preview'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
-/**
- * 이미지 한 장을 업로드하고, 공개 URL을 숨은 필드에 실어 폼과 함께 전송한다.
- *
- * @param name 폼 필드 이름
- * @param baseUrl 업로드 API 경로(리소스별 `/api/admin/.../upload` 등)
- * @param defaultValue 기존 이미지 URL(수정 화면)
- * @param children 업로드 버튼 문구
- */
 export default function DataImageInput({
   children,
   name,
@@ -43,9 +30,6 @@ export default function DataImageInput({
   const [hasFailed, setHasFailed] = useState(false)
   const { t } = useAdminI18n()
 
-  /**
-   * 선택한 이미지 파일을 업로드하고 공개 URL 을 폼 값으로 반영하는 함수
-   */
   const uploadSelectedImage = async () => {
     const fileData = inputRef.current?.files?.[0]
     if (!fileData) return
@@ -61,7 +45,7 @@ export default function DataImageInput({
     } catch (error) {
       console.error(error)
       // 업로드에 실패했으면 이전 값을 유지한다.
-      // 깨진 URL 이 폼에 실려 그대로 저장되는 것을 막는 지점이다.
+
       setPreviewImageUrl(previousImageUrl)
       setHasFailed(true)
     } finally {
@@ -79,7 +63,7 @@ export default function DataImageInput({
         accept={'image/*'}
         hidden={true}
         ref={inputRef}
-        // 업로드 오류는 uploadSelectedImage 안에서 처리한다.
+
         onChange={() => void uploadSelectedImage()}
       />
       <input
@@ -104,6 +88,7 @@ export default function DataImageInput({
         onClick={() => inputRef.current?.click()}
         className={'admin-btn-primary w-fit'}
         disabled={isLoading}
+        aria-busy={isLoading}
       >
         {isLoading ? t('uploading') : children}
       </button>

@@ -222,7 +222,7 @@ describe('validation schemas', () => {
       }).success
     ).toBe(false)
 
-    // 참가자 목록은 비울 수 있다 — 편집에서 전원 제거를 허용한다.
+    // 편집에서 전원 제거를 허용하므로 참가자 목록은 비울 수 있다.
     expect(
       sessionValidation.safeParse({
         ...validSession,

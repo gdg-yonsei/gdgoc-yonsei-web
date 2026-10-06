@@ -2,11 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-/**
- * Client components ship to every visitor. The public chrome must not pull
- * tailwind-merge (via `cn`, ~9 KB gz) or a whole bilingual copy dictionary
- * into the browser; server parents pass the few strings they need as props.
- */
+/** Server parents pass only needed strings: public chrome must exclude whole dictionaries and tailwind-merge(cn, ~9 KB gzip). */
 const ROOTS = [
   'app/components/site',
   'app/components/header',
@@ -20,7 +16,6 @@ const FORBIDDEN = [
   'lib/contents/calendar-copy.ts',
 ]
 
-/** Path comparisons below use forward slashes; normalize Windows separators. */
 function toPosix(path: string): string {
   return path.split(sep).join('/')
 }
@@ -50,8 +45,7 @@ function resolveImport(from: string, specifier: string): string | null {
   return null
 }
 
-/** Value imports, side-effect imports, re-exports and lazy import()s (their
-    chunks ship to the browser too) that resolve inside the repo. */
+/** Follow value imports, side effects, re-exports and lazy imports; all can ship browser chunks. */
 function dependencies(path: string): string[] {
   const source = readFileSync(path, 'utf8')
   return [
@@ -64,7 +58,6 @@ function dependencies(path: string): string[] {
     .filter((resolved): resolved is string => resolved !== null)
 }
 
-/** Every module a 'use client' file under ROOTS reaches by value. */
 function clientGraph(): Set<string> {
   const queue = ROOTS.flatMap(files).filter(
     (path) =>

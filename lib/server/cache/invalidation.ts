@@ -1,16 +1,5 @@
-/**
- * 관리자 데이터 변경 후 공개 사이트 캐시를 무효화하는 함수 모음.
- *
- * 변경 종류마다 어떤 캐시를 지울지 이 파일 한 곳에서 정한다. 서비스 계층
- * (`lib/server/services/admin/*`)이 DB 쓰기 직후 호출한다.
- *
- * 두 단계로 나눠 무효화한다.
- * - 즉시(immediate) 태그: 방금 바꾼 데이터를 보여 주는 화면. `updateCacheTags`로 바로
- *   지워 관리자가 저장 직후 공개 페이지에서 변경을 볼 수 있게 한다(read-your-own-writes).
- * - 백그라운드(background) 태그: 간접적으로 영향을 받는 화면(홈, 사이트맵 등).
- *   `revalidateCacheTags`로 다음 방문 때 새로 계산하게 한다.
- * 경로 무효화(`revalidatePath`)는 언어별 공개 경로를 보조로 지울 때만 쓴다.
- */
+// 변경 화면은 즉시 태그 만료로 저장값을 보이고, 홈·사이트맵 등 간접 영향 화면은 백그라운드 갱신한다.
+// 경로 무효화는 언어별 공개 경로의 보조 수단이다.
 import 'server-only'
 
 import { revalidatePath } from 'next/cache'
@@ -43,7 +32,6 @@ import {
 } from '@/lib/server/cache/utils'
 import { generationPath, projectPath, sessionPath } from '@/lib/site/routes'
 
-/** 기수 이름별 기수 아카이브 경로(구성원·프로젝트·세션). */
 function generationScopedPaths(
   generationNames: readonly string[]
 ): LocalizedPublicRoute[] {
@@ -54,14 +42,8 @@ function generationScopedPaths(
   ])
 }
 
-/**
- * 공개 사이트 캐시를 모두 지운다(관리자 사이드바의 새로고침 버튼).
- *
- * - 목록(홈, 허브, 기수 목록, 사이트맵)은 즉시 지워 다음 요청이 새로 계산한다.
- * - 세션·프로젝트 상세는 공용 태그(`*:items:*`)로 한 번에 오래된 것으로 표시한다(`'max'`). id를 읽지
- *   않아도 되고, 상세 페이지 수백 개를 한꺼번에 다시 만들지 않는다. 다음 방문은 이전 내용을 받으면서
- *   백그라운드에서 새로 만들고, 그다음 방문부터 새 내용이 보인다.
- */
+// 전체 새로고침은 목록을 즉시 만료하고 상세는 공용 태그로 stale 처리해 재생성 폭주를 피한다.
+// 상세의 다음 방문은 기존 내용을 받고 백그라운드 갱신하며 그다음부터 새 내용을 본다.
 export function invalidateAllPublicCache() {
   const immediateTags = uniqueStrings(
     i18n.locales.flatMap((locale) => [

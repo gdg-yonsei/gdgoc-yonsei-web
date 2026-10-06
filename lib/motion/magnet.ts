@@ -1,16 +1,7 @@
-/**
- * 버튼이 포인터 쪽으로 살짝 끌려가는 자석 효과 계산.
- *
- * 홈 화면 연출(anime.js 장면, CSS 전환)이 쓰는 순수 계산 함수. DOM 없이 단위 테스트한다.
- */
-
 type Point = { x: number; y: number }
 type Box = { left: number; top: number; width: number; height: number }
 
-/**
- * 요소가 포인터 쪽으로 기우는 거리. 중심에서 포인터까지 거리의 일부만큼 움직이되 최댓값이
- * 있고, 포인터가 요소 반 크기의 `reach`배 안에 있을 때만 움직인다.
- */
+// 포인터가 요소 반 크기의 reach배 안에 있을 때만 중심 거리 일부만큼 움직이며 최댓값을 제한한다.
 export function magnetOffset(
   pointer: Point,
   box: Box,

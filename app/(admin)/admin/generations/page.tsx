@@ -1,6 +1,3 @@
-/**
- * 기수 목록 화면(`/admin/generations`). 생성 권한이 있으면 "만들기" 버튼을 보인다.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
@@ -17,12 +14,10 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Generations',
 }
 
-/** 기수 목록. 표는 Suspense로 스트리밍하고 그동안 스켈레톤을 보여 준다. */
 export default async function GenerationsPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

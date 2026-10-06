@@ -1,6 +1,3 @@
-/**
- * 사용자-프로젝트 참가 테이블(`users_to_projects`, 다대다).
- */
 import { users } from '@/db/schema/users'
 import { projects } from '@/db/schema/projects'
 import { pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core'
@@ -25,7 +22,6 @@ export const usersToProjects = pgTable(
   })
 )
 
-/** 참가 행에서 프로젝트·사용자로 가는 관계. */
 export const usersToProjectsRelations = relations(
   usersToProjects,
   ({ one }) => ({

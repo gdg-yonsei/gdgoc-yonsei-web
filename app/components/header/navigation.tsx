@@ -1,11 +1,6 @@
 'use client'
 
-/**
- * 공개 사이트 헤더 내비게이션(클라이언트 컴포넌트): 데스크톱 링크, 언어 전환, 모바일 메뉴.
- *
- * 링크와 문구는 서버 헤더가 props로 넘긴다. 그래서 이 모듈은 이중 언어 사전이나
- * tailwind-merge를 클라이언트 번들에 넣지 않는다.
- */
+/** 서버 헤더가 필요한 링크·문구만 props로 넘겨, 이중 언어 사전과 tailwind-merge가 브라우저 번들에 실리지 않게 한다. */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useRef, useState, type CSSProperties } from 'react'
@@ -18,14 +13,12 @@ import type {
   HeaderNavigationLink,
 } from './navigation-links'
 
-/** 서버 헤더가 넘기는 언어, 링크, 문구. */
 type NavigationProps = {
   lang: Locale
   links: HeaderNavigationLink[]
   copy: HeaderNavigationCopy
 }
 
-/** 현재 경로가 링크 경로이거나 그 하위 경로인지(`aria-current` 표시용). */
 function isCurrentPath(pathname: string | null, href: string) {
   if (!pathname) return false
   return pathname === href || pathname.startsWith(`${href}/`)
@@ -59,10 +52,7 @@ function DesktopNavigation({
   )
 }
 
-/**
- * 모바일 전체 화면 메뉴. 네이티브 `<dialog>`의 `showModal()`을 써서 포커스 가두기와
- * ESC 닫기를 브라우저에 맡긴다.
- */
+/** 네이티브 dialog.showModal로 포커스 가두기와 Escape 닫기를 브라우저에 맡긴다. */
 function MobileMenu({
   lang,
   links,
@@ -163,10 +153,7 @@ function MobileMenu({
   )
 }
 
-/**
- * 경로를 읽기 전(Suspense 대체 UI)에 보여 줄 내비게이션. 모양은 같고 현재 위치 표시와
- * 모바일 메뉴 동작만 빠진다.
- */
+/** 경로를 기다리는 fallback은 현재 위치 표시와 모바일 메뉴 동작을 제외한다. */
 export function NavigationFallback({ lang, links, copy }: NavigationProps) {
   return (
     <div className="flex items-center gap-1">
@@ -190,7 +177,6 @@ export function NavigationFallback({ lang, links, copy }: NavigationProps) {
   )
 }
 
-/** 현재 경로를 반영한 데스크톱 링크, 언어 전환, 모바일 메뉴. */
 function NavigationForPath({
   lang,
   links,
@@ -212,7 +198,6 @@ function NavigationForPath({
   )
 }
 
-/** `usePathname()`으로 현재 경로를 읽어 내비게이션을 그린다. */
 export default function HeaderNavigation(props: NavigationProps) {
   const pathname = usePathname()
 

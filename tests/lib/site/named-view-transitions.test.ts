@@ -2,14 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-/*
- * A named <ViewTransition> (shared-element morph) must say share="auto" and
- * default="none". Without default="none" it animates on every unrelated
- * transition, and a streamed Suspense reveal that contains it runs through
- * document.startViewTransition, which waits for web fonts and in-view images
- * (up to 500 ms) before the content can paint — on detail and generation
- * pages that is the largest paint.
- */
+/* Shared transitions need share="auto" and default="none" to avoid animating unrelated navigation.
+ * Suspense reveals can wait up to 500 ms for fonts/images, delaying detail and generation LCP. */
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)

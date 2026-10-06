@@ -35,7 +35,7 @@ describe('SafeMDX', () => {
 
     expect(container.querySelector('h1')).toBeNull()
     expect(container.querySelector('h2')).toHaveTextContent('Overview')
-    // Levels stop at h6.
+
     expect(container.querySelector('h6')).toHaveTextContent('Deep')
   })
 })

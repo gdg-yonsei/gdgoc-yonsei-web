@@ -39,10 +39,10 @@
   - 데이터: `members`, `membersRole`, `projects`, `sessions`, `generations`, `parts`, `publicCache`
   - 화면: `adminPage`, `membersPage`, `profilePage`, `projectsPage`, `sessionsPage`, `generationsPage`, `partsPage`
 - 표를 쓰는 곳
-  - `hasPermission(userId, action, resource, ownerId?)` — 버튼·메뉴 노출
-  - `requirePermission(...)` / `requireOwnPermission(...)` — 레이아웃·페이지 가드(없으면 `forbidden()`)
-  - `authorize(actor, action, resource, ownerId?)` — 서비스(웹 Server Action과 MCP 공통)
-  - `getAdminNavigationItems` — 메뉴 목록(화면 리소스 `get`)
+  - `hasPermission(userId, action, resource, ownerId?)`: 버튼·메뉴 노출
+  - `requirePermission(...)` / `requireOwnPermission(...)`: 레이아웃·페이지 가드(없으면 `forbidden()`)
+  - `authorize(actor, action, resource, ownerId?)`: 서비스(웹 Server Action과 MCP 공통)
+  - `getAdminNavigationItems`: 메뉴 목록(화면 리소스 `get`)
 
 ### 표로 표현하지 않는 규칙 (`lib/server/services/admin/authorize.ts`)
 
@@ -72,7 +72,7 @@ type Actor = {
 
 `authorize`는 두 가지를 모두 본다.
 
-1. **스코프**: `requiredScopeFor(action, resource)` — 조회는 `gyms:read`, 쓰기는 `gyms:write`, 삭제·역할 변경은 `gyms:admin`. 웹 세션은 통과.
+1. **스코프**: `requiredScopeFor(action, resource)`: 조회는 `gyms:read`, 쓰기는 `gyms:write`, 삭제·역할 변경은 `gyms:admin`. 웹 세션은 통과.
 2. **역할**: 위 권한 표.
 
 서비스는 `ServiceResult<T>`(`{ ok: true, data }` 또는 `{ ok: false, code, message, fieldErrors? }`)를 돌려준다.
@@ -112,6 +112,6 @@ Better Auth의 `jwt()` + `@better-auth/mcp` + `@better-auth/cimd` 플러그인�
 - 액세스 토큰: JWT, `/api/mcp`에만 쓸 수 있게 audience가 묶여 있다. 수명 1시간(`gyms:admin` 포함 시 15분).
 - 리프레시 토큰: 30일.
 - 클라이언트 등록: 동적 등록(DCR) 또는 CIMD(클라이언트 id가 메타데이터 URL).
-- 동의 화면: `/auth/mcp-consent` — 역할로 실제 쓸 수 있는 스코프만 체크박스로 보여 준다.
+- 동의 화면: `/auth/mcp-consent`: 역할로 실제 쓸 수 있는 스코프만 체크박스로 보여 준다.
 
 자세한 흐름과 도구 목록은 [`mcp.md`](./mcp.md).

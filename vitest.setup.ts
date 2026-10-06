@@ -11,8 +11,7 @@ process.env.GITHUB_CLIENT_ID ??= 'test-github-client-id'
 process.env.GITHUB_CLIENT_SECRET ??= 'test-github-client-secret'
 process.env.GOOGLE_CLIENT_ID ??= 'test-google-client-id'
 process.env.GOOGLE_CLIENT_SECRET ??= 'test-google-client-secret'
-// Pinned, not defaulted: CI exports the e2e server's origin
-// (http://127.0.0.1:3100), and canonical-URL tests must not depend on it.
+// Pin the test origin because CI exports the e2e origin and canonical URLs must stay independent.
 process.env.NEXT_PUBLIC_SITE_URL = 'https://gdgoc.yonsei.ac.kr'
 process.env.NEXT_PUBLIC_IMAGE_URL ??= 'https://cdn.example/'
 process.env.CLOUDFLARE_ACCOUNT_ID ??= 'test-account'
@@ -28,8 +27,7 @@ type NextImageMockProps = React.ImgHTMLAttributes<HTMLImageElement> & {
   placeholder?: 'blur' | 'empty'
 }
 
-// `after()`는 요청 컨텍스트 밖에서 호출하면 예외를 던진다. 테스트에서는 예약된
-// 작업을 즉시 실행해 결과를 검증할 수 있게 한다.
+// after는 요청 밖에서 예외를 던지므로 테스트에서는 예약 작업을 즉시 실행한다.
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   after: (task: unknown) => {
@@ -79,8 +77,7 @@ vi.mock('next/link', () => ({
     transitionTypes,
     ...props
   }: NextLinkMockProps) => {
-    // Router-only props never reach the DOM; transition types surface as a
-    // data attribute so tests can assert how a navigation animates.
+    // Router props stay out of the DOM; a data attribute exposes transition types for assertions.
     void prefetch
     void replace
     void scroll
@@ -98,8 +95,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>()
-  // Next.js runs a React canary with <ViewTransition>; the react package
-  // Vitest resolves has none, so here it renders its children unchanged.
+  // Vitest React lacks Next's canary ViewTransition, so the test substitute passes children through.
   const PassThrough = ({ children }: { children?: React.ReactNode }) => children
   return { ...actual, ViewTransition: actual.ViewTransition ?? PassThrough }
 })
@@ -182,8 +178,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-// jsdom lacks the modal dialog API used by the mobile menu. Mirror the
-// browser contract: `open` attribute plus a `close` event.
+// jsdom lacks modal dialogs; mirror the browser's open attribute and close event.
 const dialogPrototype = (globalThis.HTMLDialogElement ?? globalThis.HTMLElement)
   .prototype
 

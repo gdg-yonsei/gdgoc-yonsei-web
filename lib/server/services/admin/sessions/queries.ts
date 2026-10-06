@@ -1,8 +1,3 @@
-/**
- * 세션 조회 서비스: 목록, 상세, 수정 폼용 입력 변환.
- *
- * 조회 권한(`sessionsPage`)과 기수 범위를 확인한 뒤 fetcher로 데이터를 읽는다.
- */
 import 'server-only'
 
 import { getSession } from '@/lib/server/fetcher/admin/get-session'
@@ -24,7 +19,6 @@ import {
   type SessionInput,
 } from '@/lib/server/services/admin/sessions/shared'
 
-/** 범위(기수)의 세션 목록. */
 export async function listSessions(
   actor: Actor,
   { generation }: { generation?: number | 'all' | undefined } = {}
@@ -60,12 +54,10 @@ async function loadSessionDetail(sessionId: string) {
   }
 }
 
-/** 세션 상세(파트·기수, 작성자, 참가자). */
 export type SessionDetail = NonNullable<
   Awaited<ReturnType<typeof loadSessionDetail>>
 >
 
-/** 세션 상세. */
 export async function getSessionDetail(
   actor: Actor,
   sessionId: string

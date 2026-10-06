@@ -165,7 +165,6 @@ describe('admin selection components', () => {
     ) as HTMLInputElement
     const search = screen.getByRole('textbox', { name: 'Search name' })
 
-    // 공백을 섞어 입력해도 한글 이름을 찾습니다.
     fireEvent.change(search, { target: { value: '박 밥' } })
     expect(screen.queryByTitle('김앨리스')).toBeNull()
     expect(screen.getByTitle('박밥')).toBeTruthy()
@@ -193,8 +192,8 @@ describe('admin selection components', () => {
       ])
     })
 
-    // 표시된 멤버가 모두 선택되어 있으면 같은 버튼이 선택 해제로 바뀌고,
-    // 필터 밖의 선택은 유지됩니다.
+    // 표시된 후보의 선택을 바꿔도 필터 밖에서 선택한 멤버는 유지한다.
+
     fireEvent.click(
       screen.getByRole('button', { name: 'Deselect all shown (1)' })
     )
@@ -230,7 +229,6 @@ describe('admin selection components', () => {
       name: 'Part filter',
     })
 
-    // 최신 기수가 먼저 나옵니다.
     expect(
       Array.from(generationSelect.options).map((option) => option.value)
     ).toEqual(['', '11th', '10th'])
@@ -253,7 +251,6 @@ describe('admin selection components', () => {
       ])
     })
 
-    // 새 기수에 없는 파트 필터는 초기화됩니다.
     fireEvent.change(partSelect, { target: { value: 'AI' } })
     fireEvent.change(generationSelect, { target: { value: '11th' } })
     expect(partSelect.value).toBe('')

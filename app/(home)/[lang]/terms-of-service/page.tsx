@@ -1,6 +1,3 @@
-/**
- * 이용약관(`/{lang}/terms-of-service`).
- */
 import Breadcrumbs from '@/app/components/site/breadcrumbs'
 import PageTransition from '@/app/components/site/page-transition'
 import { archiveCommonCopy } from '@/lib/contents/archive-copy'
@@ -11,7 +8,6 @@ import { localeStaticParams } from '@/lib/i18n'
 import { getLocale } from '@/lib/i18n/server'
 import { localeHref } from '@/lib/site/routes'
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
 
@@ -26,12 +22,10 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
-/** 페이지 본문. */
 export default async function TermsOfServicePage() {
   const lang = await getLocale()
   const common = archiveCommonCopy[lang]
@@ -49,7 +43,7 @@ export default async function TermsOfServicePage() {
         />
         <div id="content">
           <article className="policy-doc site-prose prose">
-            {/* 소개 */}
+            {}
             <section>
               <h1>
                 {isKorean ? '웹사이트 이용약관' : 'Website Terms of Service'}
@@ -81,7 +75,7 @@ export default async function TermsOfServicePage() {
               <hr />
             </section>
 
-            {/* 목적 */}
+            {}
             <section id="purpose">
               <h2>{isKorean ? '제1조 (목적)' : 'Article 1 (Purpose)'}</h2>
               <p>
@@ -91,7 +85,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 회원 가입 */}
+            {}
             <section id="membership">
               <h2>
                 {isKorean ? '제2조 (회원가입)' : 'Article 2 (Membership)'}
@@ -103,7 +97,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 회원의 의무 */}
+            {}
             <section id="obligations">
               <h2>
                 {isKorean
@@ -143,7 +137,7 @@ export default async function TermsOfServicePage() {
               </ul>
             </section>
 
-            {/* 개인정보 보호 */}
+            {}
             <section id="privacy">
               <h2>
                 {isKorean
@@ -157,7 +151,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 서비스 이용 */}
+            {}
             <section id="service-use">
               <h2>
                 {isKorean
@@ -171,7 +165,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 이용 제한 */}
+            {}
             <section id="suspension">
               <h2>
                 {isKorean
@@ -185,7 +179,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 탈퇴 */}
+            {}
             <section id="termination">
               <h2>
                 {isKorean
@@ -199,7 +193,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 저작권 */}
+            {}
             <section id="copyright">
               <h2>{isKorean ? '제8조 (저작권)' : 'Article 8 (Copyright)'}</h2>
               <p>
@@ -209,7 +203,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 약관 변경 */}
+            {}
             <section id="changes">
               <h2>
                 {isKorean ? '제9조 (약관의 변경)' : 'Article 9 (Amendments)'}
@@ -221,7 +215,7 @@ export default async function TermsOfServicePage() {
               </p>
             </section>
 
-            {/* 준거법과 관할 */}
+            {}
             <section id="law">
               <h2>
                 {isKorean

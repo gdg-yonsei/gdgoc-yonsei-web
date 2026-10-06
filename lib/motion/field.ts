@@ -1,9 +1,3 @@
-/**
- * 점(dot) 배경 연출용 격자 계산.
- *
- * 홈 화면 연출(anime.js 장면, CSS 전환)이 쓰는 순수 계산 함수. DOM 없이 단위 테스트한다.
- */
-
 type Point = { x: number; y: number }
 type Box = { left: number; top: number; width: number; height: number }
 
@@ -24,8 +18,7 @@ export function fieldShape(
   return [columns, rows]
 }
 
-/** `box`에 고르게 펼친 `columns` × `rows` 점 배경에서 한 점 아래에 있는 점의 번호(행 우선).
-    상자 밖의 점은 가장자리로 붙인다. */
+// 점 번호는 행 우선이다. 상자 밖의 좌표는 가장자리로 붙인다.
 export function nearestCell(
   point: Point,
   box: Box,

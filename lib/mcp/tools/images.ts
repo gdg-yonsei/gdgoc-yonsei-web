@@ -1,6 +1,3 @@
-/**
- * MCP 이미지 업로드 도구(사전 서명 업로드 시작·완료, URL에서 가져오기).
- */
 import 'server-only'
 
 import { z } from 'zod'
@@ -29,7 +26,6 @@ const gate = [
 const uploadedKey = (data: unknown) =>
   (data as { objectKey?: string } | null)?.objectKey
 
-/** 이미지 도구 목록. */
 export const imageTools = [
   defineTool({
     name: 'create_image_upload',

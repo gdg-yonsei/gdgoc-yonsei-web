@@ -1,14 +1,4 @@
-/**
- * Better Auth 설정(로그인, 세션, 패스키, MCP용 OAuth 인가 서버).
- *
- * - 로그인: GitHub·Google 소셜 로그인과 패스키
- * - 세션: DB 세션 + 쿠키. 서버에서는 `getAuthSession()`으로 읽는다
- * - MCP: `jwt()` + `mcp()` + `cimd()` 플러그인으로 OAuth 2.1 인가 서버가 되어
- *   `/api/mcp`에 쓸 액세스 토큰을 발급한다(`docs/architecture/mcp.md`)
- *
- * 라우트는 `app/api/auth/[...all]/route.ts`가 노출한다. DB 테이블 이름은 Auth.js 시절 이름을
- * 유지하므로 Better Auth 모델과 Drizzle 테이블을 `schema`에서 직접 연결한다.
- */
+// Auth.js 테이블 이름을 유지하므로 Better Auth 모델과 Drizzle 테이블을 schema에서 직접 연결한다.
 import 'server-only'
 
 import { betterAuth } from 'better-auth/minimal'
@@ -51,7 +41,6 @@ import {
 const authEnv = getAuthEnv()
 const authOrigin = new URL(authEnv.BETTER_AUTH_URL).origin
 
-/** Better Auth 서버 인스턴스. */
 export const auth = betterAuth({
   appName: 'GDGoC Yonsei',
   baseURL: authOrigin,
@@ -75,7 +64,6 @@ export const auth = betterAuth({
     },
   }),
   hooks: {
-    // MCP 클라이언트 동적 등록 요청을 보정한다(`lib/mcp/registration.ts`).
     // Better Auth 훅은 Promise를 돌려줘야 해서 await가 없어도 async로 둔다.
     // eslint-disable-next-line @typescript-eslint/require-await
     before: createAuthMiddleware(async (ctx) => {
@@ -128,10 +116,9 @@ export const auth = betterAuth({
   ],
 })
 
-/** 로그인 세션(사용자 정보 포함) 타입. */
 export type AuthSession = typeof auth.$Infer.Session
 
-/** 현재 요청의 로그인 세션을 읽는다. 요청 안에서 여러 번 불러도 한 번만 조회한다(React `cache`). */
+// 로그인 세션 조회는 같은 요청의 React cache로 합친다.
 export const getAuthSession = cache(async (): Promise<AuthSession | null> => {
   return auth.api.getSession({ headers: await headers() })
 })

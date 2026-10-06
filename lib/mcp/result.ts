@@ -1,12 +1,9 @@
-/**
- * 서비스 결과를 MCP 도구 결과(`CallToolResult`)로 바꾼다.
- */
 import 'server-only'
 
 import type { CallToolResult } from '@modelcontextprotocol/server'
 import type { ServiceResult } from '@/lib/server/services/admin/types'
 
-/** 서비스 결과를 MCP 도구 결과로. 실패는 isError + { code, message, fieldErrors }. */
+// MCP 실패 결과는 isError와 { code, message, fieldErrors }를 함께 전달한다.
 export function toCallToolResult(
   result: ServiceResult<unknown>
 ): CallToolResult {

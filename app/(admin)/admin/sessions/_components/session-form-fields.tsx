@@ -1,7 +1,3 @@
-/**
- * 세션 생성·수정 폼의 입력 필드 목록(서버 컴포넌트). 두 화면이 같은 필드를 같은 순서로 그리도록 한 곳에 둔다.
- * 폼(`DataForm`)과 제출 버튼은 각 페이지가 감싼다.
- */
 import DataInput from '@/app/components/admin/data-input'
 import DataSelectInput from '@/app/components/admin/data-select-input'
 import GenerationField from '@/app/components/admin/generation-field'
@@ -22,10 +18,8 @@ import type { AdminMessages } from '@/lib/admin-i18n'
 import type { getGeneration } from '@/lib/server/fetcher/admin/get-generation'
 import type { getSession } from '@/lib/server/fetcher/admin/get-session'
 
-/** 수정 화면이 채워 넣는 기존 세션. */
 type SavedSession = NonNullable<Awaited<ReturnType<typeof getSession>>>
 
-/** 기수의 파트와 구성원을 담당 파트 선택지로 바꾼다. 기수를 못 찾으면 빈 목록. */
 export function toSessionPartOptions(
   generation: Awaited<ReturnType<typeof getGeneration>> | null
 ): SessionPartOption[] {
@@ -54,13 +48,6 @@ function toDateTimeLocal(value: Date | null) {
   return value?.toISOString().slice(0, 16) ?? ''
 }
 
-/**
- * 세션 입력 필드. `session`이 있으면 수정 화면으로 보고 기존 값을 채운다.
- *
- * @param generationName 세션이 속한 기수 이름(읽기 전용 표시)
- * @param members 참가자로 고를 수 있는 멤버
- * @param parts 담당 파트 선택지(`toSessionPartOptions`)
- */
 export default function SessionFormFields({
   t,
   generationName,

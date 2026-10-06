@@ -1,16 +1,5 @@
-/**
- * Drizzle 데이터베이스 클라이언트(PostgreSQL, postgres-js 드라이버).
- *
- * 앱 전체가 이 `db` 하나를 공유한다. 스키마 모듈을 모두 합쳐 넘기므로
- * `db.query.<table>` 관계형 쿼리를 쓸 수 있다.
- *
- * 여기서 `dotenv/config`를 불러오지 않는다. 앱은 Next.js가 `.env`를 읽고, Next 밖에서
- * 도는 도구(drizzle-kit, `db:seed`)는 각자 읽는다. e2e 설정이 `.env`를 물려받으면 안
- * 된다: 테스트 초기화가 운영 DB에 닿은 적이 있기 때문이다.
- *
- * 서버 전용이지만 `server-only`를 쓰지 않는다. tsx로 실행하는 시드·e2e 스크립트도 이
- * 모듈을 import하기 때문이다(같은 이유로 `env-core`를 쓴다).
- */
+// dotenv는 호출자가 읽어야 e2e가 운영 DB 설정을 물려받지 않는다.
+// tsx 시드·e2e에서도 가져오므로 server-only 대신 env-core를 쓴다.
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
@@ -43,7 +32,6 @@ const client = postgres(databaseEnv.AUTH_DRIZZLE_URL, {
   },
 })
 
-/** 앱 전체가 공유하는 Drizzle 클라이언트. */
 export const db = drizzle(client, {
   schema: {
     ...accountsSchema,
@@ -67,11 +55,8 @@ export const db = drizzle(client, {
   },
 })
 
-/** Drizzle 데이터베이스 클라이언트 타입. */
 export type Database = typeof db
 
-/** `db.transaction()` 콜백이 받는 트랜잭션 객체 타입. */
 export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0]
 
-/** 트랜잭션 안팎 어디서든 쿼리를 실행할 수 있는 객체(`db` 또는 트랜잭션). */
 export type DbExecutor = Database | Transaction

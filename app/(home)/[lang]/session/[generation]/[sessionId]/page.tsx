@@ -1,6 +1,4 @@
-/**
- * 세션 상세 페이지(`/{lang}/session/{기수}/{id}`). 공개되지 않았거나 URL의 기수가 다르면 404.
- */
+/** 비공개 세션이거나 URL의 기수가 실제 기수와 다르면 404다. */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -67,7 +65,6 @@ function fallbackDescription(
     : `Learn from ${title}, a GDGoC Yonsei ${generation} session.`
 }
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { generation, sessionId } = await params
   const locale = await getLocale()
@@ -83,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return createLocalizedMetadata({
     locale,
     path: sessionPath(generation, sessionId),
-    // 예: "25-26 Sixth T19 · Tech Talk · Nov 4, 2025"
+
     title: [
       title,
       categoryLabel(session.category, locale),
@@ -102,7 +99,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/** 페이지 본문. */
 export default async function SessionDetailPage({ params }: Props) {
   const { generation, sessionId } = await params
 

@@ -1,9 +1,4 @@
-/**
- * 관리자 화면(GYMS) 영어 문구.
- *
- * 이 객체의 키 목록이 관리자 번역 키의 기준이다. 키를 추가하면 `ko.ts`에도 같은
- * 키를 넣어야 하며, 빠지면 타입 검사에서 오류가 난다.
- */
+// 번역 키는 영어 사전이 기준이다. 키 추가 시 ko.ts에도 넣어야 타입 검사를 통과한다.
 export const en = {
   confirm: 'Confirm',
   cancel: 'Cancel',
@@ -35,12 +30,16 @@ export const en = {
   registerPasskeySuccess: 'The passkey has been registered.',
   registerPasskeyAlreadyRegistered: 'The passkey is already registered.',
   registerPasskeyError: 'The passkey could not be registered. Please retry.',
+  passkeySignInError:
+    'Passkey sign-in could not be completed. Please retry or use another sign-in method.',
   subscribe: 'Subscribe',
   unsubscribe: 'Unsubscribe',
   sessionNotificationEmails: 'Session Notification Emails',
   trueValue: 'True',
   falseValue: 'False',
   tbd: 'TBD',
+  notProvided: 'Not provided',
+  privateValue: 'Private',
   english: 'English',
   korean: 'Korean',
   splitView: 'Split View',
@@ -181,7 +180,6 @@ export const en = {
   sortByUpdated: 'Last Updated',
   sortByCreated: 'Last Created',
 
-  // ── 화면 틀(헤더·사이드바) ──
   skipToContent: 'Skip to content',
   mainNavigation: 'Main navigation',
   openMenu: 'Open menu',
@@ -193,7 +191,6 @@ export const en = {
   darkMode: 'Switch to dark mode',
   account: 'Account',
 
-  // ── 대시보드 ──
   dashboard: 'Dashboard',
   totalMembers: 'Members',
   totalSessions: 'Sessions',
@@ -210,8 +207,8 @@ export const en = {
     'Only approved members can connect. You pick the permissions (read, write, admin) on the consent screen, and you can remove the connection from the client at any time.',
   copy: 'Copy',
   copied: 'Copied',
+  copyFailed: 'Copy failed. Try again.',
 
-  // ── 빈 상태·로딩 상태 ──
   errorOccurred: 'Something went wrong',
   errorOccurredHint:
     'The page could not be loaded. Try again, and contact a lead if it keeps happening.',
@@ -223,7 +220,6 @@ export const en = {
   required: 'Required',
   optional: 'Optional',
 
-  // ── 목록 표 헤더 ──
   columnName: 'Name',
   columnPart: 'Part',
   columnRole: 'Role',
@@ -234,7 +230,6 @@ export const en = {
   columnPeriod: 'Period',
   columnMembers: 'Members',
 
-  // ── 영어·한국어 입력 패널 ──
   written: 'Done',
   notWritten: 'Missing',
   bilingualThisField: 'This field',
@@ -244,7 +239,6 @@ export const en = {
   languageNameEn: 'English',
   languageNameKo: 'Korean',
 
-  // ── 파트 구성원 선택기 ──
   selectedMembers: 'Selected members',
   removeMember: 'Remove',
   searchName: 'Search name',
@@ -259,11 +253,9 @@ export const en = {
   noMatchingMembers: 'No matching members.',
   searchResults: 'Results',
 
-  // ── 에디터·파트 폼 ──
   editor: 'Editor',
   preview: 'Preview',
   displayOrderHint: 'Parts with smaller numbers appear first.',
-  // ── MCP 연결 관리 ──
   mcpConnections: 'Connected AI tools',
   mcpConnectionsDescription:
     'MCP clients (Claude, Codex, ChatGPT, Cursor …) you allowed to use GYMS on your behalf. Disconnecting one stops it immediately; connect again from the client to restore access.',
@@ -293,7 +285,6 @@ export const en = {
   mcpAuditOk: 'OK',
   mcpAuditError: 'Error',
   mcpAuditEmpty: 'No MCP activity yet.',
-  // ── 404 ──
   notFoundTitle: 'Page not found',
   notFoundHint: 'The item may have been deleted, or the address is wrong.',
   backToDashboard: 'Back to dashboard',

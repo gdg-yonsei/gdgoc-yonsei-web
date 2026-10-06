@@ -1,9 +1,3 @@
-/**
- * 관리자 로그인 화면(`/auth/sign-in`).
- *
- * MCP 클라이언트의 OAuth 요청으로 왔다면 쿼리를 보존해 로그인 후 그 요청을 이어 간다.
- * 이미 로그인했으면 바로 관리자 홈(또는 이어 갈 OAuth 요청)으로 보낸다.
- */
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import SignInOptions from '@/app/(admin)/auth/sign-in/sign-in-options'
 import { Metadata } from 'next'
@@ -15,15 +9,11 @@ import { getAdminLocale } from '@/lib/admin-i18n/server'
 import { localizeAdminHref } from '@/lib/admin-i18n'
 import { oauthQueryString, postLoginPath } from '@/lib/mcp/consent'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Sign In',
 }
 
-/**
- * 로그인 카드(DESIGN.md `ex-auth-form-card`: canvas 위 hairline + soft shadow 카드).
- * 높이를 고정하지 않아 작은 화면에서도 내용이 잘리지 않는다.
- */
+/** DESIGN.md `ex-auth-form-card`를 따르며, 작은 화면에서 내용이 잘리지 않게 높이를 고정하지 않는다. */
 export default async function SignInPage({
   searchParams,
 }: PageProps<'/auth/sign-in'>) {
@@ -32,7 +22,7 @@ export default async function SignInPage({
   const callbackURL = postLoginPath(query)
 
   const session = await getAuthSession()
-  // 이미 로그인했으면 관리자 홈(또는 이어 갈 OAuth 요청)으로 보낸다.
+
   if (session) {
     return redirect(
       callbackURL === '/admin'
@@ -82,14 +72,14 @@ export default async function SignInPage({
             By signing up, you agree to our{' '}
             <Link
               href={'/privacy-policy'}
-              className={'text-primary hover:underline'}
+              className={'text-primary underline underline-offset-2'}
             >
               Privacy Policy
             </Link>{' '}
             and{' '}
             <Link
               href={'/terms-of-service'}
-              className={'text-primary hover:underline'}
+              className={'text-primary underline underline-offset-2'}
             >
               Terms of Service
             </Link>

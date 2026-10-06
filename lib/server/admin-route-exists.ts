@@ -1,13 +1,5 @@
-/**
- * proxy가 관리자 상세 화면(`/admin/<리소스>/<id>[/edit|/register]`)의 존재를 미리 확인하는 데 쓰는 헬퍼.
- *
- * Cache Components는 관리자 화면을 스트리밍하므로, 페이지 안의 `notFound()`는 상태 코드 200이 이미 나간 뒤에
- * 404 화면을 그린다. proxy가 응답 전에 항목이 없는 것을 알아내면 일치하는 라우트가 없는 주소로 rewrite해
- * 전역 404(`app/global-not-found.tsx`)가 진짜 404 상태로 나가게 한다. 공개 사이트의 같은 검사는 `proxy.ts`에 있다.
- *
- * 로그인하지 않은(또는 승인 전) 요청에는 검사하지 않는다. 그런 요청은 관리자 레이아웃이 로그인 화면·403으로
- * 보내야 하고, 404와 로그인 이동이 갈리면 로그인 없이도 id가 있는지 알아낼 수 있기 때문이다.
- */
+// 스트리밍 중 notFound는 200을 보낼 수 있어 proxy가 없는 항목을 전역 404로 rewrite한다.
+// 로그인·승인 전에는 검사하지 않아 로그인 없이 ID 존재 여부가 드러나지 않게 한다.
 import type { NextRequest } from 'next/server'
 import { and, eq, gt, ne } from 'drizzle-orm'
 import { db } from '@/db'
@@ -19,7 +11,6 @@ import { sessions } from '@/db/schema/sessions'
 import { users } from '@/db/schema/users'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 
-/** 존재를 확인할 관리자 상세 화면. */
 export type AdminRouteIdentity = {
   resource: 'generations' | 'members' | 'parts' | 'projects' | 'sessions'
   id: string
@@ -37,10 +28,7 @@ const RESOURCES = new Set<AdminRouteIdentity['resource']>([
 const DETAIL_SUBPAGES = new Set(['edit', 'register'])
 const FIXED_SEGMENTS = new Set(['create', 'accept'])
 
-/**
- * 언어 접두사를 뗀 관리자 경로(`/admin/...`)가 상세 화면이면 리소스와 id를 돌려준다.
- * 목록·생성 화면이나 알 수 없는 하위 경로면 `null`.
- */
+// 목록·생성 화면이나 알 수 없는 하위 경로는 상세 화면으로 해석하지 않는다.
 export function getAdminRouteIdentity(
   pathname: string
 ): AdminRouteIdentity | null {
@@ -78,10 +66,7 @@ function sessionTokenFromRequest(request: NextRequest): string | null {
   return separator > 0 ? value.slice(0, separator) : null
 }
 
-/**
- * 요청에 승인된 사용자(UNVERIFIED가 아닌)의 유효한 로그인 세션이 있는지. 토큰은 DB의 세션과 정확히
- * 같아야 하므로 아무 쿠키 값이나 넣어서는 통과할 수 없다.
- */
+// 승인된 사용자의 유효 세션만 허용한다. 쿠키 토큰은 DB 세션 토큰과 정확히 같아야 한다.
 export async function hasApprovedSession(
   request: NextRequest
 ): Promise<boolean> {

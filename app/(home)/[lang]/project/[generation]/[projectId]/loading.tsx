@@ -1,7 +1,3 @@
-/**
- * 프로젝트 상세 로딩 스켈레톤.
- */
-
 export default function ProjectDetailLoading() {
   return (
     <div

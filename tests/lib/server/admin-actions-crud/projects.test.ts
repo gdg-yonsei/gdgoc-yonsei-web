@@ -75,7 +75,6 @@ vi.mock('@/db', () => {
     select: mockSelect,
     query: mockQuery,
   }
-  // 트랜잭션 콜백은 같은 목 객체로 바로 실행한다.
   return {
     db: {
       ...db,

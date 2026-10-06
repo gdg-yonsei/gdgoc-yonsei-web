@@ -1,12 +1,8 @@
-# Corepack 0.34.0은 bin/pnpm.cjs를 실행하지만 pnpm 12는 네이티브 실행 파일을 사용한다.
-# npm이 패키지의 bin과 플랫폼별 의존성을 설치하도록 Corepack 대신 pnpm을 직접 설치한다.
-# 버전은 package.json의 packageManager에서 읽고 Corepack용 무결성 해시(+sha512...)만 제거한다.
-# Nix 이미지의 npm 기본 전역 설치 경로는 PATH에 없을 수 있다.
-# /opt/pnpm에 설치하고 Nixpacks paths로 설치·빌드·실행 단계의 PATH에 추가한다.
+# 네이티브 pnpm은 Corepack 대신 npm으로 설치하며 packageManager에서 무결성 해시를 제외한 버전을 읽는다.
+# Nix의 전역 npm 경로 대신 /opt/pnpm을 쓰고 모든 단계의 PATH에 추가한다.
 
-# Node는 명시적으로 고정한다. engines.node를 ">=22.13.0 <=24"로 올렸기 때문에
-# nixpacks의 자동 추론에 맡기면 선택되는 메이저가 달라질 수 있다.
-# pnpm은 npm이 공급하므로 nix의 pnpm-9_x는 넣지 않는다(PATH 섀도잉 방지).
+# engines 범위의 자동 추론에 따라 Node 메이저가 바뀌지 않도록 고정한다.
+# npm이 설치한 pnpm을 가리지 않도록 Nix의 pnpm 패키지는 제외한다.
 [phases.setup]
 nixPkgs = ["nodejs_22", "openssl"]
 
@@ -23,10 +19,8 @@ cacheDirectories = [
   ".next/cache",
 ]
 
-# 배포 빌드만 마이그레이션을 적용한다. `pnpm build`는 DB 스키마를 건드리지 않으므로 로컬에서 운영 DB를
-# 가리키는 `.env`로 빌드해도 마이그레이션이 적용되지 않는다. 마이그레이션이 `next build`보다 먼저인 이유:
-# 빌드가 정적 경로를 만들려고 새 스키마로 DB를 읽는다. CI의 "Migration upgrade path" 작업이 같은
-# `drizzle-kit migrate`를 운영과 같은 상태의 DB에 실행해 본다.
+# 정적 경로가 새 스키마를 읽으므로 배포 빌드는 CI에서 검증한 마이그레이션을 먼저 적용한다.
+# 로컬 `pnpm build`는 DB 스키마를 변경하지 않는다.
 [phases.build]
 dependsOn = ["install"]
 cmds = ["pnpm build:production"]

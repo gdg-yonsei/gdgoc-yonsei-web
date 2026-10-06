@@ -1,6 +1,3 @@
-/**
- * 내 프로필 정보 패널(서버 컴포넌트).
- */
 import { getAuthSession } from '@/auth'
 import UserProfileImage from '@/app/components/admin/user-profile-image'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
@@ -8,9 +5,7 @@ import { notFound } from 'next/navigation'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
-/**
- * 로그인 사용자의 프로필(사진, 두 언어 이름, 연락처 등). 세션이나 사용자 행이 없으면 404.
- */
+/** 세션이나 로그인 사용자 행이 없으면 404다. */
 export default async function UserProfile() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

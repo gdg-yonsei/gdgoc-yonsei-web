@@ -1,9 +1,4 @@
-/**
- * 기수 테이블(`generations`).
- *
- * GDGoC Yonsei의 활동 기수(예: `25-26`). 파트·프로젝트가 기수에 속하고, 세션은 파트를
- * 통해 기수에 속한다. 공개 사이트 URL에도 기수 이름이 들어간다(`/session/25-26`).
- */
+// 세션의 기수는 소속 파트를 통해 결정된다.
 import { date, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { parts } from '@/db/schema/parts'
@@ -19,7 +14,6 @@ export const generations = pgTable('generations', {
   updatedAt: timestamp('updatedAt').defaultNow(),
 })
 
-/** 기수에 속한 파트와 프로젝트. */
 export const generationsRelations = relations(generations, ({ many }) => ({
   parts: many(parts),
   projects: many(projects),
