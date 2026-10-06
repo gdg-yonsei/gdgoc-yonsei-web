@@ -194,9 +194,7 @@ test.describe('home page', () => {
         })
       const [top] = await stackEdges()
 
-      // Walk the stack: a sticky card must never keep part of itself below
-      // the fold or under the next card for the whole way through. The end
-      // is re-read each step: sections above may render late and move it.
+      // Every sticky card must become fully readable; late-rendered sections can move the stack's end.
       const leastHidden = new Map<string, number>()
       for (
         let y = top - viewport.height;

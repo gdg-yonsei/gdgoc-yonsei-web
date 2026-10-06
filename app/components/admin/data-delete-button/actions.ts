@@ -1,8 +1,5 @@
 'use server'
 
-/**
- * 상세 화면의 공용 삭제 버튼이 호출하는 Server Action. 리소스 종류에 맞는 삭제 서비스로 넘긴다.
- */
 import {
   runAdminFormAction,
   type AdminFormState,
@@ -17,10 +14,7 @@ import {
   type DeleteResourceType,
 } from '@/lib/validations/admin-api'
 
-/**
- * 리소스 종류별 삭제 서비스.
- * 세션·프로젝트 ID는 UUID 문자열, 기수·파트 ID는 숫자이므로 여기서 변환한다.
- */
+/** 세션·프로젝트 id는 UUID 문자열, 기수·파트 id는 숫자여서 삭제 서비스에 맞춰 변환한다. */
 const deleteServices: Record<
   DeleteResourceType,
   (actor: Actor, id: string) => Promise<ServiceResult<unknown>>
@@ -32,10 +26,6 @@ const deleteServices: Record<
   parts: (actor: Actor, id: string) => deletePart(actor, Number(id)),
 }
 
-/**
- * 상세 화면의 삭제 버튼이 호출하는 공용 삭제 액션.
- * 폼의 `dataType`/`dataId`를 먼저 검증하고, 삭제 후 해당 리소스 목록으로 이동한다.
- */
 export async function deleteResourceAction(
   _prev: AdminFormState,
   formData: FormData

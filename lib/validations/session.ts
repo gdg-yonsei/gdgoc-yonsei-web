@@ -1,9 +1,4 @@
-/**
- * 세션 입력 스키마.
- *
- * 입력 검증 스키마(zod). 서비스 계층이 웹 폼과 MCP 입력을 모두 이 스키마로 검증한다.
- * 오류 문구는 관리자 화면과 MCP 응답에 그대로 보이므로 영어로 쓴다.
- */
+// 웹 폼·MCP 응답에 검증 오류가 그대로 보여 영어로 쓴다.
 import { z } from 'zod'
 
 /** 세션 종류. DB `sessionType` enum과 같은 값이어야 한다. */
@@ -18,16 +13,13 @@ export const ACTIVITY_CATEGORIES = [
   'devrel',
 ] as const
 
-/** 세션 종류 유니온. */
 export type SessionType = (typeof SESSION_TYPES)[number]
-/** 활동 분류 유니온. */
 export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number]
 
 const SessionTypeEnum = z.enum(SESSION_TYPES)
 
 const ActivityCategoryEnum = z.enum(ACTIVITY_CATEGORIES)
 
-/** 세션 입력. 시작 시각은 종료 시각보다 앞서야 한다. */
 export const sessionValidation = z
   .object({
     name: z.string().trim().nonempty('Name is required'),
@@ -64,5 +56,5 @@ export const sessionValidation = z
   })
   .refine((data) => data.startAt < data.endAt, {
     message: 'Start time must be before end time',
-    path: ['endAt'], // 오류를 표시할 필드
+    path: ['endAt'],
   })

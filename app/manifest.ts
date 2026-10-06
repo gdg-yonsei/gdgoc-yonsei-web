@@ -1,17 +1,13 @@
-/**
- * 웹 앱 매니페스트(`/manifest.webmanifest`). 홈 화면에 추가했을 때의 이름·아이콘·색.
- */
 import type { MetadataRoute } from 'next'
 
-/** 매니페스트 내용. */
 export default function generateManifest(): MetadataRoute.Manifest {
   return {
     name: 'GDGoC Yonsei',
     short_name: 'GDGoC Yonsei',
     description:
       "Official website of GDGoC Yonsei, Yonsei University's student developer community.",
-    // 언어별 홈으로 보내면 설치된 앱이 한쪽 로케일에 고정되므로, proxy가 로케일을
-    // 판별하도록 루트를 유지합니다.
+    // 설치 앱이 한쪽 언어에 고정되지 않게, 루트 경로에서 proxy가 언어를 고르게 한다.
+
     start_url: '/',
     display: 'standalone',
     background_color: '#fafafa',

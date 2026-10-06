@@ -1,12 +1,6 @@
-/**
- * 시드 세션 일정 생성 헬퍼(순수 함수, `tests/lib/seed-helpers.test.ts`가 검증한다).
- */
-
-/** 시드 세션 분류(세션 `category` 컬럼 값). */
 export type SeedCategory =
   'tech_talk' | 'part_session' | 'hackathon' | 'demo_day' | 'devrel'
 
-/** 만들 세션 한 건. */
 export type SeedSessionPlan = {
   name: string
   nameKo: string
@@ -26,12 +20,7 @@ function isInRanges(date: Date, ranges: readonly DateRange[]): boolean {
   return ranges.some((range) => date >= range.from && date <= range.to)
 }
 
-/**
- * from~to 사이 특정 요일·시각의 반복 일정을 만든다(skipRanges에 걸리는 날은 뺀다).
- *
- * 세션 시각은 서울 벽시계 시각을 UTC 라벨로 저장하므로(`lib/format/datetime.ts`), `hour`는 서울 시각을
- * 그대로 넣는다. 예: 화요일 19시 세션은 `hour: 19` → `…T19:00:00.000Z`.
- */
+// 서울 벽시계 hour를 그대로 UTC 라벨로 저장한다. 예: 서울 화요일 19시는 T19:00:00.000Z다.
 export function weeklyOccurrences(options: {
   from: Date
   to: Date
@@ -64,7 +53,6 @@ export function weeklyOccurrences(options: {
   return dates
 }
 
-/** 시드 기수 활동 기간: 2025-09 ~ 2026-06 */
 export const SEED_WINDOW = {
   from: new Date('2025-09-01T00:00:00.000Z'),
   to: new Date('2026-06-30T23:59:59.000Z'),
@@ -89,11 +77,10 @@ function twoHourSlot(start: Date): { startAt: Date; endAt: Date } {
   }
 }
 
-/** 시드 기간 1년치 세션 계획: 매주 T19, 격주 파트 세션, 해커톤·데모데이 같은 특별 행사. 시작 순으로 정렬한다. */
 export function buildSessionPlans(): SeedSessionPlan[] {
   const plans: SeedSessionPlan[] = []
 
-  // 매주 화요일 19:00 — T19
+  // T19는 매주 화요일 서울 19시다.
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 2,
@@ -110,7 +97,7 @@ export function buildSessionPlans(): SeedSessionPlan[] {
     })
   })
 
-  // 격주 목요일 19:00 — 파트 세션
+  // 파트 세션은 격주 목요일 서울 19시다.
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 4,

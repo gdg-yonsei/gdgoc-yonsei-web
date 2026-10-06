@@ -1,9 +1,4 @@
-/**
- * 관리자 앱 셸(서버 레이아웃): 로그인·승인 확인, 번역 사전·Jotai 제공, 앱 바·사이드바·하단 탭, 전역 모달.
- *
- * 모든 `/admin/*` 페이지가 이 레이아웃 아래에서 렌더링된다. 로그인하지 않았으면 로그인
- * 화면으로 보내고, 가입 승인 전(`UNVERIFIED`)이면 403을 보여 준다.
- */
+/** 미로그인 사용자는 로그인 화면으로 보내고, 가입 승인 전 UNVERIFIED는 403으로 막는다. */
 import { ReactNode } from 'react'
 import { getAuthSession } from '@/auth'
 import { Metadata } from 'next'
@@ -22,7 +17,6 @@ import { cookies } from 'next/headers'
 import { ADMIN_THEME_COOKIE, normalizeAdminTheme } from '@/lib/admin-theme'
 import { cn } from '@/lib/cn'
 
-/** 관리자 페이지 제목 형식(`페이지 | GYMS`). */
 export const metadata: Metadata = {
   title: {
     default: 'GYMS',
@@ -32,7 +26,6 @@ export const metadata: Metadata = {
     'Google Developer Group on Campus Yonsei University Management System',
 }
 
-/** 관리자 앱 셸. */
 export default async function AdminLayout({
   children,
 }: {
@@ -44,7 +37,6 @@ export default async function AdminLayout({
   ])
   const messages = getAdminMessages(locale)
 
-  // 로그인하지 않았으면 로그인 화면으로, 가입 승인 전이면 403.
   const userId = session?.user?.id
   if (!userId) {
     redirect('/auth/sign-in')
@@ -64,12 +56,8 @@ export default async function AdminLayout({
   return (
     <AdminI18nProvider locale={locale} messages={messages}>
       <JotaiProvider>
-        {/*
-            테마와 언어는 관리자 영역 래퍼에만 적용한다. `<html>`에 올리려면 공유 루트
-            레이아웃에서 쿠키를 읽어야 하는데, 그러면 로그인 페이지까지 blocking route가
-            된다. `@custom-variant dark`는 조상 어디에 `.dark`가 있어도 맞으므로 이
-            래퍼로 충분하다.
-          */}
+        {/* 루트에서 쿠키를 읽으면 로그인까지 요청을 기다리므로, 테마·언어는 관리자 래퍼에 적용한다.
+         * dark 변형은 조상의 .dark에도 적용된다. */}
         <div
           id={'admin-theme-root'}
           lang={locale}
@@ -93,10 +81,7 @@ export default async function AdminLayout({
             resolvedScope={resolvedScope}
             theme={theme}
           />
-          {/*
-            앱 바·사이드바·하단 탭만큼의 여백은 여기서 한 번만 준다. 사이드바 폭
-            (`sidebar.tsx`의 `w-64`)과 `lg:pl-64`는 반드시 같아야 한다.
-          */}
+          {/* 사이드바의 w-64와 본문 lg:pl-64는 같은 폭이어야 한다. */}
           <main
             id={'admin-main'}
             className={'min-h-dvh pb-20 lg:pb-0 lg:pl-64'}

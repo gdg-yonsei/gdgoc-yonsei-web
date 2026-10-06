@@ -1,9 +1,4 @@
-/**
- * 외부 참가자 테이블(`external_participants`).
- *
- * 회원이 아닌 참가자를 세션에 기록하기 위한 테이블이다. 현재 화면에서는 쓰지 않지만
- * 데이터 보존을 위해 스키마를 유지한다.
- */
+// 현재 화면에서 쓰지 않아도 비회원 참가 기록을 보존하기 위해 유지한다.
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { sessions } from '@/db/schema/sessions'
@@ -26,7 +21,6 @@ export const externalParticipants = pgTable('external_participants', {
     }),
 })
 
-/** 외부 참가자가 속한 세션 관계. */
 export const externalParticipantsRelation = relations(
   externalParticipants,
   ({ one }) => ({

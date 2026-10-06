@@ -1,10 +1,3 @@
-/**
- * 내 프로필 서비스(관리자 프로필 화면, MCP whoami 계열 도구).
- *
- * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
- * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
- * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
- */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -25,7 +18,6 @@ import {
 import { getGenerationNamesForUserId } from '@/lib/server/services/admin/cache-context'
 import { memberValidation } from '@/lib/validations/member'
 
-/** 로그인한 본인의 프로필. */
 export async function getMyProfile(
   actor: Actor
 ): Promise<ServiceResult<MemberRecord>> {
@@ -106,7 +98,6 @@ export async function updateMyProfile(
   )
 }
 
-/** 새 세션 안내 메일 수신 여부를 바꾼다. */
 export async function setSessionNotificationEmail(
   actor: Actor,
   enabled: boolean

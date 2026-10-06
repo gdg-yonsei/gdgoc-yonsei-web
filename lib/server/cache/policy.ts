@@ -1,9 +1,4 @@
-/**
- * 공개 캐시 수명 프로필과 세션 공개 기준 시각(버킷).
- *
- * `next.config.ts`가 import하므로 `server-only`를 붙이지 않는다. 캐시 계약 전체는
- * `docs/architecture/caching.md` 참고.
- */
+// next.config가 가져오므로 server-only를 붙이지 않는다. 캐시 계약은 docs/architecture/caching.md에 있다.
 
 /** 프로필별 수명(초). `next.config.ts`의 `cacheLife`로 등록된다. */
 export const cacheLifeConfig = {
@@ -51,7 +46,6 @@ export const cacheLifeConfig = {
   },
 } as const
 
-/** `cacheQuery()`에 넘기는 프로필 이름 모음. 오타를 막기 위해 문자열 대신 이 값을 쓴다. */
 export const publicCachePolicy = {
   home: 'home',
   generationIndex: 'generationIndex',
@@ -63,19 +57,12 @@ export const publicCachePolicy = {
   sitemap: 'sitemap',
 } as const
 
-/** 공개 캐시 프로필 이름 유니온. */
 export type PublicCacheProfile =
   (typeof publicCachePolicy)[keyof typeof publicCachePolicy]
 
-/** 세션 공개 시점 버킷 크기(1시간). */
 export const SESSION_VISIBILITY_BUCKET_MS = 60 * 60 * 1000
 
-/**
- * 주어진 시각이 속한 1시간 버킷의 시작 시각(ISO 문자열).
- *
- * 공개 세션 쿼리는 "끝난 세션만 공개"하므로 현재 시각이 필요하지만, 그대로 쓰면 캐시가
- * 매번 달라진다. 1시간 단위로 내려 같은 시간대의 요청이 캐시를 공유하게 한다.
- */
+// 현재 시각을 1시간 버킷 시작으로 내려 끝난 세션을 조회하는 같은 시간대 요청이 캐시를 공유하게 한다.
 export function getSessionVisibilityBucket(date = new Date()): string {
   const bucketStart = new Date(
     Math.floor(date.getTime() / SESSION_VISIBILITY_BUCKET_MS) *

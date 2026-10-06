@@ -1,10 +1,4 @@
-/**
- * 서버 로그 출력 헬퍼.
- *
- * 모든 서버 코드는 `console`을 직접 쓰지 않고 이 로거를 거친다. 로그 한 줄이
- * `[scope] message {metadata}` 형태가 되어 배포 환경 로그에서 검색하기 쉽다.
- * 메타데이터에는 비밀값이나 개인정보를 넣지 않는다.
- */
+// 서버 로그는 [scope] message {metadata} 형식이다. metadata에 비밀값·개인정보를 넣지 않는다.
 import 'server-only'
 
 type LogMetadata = Record<string, unknown> | undefined
@@ -20,7 +14,6 @@ function formatMetadata(metadata: LogMetadata): string {
   return metadata ? ` ${JSON.stringify(metadata)}` : ''
 }
 
-/** 범위(scope) 이름과 함께 로그를 남긴다. 범위는 `영역.기능` 형식으로 적는다. */
 export const logger = {
   info(scope: string, message: string, metadata?: LogMetadata) {
     console.info(`[${scope}] ${message}${formatMetadata(metadata)}`)

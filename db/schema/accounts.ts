@@ -1,9 +1,4 @@
-/**
- * Better Auth 소셜 로그인 계정 테이블(`account`).
- *
- * 사용자 한 명이 GitHub·Google 계정을 여러 개 연결할 수 있다. 컬럼 이름 일부는
- * 예전 Auth.js 스키마를 그대로 쓰므로 TS 필드 이름과 DB 컬럼 이름이 다를 수 있다.
- */
+// Auth.js 호환 컬럼을 유지하므로 TS 필드 이름과 DB 컬럼 이름이 다를 수 있다.
 import {
   index,
   integer,

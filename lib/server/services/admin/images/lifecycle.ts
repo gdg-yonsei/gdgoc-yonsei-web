@@ -1,9 +1,4 @@
-/**
- * MCP 이미지 업로드 기록의 생애 주기: 시작(시간당 한도 예약), 거절, 버려진 업로드 정리.
- *
- * 기록 테이블의 상태 전이는 `db/schema/mcp-image-upload.ts`, DB 조작은 `lib/server/uploads/upload-records.ts`에
- * 있다. 크론 없이 업로드를 시작할 때마다 만료된 업로드를 조금씩 치운다.
- */
+// 크론 대신 업로드 시작 때 만료 기록을 조금씩 치운다. DB 상태 변경은 uploads/upload-records.ts에 둔다.
 import 'server-only'
 
 import { logger } from '@/lib/server/logger'
@@ -33,11 +28,7 @@ const CLEANUP_LEASE_MS = 10 * 60 * 1000
 const SETTLED_RETENTION_MS = 2 * 24 * 60 * 60 * 1000
 const HOUR_MS = 60 * 60 * 1000
 
-/**
- * 업로드를 시작한다: 시간당 한도 안에서 기록을 원자적으로 예약하고(거절·실패한
- * 시도도 한도에 포함된다), 완료되지 않은 채 만료된 업로드를 몇 개 치운다
- * (크론 없이 사용할 때마다 조금씩 정리한다).
- */
+// 실패·거절도 포함해 시간당 한도를 원자적으로 예약하고 만료된 미완료 업로드를 조금씩 치운다.
 export async function beginUpload(
   actor: Actor,
   upload: {
@@ -66,10 +57,7 @@ export async function beginUpload(
   return ok(id)
 }
 
-/**
- * 만료된 미완료 업로드를 임대해 R2 객체를 지우고, 지운 것만 끝난 것으로 표시한다(한도에는 계속 포함).
- * R2 삭제가 실패하면 기록이 남아 임대가 끝난 뒤 다시 시도된다.
- */
+// 임대한 만료 객체는 R2 삭제 뒤에만 완료로 표시한다. 삭제 실패는 임대 종료 뒤 재시도한다.
 async function cleanUpAbandonedUploads(now: Date) {
   try {
     const claimed = await claimExpiredUploads(
@@ -93,10 +81,7 @@ async function cleanUpAbandonedUploads(now: Date) {
   }
 }
 
-/**
- * 검증에 실패한 업로드: 객체를 지우고 기록은 거절로 남긴다(한도에 계속 포함).
- * 객체 삭제가 실패하면 거절로 닫지 않고 바로 만료시켜 정리 작업이 다시 지우게 한다.
- */
+// 검증 실패 객체도 삭제 후 거절로 남겨 한도에 포함한다. 삭제 실패는 즉시 만료시켜 정리에서 재시도한다.
 export async function rejectUpload(
   target: { id: string } | { objectKey: string },
   objectKey?: string

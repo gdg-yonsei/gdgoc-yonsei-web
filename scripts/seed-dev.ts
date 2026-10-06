@@ -1,10 +1,4 @@
-/**
- * 로컬 개발용 시드 데이터(`pnpm db:seed`).
- *
- * 기수 하나, 파트, 멤버, 태그, 프로젝트, 1년치 세션을 넣는다. 시드 행은 `dev-seed-` 접두사로 표시해
- * 다시 실행할 때 이전 시드만 지운다(TRUNCATE하지 않음). 일회용 DB가 아니면 실행을 거부한다
- * (`scripts/lib/disposable-database.ts`).
- */
+// dev-seed- 마커가 있는 이전 시드만 지운다. TRUNCATE하지 않으며 일회용 DB가 아니면 실행을 거절한다.
 import 'dotenv/config'
 import { eq, inArray, like } from 'drizzle-orm'
 import { db } from '../db'
@@ -141,7 +135,6 @@ const SEED_PROJECTS = [
   },
 ]
 
-/** 대상 DB가 지워도 되는 DB인지 확인한다. */
 function assertLocalDatabase() {
   // `--force`는 사람이 직접 고른 DB에 시드하기 위한 의도적인 우회 수단이다.
   if (process.argv.includes('--force')) {
@@ -245,8 +238,8 @@ async function main() {
       plans.map((plan) => ({
         name: plan.name,
         nameKo: plan.nameKo,
-        description: `${plan.name} — a GDGoC Yonsei activity.`,
-        descriptionKo: `${plan.nameKo} — GDGoC Yonsei 활동입니다.`,
+        description: `${plan.name}, a GDGoC Yonsei activity.`,
+        descriptionKo: `${plan.nameKo}, GDGoC Yonsei 활동입니다.`,
         authorId: organizerRow.id,
         partId:
           plan.category === 'part_session'
@@ -269,7 +262,6 @@ async function main() {
     )
     .returning({ id: sessions.id })
 
-  // 세션별 5~15명 결정적 참여 배정
   const attendanceRows = insertedSessions.flatMap((session, sessionIndex) => {
     const attendeeCount = 5 + ((sessionIndex * 7) % 11)
     return Array.from({ length: attendeeCount }, (_, offset) => ({

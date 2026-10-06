@@ -1,6 +1,3 @@
-/**
- * MCP 도구 공용 입력 스키마와 헬퍼(목록 페이지네이션, 부분 수정 병합, 이미지 URL 검증).
- */
 import 'server-only'
 
 import { z } from 'zod'
@@ -12,7 +9,6 @@ import {
   type ServiceResult,
 } from '@/lib/server/services/admin/types'
 
-/** 목록 도구 공통 인자: 기수, 페이지 크기, 커서. */
 export const listArgs = {
   generationId: z
     .number()
@@ -55,7 +51,6 @@ export function generationArg(
   return generationId ?? (actor.role === 'LEAD' ? 'all' : undefined)
 }
 
-/** 목록 서비스 결과를 페이지 형태로 바꾼다(실패는 그대로). */
 export async function listPage<T>(
   result: Promise<ServiceResult<T[]>>,
   limit: number,
@@ -65,7 +60,6 @@ export async function listPage<T>(
   return resolved.ok ? ok(paginate(resolved.data, limit, cursor)) : resolved
 }
 
-/** undefined 인 키를 뺀 패치를 현재 값 위에 덮는다(부분 수정). */
 export function mergePatch<T extends object>(
   current: T,
   patch: Record<string, unknown>
@@ -78,7 +72,6 @@ export function mergePatch<T extends object>(
   }
 }
 
-/** 상세 조회 → 입력 형태 변환 → 패치 병합 → 수정 서비스 호출. */
 export async function patchWith<Detail, Input extends object, Out>(
   load: Promise<ServiceResult<Detail>>,
   toInput: (detail: Detail) => Input,
@@ -90,11 +83,8 @@ export async function patchWith<Detail, Input extends object, Out>(
   return save(mergePatch(toInput(current.data), patch))
 }
 
-/**
- * 이미지 필드: 업로드 도구가 돌려준 우리 R2 URL(해당 접두사)만 받는다.
- * 외부 URL 은 공개 페이지의 next/image 허용 호스트가 아니라 깨지고, 다른 항목의
- * 이미지를 가리키면 그 항목을 수정할 때 deleteRemovedImages가 공유 객체를 지운다.
- */
+// 이미지 필드는 해당 접두사의 우리 R2 URL만 받는다. 외부 호스트는 공개 이미지가 깨질 수 있다.
+// 다른 항목의 공유 객체는 그 항목 수정 시 deleteRemovedImages가 지울 수 있다.
 export function r2ImageUrl(prefix: 'sessions' | 'projects' | 'users') {
   return z
     .string()

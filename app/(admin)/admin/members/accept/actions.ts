@@ -1,8 +1,5 @@
 'use server'
 
-/**
- * 가입 승인·거절 Server Action. 둘 다 끝나면 승인 화면으로 돌아온다.
- */
 import {
   runAdminFormAction,
   type AdminFormState,
@@ -16,7 +13,6 @@ import {
   deleteMember,
 } from '@/lib/server/services/admin/members'
 
-/** 가입 대기 사용자를 승인하고 역할을 부여한다. */
 export async function acceptMemberAction(
   _prev: AdminFormState,
   formData: FormData
@@ -27,7 +23,6 @@ export async function acceptMemberAction(
   })
 }
 
-/** 가입 대기 사용자를 거절(계정 삭제)한다. */
 export async function deleteMemberAction(
   _prev: AdminFormState,
   formData: FormData

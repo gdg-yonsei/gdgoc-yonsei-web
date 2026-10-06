@@ -1,8 +1,3 @@
-/**
- * 세션 상세 페이지 본문(서버 컴포넌트): 일시·장소·파트 정보, 사진 갤러리(없으면 포스터), 본문, 관련 세션, 이전/다음 세션.
- *
- * 시각은 `lib/format/datetime`의 세션 포매터로 KST 기준 표시한다.
- */
 import Link from 'next/link'
 import { ViewTransition } from 'react'
 import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon'
@@ -29,7 +24,6 @@ import { isPlaceholderImage } from '@/lib/site/images'
 import { categoryHue, categoryLabel, partHue } from '@/lib/site/labels'
 import { sessionTitle, type LogSession } from '@/lib/site/session-log'
 
-/** 상세 화면용 세션(제목은 이미 현재 언어로 고른 값). */
 export type SessionDetail = {
   id: string
   title: string
@@ -44,14 +38,7 @@ export type SessionDetail = {
   images: string[]
 }
 
-/**
- * 세션 상세.
- *
- * 제목은 로그 목록 행과 같은 `ViewTransition` 이름을 써서 목록 → 상세 이동이 이어지게 한다.
- * @param related 관련 세션(같은 파트 등)
- * @param previous/next 시간순 이전·다음 세션
- * @param copy/common 현재 언어의 세션·공통 문구
- */
+/** 제목은 세션 로그 행과 같은 ViewTransition 이름을 써서 목록·상세 이동이 이어지게 한다. */
 export default function SessionDetailView({
   lang,
   session,

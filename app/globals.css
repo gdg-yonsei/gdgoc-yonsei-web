@@ -1,23 +1,12 @@
-/*
- * 공개 사이트와 관리자 화면이 함께 쓰는 기반 스타일: Tailwind, 한글 글꼴(Pretendard), Markdown 본문(`prose`),
- * 기본 글꼴 순서. 각 화면의 스타일은 `site.css`(공개 사이트, 전역 404·오류 화면)와 `admin.css`(관리자·로그인)가
- * 이 파일을 불러온 뒤 덧붙이고, 각 루트 레이아웃이 자기 파일만 불러온다. 그래서 공개 사이트 CSS(약 3,000줄)가
- * 관리자 화면에 실리지 않고, 관리자 토큰·유틸리티도 공개 사이트에 실리지 않는다(`tests/lib/site/css-split.test.ts`).
- * 홈(랜딩) 전용 스타일(`styles/site-home.css`)은 홈 페이지가 따로 불러온다.
- */
+/* 루트별 site.css·admin.css를 분리해 서로의 화면 CSS가 실리지 않게 한다.
+ * 홈 전용 site-home.css는 홈 페이지만 가져온다. */
 @import 'tailwindcss';
-/*
- * 한글 본문용 Pretendard. unicode-range로 나눈 92개 서브셋이라 브라우저는 실제로 쓰인 글자 범위의
- * 청크만 내려받는다.
- */
+/* Pretendard는 unicode-range 92개 서브셋 중 화면에 쓰인 한글 범위만 내려받는다. */
 @import './pretendard.css';
 @plugin '@tailwindcss/typography';
 
 @theme {
-  /*
-   * 라틴 글자는 Google Sans, 한글은 Pretendard가 맡는다. Google Sans에 한글이 없으므로 브라우저가 자동으로
-   * 다음 글꼴로 넘어간다.
-   */
+  /* Google Sans에 없는 한글은 다음 글꼴인 Pretendard로 폴백한다. */
   --font-sans:
     var(--font-google-sans), 'Pretendard Variable', ui-sans-serif, system-ui,
     'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;

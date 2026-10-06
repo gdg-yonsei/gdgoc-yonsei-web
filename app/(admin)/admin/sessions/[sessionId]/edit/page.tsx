@@ -1,6 +1,3 @@
-/**
- * 세션 수정 화면(`/admin/sessions/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { notFound } from 'next/navigation'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
@@ -26,12 +23,10 @@ import SessionFormFields, {
 } from '@/app/(admin)/admin/sessions/_components/session-form-fields'
 import { connection } from 'next/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Session',
 }
 
-/** 기존 값을 채운 세션 수정 폼. */
 export default async function EditSessionPage({
   params,
 }: PageProps<'/admin/sessions/[sessionId]/edit'>) {
@@ -44,7 +39,6 @@ export default async function EditSessionPage({
     notFound()
   }
 
-  // 세션 생성 권한이 있는 사용자만 수정 화면을 열 수 있다.
   const session = await requirePermission(
     'put',
     'sessions',

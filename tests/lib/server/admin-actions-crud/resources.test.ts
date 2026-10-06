@@ -8,8 +8,7 @@ const mockInvalidatePartPublicCache = vi.fn()
 const mockInvalidateProjectPublicCache = vi.fn()
 const mockInvalidateSessionPublicCache = vi.fn()
 const mockRedirect = vi.fn()
-// 실제 next/navigation 의 forbidden() 은 반환하지 않고 throw 한다.
-// 값을 반환하는 목을 쓰면 가드 이후 코드가 계속 실행돼 실제와 다른 흐름을 검증하게 된다.
+// forbidden 대역도 throw해야 가드 뒤 코드가 실행되지 않고 실제 동작과 같아진다.
 const mockForbidden = vi.fn(() => {
   throw new Error('FORBIDDEN')
 })

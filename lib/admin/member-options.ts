@@ -1,9 +1,3 @@
-/**
- * 관리자 멤버 선택 UI(세션 참가자, 파트 구성원)용 순수 헬퍼.
- *
- * 서버 fetcher가 돌려준 행을 화면에 맞게 묶고, 검색·필터 규칙을 제공한다.
- * 클라이언트 컴포넌트와 서버 코드 모두에서 쓰므로 순수 함수만 둔다.
- */
 import { formatUserName } from '@/lib/format/user-name'
 
 /** id 기준으로 중복을 제거한다. 먼저 나온 항목이 남는다. */
@@ -11,7 +5,6 @@ export function dedupeById<T extends { id: string }>(items: readonly T[]): T[] {
   return Array.from(new Map(items.map((item) => [item.id, item])).values())
 }
 
-/** 멤버가 속한 기수·파트 한 건. */
 export type MemberMembership = {
   generationId: number | null
   generation: string | null
@@ -48,7 +41,6 @@ export function groupMemberships<T extends { id: string } & MemberMembership>(
   return Array.from(grouped.values())
 }
 
-/** 이름 표시에 필요한 멤버 필드. */
 export type NamedMember = {
   name: string | null
   firstName: string | null
@@ -58,10 +50,7 @@ export type NamedMember = {
   isForeigner: boolean
 }
 
-/**
- * 선택 목록에 보일 멤버 이름. 한글 이름이 있으면 한글 이름(외국인은 이름 성 순서),
- * 없으면 영문 이름을 쓴다.
- */
+// 한글 이름을 우선하고 없으면 영문 이름을 쓴다. 외국인은 이름 성 순서다.
 export function memberDisplayName(member: NamedMember): string {
   return member.firstNameKo
     ? formatUserName(
@@ -79,10 +68,7 @@ export function memberDisplayName(member: NamedMember): string {
       )
 }
 
-/**
- * 검색어 비교용 정규화. 한글 이름을 "김 승연"처럼 띄어 입력해도 찾을 수 있도록
- * 공백을 모두 지우고 소문자로 바꾼다.
- */
+// 김 승연처럼 띄어 입력해도 찾도록 공백을 모두 없애고 소문자로 비교한다.
 export function normalizeMemberSearch(value: string): string {
   return value.toLowerCase().replace(/\s+/g, '')
 }
@@ -123,16 +109,10 @@ export function findMembership(
   )
 }
 
-/**
- * 기수·파트 필터의 "소속 없음" 값. 어느 기수·파트에도 속하지 않은 멤버만 고른다. 실제 기수·파트 이름과
- * 겹치지 않도록 이름으로 쓸 수 없는 값을 쓴다.
- */
+// 소속 없음 값은 실제 기수·파트 이름과 충돌하지 않도록 이름으로 쓸 수 없는 값을 쓴다.
 export const NO_MEMBERSHIP = '__none__'
 
-/**
- * 멤버의 소속이 기수·파트 필터에 맞는지. 빈 필터는 모두 맞고, `NO_MEMBERSHIP`은 기수·파트가 모두 비어
- * 있는(소속이 없는) 멤버에만 맞는다.
- */
+// NO_MEMBERSHIP은 기수·파트가 모두 비어 있는 멤버만 고른다. 빈 필터는 모두 허용한다.
 export function matchesMembershipFilter(
   memberships: readonly MemberMembership[],
   generation: string,
@@ -152,7 +132,6 @@ export function matchesMembershipFilter(
   return Boolean(findMembership(memberships, generation, part, partKey))
 }
 
-/** 파트 구성원 조회 결과(`usersToParts`)를 선택기의 소속 목록으로 바꾼다. */
 export function toMemberships(
   usersToParts: readonly {
     part: {

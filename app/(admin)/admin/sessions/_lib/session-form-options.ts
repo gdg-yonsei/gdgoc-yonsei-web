@@ -1,13 +1,7 @@
-/**
- * 세션 생성·수정 폼의 선택지 목록.
- *
- * 두 화면이 같은 선택지를 쓰도록 한 곳에 둔다. 값(`value`)은 DB enum과 같아야 하며
- * `lib/validations/session.ts`의 `SESSION_TYPES`, `ACTIVITY_CATEGORIES`와 짝을 이룬다.
- */
+/** 선택지 값은 DB enum 및 `SESSION_TYPES`·`ACTIVITY_CATEGORIES`와 일치해야 한다. */
 import type { AdminMessages } from '@/lib/admin-i18n'
 import type { ActivityCategory, SessionType } from '@/lib/validations/session'
 
-/** 세션 종류 선택지(일반 세션 / 파트 세션). */
 export function sessionTypeOptions(
   t: AdminMessages
 ): { name: string; value: SessionType }[] {

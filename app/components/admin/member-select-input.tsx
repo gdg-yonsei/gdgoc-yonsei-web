@@ -1,14 +1,11 @@
 'use client'
 
-/**
- * 참가자 여러 명을 토글 버튼으로 고르는 입력(클라이언트 컴포넌트). 선택한 id 목록을 JSON으로 `participants` 필드에 싣는다.
- */
+/** 선택 id는 participants 필드에 JSON으로 제출한다. */
 import { useState } from 'react'
 import { formatUserName } from '@/lib/format/user-name'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { cn } from '@/lib/cn'
 
-/** 선택지로 보여 줄 멤버. */
 export type ProjectMemberOption = {
   id: string
   name: string | null
@@ -20,12 +17,7 @@ export type ProjectMemberOption = {
   part: string | null
 }
 
-/**
- * 멤버 토글 목록. 한국어 이름이 있으면 한국어 이름을, 없으면 영어 이름을 보여 준다.
- *
- * @param defaultValue 처음부터 선택된 멤버 id
- * @param members 선택지
- */
+/** 한국어 이름이 없으면 영어 이름을 표시한다. */
 export default function MembersSelectInput({
   defaultValue,
   members,
@@ -68,9 +60,7 @@ export default function MembersSelectInput({
                 )
               }}
             >
-              <div className={'text-xs opacity-70'}>
-                {member.part ?? t('part')}
-              </div>
+              <div className={'text-xs'}>{member.part ?? t('part')}</div>
               <div>
                 {member.firstNameKo && member.lastNameKo
                   ? formatUserName(

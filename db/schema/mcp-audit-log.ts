@@ -1,6 +1,3 @@
-/**
- * MCP 도구 호출 감사 로그 테이블(`mcp_audit_log`).
- */
 import {
   index,
   integer,
@@ -12,10 +9,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { roleEnum, users } from '@/db/schema/users'
 
-/**
- * MCP 쓰기·관리 도구 호출 기록. 실패한 호출도 남긴다.
- * 입력은 비밀성 키를 가리고 긴 문자열을 잘라서 저장한다(lib/mcp/audit.ts).
- */
+// 실패한 쓰기·관리 호출도 기록하며, 입력의 비밀성 키와 긴 문자열은 lib/mcp/audit.ts에서 가린다.
 export const mcpAuditLog = pgTable(
   'mcp_audit_log',
   {

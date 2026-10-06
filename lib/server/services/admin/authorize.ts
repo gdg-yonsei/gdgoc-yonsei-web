@@ -1,9 +1,4 @@
-/**
- * 관리자 서비스 권한 판단.
- *
- * 역할 정책 표(`permission/policy.ts`)에 더해, MCP 토큰 스코프, 기수 단위 접근, 멤버 수정
- * 대상 제한 같은 서비스 계층 규칙을 함께 본다.
- */
+// 역할 정책에 MCP 스코프·기수 접근·수정 대상 역할 제한을 추가로 확인한다.
 import 'server-only'
 
 import { desc, eq } from 'drizzle-orm'
@@ -25,7 +20,6 @@ import {
   type ServiceResult,
 } from '@/lib/server/services/admin/types'
 
-/** 작업 종류에 필요한 OAuth 스코프. 삭제와 역할 변경은 가장 높은 권한이다. */
 export function requiredScopeFor(
   action: ActionType,
   resource: ResourceType
@@ -61,11 +55,7 @@ export function hasScope(actor: Actor, scope: Scope): boolean {
   return actor.scopes === 'session' || actor.scopes.includes(scope)
 }
 
-/**
- * 스코프와 역할을 모두 확인한다. 둘 중 하나라도 부족하면 FORBIDDEN.
- *
- * @param ownerId - 데이터 소유자 ID(본인 데이터만 허용하는 규칙에 쓴다)
- */
+// 역할과 스코프 중 하나라도 부족하면 FORBIDDEN이다. ownerId는 데이터 소유자 ID다.
 export function authorize(
   actor: Actor,
   action: ActionType,
@@ -119,10 +109,7 @@ const CORE_EDITABLE_ROLES: ReadonlySet<Role> = new Set([
   'UNVERIFIED',
 ])
 
-/**
- * 멤버 정보를 고칠 수 있는지. 본인은 항상, LEAD 는 누구나,
- * CORE 는 낮은 역할의 멤버만. (역할 매트릭스의 `put members` 위에 얹는 대상 제한)
- */
+// 멤버 수정은 본인·LEAD 또는 낮은 역할 멤버를 대상으로 하는 CORE에게만 허용한다.
 export function canEditMember(
   actor: Pick<Actor, 'userId' | 'role'>,
   target: { id: string; role: Role }
@@ -132,10 +119,7 @@ export function canEditMember(
   return actor.role === 'CORE' && CORE_EDITABLE_ROLES.has(target.role)
 }
 
-/**
- * 다른 사람의 이메일은 LEAD 만 바꾼다. 이메일로 소셜 계정을 연결하므로
- * 남의 이메일을 바꿀 수 있으면 그 계정을 가로챌 수 있다.
- */
+// 이메일로 소셜 계정을 연결하므로 계정 탈취를 막기 위해 남의 이메일 변경은 LEAD만 허용한다.
 export function canChangeMemberEmail(
   actor: Pick<Actor, 'userId' | 'role'>,
   targetId: string
@@ -143,10 +127,7 @@ export function canChangeMemberEmail(
   return targetId === actor.userId || actor.role === 'LEAD'
 }
 
-/**
- * 두 사람이 한 기수라도 함께 속해 있는지. 본인과 LEAD 는 항상 true.
- * 연락처(이메일·전화·학번) 공개와 CORE 의 멤버 수정 범위를 정한다.
- */
+// 공유 기수는 연락처 공개·CORE 수정 범위를 정한다. 본인·LEAD는 항상 허용한다.
 export async function sharesGenerationWith(
   actor: Pick<Actor, 'userId' | 'role'>,
   memberId: string

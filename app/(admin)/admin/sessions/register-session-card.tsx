@@ -1,6 +1,3 @@
-/**
- * "참여할 세션" 카드. 누르면 참가 신청 화면으로 간다.
- */
 import Link from 'next/link'
 import {
   formatAdminDate,
@@ -9,12 +6,7 @@ import {
 } from '@/lib/admin-i18n'
 import { pickLocalized, type Locale } from '@/lib/i18n'
 
-/**
- * 세션 이름(관리자 언어, 없으면 다른 언어), 파트, 일시, 신청 인원/정원을 보여 주는 링크 카드.
- *
- * @param participants 현재 신청자 수
- * @param maxCapacity 정원(null이면 제한 없음)
- */
+/** `maxCapacity`가 null이면 정원 제한이 없다. */
 export default function RegisterSessionCard({
   sessionId,
   sessionName,

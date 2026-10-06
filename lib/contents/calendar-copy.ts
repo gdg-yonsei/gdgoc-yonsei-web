@@ -1,14 +1,6 @@
-/**
- * 공개 캘린더 페이지(`/[lang]/calendar`) 문구.
- *
- * - `calendarPageCopy`: 서버에서 쓰는 제목·설명·메타 설명
- * - `calendarWidgetCopy`: 달력 클라이언트 컴포넌트에 넘기는 문구. 클라이언트에는 현재
- *   언어 것만 prop으로 넘겨 번들에 두 언어 사전이 실리지 않게 한다. 함수는 서버에서
- *   클라이언트로 넘길 수 없으므로 개수 문구는 `{count}` 템플릿으로 둔다.
- */
+// 클라이언트에는 현재 언어 문구만 prop으로 넘긴다. 함수는 전송할 수 없어 개수 문구는 {count} 템플릿이다.
 import type { Locale } from '@/lib/i18n'
 
-/** 캘린더 페이지 제목·설명(서버 전용). */
 export const calendarPageCopy = {
   en: {
     title: 'Calendar',
@@ -26,7 +18,6 @@ export const calendarPageCopy = {
   },
 } as const satisfies Record<Locale, Record<string, string>>
 
-/** 달력 위젯 문구 한 벌. */
 export type CalendarWidgetCopy = {
   weekdays: readonly string[]
   previous: string
@@ -36,15 +27,12 @@ export type CalendarWidgetCopy = {
   scheduled: string
   monthEmpty: string
   dayEmpty: string
-  /** 날짜 칸 접근성 라벨의 세션 개수: 0개, 1개, 여러 개. */
   countNone: string
   countOne: string
   countMany: string
-  /** 칸에 다 못 보인 일정 수(`+{count} more`). */
   more: string
 }
 
-/** 달력 위젯 문구(언어별). 페이지가 현재 언어 것만 골라 넘긴다. */
 export const calendarWidgetCopy: Record<Locale, CalendarWidgetCopy> = {
   en: {
     weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],

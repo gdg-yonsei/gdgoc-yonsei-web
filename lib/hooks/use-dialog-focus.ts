@@ -1,24 +1,10 @@
-/**
- * 모달 대화상자의 키보드 접근성 처리: ESC로 닫기, Tab 포커스 가두기, 닫은 뒤 포커스 되돌리기.
- *
- * 관리자 확인 모달(`modal.tsx`)과 모바일 메뉴 드로어(`menu-bar.tsx`)가 같은 규칙을 쓰도록
- * 한 곳에 모아 둔다. 클라이언트 컴포넌트에서만 호출한다.
- */
 import { useEffect, useEffectEvent, type RefObject } from 'react'
 
-/** 대화상자 안에서 Tab으로 이동할 수 있는 요소 선택자. */
 export const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
-/**
- * 열려 있는 동안 포커스를 `panelRef` 안에 가두고, 닫히면 열기 직전에 포커스가 있던 요소로 되돌린다.
- *
- * @param isOpen 대화상자가 열려 있는지
- * @param panelRef 대화상자 패널 요소
- * @param onClose ESC를 눌렀을 때 호출한다
- * @param initialFocusRef 열릴 때 처음 포커스할 요소. 생략하면 패널의 첫 번째 포커스 가능 요소.
- *   파괴적 확인 모달은 "취소" 버튼을 넘겨, Enter 한 번에 삭제되는 일을 막는다.
- */
+// 열릴 때 initialFocusRef 또는 첫 포커스 요소를 쓰며 닫히면 원래 포커스로 돌아간다.
+// 파괴적 확인 모달은 취소 버튼을 넘겨 Enter 한 번으로 삭제되지 않게 한다.
 export function useDialogFocus({
   isOpen,
   panelRef,

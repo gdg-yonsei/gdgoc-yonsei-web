@@ -1,11 +1,6 @@
-/**
- * GDG `< >` 마크의 기하 정보. `app/components/svg/gdg-logo.tsx`의 캡슐 경로 네 개(viewBox 512×321)에서
- * 잰 값이다. 각 캡슐은 반지름 ≈52.78의 스타디움 모양이고, 중심선은 괄호 꼭짓점에서 가로 113.6, 세로 ±80.2만큼
- * 떨어진 팔 끝까지 이어진다. 히어로 포스터(SVG)와 WebGL 필드가 모두 이 숫자에서 모양을 만들어 두 그림이
- * 정확히 겹친다.
- */
+// 원본 로고(512×321)의 반지름 ≈52.78, 팔 끝 오프셋(113.6, ±80.2)을 SVG·WebGL이 공유한다.
+// 같은 기하 값을 써야 히어로 포스터와 WebGL 필드가 정확히 겹친다.
 
-/** 로고 원본 좌표에서 잰 괄호 치수. */
 export const BRACKET = {
   armDx: 113.6,
   armDy: 80.2,
@@ -18,10 +13,8 @@ export const BRACKET_VIEWBOX = {
   height: BRACKET.armDy * 2 + BRACKET.radius * 2,
 } as const
 
-/** 캡슐 색(GDG 4색). */
 export type CapsuleHue = 'red' | 'blue' | 'green' | 'yellow'
 
-/** 캡슐 하나: 양끝 중심점(a, b), 반지름, 색. */
 export type Capsule = {
   hue: CapsuleHue
   ax: number
@@ -31,16 +24,11 @@ export type Capsule = {
   r: number
 }
 
-/** 왼쪽 괄호 `<` / 오른쪽 괄호 `>`. */
 export type BracketSide = 'left' | 'right'
 
-/** 화면 좌표 사각형. */
 export type Rect = { left: number; top: number; width: number; height: number }
 
-/**
- * 괄호 하나의 캡슐들(자체 viewBox 좌표). 뒤에 오는 캡슐이 앞 캡슐 위에 그려져 로고와
- * 같아진다: 빨강 위에 파랑, 노랑 위에 초록.
- */
+// 뒤 캡슐이 앞 캡슐 위에 그려져야 원본처럼 빨강 위 파랑, 노랑 위 초록이 된다.
 export function bracketCapsulesInViewBox(side: BracketSide): Capsule[] {
   const { armDx, armDy, radius: r } = BRACKET
   const middle = r + armDy
@@ -77,10 +65,7 @@ export function capsulePath({ ax, ay, bx, by, r }: Capsule): string {
   return `M${x1} ${y1}L${x2} ${y2}A${radius} ${radius} 0 0 0 ${x3} ${y3}L${x4} ${y4}A${radius} ${radius} 0 0 0 ${x1} ${y1}Z`
 }
 
-/**
- * 화면에 그려진 두 괄호 상자(예: 캔버스 기준으로 잰 포스터 자리)를 그 좌표계의 캡슐로 바꾼다.
- * `offset`은 스크롤할 때 두 괄호를 좌우로 벌리는 거리다.
- */
+// offset은 스크롤할 때 화면 좌표의 두 괄호를 좌우로 벌리는 거리다.
 export function capsulesFromBracketRects(
   left: Rect,
   right: Rect,
@@ -102,13 +87,11 @@ export function capsulesFromBracketRects(
   return [...place(left, 'left', -offset), ...place(right, 'right', offset)]
 }
 
-/** 히어로 높이 대비 스크롤 진행률(0~1). */
 export function scrollProgress(scrollY: number, heroHeight: number): number {
   if (heroHeight <= 0) return 0
   return Math.min(1, Math.max(0, scrollY / heroHeight))
 }
 
-/** 히어로를 스크롤하는 동안 각 괄호가 벌어지는 거리(smoothstep 이징). */
 export function partingOffset(progress: number, viewportWidth: number): number {
   const t = Math.min(1, Math.max(0, progress))
   return t * t * (3 - 2 * t) * viewportWidth * 0.55

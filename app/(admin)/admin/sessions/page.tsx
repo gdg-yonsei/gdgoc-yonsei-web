@@ -1,6 +1,3 @@
-/**
- * 세션 목록 화면(`/admin/sessions`): 세션 표, 참여 중인 세션, 참여할 세션.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import {
   AdminCardSkeleton,
@@ -23,12 +20,10 @@ import {
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Sessions',
 }
 
-/** 세션 목록. 표는 Suspense로 스트리밍하고 그동안 스켈레톤을 보여 준다. */
 export default async function SessionsPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),
@@ -44,7 +39,6 @@ export default async function SessionsPage() {
     canCreate && resolvedScope?.scope?.kind === 'generation'
 
   return (
-    // 세션 목록을 먼저 두고, 개인 일정(참여 중/참여 가능)은 그 아래 보조 섹션으로 둔다.
     // 세션은 특정 기수에 속해야 하므로 "전체 기수" 범위에서는 만들기 버튼 대신 안내를 보인다.
     <AdminDefaultLayout className={'gap-6'}>
       <AdminPageHeader

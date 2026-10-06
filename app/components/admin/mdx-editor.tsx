@@ -1,18 +1,10 @@
 'use client'
 
-/**
- * Markdown 편집기와 실시간 미리보기(클라이언트 컴포넌트). 세션·프로젝트 본문 입력에 쓴다.
- */
 import { ChangeEvent, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 
-/**
- * 왼쪽은 `<textarea>`, 오른쪽은 `react-markdown` 미리보기. 입력에 맞춰 높이가 늘어난다.
- *
- * @param name 폼 필드 이름(제출 값은 textarea 원문)
- * @param defaultValue 기존 본문
- */
+/** textarea 원문을 폼 값으로 제출하며, 미리보기는 react-markdown으로 렌더링한다. */
 export default function MDXEditor({
   title,
   name,

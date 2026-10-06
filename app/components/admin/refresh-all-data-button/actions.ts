@@ -1,17 +1,11 @@
 'use server'
 
-/**
- * 공개 사이트 캐시 전체 무효화 Server Action. 권한은 CORE·LEAD(`publicCache` 리소스의 `put`).
- */
 import { invalidateAllPublicCache } from '@/lib/server/cache'
 import { logger } from '@/lib/server/logger'
 import { requirePermission } from '@/lib/server/permission/require-permission'
 
-/**
- * 공개 사이트 캐시를 무효화한다(사이드바의 새로고침 버튼). DB를 직접 고친 뒤 화면에 반영되지 않을 때 쓰는
- * 비상용 기능이다. 목록(홈, 허브, 기수 목록, 사이트맵)은 즉시, 세션·프로젝트 상세는 다음 방문 때 백그라운드에서
- * 새로 만든다(`invalidateAllPublicCache` 참고).
- */
+/** DB 직접 변경 뒤 사용하는 비상 갱신으로, 목록 캐시는 즉시 무효화한다.
+ * 세션·프로젝트 상세는 다음 방문 때 백그라운드에서 갱신한다. */
 export async function revalidateAllDataAction() {
   await requirePermission('put', 'publicCache')
 

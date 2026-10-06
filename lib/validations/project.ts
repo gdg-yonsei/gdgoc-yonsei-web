@@ -1,9 +1,4 @@
-/**
- * 프로젝트 입력 스키마.
- *
- * 입력 검증 스키마(zod). 서비스 계층이 웹 폼과 MCP 입력을 모두 이 스키마로 검증한다.
- * 오류 문구는 관리자 화면과 MCP 응답에 그대로 보이므로 영어로 쓴다.
- */
+// 웹 폼·MCP 응답에 검증 오류가 그대로 보여 영어로 쓴다.
 import { z } from 'zod'
 import {
   MAX_PROJECT_TAGS,
@@ -21,7 +16,6 @@ const tagName = z
     message: 'Tags cannot contain commas or pipes',
   })
 
-/** 프로젝트 입력. 두 언어 이름·설명·본문, 대표·본문 이미지, 참가자는 필수다. */
 export const projectValidation = z.object({
   name: z.string().trim().nonempty('Name is required'),
   nameKo: z.string().trim().nonempty('Korean Name is required'),

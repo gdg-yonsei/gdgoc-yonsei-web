@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: serve-dev.sh [port] — next dev with CI's fake env and the local DB.
+# Usage: serve-dev.sh [port]. Runs next dev with CI's fake env and the local DB.
 set -u
 cd "$(git rev-parse --show-toplevel)"
 PORT=${1:-3200}

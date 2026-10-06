@@ -1,10 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { readSeededData } from './helpers/read-seeded-data'
 
-/*
- * Layout regressions a unit test cannot see: both depend on real font
- * metrics and viewport-relative type sizes.
- */
+/* Layout regressions here depend on real font metrics and viewport-relative type sizes. */
 
 test('hero title stays on one line on wide screens', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 })

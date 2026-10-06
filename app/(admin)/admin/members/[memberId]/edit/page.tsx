@@ -1,9 +1,4 @@
-/**
- * 멤버 정보 수정 화면(`/admin/members/{id}/edit`).
- *
- * 레이아웃 가드(`members` 수정) 위에, 대상 역할·기수까지 보는 세밀한 판단(`authorizeMemberEdit`)을
- * 한 번 더 한다. 다른 사람의 이메일은 LEAD만 바꿀 수 있어 그 외에는 읽기 전용으로 보인다.
- */
+/** 레이아웃 권한 외에 대상 역할·기수를 authorizeMemberEdit으로 확인한다. 다른 사람의 이메일은 LEAD만 고친다. */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -27,12 +22,10 @@ import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { connection } from 'next/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Member',
 }
 
-/** 멤버 수정 폼. 수정할 수 없으면 403, 멤버가 없으면 404. */
 export default async function EditMemberPage({
   params,
 }: PageProps<'/admin/members/[memberId]/edit'>) {
@@ -40,9 +33,9 @@ export default async function EditMemberPage({
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
   const { memberId } = await params
-  // 가드가 통과한 세션을 아래 역할 관리 UI 노출 여부 판단에 재사용한다.
+
   const session = await requirePermission('put', 'members', memberId)
-  // CORE 는 낮은 역할의 멤버만 고칠 수 있고, 남의 이메일은 LEAD 만 바꾼다.
+
   const actor = await getWebActor()
   const editable = actor ? await authorizeMemberEdit(actor, memberId) : null
   if (!actor || !editable) forbidden()

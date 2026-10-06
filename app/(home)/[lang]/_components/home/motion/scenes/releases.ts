@@ -1,8 +1,3 @@
-/**
- * 대표 프로젝트 섹션의 연출: 표지 망점 인쇄, 카드 등장, 포인터 기울기.
- *
- * 장면 함수 규칙은 `../scene.ts` 참고.
- */
 import { createAnimatable, spring, stagger, utils } from 'animejs'
 import { whenPresent } from '@/lib/motion/present'
 import { SPRINGS } from '@/lib/motion/springs'
@@ -11,11 +6,7 @@ import { arrival } from '../arrival'
 import type { Scene } from '../scene'
 import { sceneTimeline } from '../timeline'
 
-/**
- * `<releases>` 장면. 대표 프로젝트 표지가 커지는 망점으로 인쇄되듯 나타나고, 카드가 떠오르며 기술 스택
- * 칩이 튀어 오른다. 정밀 포인터에서는 카드가 포인터 쪽으로 기울고 표지는 반대로 살짝 밀린다. 누르는
- * 순간 카드를 바로 평평하게 되돌려, 프로젝트 상세로 넘어가는 공유 표지 전환이 평평한 상태에서 시작된다.
- */
+/** 누를 때 카드를 평평하게 되돌려, 공유 표지 전환이 기울어진 상태로 시작되지 않게 한다. */
 const releases: Scene = ({ root, scope, matches, belowFold }) => {
   const cleanups: Array<() => void> = []
 
@@ -67,8 +58,8 @@ const releases: Scene = ({ root, scope, matches, belowFold }) => {
     }
 
     if (!matches.fine) return
-    // 카드의 기울기 효과는 포인터가 처음 닿을 때 만들어, 측정 작업이 섹션을 준비하는 스크롤 프레임에
-    // 끼지 않게 한다.
+    // 기울기 효과는 첫 포인터 진입 때 만들어, 스크롤 프레임의 장면 준비 중 측정을 피한다.
+
     scope.add('lean', (item: HTMLElement) => {
       const lean = createAnimatable(item, {
         '--tilt-x': { unit: 'deg' },

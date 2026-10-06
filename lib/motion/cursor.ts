@@ -1,9 +1,3 @@
-/**
- * 선언문(manifesto) 단어 강조 연출용 헬퍼.
- *
- * 홈 화면 연출(anime.js 장면, CSS 전환)이 쓰는 순수 계산 함수. DOM 없이 단위 테스트한다.
- */
-
 type Box = { left: number; top: number; width: number; height: number }
 
 /** 지나간 정도(progress)에 따라 어느 단어까지 불이 켜졌는지.

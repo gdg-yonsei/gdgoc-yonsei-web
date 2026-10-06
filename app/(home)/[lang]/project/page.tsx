@@ -1,6 +1,3 @@
-/**
- * 프로젝트 허브(`/{lang}/project`): 기수 띠, 검색·필터, 프로젝트 격자.
- */
 import type { Metadata } from 'next'
 import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
 import {
@@ -38,12 +35,10 @@ import { projectPath } from '@/lib/site/routes'
 const en = projectArchiveCopy.en
 const ko = projectArchiveCopy.ko
 
-/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = projectArchiveCopy[locale]
@@ -56,7 +51,6 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-/** 페이지 본문. */
 export default function ProjectHubPage() {
   return (
     <ArchiveHubShell

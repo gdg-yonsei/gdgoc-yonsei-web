@@ -1,11 +1,4 @@
-/**
- * 배포 후 스모크 테스트: 실행 중인 사이트에 읽기 전용 GET 요청만 보낸다.
- *
- * 단위·e2e 테스트가 실제 배포에서 볼 수 없는 것을 확인한다: 빌드의 런타임 의존성(예: 소셜 이미지용
- * satori의 wasm), 공개 페이지 뒤의 운영 DB, redirect와 응답 헤더.
- *
- * 사용법: node scripts/ci/smoke-test.mjs https://gdgoc.yonsei.ac.kr
- */
+// 운영 DB·런타임 의존성·리다이렉트·헤더를 읽기 전용 GET으로 검사한다: node scripts/ci/smoke-test.mjs <URL>.
 import { appendFileSync } from 'node:fs'
 
 const baseURL = (process.argv[2] ?? process.env.SMOKE_BASE_URL ?? '').replace(
@@ -42,7 +35,7 @@ async function check(name, fn) {
   try {
     const detail = await fn()
     results.push({ name, ok: true, detail })
-    console.log(`ok   ${name}${detail ? ` — ${detail}` : ''}`)
+    console.log(`ok   ${name}${detail ? `: ${detail}` : ''}`)
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     results.push({ name, ok: false, detail: message })
@@ -98,7 +91,6 @@ function ogImage(body) {
 }
 
 // 배포가 끝났다고 보고된 뒤에도 새 컨테이너가 트래픽을 받기까지 시간이 걸릴 수 있다.
-// 홈 페이지가 응답할 때까지 기다린 뒤에 검사를 시작한다.
 async function waitForSite() {
   for (let attempt = 1; attempt <= WARMUP_ATTEMPTS; attempt += 1) {
     try {
@@ -164,7 +156,6 @@ await check('site social image', async () => {
   return expectImage(ogImage(body))
 })
 
-// 상세 페이지와 그 소셜 이미지(satori로 생성), 종류별로 하나씩.
 for (const [kind, pattern] of [
   ['session', /href="(\/ko\/session\/[^"/]+\/[0-9a-f-]{36})"/],
   ['project', /href="(\/ko\/project\/[^"/]+\/[0-9a-f-]{36})"/],
@@ -209,7 +200,7 @@ const failed = results.filter((result) => !result.ok)
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const lines = [
-    `### Smoke test — ${baseURL}`,
+    `### Smoke test: ${baseURL}`,
     '',
     '| Check | Result | Detail |',
     '| --- | --- | --- |',

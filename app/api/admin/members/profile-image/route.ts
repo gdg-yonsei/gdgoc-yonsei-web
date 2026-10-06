@@ -1,6 +1,3 @@
-/**
- * 관리자 API: 멤버 프로필 이미지 업로드용 사전 서명 URL 발급.
- */
 import {
   parseRequestBody,
   privateError,
@@ -13,9 +10,6 @@ import { getSafeImageExtension } from '@/lib/server/storage/object-key'
 import { presignImageUpload } from '@/lib/server/storage/r2'
 import { memberProfileImageUploadValidation } from '@/lib/validations/admin-api'
 
-/**
- * 사용자의 프로필 이미지를 업로드 할 수 있는 사전 서명 URL 을 반환한다.
- */
 export async function POST(request: Request) {
   // 권한 검사에 memberId 가 필요하므로 본문 검증이 먼저다.
   const body = parseRequestBody(

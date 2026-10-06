@@ -69,12 +69,14 @@ app/components/header/*, app/components/footer.tsx (modify Task 16)
 ### Task 1: 폰트 self-host (Pretendard Variable + JetBrains Mono Variable)
 
 **Files:**
+
 - Create: `app/fonts/pretendard-variable.woff2`, `app/fonts/jetbrains-mono-variable.woff2` (npm 패키지에서 복사)
 - Modify: `app/(home)/[lang]/layout.tsx` (googleSans 제거, 두 폰트 등록)
 - Modify: `app/globals.css` (`@theme inline` 폰트 매핑)
 - Modify: `package.json` (devDeps: pretendard, @fontsource-variable/jetbrains-mono)
 
 **Interfaces:**
+
 - Produces: CSS 변수 `--font-pretendard`, `--font-jetbrains-mono`; Tailwind 유틸 `font-sans`(Pretendard), `font-mono`(JetBrains Mono). 이후 모든 태스크가 `font-mono`를 데이터 라벨에 사용.
 
 - [ ] **Step 1: 패키지 설치 및 woff2 복사**
@@ -152,10 +154,12 @@ git commit -m "feat: self-host Pretendard and JetBrains Mono variable fonts"
 ### Task 2: 시맨틱 컬러 토큰 + 베이스 스타일
 
 **Files:**
+
 - Modify: `app/globals.css`
 - Modify: `app/(home)/[lang]/layout.tsx` (html 색상 클래스)
 
 **Interfaces:**
+
 - Produces: Tailwind 유틸 `bg-surface`, `bg-surface-raised`, `text-ink`, `text-yonsei-blue`, `bg-yonsei-blue`, `border-ink/10` 등 + 전역 `:focus-visible` 링 + `.cv-auto` 유틸. 이후 모든 UI 태스크가 사용.
 
 - [ ] **Step 1: 토큰 추가**
@@ -174,10 +178,10 @@ git commit -m "feat: self-host Pretendard and JetBrains Mono variable fonts"
 Task 1에서 만든 `@theme inline` 블록 안에 폰트 변수 아래로 추가:
 
 ```css
-  --color-surface: var(--surface);
-  --color-surface-raised: var(--surface-raised);
-  --color-ink: var(--ink);
-  --color-yonsei-blue: var(--yonsei-blue);
+--color-surface: var(--surface);
+--color-surface-raised: var(--surface-raised);
+--color-ink: var(--ink);
+--color-yonsei-blue: var(--yonsei-blue);
 ```
 
 - [ ] **Step 2: 베이스 포커스 링 + content-visibility 유틸 추가**
@@ -185,10 +189,10 @@ Task 1에서 만든 `@theme inline` 블록 안에 폰트 변수 아래로 추가
 `@layer utilities` 블록 안(`.no-scrollbar` 아래)에 추가:
 
 ```css
-  .cv-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 640px;
-  }
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}
 ```
 
 파일 끝(shooting-star CSS 위 아무 곳)에 추가:
@@ -227,13 +231,15 @@ git commit -m "feat: add semantic color tokens, focus ring, and cv-auto utility"
 
 ---
 
-### Task 3: 스키마 확장 — sessions.category + projects.repoUrl/demoUrl + 마이그레이션·backfill
+### Task 3: 스키마 확장: sessions.category + projects.repoUrl/demoUrl + 마이그레이션·backfill
 
 **Files:**
+
 - Modify: `db/schema/sessions.ts`, `db/schema/projects.ts`
 - Create(generated): `drizzle/00XX_*.sql` (backfill UPDATE 추가)
 
 **Interfaces:**
+
 - Produces: `activityCategoryEnum`(export, `db/schema/sessions.ts`), `sessions.category`(notNull, default `'tech_talk'`), `projects.repoUrl: string | null`, `projects.demoUrl: string | null`. Task 4·5·7·8이 소비.
 
 - [ ] **Step 1: sessions 스키마에 enum + 컬럼 추가**
@@ -285,7 +291,7 @@ UPDATE "sessions" SET "category" = 'part_session' WHERE "type" = 'Part Session';
 pnpm db:migrate
 ```
 
-Expected: 에러 없이 완료. (로컬 DB 필요 — 실패 시 docker compose 등으로 Postgres 기동 후 재시도.)
+Expected: 에러 없이 완료. (로컬 DB 필요, 실패 시 docker compose 등으로 Postgres 기동 후 재시도.)
 
 - [ ] **Step 5: 타입·테스트 확인 후 커밋**
 
@@ -297,9 +303,10 @@ git commit -m "feat: add session activity category enum and project repo/demo UR
 
 ---
 
-### Task 4: 세션 category 배선 — zod·form-data·어드민 폼·액션
+### Task 4: 세션 category 배선: zod·form-data·어드민 폼·액션
 
 **Files:**
+
 - Modify: `lib/validations/session.ts`, `lib/server/form-data/get-session-form-data.ts`
 - Modify: `app/(admin)/admin/sessions/create/page.tsx`, `app/(admin)/admin/sessions/create/actions.ts`
 - Modify: `app/(admin)/admin/sessions/[sessionId]/edit/page.tsx`, `app/(admin)/admin/sessions/[sessionId]/edit/actions.ts`
@@ -307,6 +314,7 @@ git commit -m "feat: add session activity category enum and project repo/demo UR
 - Modify(필요 시): `tests/lib/validations/validations.test.ts`, `tests/lib/server/admin-actions-crud/sessions.test.ts`, `tests/lib/server/form-data/form-data.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 3의 `sessions.category` 컬럼.
 - Produces: `sessionValidation`에 필수 필드 `category`(z.enum 5종), `getSessionFormData()` 반환에 `category: 'tech_talk' | 'part_session' | 'hackathon' | 'demo_day' | 'devrel'`(폼값 없거나 불량이면 `'tech_talk'` 폴백). 어드민 폼 name은 `category`.
 
@@ -369,7 +377,7 @@ describe('sessionValidation category', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/lib/validations/session-category.test.ts`
-Expected: FAIL — `rejects an unknown category`와 `rejects a missing category`가 실패(현재 zod가 category 키를 모름 → strip 후 통과해버림).
+Expected: FAIL: `rejects an unknown category`와 `rejects a missing category`가 실패(현재 zod가 category 키를 모름 → strip 후 통과해버림).
 
 - [ ] **Step 3: zod 스키마 구현**
 
@@ -415,12 +423,12 @@ export type ActivityCategoryFormValue = (typeof ACTIVITY_CATEGORIES)[number]
 반환 타입 주석 객체에 `category: ActivityCategoryFormValue` 추가. 함수 본문의 `const type = ...` 근처에 추가:
 
 ```ts
-  const rawCategory = formData.get('category')
-  const category: ActivityCategoryFormValue = ACTIVITY_CATEGORIES.includes(
-    rawCategory as ActivityCategoryFormValue
-  )
-    ? (rawCategory as ActivityCategoryFormValue)
-    : 'tech_talk'
+const rawCategory = formData.get('category')
+const category: ActivityCategoryFormValue = ACTIVITY_CATEGORIES.includes(
+  rawCategory as ActivityCategoryFormValue
+)
+  ? (rawCategory as ActivityCategoryFormValue)
+  : 'tech_talk'
 ```
 
 return 객체에 `category,` 추가.
@@ -428,30 +436,31 @@ return 객체에 `category,` 추가.
 - [ ] **Step 6: 액션·폼 배선**
 
 `app/(admin)/admin/sessions/create/actions.ts`:
+
 1. `getSessionFormData(formData)` 구조 분해에 `category,` 추가.
 2. `sessionValidation.parse({ ... })` 페이로드에 `category,` 추가.
 3. `db.insert(sessions).values({ ... })`에 `category: category,` 추가(`type: type,` 줄 옆).
 
-`app/(admin)/admin/sessions/[sessionId]/edit/actions.ts` (update 액션 — create와 동일 패턴): 구조 분해·validation 페이로드·`.set({ ... })` 객체 3곳에 `category` 추가.
+`app/(admin)/admin/sessions/[sessionId]/edit/actions.ts` (update 액션, create와 동일 패턴): 구조 분해·validation 페이로드·`.set({ ... })` 객체 3곳에 `category` 추가.
 
-`app/(admin)/admin/sessions/create/page.tsx` — 기존 `DataSelectInput ... name={'type'}` 블록 **바로 아래**에 추가:
+`app/(admin)/admin/sessions/create/page.tsx`: 기존 `DataSelectInput ... name={'type'}` 블록 **바로 아래**에 추가:
 
 ```tsx
-        <DataSelectInput
-          data={[
-            { name: 'Tech Talk (T19)', value: 'tech_talk' },
-            { name: 'Part Session', value: 'part_session' },
-            { name: 'Hackathon', value: 'hackathon' },
-            { name: 'Demo Day', value: 'demo_day' },
-            { name: 'DevRel / Social', value: 'devrel' },
-          ]}
-          name={'category'}
-          title={'Activity Category'}
-          defaultValue={'tech_talk'}
-        />
+<DataSelectInput
+  data={[
+    { name: 'Tech Talk (T19)', value: 'tech_talk' },
+    { name: 'Part Session', value: 'part_session' },
+    { name: 'Hackathon', value: 'hackathon' },
+    { name: 'Demo Day', value: 'demo_day' },
+    { name: 'DevRel / Social', value: 'devrel' },
+  ]}
+  name={'category'}
+  title={'Activity Category'}
+  defaultValue={'tech_talk'}
+/>
 ```
 
-`app/(admin)/admin/sessions/[sessionId]/edit/page.tsx` — 같은 위치(기존 `name={'type'}` select 아래)에 동일 블록을 추가하되 `defaultValue={sessionData.category ?? 'tech_talk'}` (edit 페이지가 세션을 담는 변수명을 그대로 사용 — `grep -n "type\b.*DataSelectInput\|defaultValue={.*type" "app/(admin)/admin/sessions/[sessionId]/edit/page.tsx"`로 확인).
+`app/(admin)/admin/sessions/[sessionId]/edit/page.tsx`: 같은 위치(기존 `name={'type'}` select 아래)에 동일 블록을 추가하되 `defaultValue={sessionData.category ?? 'tech_talk'}` (edit 페이지가 세션을 담는 변수명을 그대로 사용: `grep -n "type\b.*DataSelectInput\|defaultValue={.*type" "app/(admin)/admin/sessions/[sessionId]/edit/page.tsx"`로 확인).
 
 - [ ] **Step 7: 전체 테스트 실행 + 기존 픽스처 갱신**
 
@@ -467,15 +476,17 @@ git commit -m "feat: wire session activity category through validation and admin
 
 ---
 
-### Task 5: 프로젝트 repoUrl/demoUrl 배선 — zod·form-data·어드민 폼·액션
+### Task 5: 프로젝트 repoUrl/demoUrl 배선: zod·form-data·어드민 폼·액션
 
 **Files:**
+
 - Modify: `lib/validations/project.ts`, `lib/server/form-data/get-project-form-data.ts`
 - Modify: `app/(admin)/admin/projects/create/page.tsx`, `app/(admin)/admin/projects/create/actions.ts`
 - Modify: `app/(admin)/admin/projects/[projectId]/edit/page.tsx`, `app/(admin)/admin/projects/[projectId]/edit/actions.ts`
 - Create: `tests/lib/validations/project-urls.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 3의 `projects.repoUrl/demoUrl`.
 - Produces: `projectValidation`에 `repoUrl`/`demoUrl`(`z.string().trim().url().nullable()`), `getProjectFormData()` 반환에 `repoUrl: string | null`/`demoUrl: string | null`(빈 문자열→null). 폼 name: `repoUrl`, `demoUrl`.
 
@@ -532,7 +543,7 @@ describe('projectValidation urls', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/lib/validations/project-urls.test.ts`
-Expected: FAIL — `accepts null...`(키 없음으로 통과하지만 null 명시 시 strip이라 통과함) 중 `rejects a malformed url`이 실패.
+Expected: FAIL: `accepts null...`(키 없음으로 통과하지만 null 명시 시 strip이라 통과함) 중 `rejects a malformed url`이 실패.
 
 - [ ] **Step 3: 구현**
 
@@ -559,8 +570,8 @@ function getNullableUrl(formData: FormData, key: string): string | null {
 반환 타입에 `repoUrl: string | null` / `demoUrl: string | null` 추가, 본문에:
 
 ```ts
-  const repoUrl = getNullableUrl(formData, 'repoUrl')
-  const demoUrl = getNullableUrl(formData, 'demoUrl')
+const repoUrl = getNullableUrl(formData, 'repoUrl')
+const demoUrl = getNullableUrl(formData, 'demoUrl')
 ```
 
 return 객체에 `repoUrl, demoUrl,` 추가.
@@ -611,13 +622,15 @@ git commit -m "feat: wire project repo/demo URLs through validation and admin fo
 
 ---
 
-### Task 6: `lib/heatmap.ts` — 주 버킷팅·색·우선순위·opacity (TDD)
+### Task 6: `lib/heatmap.ts`: 주 버킷팅·색·우선순위·opacity (TDD)
 
 **Files:**
+
 - Create: `lib/heatmap.ts`
 - Test: `tests/lib/heatmap.test.ts`
 
 **Interfaces:**
+
 - Produces (이후 태스크가 그대로 소비하는 시그니처):
   - `ACTIVITY_CATEGORIES`, `type ActivityCategory`
   - `CATEGORY_PRIORITY: readonly ActivityCategory[]`
@@ -745,7 +758,7 @@ describe('intensityOpacity', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/lib/heatmap.test.ts`
-Expected: FAIL — `Cannot find module '@/lib/heatmap'` 계열 에러.
+Expected: FAIL: `Cannot find module '@/lib/heatmap'` 계열 에러.
 
 - [ ] **Step 3: 구현**
 
@@ -916,13 +929,15 @@ git commit -m "feat: add heatmap week-bucketing, category color, and intensity u
 
 ---
 
-### Task 7: public 읽기 모델 4종 — `lib/server/queries/public/home.ts`
+### Task 7: public 읽기 모델 4종: `lib/server/queries/public/home.ts`
 
 **Files:**
+
 - Create: `lib/server/queries/public/home.ts`
 - Test: `tests/lib/server/fetcher/home-queries.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 3 스키마, Task 6 `HEATMAP_WEEKS`/`WEEK_MS`. 기존 `cacheQuery`, `publicCachePolicy`, 태그 함수들, `getSessionVisibilityBucket`(호출부에서).
 - Produces (홈·어바웃 페이지가 소비):
   - `getHeatmapSessions(locale: Locale, visibilityBucket: string)` → `{ id, name, nameKo, startAt: Date | null, category, internalCount: number, externalCount: number }[]`
@@ -1143,7 +1158,7 @@ describe('home queries', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/lib/server/fetcher/home-queries.test.ts`
-Expected: FAIL — `Cannot find module '@/lib/server/queries/public/home'`.
+Expected: FAIL: `Cannot find module '@/lib/server/queries/public/home'`.
 
 - [ ] **Step 3: 구현**
 
@@ -1264,7 +1279,7 @@ export async function getFeaturedProjects(locale: Locale) {
   }))
 }
 
-/** 커뮤니티 집계 (하드코딩 금지 — 스펙 §9 Stats) */
+/** 커뮤니티 집계 (하드코딩 금지: 스펙 §9 Stats) */
 export async function getCommunityStats(locale: Locale) {
   'use cache: remote'
 
@@ -1425,16 +1440,18 @@ git commit -m "feat: add public home/about read-model queries"
 
 ---
 
-### Task 8: 로컬 시드 — `scripts/seed-dev.ts` + `pnpm db:seed`
+### Task 8: 로컬 시드: `scripts/seed-dev.ts` + `pnpm db:seed`
 
 **Files:**
+
 - Create: `scripts/seed/helpers.ts`, `scripts/seed-dev.ts`
 - Test: `tests/lib/seed-helpers.test.ts`
 - Modify: `package.json` (script `db:seed`, devDep `tsx`)
 
 **Interfaces:**
+
 - Consumes: Task 3 스키마(category/repoUrl/demoUrl 포함), 전체 db/schema.
-- Produces: `pnpm db:seed` — 재실행 가능(마커 기반 정리), 로컬 DB 가드(`--force` 없으면 localhost 계열만). helpers: `weeklyOccurrences(options)`, `buildSessionPlans(): SeedSessionPlan[]`, `SEED_WINDOW`, `SEED_BREAKS`.
+- Produces: `pnpm db:seed`: 재실행 가능(마커 기반 정리), 로컬 DB 가드(`--force` 없으면 localhost 계열만). helpers: `weeklyOccurrences(options)`, `buildSessionPlans(): SeedSessionPlan[]`, `SEED_WINDOW`, `SEED_BREAKS`.
 
 - [ ] **Step 1: 실패하는 헬퍼 테스트 작성**
 
@@ -1516,7 +1533,7 @@ describe('buildSessionPlans', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/lib/seed-helpers.test.ts`
-Expected: FAIL — helpers 모듈 없음.
+Expected: FAIL: helpers 모듈 없음.
 
 - [ ] **Step 3: helpers 구현**
 
@@ -1524,11 +1541,7 @@ Create `scripts/seed/helpers.ts`:
 
 ```ts
 export type SeedCategory =
-  | 'tech_talk'
-  | 'part_session'
-  | 'hackathon'
-  | 'demo_day'
-  | 'devrel'
+  'tech_talk' | 'part_session' | 'hackathon' | 'demo_day' | 'devrel'
 
 export type SeedSessionPlan = {
   name: string
@@ -1604,13 +1617,16 @@ export const SEED_BREAKS: readonly DateRange[] = [
 ]
 
 function twoHourSlot(start: Date): { startAt: Date; endAt: Date } {
-  return { startAt: start, endAt: new Date(start.getTime() + 2 * 60 * 60 * 1000) }
+  return {
+    startAt: start,
+    endAt: new Date(start.getTime() + 2 * 60 * 60 * 1000),
+  }
 }
 
 export function buildSessionPlans(): SeedSessionPlan[] {
   const plans: SeedSessionPlan[] = []
 
-  // 매주 화요일 19:00 KST (10:00 UTC) — T19
+  // 매주 화요일 19:00 KST (10:00 UTC): T19
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 2,
@@ -1627,7 +1643,7 @@ export function buildSessionPlans(): SeedSessionPlan[] {
     })
   })
 
-  // 격주 목요일 — 파트 세션
+  // 격주 목요일: 파트 세션
   weeklyOccurrences({
     ...SEED_WINDOW,
     weekday: 4,
@@ -1648,14 +1664,70 @@ export function buildSessionPlans(): SeedSessionPlan[] {
   const specials: Array<
     Omit<SeedSessionPlan, 'startAt' | 'endAt'> & { dateIso: string }
   > = [
-    { name: 'Namu-thon', nameKo: '나무톤', category: 'hackathon', dateIso: '2025-11-08T01:00:00.000Z', location: 'Baekyang Nuri', locationKo: '백양누리' },
-    { name: 'The Bridge Hackathon', nameKo: '브릿지 해커톤', category: 'hackathon', dateIso: '2026-02-21T01:00:00.000Z', location: 'Seoul & Tokyo', locationKo: '서울·도쿄' },
-    { name: 'oTP Demo Day', nameKo: 'oTP 데모데이', category: 'demo_day', dateIso: '2025-12-12T09:00:00.000Z', location: 'Engineering Hall Auditorium', locationKo: '공학원 대강당' },
-    { name: 'Yonsei X Korea Demo Day', nameKo: '연세 X 고려 데모데이', category: 'demo_day', dateIso: '2026-05-30T05:00:00.000Z', location: 'Korea University', locationKo: '고려대학교' },
-    { name: 'Welcome Networking Night', nameKo: '웰컴 네트워킹 나이트', category: 'devrel', dateIso: '2025-09-19T09:00:00.000Z', location: 'Sinchon', locationKo: '신촌' },
-    { name: 'DevRel Insight Night', nameKo: 'DevRel 인사이트 나이트', category: 'devrel', dateIso: '2025-10-31T09:00:00.000Z', location: 'Student Union', locationKo: '학생회관' },
-    { name: 'Alumni Career Talk', nameKo: '알럼나이 커리어 토크', category: 'devrel', dateIso: '2026-03-27T09:00:00.000Z', location: 'Online', locationKo: '온라인' },
-    { name: 'Google I/O Watch Party', nameKo: '구글 I/O 워치 파티', category: 'devrel', dateIso: '2026-05-08T09:00:00.000Z', location: 'Engineering Hall B039', locationKo: '공학원 B039' },
+    {
+      name: 'Namu-thon',
+      nameKo: '나무톤',
+      category: 'hackathon',
+      dateIso: '2025-11-08T01:00:00.000Z',
+      location: 'Baekyang Nuri',
+      locationKo: '백양누리',
+    },
+    {
+      name: 'The Bridge Hackathon',
+      nameKo: '브릿지 해커톤',
+      category: 'hackathon',
+      dateIso: '2026-02-21T01:00:00.000Z',
+      location: 'Seoul & Tokyo',
+      locationKo: '서울·도쿄',
+    },
+    {
+      name: 'oTP Demo Day',
+      nameKo: 'oTP 데모데이',
+      category: 'demo_day',
+      dateIso: '2025-12-12T09:00:00.000Z',
+      location: 'Engineering Hall Auditorium',
+      locationKo: '공학원 대강당',
+    },
+    {
+      name: 'Yonsei X Korea Demo Day',
+      nameKo: '연세 X 고려 데모데이',
+      category: 'demo_day',
+      dateIso: '2026-05-30T05:00:00.000Z',
+      location: 'Korea University',
+      locationKo: '고려대학교',
+    },
+    {
+      name: 'Welcome Networking Night',
+      nameKo: '웰컴 네트워킹 나이트',
+      category: 'devrel',
+      dateIso: '2025-09-19T09:00:00.000Z',
+      location: 'Sinchon',
+      locationKo: '신촌',
+    },
+    {
+      name: 'DevRel Insight Night',
+      nameKo: 'DevRel 인사이트 나이트',
+      category: 'devrel',
+      dateIso: '2025-10-31T09:00:00.000Z',
+      location: 'Student Union',
+      locationKo: '학생회관',
+    },
+    {
+      name: 'Alumni Career Talk',
+      nameKo: '알럼나이 커리어 토크',
+      category: 'devrel',
+      dateIso: '2026-03-27T09:00:00.000Z',
+      location: 'Online',
+      locationKo: '온라인',
+    },
+    {
+      name: 'Google I/O Watch Party',
+      nameKo: '구글 I/O 워치 파티',
+      category: 'devrel',
+      dateIso: '2026-05-08T09:00:00.000Z',
+      location: 'Engineering Hall B039',
+      locationKo: '공학원 B039',
+    },
   ]
   for (const special of specials) {
     plans.push({
@@ -1754,14 +1826,78 @@ const SEED_TAGS = [
 ]
 
 const SEED_PROJECTS = [
-  { name: 'Campus Compass', nameKo: '캠퍼스 나침반', description: 'Indoor navigation for Yonsei campus buildings.', descriptionKo: '연세 캠퍼스 실내 길찾기 서비스.', tags: ['Flutter', 'Firebase'], repoUrl: 'https://github.com/gdg-yonsei/campus-compass', demoUrl: 'https://campus-compass.example.com' },
-  { name: 'Lecture Lens', nameKo: '렉처 렌즈', description: 'AI-powered lecture summarization and search.', descriptionKo: 'AI 강의 요약·검색 도구.', tags: ['PyTorch', 'FastAPI'], repoUrl: 'https://github.com/gdg-yonsei/lecture-lens', demoUrl: null },
-  { name: 'Green Route', nameKo: '그린 루트', description: 'Carbon-aware commute planner for students.', descriptionKo: '탄소 배출을 고려한 통학 경로 추천.', tags: ['Next.js', 'TypeScript'], repoUrl: 'https://github.com/gdg-yonsei/green-route', demoUrl: 'https://green-route.example.com' },
-  { name: 'Mokdori', nameKo: '먹도리', description: 'Campus restaurant queue and review service.', descriptionKo: '학식·맛집 대기열과 리뷰 서비스.', tags: ['Kotlin', 'Firebase'], repoUrl: null, demoUrl: 'https://mokdori.example.com' },
-  { name: 'Cloud Atlas', nameKo: '클라우드 아틀라스', description: 'Terraform templates for student projects.', descriptionKo: '학생 프로젝트용 Terraform 템플릿 모음.', tags: ['Terraform', 'Go'], repoUrl: 'https://github.com/gdg-yonsei/cloud-atlas', demoUrl: null },
-  { name: 'Study Sync', nameKo: '스터디 싱크', description: 'Real-time study group matching platform.', descriptionKo: '실시간 스터디 그룹 매칭 플랫폼.', tags: ['Next.js', 'Firebase'], repoUrl: 'https://github.com/gdg-yonsei/study-sync', demoUrl: 'https://study-sync.example.com' },
-  { name: 'Sign Bridge', nameKo: '사인 브릿지', description: 'Sign language translation with on-device ML.', descriptionKo: '온디바이스 ML 수어 번역.', tags: ['PyTorch', 'Flutter'], repoUrl: 'https://github.com/gdg-yonsei/sign-bridge', demoUrl: null },
-  { name: 'Portfolio Kit', nameKo: '포트폴리오 킷', description: 'Design-system-driven portfolio builder.', descriptionKo: '디자인 시스템 기반 포트폴리오 빌더.', tags: ['Figma', 'TypeScript'], repoUrl: 'https://github.com/gdg-yonsei/portfolio-kit', demoUrl: 'https://portfolio-kit.example.com' },
+  {
+    name: 'Campus Compass',
+    nameKo: '캠퍼스 나침반',
+    description: 'Indoor navigation for Yonsei campus buildings.',
+    descriptionKo: '연세 캠퍼스 실내 길찾기 서비스.',
+    tags: ['Flutter', 'Firebase'],
+    repoUrl: 'https://github.com/gdg-yonsei/campus-compass',
+    demoUrl: 'https://campus-compass.example.com',
+  },
+  {
+    name: 'Lecture Lens',
+    nameKo: '렉처 렌즈',
+    description: 'AI-powered lecture summarization and search.',
+    descriptionKo: 'AI 강의 요약·검색 도구.',
+    tags: ['PyTorch', 'FastAPI'],
+    repoUrl: 'https://github.com/gdg-yonsei/lecture-lens',
+    demoUrl: null,
+  },
+  {
+    name: 'Green Route',
+    nameKo: '그린 루트',
+    description: 'Carbon-aware commute planner for students.',
+    descriptionKo: '탄소 배출을 고려한 통학 경로 추천.',
+    tags: ['Next.js', 'TypeScript'],
+    repoUrl: 'https://github.com/gdg-yonsei/green-route',
+    demoUrl: 'https://green-route.example.com',
+  },
+  {
+    name: 'Mokdori',
+    nameKo: '먹도리',
+    description: 'Campus restaurant queue and review service.',
+    descriptionKo: '학식·맛집 대기열과 리뷰 서비스.',
+    tags: ['Kotlin', 'Firebase'],
+    repoUrl: null,
+    demoUrl: 'https://mokdori.example.com',
+  },
+  {
+    name: 'Cloud Atlas',
+    nameKo: '클라우드 아틀라스',
+    description: 'Terraform templates for student projects.',
+    descriptionKo: '학생 프로젝트용 Terraform 템플릿 모음.',
+    tags: ['Terraform', 'Go'],
+    repoUrl: 'https://github.com/gdg-yonsei/cloud-atlas',
+    demoUrl: null,
+  },
+  {
+    name: 'Study Sync',
+    nameKo: '스터디 싱크',
+    description: 'Real-time study group matching platform.',
+    descriptionKo: '실시간 스터디 그룹 매칭 플랫폼.',
+    tags: ['Next.js', 'Firebase'],
+    repoUrl: 'https://github.com/gdg-yonsei/study-sync',
+    demoUrl: 'https://study-sync.example.com',
+  },
+  {
+    name: 'Sign Bridge',
+    nameKo: '사인 브릿지',
+    description: 'Sign language translation with on-device ML.',
+    descriptionKo: '온디바이스 ML 수어 번역.',
+    tags: ['PyTorch', 'Flutter'],
+    repoUrl: 'https://github.com/gdg-yonsei/sign-bridge',
+    demoUrl: null,
+  },
+  {
+    name: 'Portfolio Kit',
+    nameKo: '포트폴리오 킷',
+    description: 'Design-system-driven portfolio builder.',
+    descriptionKo: '디자인 시스템 기반 포트폴리오 빌더.',
+    tags: ['Figma', 'TypeScript'],
+    repoUrl: 'https://github.com/gdg-yonsei/portfolio-kit',
+    demoUrl: 'https://portfolio-kit.example.com',
+  },
 ]
 
 function assertLocalDatabase() {
@@ -1771,7 +1907,10 @@ function assertLocalDatabase() {
     process.exit(1)
   }
   const hostname = new URL(rawUrl).hostname
-  if (!ALLOWED_DB_HOSTS.includes(hostname) && !process.argv.includes('--force')) {
+  if (
+    !ALLOWED_DB_HOSTS.includes(hostname) &&
+    !process.argv.includes('--force')
+  ) {
     console.error(
       `Refusing to seed non-local database host "${hostname}". Pass --force to override.`
     )
@@ -1854,7 +1993,11 @@ async function main() {
     (part) => part.name !== 'Organizer'
   )
   await db.insert(usersToParts).values([
-    { userId: organizerRow.id, partId: organizerPartId, userType: 'Core' as const },
+    {
+      userId: organizerRow.id,
+      partId: organizerPartId,
+      userType: 'Core' as const,
+    },
     ...memberRows.map((member, index) => ({
       userId: member.id,
       partId: rotatingParts[index % rotatingParts.length]!.id,
@@ -1870,8 +2013,8 @@ async function main() {
       plans.map((plan) => ({
         name: plan.name,
         nameKo: plan.nameKo,
-        description: `${plan.name} — a GDGoC Yonsei activity.`,
-        descriptionKo: `${plan.nameKo} — GDGoC Yonsei 활동입니다.`,
+        description: `${plan.name}, a GDGoC Yonsei activity.`,
+        descriptionKo: `${plan.nameKo}, GDGoC Yonsei 활동입니다.`,
         authorId: organizerRow.id,
         partId:
           plan.category === 'part_session'
@@ -1982,15 +2125,17 @@ git commit -m "feat: add deterministic local dev seed script (pnpm db:seed)"
 
 ---
 
-### Task 9: 모션 인프라 — LazyMotion 프로바이더·Reveal·template + vitest mock 확장
+### Task 9: 모션 인프라: LazyMotion 프로바이더·Reveal·template + vitest mock 확장
 
 **Files:**
+
 - Create: `app/components/motion/lazy-motion-provider.tsx`, `app/components/motion/reveal.tsx`, `app/(home)/[lang]/template.tsx`
 - Modify: `app/(home)/[lang]/layout.tsx`(프로바이더 배선), `app/components/header/navigation-list.tsx`·`app/components/show-more-content.tsx`(`motion.*`→`m.*`), `vitest.setup.ts`
 - Test: `tests/components/motion-reveal.test.tsx`
 
 **Interfaces:**
-- Produces: `<LazyMotionProvider>`(layout에서 body 전체 래핑), `<Reveal className delay>`(whileInView once 페이드+y8 — 이후 태스크들의 표준 스크롤 리빌), route enter 페이드 template. vitest의 motion/react mock이 `m`/`LazyMotion`/`useReducedMotion`/`useScroll`/`useTransform`/`animate` 제공(**useReducedMotion은 테스트에서 항상 true**).
+
+- Produces: `<LazyMotionProvider>`(layout에서 body 전체 래핑), `<Reveal className delay>`(whileInView once 페이드+y8: 이후 태스크들의 표준 스크롤 리빌), route enter 페이드 template. vitest의 motion/react mock이 `m`/`LazyMotion`/`useReducedMotion`/`useScroll`/`useTransform`/`animate` 제공(**useReducedMotion은 테스트에서 항상 true**).
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -2012,7 +2157,7 @@ describe('Reveal', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/motion-reveal.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: vitest.setup.ts mock 확장 (구현 전에 먼저)**
 
@@ -2127,7 +2272,7 @@ Create `app/(home)/[lang]/template.tsx`:
 import { m, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 
-/** 라우트 enter 페이드 (exit 애니메이션은 비범위 — 스펙 §10) */
+/** 라우트 enter 페이드 (exit 애니메이션은 비범위: 스펙 §10) */
 export default function Template({ children }: { children: ReactNode }) {
   const shouldReduce = useReducedMotion()
 
@@ -2148,13 +2293,13 @@ export default function Template({ children }: { children: ReactNode }) {
 `app/(home)/[lang]/layout.tsx`: `import LazyMotionProvider from '@/app/components/motion/lazy-motion-provider'` 추가, body 내부를 래핑:
 
 ```tsx
-      <body>
-        <LazyMotionProvider>
-          <Header lang={lang} />
-          {children}
-          <Footer />
-        </LazyMotionProvider>
-      </body>
+<body>
+  <LazyMotionProvider>
+    <Header lang={lang} />
+    {children}
+    <Footer />
+  </LazyMotionProvider>
+</body>
 ```
 
 `app/components/header/navigation-list.tsx`: `import { motion } from 'motion/react'` → `import { m } from 'motion/react'`, 본문의 `motion.div` → `m.div` (1곳, MotionLink 내부).
@@ -2178,12 +2323,14 @@ git commit -m "feat: add LazyMotion provider, Reveal helper, and route enter tem
 ### Task 10: 홈 히어로 + Starfield 캔버스
 
 **Files:**
+
 - Create: `app/components/home/starfield-canvas.tsx`, `app/components/home/hero.tsx`
 - Test: `tests/components/home-hero.test.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 2 토큰, Task 9 mock.
-- Produces: `<Hero lang={Locale}>` — Task 14 홈 페이지가 소비. Starfield는 hero 내부 구현 세부.
+- Produces: `<Hero lang={Locale}>`: Task 14 홈 페이지가 소비. Starfield는 hero 내부 구현 세부.
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -2223,11 +2370,11 @@ describe('Hero', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/home-hero.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: Starfield 구현**
 
-Create `app/components/home/starfield-canvas.tsx` (단일 canvas + rAF, 탭 비가시 시 정지, reduced-motion이면 1회 정적 드로우 — 스펙 §7):
+Create `app/components/home/starfield-canvas.tsx` (단일 canvas + rAF, 탭 비가시 시 정지, reduced-motion이면 1회 정적 드로우: 스펙 §7):
 
 ```tsx
 'use client'
@@ -2248,7 +2395,13 @@ type Star = {
   speed: number
 }
 
-type Streak = { x: number; y: number; angle: number; bornAt: number; color: string }
+type Streak = {
+  x: number
+  y: number
+  angle: number
+  bornAt: number
+  color: string
+}
 
 export default function StarfieldCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -2300,7 +2453,8 @@ export default function StarfieldCanvas() {
       for (const star of stars) {
         const twinkle = reduceMotion
           ? 0.55
-          : 0.3 + 0.45 * Math.abs(Math.sin(star.phase + time * 0.001 * star.speed))
+          : 0.3 +
+            0.45 * Math.abs(Math.sin(star.phase + time * 0.001 * star.speed))
         context.globalAlpha = twinkle
         context.fillStyle = star.color
         context.beginPath()
@@ -2428,8 +2582,8 @@ const HERO_COPY = {
     ko: 'Google Developer Group on Campus · 연세대학교',
   },
   subtitle: {
-    en: 'A community of student developers who connect, learn, and grow together — building solutions for campus and society.',
-    ko: '함께 연결되고, 배우고, 성장하는 학생 개발자 커뮤니티 — 캠퍼스와 사회를 위한 솔루션을 만듭니다.',
+    en: 'A community of student developers who connect, learn, and grow together, building solutions for campus and society.',
+    ko: '함께 연결되고, 배우고, 성장하는 학생 개발자 커뮤니티, 캠퍼스와 사회를 위한 솔루션을 만듭니다.',
   },
   aboutCta: { en: 'About us', ko: '소개 보기' },
   joinCta: { en: 'Join us', ko: '함께하기' },
@@ -2517,13 +2671,15 @@ git commit -m "feat: add home hero with GPU-friendly starfield canvas"
 ### Task 11: Activity Heatmap 아일랜드 + 리빌 CSS
 
 **Files:**
+
 - Create: `app/components/home/activity-heatmap.tsx`
 - Modify: `app/globals.css` (셀 리빌 keyframes)
 - Test: `tests/components/activity-heatmap.test.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 6의 `HeatmapWeek`/`CATEGORY_CELL_CLASS`/`CATEGORY_LABEL`/`CATEGORY_PRIORITY`/`intensityOpacity`.
-- Produces: `<ActivityHeatmap weeks={HeatmapWeek[]} lang={Locale}>` — Task 14가 소비. 셀은 `button`(aria-label), 상세 패널은 `aria-live` + 고정 min-h(CLS 방지). 스펙 §8의 absolute 툴팁 대신 **예약 공간 detail panel** 방식을 채택 — '레이아웃 밀림 없음'·키보드 접근 요건을 더 단순하게 충족하는 구현 세부 변경.
+- Produces: `<ActivityHeatmap weeks={HeatmapWeek[]} lang={Locale}>`: Task 14가 소비. 셀은 `button`(aria-label), 상세 패널은 `aria-live` + 고정 min-h(CLS 방지). 스펙 §8의 absolute 툴팁 대신 **예약 공간 detail panel** 방식을 채택: '레이아웃 밀림 없음'·키보드 접근 요건을 더 단순하게 충족하는 구현 세부 변경.
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -2576,7 +2732,7 @@ describe('ActivityHeatmap', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/activity-heatmap.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: 컴포넌트 구현**
 
@@ -2737,7 +2893,7 @@ export default function ActivityHeatmap({
 `app/globals.css`의 `@layer base { :focus-visible ... }` 블록 아래에 추가:
 
 ```css
-/* Activity heatmap 셀 리빌 — 컴포지터 전용(opacity/transform), --i 기반 stagger */
+/* Activity heatmap 셀 리빌: 컴포지터 전용(opacity/transform), --i 기반 stagger */
 .heatmap-cell {
   opacity: 0;
   transform: scale(0.6);
@@ -2784,12 +2940,14 @@ git commit -m "feat: add activity heatmap island with CSS stagger reveal"
 ### Task 12: Parts Bento Grid + 콘텐츠 확장
 
 **Files:**
-- Modify: `lib/contents/parts-section.ts` (named export `bentoParts` 추가 — default export는 그대로)
+
+- Modify: `lib/contents/parts-section.ts` (named export `bentoParts` 추가: default export는 그대로)
 - Create: `app/components/home/parts-bento-grid.tsx`
 - Test: `tests/components/parts-bento-grid.test.tsx`
 
 **Interfaces:**
-- Produces: `bentoParts: BentoPart[]`(6칸: Organizer(wide)+FE/BE/ML·AI/UI·UX/DevRel — 스펙 §7·일탈 ⑦), `<PartsBentoGrid lang={Locale}>`. Task 15의 parts-deepdive도 `bentoParts`의 Organizer 항목을 재사용.
+
+- Produces: `bentoParts: BentoPart[]`(6칸: Organizer(wide)+FE/BE/ML·AI/UI·UX/DevRel: 스펙 §7·일탈 ⑦), `<PartsBentoGrid lang={Locale}>`. Task 15의 parts-deepdive도 `bentoParts`의 Organizer 항목을 재사용.
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -2826,7 +2984,7 @@ describe('PartsBentoGrid', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/parts-bento-grid.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: 콘텐츠 확장**
 
@@ -2849,7 +3007,7 @@ function byTitle(title: string) {
   return part
 }
 
-/** 홈 bento 6칸 (프롬프트 고정 구성 — Organizer 포함, DB parts와 무관한 정적 콘텐츠) */
+/** 홈 bento 6칸 (프롬프트 고정 구성: Organizer 포함, DB parts와 무관한 정적 콘텐츠) */
 export const bentoParts: BentoPart[] = [
   {
     key: 'organizer',
@@ -2857,8 +3015,8 @@ export const bentoParts: BentoPart[] = [
     span: 'wide',
     accentClass: 'bg-yonsei-blue',
     content: {
-      en: 'Leads GDGoC Yonsei end to end — designing programs like T19 and demo days, partnering with Google and other chapters, and keeping the community healthy.',
-      ko: 'GDGoC Yonsei 운영 전반을 이끕니다 — T19·데모데이 같은 프로그램 설계, 구글·타 챕터와의 협력, 커뮤니티 운영까지 담당합니다.',
+      en: 'Leads GDGoC Yonsei end to end, designing programs like T19 and demo days, partnering with Google and other chapters, and keeping the community healthy.',
+      ko: 'GDGoC Yonsei 운영 전반을 이끕니다. T19·데모데이 같은 프로그램 설계, 구글·타 챕터와의 협력, 커뮤니티 운영까지 담당합니다.',
     },
   },
   {
@@ -2944,7 +3102,7 @@ export default function PartsBentoGrid({ lang }: { lang: Locale }) {
           }`}
           style={{ contain: 'layout style paint' }}
         >
-          {/* box-shadow 애니메이션 금지 — 사전 렌더된 그림자 레이어의 opacity만 전환 */}
+          {/* box-shadow 애니메이션 금지: 사전 렌더된 그림자 레이어의 opacity만 전환 */}
           <span
             aria-hidden
             className={
@@ -2979,12 +3137,14 @@ git commit -m "feat: add parts bento grid with static six-part content"
 ### Task 13: Projects Showcase (태그 필터 + FLIP)
 
 **Files:**
+
 - Create: `app/components/home/projects-showcase.tsx`
 - Test: `tests/components/projects-showcase.test.tsx`
 
 **Interfaces:**
-- Consumes: Task 7의 `FeaturedProject` 타입(**`import type`만** — server-only 모듈이므로 런타임 import 금지).
-- Produces: `<ProjectsShowcase projects={FeaturedProject[]} lang={Locale}>`. layout FLIP은 `domMax`가 필요하므로 이 컴포넌트 내부에서만 중첩 `<LazyMotion features={domMax}>` 사용(스펙 §7 — 전역 domAnimation 유지).
+
+- Consumes: Task 7의 `FeaturedProject` 타입(**`import type`만**: server-only 모듈이므로 런타임 import 금지).
+- Produces: `<ProjectsShowcase projects={FeaturedProject[]} lang={Locale}>`. layout FLIP은 `domMax`가 필요하므로 이 컴포넌트 내부에서만 중첩 `<LazyMotion features={domMax}>` 사용(스펙 §7: 전역 domAnimation 유지).
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -3041,7 +3201,9 @@ describe('ProjectsShowcase', () => {
   it('renders the empty placeholder when there are no projects', () => {
     render(<ProjectsShowcase projects={[]} lang={'ko'} />)
     expect(
-      screen.getByText('어드민(GYMS)에서 프로젝트를 등록하면 이곳에 표시됩니다.')
+      screen.getByText(
+        '어드민(GYMS)에서 프로젝트를 등록하면 이곳에 표시됩니다.'
+      )
     ).toBeInTheDocument()
   })
 })
@@ -3050,7 +3212,7 @@ describe('ProjectsShowcase', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/projects-showcase.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: 구현**
 
@@ -3136,9 +3298,7 @@ export default function ProjectsShowcase({
           ))}
         </div>
 
-        <div
-          className={'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'}
-        >
+        <div className={'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'}>
           {visibleProjects.map((project) => (
             <m.article
               key={project.id}
@@ -3242,12 +3402,14 @@ git commit -m "feat: add projects showcase with tag filter and FLIP layout"
 ### Task 14: 홈 페이지 재조립 (+ About Teaser)
 
 **Files:**
+
 - Create: `app/components/home/about-teaser.tsx`
 - Rewrite: `app/(home)/[lang]/page.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 6·7·10·11·12·13 산출물, `getSessionVisibilityBucket`(기존), `connection`(next/server).
-- Produces: 새 홈 — HERO → ABOUT TEASER → ACTIVITY HEATMAP(Suspense+connection) → PARTS BENTO → PROJECTS SHOWCASE. 구 섹션 import 전부 제거(파일 삭제는 Task 16).
+- Produces: 새 홈: HERO → ABOUT TEASER → ACTIVITY HEATMAP(Suspense+connection) → PARTS BENTO → PROJECTS SHOWCASE. 구 섹션 import 전부 제거(파일 삭제는 Task 16).
 
 - [ ] **Step 1: About Teaser 작성**
 
@@ -3367,7 +3529,7 @@ function HeatmapSkeleton() {
 }
 
 async function HeatmapSection({ lang }: { lang: Locale }) {
-  // 현재 시각(visibility bucket) 사용 — 기존 세션 페이지와 동일하게 connection()으로 동적 처리
+  // 현재 시각(visibility bucket) 사용: 기존 세션 페이지와 동일하게 connection()으로 동적 처리
   await connection()
   const visibilityBucket = getSessionVisibilityBucket()
   const rows = await getHeatmapSessions(lang, visibilityBucket)
@@ -3395,7 +3557,7 @@ async function ProjectsSection({ lang }: { lang: Locale }) {
 }
 
 /**
- * GDGoC Yonsei 웹사이트 첫 페이지 — 리디자인 (스펙 §7)
+ * GDGoC Yonsei 웹사이트 첫 페이지: 리디자인 (스펙 §7)
  */
 export default async function HomePage({
   params,
@@ -3442,11 +3604,11 @@ pnpm test && pnpm test:types
 pnpm build
 ```
 
-Expected: vitest·tsc 통과. `pnpm build`가 두 로케일 홈 셸을 prerender하고 에러 없이 완료(DB 필요). Heatmap 섹션은 `connection()` 때문에 요청 시 스트리밍(Suspense fallback이 셸에 포함) — 빌드 로그에서 `/[lang]` 관련 prerender 에러가 없어야 함.
+Expected: vitest·tsc 통과. `pnpm build`가 두 로케일 홈 셸을 prerender하고 에러 없이 완료(DB 필요). Heatmap 섹션은 `connection()` 때문에 요청 시 스트리밍(Suspense fallback이 셸에 포함): 빌드 로그에서 `/[lang]` 관련 prerender 에러가 없어야 함.
 
 - [ ] **Step 4: 수동 확인(선택) 후 Commit**
 
-`pnpm dev` 후 `http://localhost:3000/ko` — 히어로 stagger, 히트맵 채움(시드 데이터), bento hover, 태그 필터가 동작하는지 확인.
+`pnpm dev` 후 `http://localhost:3000/ko`: 히어로 stagger, 히트맵 채움(시드 데이터), bento hover, 태그 필터가 동작하는지 확인.
 
 ```bash
 git add app/components/home/about-teaser.tsx "app/(home)/[lang]/page.tsx"
@@ -3458,6 +3620,7 @@ git commit -m "feat: rebuild home page with hero, heatmap, bento, and showcase s
 ### Task 15: `/[lang]/about` 페이지 신설 (+ sitemap, e2e 라우트)
 
 **Files:**
+
 - Create: `lib/contents/about-page.ts`
 - Create: `app/components/about/about-hero.tsx`, `app/components/about/story-section.tsx`, `app/components/about/programs-section.tsx`, `app/components/about/timeline-section.tsx`, `app/components/about/stats-section.tsx`, `app/components/about/parts-deepdive-section.tsx`
 - Create: `app/(home)/[lang]/about/page.tsx`
@@ -3465,6 +3628,7 @@ git commit -m "feat: rebuild home page with hero, heatmap, bento, and showcase s
 - Test: `tests/components/about-sections.test.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 7 `getCommunityStats`/`getGenerationTimeline`/`CommunityStats`/`GenerationTimelineEntry`, Task 9 `Reveal`, Task 12 `bentoParts`, 기존 `activitySectionContents`·`show-more-content`·SVG(Friends/BookSvg/FriendsTree/Trophy).
 - Produces: `/en/about`, `/ko/about` 정적 파라미터 페이지. `<StatsSection stats lang>`, `<TimelineSection entries lang>`.
 
@@ -3512,7 +3676,7 @@ describe('StatsSection', () => {
 - [ ] **Step 2: 실패 확인**
 
 Run: `pnpm vitest run tests/components/about-sections.test.tsx`
-Expected: FAIL — 모듈 없음.
+Expected: FAIL: 모듈 없음.
 
 - [ ] **Step 3: 카피 파일 작성**
 
@@ -3522,12 +3686,16 @@ Create `lib/contents/about-page.ts`:
 const aboutPageContents = {
   hero: {
     lines: {
-      en: ['We connect students,', 'learn out loud,', 'and grow into builders.'],
+      en: [
+        'We connect students,',
+        'learn out loud,',
+        'and grow into builders.',
+      ],
       ko: ['학생들을 연결하고,', '함께 배우며,', '만드는 사람으로 성장합니다.'],
     },
     sub: {
-      en: 'GDG on Campus Yonsei — a Google-backed developer community at Yonsei University.',
-      ko: 'GDG on Campus Yonsei — 연세대학교의 구글 기반 개발자 커뮤니티입니다.',
+      en: 'GDG on Campus Yonsei, a Google-backed developer community at Yonsei University.',
+      ko: 'GDG on Campus Yonsei, 연세대학교의 구글 기반 개발자 커뮤니티입니다.',
     },
   },
   story: [
@@ -3536,8 +3704,8 @@ const aboutPageContents = {
       order: '01',
       title: 'Connect',
       body: {
-        en: 'We bring together students across majors who care about technology — through weekly gatherings, part communities, and events with other chapters.',
-        ko: '전공을 넘어 기술을 좋아하는 학생들을 모읍니다 — 매주 열리는 모임, 파트 커뮤니티, 타 챕터와의 교류 행사로 연결됩니다.',
+        en: 'We bring together students across majors who care about technology, through weekly gatherings, part communities, and events with other chapters.',
+        ko: '전공을 넘어 기술을 좋아하는 학생들을 모읍니다. 매주 열리는 모임, 파트 커뮤니티, 타 챕터와의 교류 행사로 연결됩니다.',
       },
     },
     {
@@ -3554,7 +3722,7 @@ const aboutPageContents = {
       order: '03',
       title: 'Grow',
       body: {
-        en: 'From hackathons to demo days, we ship real products for campus and society — and grow into developers who build solutions.',
+        en: 'From hackathons to demo days, we ship real products for campus and society, and grow into developers who build solutions.',
         ko: '해커톤부터 데모데이까지, 캠퍼스와 사회를 위한 실제 결과물을 만들며 솔루션을 만드는 개발자로 성장합니다.',
       },
     },
@@ -3625,7 +3793,10 @@ export default function AboutHero({ lang }: { lang: Locale }) {
             </m.span>
           ))}
         </h1>
-        <m.p variants={lineVariants} className={'text-ink/70 max-w-2xl text-lg'}>
+        <m.p
+          variants={lineVariants}
+          className={'text-ink/70 max-w-2xl text-lg'}
+        >
           {aboutPageContents.hero.sub[lang]}
         </m.p>
       </m.div>
@@ -3634,7 +3805,7 @@ export default function AboutHero({ lang }: { lang: Locale }) {
 }
 ```
 
-Create `app/components/about/story-section.tsx` (Story에 한해 01/02/03 번호 허용 — 스펙 §9):
+Create `app/components/about/story-section.tsx` (Story에 한해 01/02/03 번호 허용: 스펙 §9):
 
 ```tsx
 import type { ComponentType } from 'react'
@@ -3694,7 +3865,7 @@ export default function StorySection({ lang }: { lang: Locale }) {
 
 주의: 구현 전에 `grep -n "export default\|className" app/components/svg/friends.tsx app/components/svg/friends-tree.tsx app/components/svg/book-svg.tsx`로 default export와 className prop 수용 여부 확인. className을 안 받으면 `<div className={'w-full'}><Art /></div>`로 감싼다.
 
-Create `app/components/about/programs-section.tsx` (이관된 6종 — 기존 카피 그대로, `show-more-content` 재활용, Solution Challenge에 `Trophy`):
+Create `app/components/about/programs-section.tsx` (이관된 6종: 기존 카피 그대로, `show-more-content` 재활용, Solution Challenge에 `Trophy`):
 
 ```tsx
 import ShowMoreContent from '@/app/components/show-more-content'
@@ -3839,7 +4010,7 @@ export default function TimelineSection({
               }
             />
             <p className={'text-ink/40 font-mono text-xs'}>
-              {entry.startDate.slice(0, 7)} —{' '}
+              {entry.startDate.slice(0, 7)} ~{' '}
               {entry.endDate
                 ? entry.endDate.slice(0, 7)
                 : TIMELINE_COPY.present[lang]}
@@ -3860,7 +4031,7 @@ export default function TimelineSection({
                 </li>
               ))}
               {entry.sessions.length === 0 && (
-                <li className={'text-ink/40 text-sm'}>—</li>
+                <li className={'text-ink/40 text-sm'}>미제공</li>
               )}
             </ul>
           </li>
@@ -3871,7 +4042,7 @@ export default function TimelineSection({
 }
 ```
 
-Create `app/components/about/stats-section.tsx` (하드코딩 금지 — props로 DB 집계, reduced-motion 시 즉시 최종값):
+Create `app/components/about/stats-section.tsx` (하드코딩 금지: props로 DB 집계, reduced-motion 시 즉시 최종값):
 
 ```tsx
 'use client'
@@ -3981,9 +4152,7 @@ export default function PartsDeepdiveSection({ lang }: { lang: Locale }) {
               className={'bg-surface-raised h-full rounded-2xl p-6'}
               style={{ contain: 'layout style paint' }}
             >
-              <h3 className={'text-ink text-lg font-semibold'}>
-                {part.title}
-              </h3>
+              <h3 className={'text-ink text-lg font-semibold'}>{part.title}</h3>
               <p className={'text-ink/70 mt-2 text-sm leading-relaxed'}>
                 {part.content[lang]}
               </p>
@@ -4054,12 +4223,12 @@ export async function generateMetadata({
   if (lang === 'ko') {
     return {
       title: '소개',
-      description: 'GDGoC Yonsei를 소개합니다 — Connect, Learn, Grow.',
+      description: 'GDGoC Yonsei를 소개합니다. Connect, Learn, Grow.',
     }
   }
   return {
     title: 'About',
-    description: 'About GDGoC Yonsei — Connect, Learn, Grow.',
+    description: 'About GDGoC Yonsei. Connect, Learn, Grow.',
   }
 }
 
@@ -4180,13 +4349,15 @@ git commit -m "feat: add /about page with story, programs, timeline, and live st
 ### Task 16: 헤더·푸터 재스타일 + About 내비 + 구 홈 컴포넌트 정리
 
 **Files:**
+
 - Modify: `app/components/header/index.tsx`, `app/components/header/desktop-navigation-list.tsx`, `app/components/header/navigation-list.tsx`, `app/components/footer.tsx`, `app/globals.css`
 - Delete: `app/(home)/[lang]/welcome-page.tsx`, `app/(home)/[lang]/about-page.tsx`, `app/(home)/[lang]/activities-page.tsx`, `app/(home)/[lang]/parts-page.tsx`, `app/(home)/[lang]/activities-list.tsx`, `app/(home)/[lang]/part-card.tsx`, `app/(home)/[lang]/home-page-background.tsx`
 - **삭제 금지**: `app/(home)/[lang]/activity-card.tsx`, `app/components/show-more-content.tsx`, `app/components/svg/**`
 
 **Interfaces:**
+
 - Consumes: Task 2 토큰.
-- Produces: 헤더(반투명 surface + backdrop-blur — blur는 헤더 한정), 데스크톱·모바일 내비에 About 링크, 새 푸터. 구 홈 파일 제거로 코드베이스에서 구 디자인 소멸.
+- Produces: 헤더(반투명 surface + backdrop-blur: blur는 헤더 한정), 데스크톱·모바일 내비에 About 링크, 새 푸터. 구 홈 파일 제거로 코드베이스에서 구 디자인 소멸.
 
 - [ ] **Step 1: 헤더 스타일 + About 링크**
 
@@ -4200,24 +4371,24 @@ git commit -m "feat: add /about page with story, programs, timeline, and live st
     >
 ```
 
-`app/components/header/desktop-navigation-list.tsx` — `<Suspense>` 블록 아래, 기존 Session `Link` **위**에 추가:
+`app/components/header/desktop-navigation-list.tsx`: `<Suspense>` 블록 아래, 기존 Session `Link` **위**에 추가:
 
 ```tsx
-      <Link href={`/${lang}/about`}>{lang === 'ko' ? '소개' : 'About'}</Link>
+<Link href={`/${lang}/about`}>{lang === 'ko' ? '소개' : 'About'}</Link>
 ```
 
-`app/components/header/navigation-list.tsx` — 첫 번째 `MotionLink`(세션) **위**에 추가:
+`app/components/header/navigation-list.tsx`: 첫 번째 `MotionLink`(세션) **위**에 추가:
 
 ```tsx
-        <MotionLink state={isMenuOpen}>
-          <Link
-            href={`/${lang}/about`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={'w-full'}
-          >
-            {lang === 'ko' ? '소개' : 'About'}
-          </Link>
-        </MotionLink>
+<MotionLink state={isMenuOpen}>
+  <Link
+    href={`/${lang}/about`}
+    onClick={() => setIsMenuOpen(!isMenuOpen)}
+    className={'w-full'}
+  >
+    {lang === 'ko' ? '소개' : 'About'}
+  </Link>
+</MotionLink>
 ```
 
 - [ ] **Step 2: 푸터 재스타일**
@@ -4231,7 +4402,7 @@ import Instagram from '@/app/components/svg/instagram'
 import GDGoCYonseiLogo from '@/app/components/svg/gdgoc-yonsei-logo'
 import Mail from '@/app/components/svg/mail'
 
-/** 전역 푸터 — surface-raised 배경 + ink 텍스트 톤 (스펙 §4) */
+/** 전역 푸터: surface-raised 배경 + ink 텍스트 톤 (스펙 §4) */
 export default function Footer() {
   return (
     <footer className={'border-ink/10 bg-surface-raised w-full border-t'}>
@@ -4310,6 +4481,7 @@ git rm "app/(home)/[lang]/welcome-page.tsx" "app/(home)/[lang]/about-page.tsx" "
 ```
 
 `app/globals.css`에서 제거:
+
 1. `@layer components` 안의 `.home-about-box { ... }` 블록
 2. `.h-home-screen { ... }` 블록
 3. `/* Home shooting star background (CSS-only to avoid client JS) */` 주석부터 `.shooting-star-br { ... }`까지 전부 (keyframes `shooting-tr/tl/bl/br` 포함)
@@ -4332,13 +4504,15 @@ git commit -m "feat: restyle header/footer with About nav and remove legacy home
 
 ---
 
-### Task 17: 최종 검증 — 성능·반응형·서브페이지·문서
+### Task 17: 최종 검증: 성능·반응형·서브페이지·문서
 
 **Files:**
+
 - Modify: `README.md` (db:seed 문서)
 - Modify(발견 시): 회귀 수정
 
 **Interfaces:**
+
 - Consumes: 전체 산출물. 스펙 §10 검증 기준: LCP < 2.5s, CLS < 0.1, INP < 200ms (로컬 프로덕션 빌드).
 
 - [ ] **Step 1: 전체 테스트 + 빌드 + 시드**
@@ -4358,9 +4532,10 @@ sleep 5
 ```
 
 chrome-devtools MCP로:
+
 1. `http://localhost:3000/ko` 접속 → Lighthouse audit (desktop) 실행 → **LCP < 2.5s, CLS < 0.1** 확인. `http://localhost:3000/ko/about`도 동일.
 2. 뷰포트 360×740으로 resize → 홈·어바웃 전 섹션 스크린샷으로 가로 스크롤/겹침/터치 타깃 확인 (스펙: 360px~ 무깨짐).
-3. 서브페이지 토큰 회귀 육안 점검: `/en/session/25-26`, `/en/project/25-26`, `/en/member/25-26`, `/en/calendar`, `/en/recruit` — 폰트·배경 교체로 깨진 곳이 있으면 최소 보정(레이아웃 재설계 금지 — 스펙 §3 비범위).
+3. 서브페이지 토큰 회귀 육안 점검: `/en/session/25-26`, `/en/project/25-26`, `/en/member/25-26`, `/en/calendar`, `/en/recruit`: 폰트·배경 교체로 깨진 곳이 있으면 최소 보정(레이아웃 재설계 금지: 스펙 §3 비범위).
 4. (수동 안내) DevTools > Rendering > Paint flashing으로 히트맵 리빌·bento hover 시 리페인트가 해당 요소 범위에 국한되는지 확인.
 
 기준 미달 항목은 원인(이미지 priority 누락, 폰트 로딩, 레이아웃 시프트 등)을 수정하고 재측정.
@@ -4405,16 +4580,16 @@ Expected: Task 1~17 커밋이 순서대로 나열됨. 이후 사용자에게 PR(
 
 ## 스펙 대비 커버리지 맵
 
-| 스펙 섹션 | 태스크 |
-|---|---|
-| §5.1 토큰 / §5.2 타이포 | 2 / 1 |
-| §6.1 스키마·어드민 | 3, 4, 5 |
-| §6.2 쿼리 4종 | 7 |
-| §6.3 시드 | 8 |
-| §6.4 빈 상태 | 11(히트맵), 13(쇼케이스), 15(타임라인·스탯) |
-| §7 홈 컴포넌트 | 10, 11, 12, 13, 14 |
-| §8 히트맵 상세 | 6, 11 |
-| §9 /about | 15 |
+| 스펙 섹션                  | 태스크                                        |
+| -------------------------- | --------------------------------------------- |
+| §5.1 토큰 / §5.2 타이포    | 2 / 1                                         |
+| §6.1 스키마·어드민         | 3, 4, 5                                       |
+| §6.2 쿼리 4종              | 7                                             |
+| §6.3 시드                  | 8                                             |
+| §6.4 빈 상태               | 11(히트맵), 13(쇼케이스), 15(타임라인·스탯)   |
+| §7 홈 컴포넌트             | 10, 11, 12, 13, 14                            |
+| §8 히트맵 상세             | 6, 11                                         |
+| §9 /about                  | 15                                            |
 | §10 애니메이션·성능·접근성 | 9(시스템), 각 컴포넌트 태스크(내재), 17(검증) |
-| §4 크롬·sitemap·라우팅 | 14, 15, 16 |
-| §12 테스트 전략 | 각 태스크 + 15(e2e), 17 |
+| §4 크롬·sitemap·라우팅     | 14, 15, 16                                    |
+| §12 테스트 전략            | 각 태스크 + 15(e2e), 17                       |

@@ -1,6 +1,4 @@
-/**
- * 기수 관리 영역(목록·상세·생성·수정 전체)의 권한 경계. `generationsPage` 리소스에 `get` 권한이 없으면 403(`forbidden()`).
- */
+/** 기수 관리 영역은 `generationsPage` 읽기 권한이 없으면 403이다. */
 import { permissionLayout } from '@/lib/server/permission/permission-layout'
 
 export default permissionLayout('get', 'generationsPage')

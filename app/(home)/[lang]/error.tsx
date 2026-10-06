@@ -1,21 +1,15 @@
 'use client'
 
-/**
- * 공개 페이지의 오류 경계(클라이언트 컴포넌트). 언어를 알 수 없어도 되도록 두 언어 문구를 함께 렌더링한다.
- */
 import { useEffect } from 'react'
 import LocalizedText from '@/app/components/localized-text'
 
-/**
- * 오류 안내와 다시 시도 버튼.
- * @param retry 오류 경계 안쪽을 서버에서 다시 받아 그린다(Next 16.3의 복구 방식)
- */
+/** `retry`는 오류 경계 안쪽을 서버에서 다시 받아 렌더링한다. */
 export default function PublicError({
   error,
   retry,
 }: {
   error: Error & { digest?: string }
-  /** 오류 경계 안쪽을 서버에서 다시 받아 그린다(Next 16.3 권장 복구 방식). */
+
   retry: () => void
 }) {
   // 렌더링 중 부수효과를 피하려고 effect에서 브라우저 콘솔에 남긴다.

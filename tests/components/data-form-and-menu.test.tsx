@@ -126,7 +126,6 @@ describe('DataForm and admin menu components', () => {
       ).not.toBeInTheDocument()
     })
 
-    // 드로어는 ESC로도 닫혀야 합니다.
     await user.click(screen.getByRole('button', { name: 'Open menu' }))
     await waitFor(() => expect(screen.getByRole('dialog')).toBeVisible())
 

@@ -1,8 +1,3 @@
-/**
- * 히어로(첫 화면) 섹션의 스크롤 연출.
- *
- * 장면 함수 규칙은 `../scene.ts` 참고.
- */
 import { animate, createAnimatable } from 'animejs'
 import { magnetOffset } from '@/lib/motion/magnet'
 import type { Scene } from '../scene'
@@ -12,14 +7,7 @@ import { sceneTimeline } from '../timeline'
 /** partingOffset()가 괄호를 움직이는 곡선. 단어도 같은 곡선으로 따라간다. */
 const smoothstep = (t: number) => t * t * (3 - 2 * t)
 
-/**
- * 히어로 장면: 스크롤로 무대가 멀어지면서 열린다. "GDGoC"와 "Yonsei"가 괄호와 함께 벌어지고,
- * 문구는 위로 떠오르며 흐려지고, 메타 정보 띠가 사라진다. 정밀 포인터(마우스)에서는 행동 유도
- * 버튼이 포인터 쪽으로 살짝 기운다.
- *
- * 망점·탭·시차 효과는 WebGL 필드(`bracket-stage`)가 맡고, 이 장면은 이미 화면에 보이는 글자만
- * 움직이므로 등장 시작 상태를 주지 않는다.
- */
+/** 망점·탭·시차는 WebGL 필드가 맡는다. 이 장면은 이미 보이는 글자만 움직여 등장 시작 상태를 주지 않는다. */
 const hero: Scene = ({ root, matches }) => {
   const [first, last] = root.querySelectorAll<HTMLElement>('.hero-word')
   const part = (selector: string) =>
@@ -62,7 +50,6 @@ const hero: Scene = ({ root, matches }) => {
     sync: 0.25,
   })
 
-  // 스크롤 안내가 세 번 끄덕인 뒤 멈춘다.
   animate(part('.hero-cue'), {
     y: [
       { to: 6, ease: 'out(2)' },

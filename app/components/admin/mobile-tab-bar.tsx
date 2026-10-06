@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 관리자 모바일 하단 탭 바(클라이언트 컴포넌트).
- */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSetAtom } from 'jotai'
@@ -13,16 +10,9 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import type { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import { cn } from '@/lib/cn'
 
-/** 하단 탭에 보일 최대 개수. 나머지는 '더보기' 드로어로 넘긴다. */
 const MAX_TABS = 4
 
-/**
- * 모바일 하단 탭 바.
- *
- * 모바일에서는 한 손으로 조작하는 경우가 많아, 자주 쓰는 목적지를 엄지가 닿는
- * 화면 하단에 고정한다. `navigations`는 이미 권한으로 걸러진 목록이므로
- * 사용자가 접근할 수 없는 탭은 들어오지 않는다.
- */
+/** 엄지가 닿는 하단에 목적지를 두며, navigations는 이미 권한으로 걸러진 목록이다. */
 export default function MobileTabBar({
   navigations,
 }: {
@@ -38,12 +28,12 @@ export default function MobileTabBar({
   if (tabs.length === 0) return null
 
   return (
-    // 사이드바/드로어의 `mainNavigation`과 다른 이름을 쓴다. 같은 이름이면
-    // 랜드마크가 중복되어 보조기술과 테스트 모두에서 모호해진다.
+    // 사이드바·드로어와 다른 랜드마크 이름을 써 보조기술과 테스트에서 중복을 피한다.
+
     <nav
       aria-label={t('menu')}
       className={
-        'border-hairline bg-surface/90 fixed inset-x-0 bottom-0 z-20 border-t backdrop-blur-md lg:hidden'
+        'border-hairline bg-surface fixed inset-x-0 bottom-0 z-20 border-t lg:hidden'
       }
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >

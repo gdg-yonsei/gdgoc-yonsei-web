@@ -1,12 +1,8 @@
-/**
- * `/robots.txt` 생성.
- */
 import type { MetadataRoute } from 'next'
 import { getSiteEnv } from '@/lib/server/env'
 
 const siteEnv = getSiteEnv()
 
-/** 크롤러 규칙과 사이트맵 위치. */
 export default function generateRobots(): MetadataRoute.Robots {
   return {
     rules: {

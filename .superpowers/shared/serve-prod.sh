@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: serve-prod.sh [--no-build|--no-seed]  — CI fake env, local DB, next start :3100
+# Usage: serve-prod.sh [--no-build|--no-seed]. Uses fake env, local DB, next start :3100.
 # --no-seed builds without reseeding the e2e fixture (keeps dev-data.sh data).
 set -u
 cd "$(git rev-parse --show-toplevel)"

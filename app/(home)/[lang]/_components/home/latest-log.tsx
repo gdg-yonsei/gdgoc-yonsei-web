@@ -1,6 +1,3 @@
-/**
- * 홈의 최근 세션 로그 섹션(서버 컴포넌트). 데이터 부분만 Suspense로 스트리밍한다.
- */
 import Link from 'next/link'
 import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon'
 import type { Locale } from '@/lib/i18n'
@@ -17,7 +14,7 @@ import { localeHref } from '@/lib/site/routes'
 
 const LATEST_COUNT = 6
 
-/** 가장 최근 공개 세션 여섯 개. 세션 로그와 같은 행 컴포넌트로 그린다. */
+/** 홈에는 가장 최근 공개 세션 여섯 개를 표시한다. */
 export async function LatestLogList({ lang }: { lang: Locale }) {
   const archive = await getSessionArchive(
     await getCachedSessionVisibilityBucket()
@@ -59,7 +56,6 @@ function LatestLogSkeleton() {
   )
 }
 
-/** `<log>` 섹션. 머리글은 정적이고, 행은 세션 아카이브에서 스트리밍된다. */
 export default function LatestLog({ lang }: { lang: Locale }) {
   const copy = landingCopy[lang].log
 

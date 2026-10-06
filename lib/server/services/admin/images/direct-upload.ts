@@ -1,7 +1,4 @@
-/**
- * MCP 직접 업로드: 크기·형식을 서명한 사전 서명 URL 발급(1단계)과, 올라온 객체의 실제 형식(매직 바이트)
- * 확인 후 공개 URL 반환(2단계). 파일은 클라이언트가 R2로 바로 올려 서버를 거치지 않는다.
- */
+// 직접 업로드는 크기·형식을 서명하고 완료 시 매직 바이트로 검증한다. 파일은 서버를 거치지 않는다.
 import 'server-only'
 
 import { logger } from '@/lib/server/logger'
@@ -46,10 +43,6 @@ import {
   rejectUpload,
 } from '@/lib/server/services/admin/images/lifecycle'
 
-/**
- * 직접 업로드 1단계: 크기·형식을 서명한 PUT URL 을 발급한다.
- * 클라이언트가 R2 로 바로 올리므로 파일이 서버를 거치지 않는다.
- */
 export async function createImageUpload(
   actor: Actor,
   input: {

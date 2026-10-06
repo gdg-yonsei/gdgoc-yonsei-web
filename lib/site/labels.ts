@@ -1,9 +1,5 @@
-/**
- * 세션 분류·파트 이름의 표시 이름과 색(순수 함수).
- */
 import type { Locale } from '@/lib/i18n'
 
-/** 배지 색상 이름. */
 export type Hue =
   'blue' | 'sky' | 'red' | 'pink' | 'yellow' | 'green' | 'neutral'
 
@@ -16,7 +12,6 @@ export const SESSION_CATEGORIES = [
   'devrel',
 ] as const
 
-/** 활동 분류 유니온. */
 export type SessionCategory = (typeof SESSION_CATEGORIES)[number]
 
 const CATEGORY_LABELS: Record<SessionCategory, Record<Locale, string>> = {
@@ -35,19 +30,16 @@ const CATEGORY_HUES: Record<SessionCategory, Hue> = {
   devrel: 'pink',
 }
 
-/** 문자열이 알려진 활동 분류인지. */
 export function isSessionCategory(value: string): value is SessionCategory {
   return (SESSION_CATEGORIES as readonly string[]).includes(value)
 }
 
-/** 활동 분류의 표시 이름(언어별). */
 export function categoryLabel(category: string, locale: Locale): string {
   return isSessionCategory(category)
     ? CATEGORY_LABELS[category][locale]
     : category
 }
 
-/** 활동 분류의 배지 색. */
 export function categoryHue(category: string): Hue {
   return isSessionCategory(category) ? CATEGORY_HUES[category] : 'neutral'
 }

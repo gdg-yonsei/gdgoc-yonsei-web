@@ -1,8 +1,4 @@
-/**
- * 패스키(WebAuthn) 인증 수단 테이블(`authenticator`).
- *
- * Better Auth passkey 플러그인이 쓰는 모델이며, 테이블 이름은 Auth.js 시절 이름을 유지한다.
- */
+// Better Auth 패스키 모델의 테이블 이름은 Auth.js 호환성을 위해 유지한다.
 import {
   boolean,
   index,

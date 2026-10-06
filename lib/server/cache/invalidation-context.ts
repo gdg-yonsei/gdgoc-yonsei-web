@@ -1,24 +1,16 @@
-/**
- * 캐시 무효화 방식 전환 컨텍스트(Server Action과 Route Handler 구분).
- */
 import 'server-only'
 
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 const storage = new AsyncLocalStorage<{ routeHandler: true }>()
 
-/**
- * Next 16 의 updateTag 는 Server Action 에서만 호출할 수 있다.
- * MCP 같은 Route Handler 는 이 컨텍스트 안에서 서비스를 실행해
- * 무효화가 revalidateTag(tag, { expire: 0 }) 로 전환되게 한다.
- */
+// updateTag는 Action 전용이다. Handler는 이 컨텍스트에서 revalidateTag(tag, { expire: 0 })를 쓴다.
 export function runWithRouteHandlerInvalidation<T>(
   fn: () => Promise<T>
 ): Promise<T> {
   return storage.run({ routeHandler: true }, fn)
 }
 
-/** 현재 코드가 `runWithRouteHandlerInvalidation` 안에서 실행 중인지. */
 export function isRouteHandlerInvalidation(): boolean {
   return storage.getStore()?.routeHandler === true
 }

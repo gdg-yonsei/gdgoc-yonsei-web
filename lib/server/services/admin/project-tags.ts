@@ -1,6 +1,3 @@
-/**
- * 프로젝트 태그 서비스(태그 목록, 프로젝트 태그 동기화).
- */
 import 'server-only'
 
 import { asc, eq, inArray, sql } from 'drizzle-orm'
@@ -9,7 +6,6 @@ import { projectsToTags } from '@/db/schema/projects-to-tags'
 import { tags } from '@/db/schema/tags'
 import { replaceRelationRows } from '@/lib/server/services/admin/shared'
 
-/** 모든 태그 이름. 관리자 태그 입력의 자동 완성 후보로 쓴다. */
 export async function getTagNames(): Promise<string[]> {
   const rows = await db
     .select({ name: tags.name })
@@ -53,11 +49,7 @@ async function resolveTagIds(
   })
 }
 
-/**
- * 프로젝트의 태그를 정확히 `names`로 맞춘다(이미 중복 제거·검증된 목록).
- *
- * @param executor - 프로젝트 저장과 같은 트랜잭션에서 실행하려면 트랜잭션 객체를 넘긴다.
- */
+// names는 중복 제거·검증된 목록이어야 한다. 프로젝트 저장과 묶으려면 같은 트랜잭션을 넘긴다.
 export async function syncProjectTags(
   projectId: string,
   names: readonly string[],

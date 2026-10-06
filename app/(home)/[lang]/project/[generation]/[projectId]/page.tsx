@@ -1,6 +1,4 @@
-/**
- * 프로젝트 상세 페이지(`/{lang}/project/{기수}/{id}`). URL의 기수가 실제와 다르면 404.
- */
+/** URL의 기수가 프로젝트의 실제 기수와 다르면 404다. */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -75,7 +73,6 @@ function fallbackDescription(
     : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
 }
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { generation, projectId } = await params
   const locale = await getLocale()
@@ -98,7 +95,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-/** 페이지 본문. */
 export default async function ProjectDetailPage({ params }: Props) {
   const { generation, projectId } = await params
 

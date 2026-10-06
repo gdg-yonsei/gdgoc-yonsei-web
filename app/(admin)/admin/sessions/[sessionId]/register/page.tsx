@@ -1,8 +1,4 @@
-/**
- * 세션 참가 신청 화면(`/admin/sessions/{id}/register`): 세션 정보, 현재 참가자, 남은 자리, 신청 버튼.
- *
- * 신청 가능 여부 판단은 화면 표시용이며, 실제 신청 시 서비스(`registerForSession`)가 같은 조건을 다시 확인한다.
- */
+/** 신청 가능 여부 표시는 안내용이며, 실제 신청 시 `registerForSession`이 조건을 다시 확인한다. */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -21,7 +17,6 @@ import BilingualPanel from '@/app/components/admin/bilingual-panel'
 import { sessionWallClockNow } from '@/lib/format/datetime'
 import { connection } from 'next/server'
 
-/** 신청이 닫혔거나 끝난 세션이면 마감 안내만, 아니면 세션 정보와 신청 버튼을 보여 준다(자리가 없으면 "정원 마감"). */
 export default async function RegisterSessionPage({
   params,
 }: PageProps<'/admin/sessions/[sessionId]/register'>) {

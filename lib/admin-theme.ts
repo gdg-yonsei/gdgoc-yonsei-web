@@ -1,14 +1,7 @@
-/**
- * 관리자 라이트/다크 테마 쿠키 이름과 값 검사. 서버(레이아웃)와 클라이언트(토글) 양쪽에서 쓴다.
- */
-
-/** 관리자 테마 쿠키 이름. */
 export const ADMIN_THEME_COOKIE = 'admin-theme'
 
-/** 관리자 테마. */
 export type AdminTheme = 'light' | 'dark'
 
-/** 값이 올바른 테마 이름인지. */
 export function isAdminTheme(
   value: string | undefined | null
 ): value is AdminTheme {

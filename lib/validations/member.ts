@@ -1,13 +1,7 @@
-/**
- * 멤버 프로필 입력 스키마(관리자 수정, 본인 프로필 수정 공용).
- *
- * 입력 검증 스키마(zod). 서비스 계층이 웹 폼과 MCP 입력을 모두 이 스키마로 검증한다.
- * 오류 문구는 관리자 화면과 MCP 응답에 그대로 보이므로 영어로 쓴다.
- */
+// 웹 폼·MCP 응답에 검증 오류가 그대로 보여 영어로 쓴다.
 import { z } from 'zod'
 
-// 프로필의 비공개 필드(전공·학번·전화번호)는 비워 둘 수 있어야 한다. 폼의 개인정보
-// 안내 문구가 빈 입력을 허용한다고 약속하기 때문이다. 빈 문자열은 null로 바꾼다.
+// 개인정보 안내대로 전공·학번·전화번호는 비울 수 있어야 한다. 빈 문자열은 null로 저장한다.
 const nullableTrimmed = z
   .string()
   .trim()
@@ -43,6 +37,5 @@ export const memberValidation = z.object({
     .nullable(),
   role: z.enum(['MEMBER', 'CORE', 'LEAD', 'ALUMNUS', 'UNVERIFIED']).nullable(),
   isForeigner: z.boolean(),
-  // 빈 문자열은 유효한 이미지 URL이 아니므로 null로 바꾼다.
   profileImage: nullableTrimmed,
 })

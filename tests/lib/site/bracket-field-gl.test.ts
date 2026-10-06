@@ -98,7 +98,6 @@ describe('parallaxTarget', () => {
   })
 })
 
-/** Just enough of WebGL2 for createBracketField to build and dispose a field. */
 function fakeGl(renderer: string) {
   const loseContext = vi.fn()
   const gl = {
@@ -213,7 +212,6 @@ describe('mountBracketField', () => {
     const field = fakeField()
     mountBracketField(canvas, hero, () => field)
 
-    // ~10 fps: each frame lands 100 ms after the previous one.
     for (let frame = 1; frame <= 20 && frames.length > 0; frame += 1) {
       frames.shift()!(frame * 100)
     }
@@ -302,7 +300,11 @@ describe('mountBracketField', () => {
       const { hero, frames, lastRipples } = mountWithFrames()
 
       hero.dispatchEvent(
-        new MouseEvent('pointerdown', { clientX: 40, clientY: 30, bubbles: true })
+        new MouseEvent('pointerdown', {
+          clientX: 40,
+          clientY: 30,
+          bubbles: true,
+        })
       )
       frames.shift()!(32)
       frames.shift()!(48)

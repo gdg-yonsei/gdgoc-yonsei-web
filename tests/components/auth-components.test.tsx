@@ -93,6 +93,20 @@ describe('auth components', () => {
     })
   })
 
+  it('handles rejected passkey registration and allows another attempt', async () => {
+    mockedAddPasskey.mockRejectedValueOnce(new Error('Authenticator cancelled'))
+    const user = userEvent.setup()
+    render(<RegisterPasskeyButton />)
+    const button = screen.getByRole('button', { name: 'Register Passkey' })
+    await user.click(button)
+    await waitFor(() =>
+      expect(globalThis.alert).toHaveBeenCalledWith(
+        'The passkey could not be registered. Please retry.'
+      )
+    )
+    expect(button).toBeEnabled()
+  })
+
   it('restores the passkey sign-in button after an authentication error', async () => {
     mockedPasskeySignIn.mockResolvedValue({
       data: null,
@@ -111,6 +125,32 @@ describe('auth components', () => {
       expect(mockedPasskeySignIn).toHaveBeenCalledWith()
       expect(button).toBeEnabled()
     })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Passkey sign-in could not be completed. Please retry or use another sign-in method.'
+    )
+    expect(mockedRouterReplace).not.toHaveBeenCalled()
+  })
+
+  it('announces a rejected passkey request and allows retrying', async () => {
+    mockedPasskeySignIn.mockRejectedValueOnce(new Error('WebAuthn unavailable'))
+    const user = userEvent.setup()
+    render(<PasskeySignInButton callbackURL="/admin" />)
+    const button = screen.getByRole('button', { name: /Sign in with Passkey/i })
+
+    await user.click(button)
+    expect(await screen.findByRole('alert')).toHaveTextContent('Please retry')
+    expect(button).toBeEnabled()
+    expect(mockedRouterReplace).not.toHaveBeenCalled()
+
+    mockedPasskeySignIn.mockResolvedValueOnce({
+      data: {},
+      error: null,
+    } as never)
+    await user.click(button)
+    await waitFor(() =>
+      expect(mockedRouterReplace).toHaveBeenCalledWith('/admin')
+    )
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 
   it('does a full navigation to resume an MCP OAuth request after passkey sign-in', async () => {

@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 관리자 라이트/다크 테마 전환 버튼(클라이언트 컴포넌트).
- */
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'
@@ -11,13 +8,7 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import type { AdminTheme } from '@/lib/admin-theme'
 import { cn } from '@/lib/cn'
 
-/**
- * 라이트/다크 테마 토글.
- *
- * 관리자 루트 요소의 `.dark`를 먼저 바꿔 즉시 반영하고, Server Action으로 쿠키를
- * 저장한 뒤 `router.refresh()`로 서버 렌더링 결과와 맞춘다.
- * @param theme 서버가 쿠키에서 읽은 현재 테마
- */
+/** 관리자 래퍼의 dark 클래스를 즉시 바꾸고, 쿠키 저장 뒤 router.refresh로 서버 결과와 맞춘다. */
 export default function ThemeToggle({
   theme,
   className,
@@ -35,8 +26,7 @@ export default function ThemeToggle({
 
   function handleToggle() {
     setCurrent(next)
-    // `.dark`는 `<html>`이 아니라 관리자 영역 래퍼에 붙는다
-    // (`app/(admin)/admin/layout.tsx` 참고).
+
     document
       .getElementById('admin-theme-root')
       ?.classList.toggle('dark', next === 'dark')
@@ -51,10 +41,11 @@ export default function ThemeToggle({
       type={'button'}
       onClick={handleToggle}
       disabled={isPending}
+      aria-busy={isPending}
       aria-label={label}
       title={label}
       className={cn(
-        'text-ink-secondary hover:bg-canvas hover:text-ink inline-flex size-10 cursor-pointer items-center justify-center rounded-md transition-colors',
+        'text-ink-secondary hover:bg-canvas hover:text-ink inline-flex size-11 cursor-pointer items-center justify-center rounded-md transition-colors',
         'focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2',
         className
       )}

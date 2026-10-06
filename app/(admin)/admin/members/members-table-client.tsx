@@ -1,8 +1,6 @@
 'use client'
 
-/**
- * 멤버 목록 표(클라이언트 컴포넌트). 검색·필터·정렬은 브라우저에서 한다(목록 규모가 작아 서버 왕복이 필요 없다).
- */
+/** 목록 규모가 작아 검색·필터·정렬은 서버 왕복 없이 브라우저에서 처리한다. */
 import { useState } from 'react'
 import UserProfileImage from '@/app/components/admin/user-profile-image'
 import type { AdminColumn } from '@/app/components/admin/data-table'
@@ -54,7 +52,6 @@ function memberMatchesSearch(member: AdminMemberListItem, query: string) {
   ].some((text) => text.toLowerCase().includes(query))
 }
 
-/** 정렬 기준(`part`·`role`·이름)에 따라 두 멤버를 비교한다. */
 function compareMembers(
   left: AdminMemberListItem,
   right: AdminMemberListItem,
@@ -66,7 +63,6 @@ function compareMembers(
   return getEnglishMemberName(left).localeCompare(getEnglishMemberName(right))
 }
 
-/** 멤버 목록 표(검색, 파트·역할 필터, 정렬, CSV 내보내기, 기수별 묶음). */
 export default function MembersTableClient({
   membersData,
   scope,
@@ -126,8 +122,7 @@ export default function MembersTableClient({
             className={'aspect-square w-8 shrink-0 rounded-full object-cover'}
           />
           <span className={'flex min-w-0 flex-col'}>
-            {/* e2e가 `getByText(name, { exact: true })`로 찾으므로
-                이름은 반드시 단일 요소의 텍스트로 남아야 한다. */}
+            {/* e2e가 이름의 정확한 텍스트를 찾으므로, 이름은 단일 요소에 유지한다. */}
             <span className={'truncate'}>{getEnglishMemberName(member)}</span>
             {getKoreanMemberName(member) && (
               <span className={'type-eyebrow text-ink-muted truncate'}>
@@ -146,7 +141,7 @@ export default function MembersTableClient({
         member.part ? (
           <span className={'admin-badge-primary'}>{member.part}</span>
         ) : (
-          <span className={'text-ink-faint'}>—</span>
+          <span className={'text-ink-faint'}>{t.notProvided}</span>
         ),
     },
     {
@@ -164,7 +159,7 @@ export default function MembersTableClient({
       header: t.columnGeneration,
       width: '8rem',
       hideOnMobile: scope?.kind !== 'all',
-      render: (member) => member.generation ?? '—',
+      render: (member) => member.generation ?? t.notProvided,
     },
   ]
 

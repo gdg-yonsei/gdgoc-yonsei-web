@@ -1,6 +1,3 @@
-/**
- * 프로젝트 목록 화면(`/admin/projects`). 생성 권한이 있으면 "만들기" 버튼을 보인다.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import { AdminTableSkeleton } from '@/app/components/admin/skeleton'
@@ -18,12 +15,10 @@ import {
 } from '@/lib/admin-i18n/server'
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Projects',
 }
 
-/** 프로젝트 목록. 표는 Suspense로 스트리밍하고 그동안 스켈레톤을 보여 준다. */
 export default async function ProjectsPage() {
   const [locale, session] = await Promise.all([
     getAdminLocale(),

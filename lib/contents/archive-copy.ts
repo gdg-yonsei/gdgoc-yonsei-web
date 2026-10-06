@@ -1,13 +1,7 @@
-/**
- * 세션·프로젝트·구성원 아카이브 페이지 문구.
- *
- * 서버 컴포넌트는 직접 읽고, 클라이언트 컴포넌트에는 필요한 문구만 prop으로 넘긴다
- * (`tests/lib/site/client-bundle-guards.test.ts`가 이 파일이 클라이언트 번들에 들어가지 않는지 검사한다).
- */
+// 이 사전은 클라이언트 번들에 넣지 않는다. 클라이언트에는 필요한 문구만 prop으로 넘긴다.
 import type { Locale } from '@/lib/i18n'
 import type { FilterBarCopy } from '@/lib/site/filter-state'
 
-/** 세 아카이브가 함께 쓰는 문구(브레드크럼, 기수 띠, 빈 상태 등). */
 export type ArchiveCommonCopy = {
   breadcrumb: string
   home: string
@@ -23,7 +17,6 @@ export type ArchiveCommonCopy = {
   reset: string
 }
 
-/** 공통 문구(언어별). */
 export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
   en: {
     breadcrumb: 'Breadcrumb',
@@ -55,7 +48,6 @@ export const archiveCommonCopy: Record<Locale, ArchiveCommonCopy> = {
   },
 }
 
-/** 세션 기록 문구. */
 export type SessionArchiveCopy = {
   tag: string
   hubTitle: string
@@ -89,7 +81,6 @@ export type SessionArchiveCopy = {
   next: string
 }
 
-/** 세션 기록 문구(언어별). */
 export const sessionArchiveCopy: Record<Locale, SessionArchiveCopy> = {
   en: {
     tag: '<log />',
@@ -162,7 +153,6 @@ export const sessionArchiveCopy: Record<Locale, SessionArchiveCopy> = {
   },
 }
 
-/** 프로젝트 쇼케이스 문구. */
 export type ProjectArchiveCopy = {
   tag: string
   hubTitle: string
@@ -197,7 +187,6 @@ export type ProjectArchiveCopy = {
   nextProject: string
 }
 
-/** 프로젝트 쇼케이스 문구(언어별). */
 export const projectArchiveCopy: Record<Locale, ProjectArchiveCopy> = {
   en: {
     tag: '<releases />',
@@ -272,7 +261,6 @@ export const projectArchiveCopy: Record<Locale, ProjectArchiveCopy> = {
   },
 }
 
-/** 세션 기록 FilterBar에 넘길 문구만 고른다. */
 export function sessionFilterCopy(locale: Locale): FilterBarCopy {
   const copy = sessionArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
@@ -287,7 +275,6 @@ export function sessionFilterCopy(locale: Locale): FilterBarCopy {
   }
 }
 
-/** 프로젝트 쇼케이스 FilterBar에 넘길 문구만 고른다. */
 export function projectFilterCopy(locale: Locale): FilterBarCopy {
   const copy = projectArchiveCopy[locale]
   const common = archiveCommonCopy[locale]
@@ -302,7 +289,6 @@ export function projectFilterCopy(locale: Locale): FilterBarCopy {
   }
 }
 
-/** 구성원 디렉터리 문구. */
 export type MemberArchiveCopy = {
   tag: string
   hubTitle: string
@@ -321,7 +307,6 @@ export type MemberArchiveCopy = {
   github: string
 }
 
-/** 구성원 디렉터리 문구(언어별). */
 export const memberArchiveCopy: Record<Locale, MemberArchiveCopy> = {
   en: {
     tag: '<team />',

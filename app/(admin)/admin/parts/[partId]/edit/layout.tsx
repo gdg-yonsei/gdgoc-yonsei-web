@@ -1,6 +1,4 @@
-/**
- * 파트 수정 화면의 권한 경계. `parts` 리소스에 `put` 권한이 없으면 403(`forbidden()`).
- */
+/** `parts` 수정 권한이 없으면 403이다. */
 import { permissionLayout } from '@/lib/server/permission/permission-layout'
 
 export default permissionLayout('put', 'parts')

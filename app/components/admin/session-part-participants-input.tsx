@@ -1,9 +1,5 @@
 'use client'
 
-/**
- * 세션 생성/수정 폼의 담당 파트·참가자 선택(클라이언트 컴포넌트). 검색·기수·파트 필터는 파트 구성원
- * 선택기와 같은 `MemberFilterControls`를 쓴다.
- */
 import { useState } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import MemberFilterControls, {
@@ -16,7 +12,6 @@ import {
 } from '@/lib/admin/member-options'
 import { cn } from '@/lib/cn'
 
-/** 파트 선택지와 그 구성원. */
 export type SessionPartOption = {
   id: number
   name: string
@@ -32,7 +27,6 @@ export type SessionPartOption = {
   }>
 }
 
-/** 참가자 후보 멤버와 소속(기수·파트) 목록. */
 export type SessionMemberOption = {
   id: string
   name: string | null
@@ -44,13 +38,7 @@ export type SessionMemberOption = {
   memberships: MemberMembership[]
 }
 
-/**
- * 세션 폼의 파트·참가자 선택.
- *
- * 왼쪽에서 파트를 고르면 그 파트 구성원이 기본 참가자로 채워지고, 오른쪽에서 기수·
- * 파트·이름으로 다른 멤버를 찾아 추가하거나 뺄 수 있다. 결과는 숨은 입력
- * `partId`, `participantId`(JSON 배열)로 폼에 실린다.
- */
+/** 파트를 고르면 구성원이 기본 참가자가 되며, 선택 id는 숨은 partId·participantId(JSON 배열) 필드로 제출한다. */
 export default function SessionPartParticipantsInput({
   defaultValue,
   members,
@@ -138,9 +126,7 @@ export default function SessionPartParticipantsInput({
                   )}
                 >
                   <div>{part.name}</div>
-                  <div className={'text-xs opacity-70'}>
-                    {part.generationName}
-                  </div>
+                  <div className={'text-xs'}>{part.generationName}</div>
                 </button>
               ))}
             </div>
@@ -260,9 +246,7 @@ export default function SessionPartParticipantsInput({
                       )
                     }}
                   >
-                    <span className={'text-xs opacity-70'}>
-                      {membershipLabel}
-                    </span>
+                    <span className={'text-xs'}>{membershipLabel}</span>
                     <span className={'line-clamp-2 w-full break-words'}>
                       {memberName}
                     </span>

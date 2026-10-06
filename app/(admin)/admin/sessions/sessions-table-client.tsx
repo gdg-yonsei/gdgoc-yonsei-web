@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 세션 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
- */
 import { useState } from 'react'
 import Image from 'next/image'
 import type { AdminColumn } from '@/app/components/admin/data-table'
@@ -21,10 +18,7 @@ import type { Locale } from '@/lib/i18n'
 import type { AdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import type { AdminSessionListItem } from '@/lib/server/fetcher/admin/get-sessions'
 
-/**
- * 세션 일시 표시. 세션 시간은 서울 벽시계 시각을 UTC 라벨로 저장하므로
- * (`lib/format/datetime.ts` 참고) UTC로 표시해야 입력한 시각 그대로 보인다.
- */
+/** 서울 벽시계 시각에 UTC 라벨을 붙여 저장하므로, UTC로 표시해야 입력한 시각을 유지한다. */
 function formatSessionDateTime(
   value: Date | string | null,
   locale: Locale,
@@ -61,7 +55,6 @@ function compareSessions(
   return sortBy === 'date-asc' ? leftTime - rightTime : rightTime - leftTime
 }
 
-/** 세션 목록 표(검색, 파트 필터, 일정·이름 정렬, CSV 내보내기, 기수별 묶음). */
 export default function SessionsTableClient({
   sessionsData,
   scope,
@@ -149,7 +142,7 @@ export default function SessionsTableClient({
       header: t.columnGeneration,
       width: '8rem',
       hideOnMobile: scope?.kind !== 'all',
-      render: (session) => session.generationName ?? '—',
+      render: (session) => session.generationName ?? t.notProvided,
     },
   ]
 

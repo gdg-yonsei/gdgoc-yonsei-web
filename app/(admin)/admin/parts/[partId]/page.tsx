@@ -1,6 +1,3 @@
-/**
- * 파트 상세 화면(`/admin/parts/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -18,7 +15,6 @@ import {
   localizeAdminHref,
 } from '@/lib/admin-i18n/server'
 
-/** 탭 제목에 파트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
 export async function generateMetadata({
   params,
 }: PageProps<'/admin/parts/[partId]'>): Promise<Metadata> {
@@ -30,7 +26,6 @@ export async function generateMetadata({
   }
 }
 
-/** 파트 상세. */
 export default async function PartPage({
   params,
 }: PageProps<'/admin/parts/[partId]'>) {

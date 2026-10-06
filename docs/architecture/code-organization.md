@@ -70,7 +70,7 @@ export async function createPartAction(
 
 서비스 함수(`lib/server/services/admin/parts.ts`)의 순서:
 
-1. `authorize(actor, action, resource, ownerId?)` — 스코프와 역할
+1. `authorize(actor, action, resource, ownerId?)`: 스코프와 역할
 2. 기수 접근(`canAccessGeneration`) 같은 표 밖 규칙
 3. zod로 입력 검증 → 실패하면 `fail('VALIDATION', …, fieldErrorsFromZod(error))`
 4. `db.transaction`으로 행과 관계 행을 함께 쓴다

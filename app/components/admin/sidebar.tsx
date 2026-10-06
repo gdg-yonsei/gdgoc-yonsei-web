@@ -1,6 +1,3 @@
-/**
- * 관리자 데스크톱 고정 사이드바(서버 컴포넌트).
- */
 import { NavigationItem } from '@/app/(admin)/admin/navigation-list'
 import SidebarContent, {
   AdminBrand,
@@ -10,15 +7,8 @@ import { Locale } from '@/lib/i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import type { AdminTheme } from '@/lib/admin-theme'
 
-/**
- * 데스크톱(lg 이상) 고정 사이드바.
- *
- * DESIGN.md의 figure/ground를 따라 사이드바는 `surface`(흰 면), 페이지 본문은
- * 따뜻한 `canvas`를 쓰고, 경계는 그림자 대신 hairline으로 나눈다.
- *
- * 폭 `w-64`는 `app/(admin)/admin/layout.tsx`의 `lg:pl-64`와 반드시 같아야 한다.
- * 한쪽만 바꾸면 본문이 사이드바에 가려지거나 틈이 생긴다.
- */
+/** DESIGN.md의 surface·canvas를 hairline으로 나눈다.
+ * 사이드바 w-64와 admin/layout의 lg:pl-64는 본문이 가리지 않게 반드시 같아야 한다. */
 export default function Sidebar({
   navigations,
   locale,

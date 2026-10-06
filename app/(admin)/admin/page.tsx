@@ -1,6 +1,3 @@
-/**
- * 관리자 홈(`/admin`) 페이지.
- */
 import { Suspense } from 'react'
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
@@ -30,11 +27,7 @@ import {
 import { resolveAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import { hasPermission } from '@/lib/server/permission/has-permission'
 
-/**
- * 관리자 홈(대시보드): 통계 타일, 다가오는 세션, 도구(QR 생성, 캘린더 구독, MCP 연결 안내).
- *
- * 범위가 특정 기수일 때만 "세션 만들기" 버튼을 보인다(세션은 기수에 속해야 하므로).
- */
+/** 세션은 특정 기수에 속해야 하므로 해당 범위에서만 세션 만들기 버튼을 표시한다. */
 export default async function AdminPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -98,7 +91,7 @@ export default async function AdminPage() {
         }
       />
 
-      <Suspense fallback={<DashboardStatsSkeleton />}>
+      <Suspense fallback={<DashboardStatsSkeleton label={t.loading} />}>
         <DashboardStats
           scope={scope}
           locale={locale}

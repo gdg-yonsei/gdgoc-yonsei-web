@@ -1,6 +1,3 @@
-/**
- * 가입 승인 화면(`/admin/members/accept`). 승인 대기(`UNVERIFIED`) 사용자를 가입 순으로 보여 준다.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminPageHeader from '@/app/components/admin/page-header'
 import AdminEmptyState from '@/app/components/admin/empty-state'
@@ -15,12 +12,10 @@ import {
   getAdminMessages,
 } from '@/lib/admin-i18n/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Approve Members',
 }
 
-/** 대기 사용자 카드 목록(사진, 이름, 이메일, SNS, 가입일)과 승인·거절 버튼. */
 export default async function AcceptMemberPage() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

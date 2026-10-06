@@ -1,6 +1,3 @@
-/**
- * 관리자 모바일 상단 앱 바와 메뉴 드로어(서버 컴포넌트).
- */
 import ToggleMenubarButton from '@/app/components/admin/toggle-menubar-button'
 import MenuBar from '@/app/components/admin/menu-bar'
 import ThemeToggle from '@/app/components/admin/theme-toggle'
@@ -12,12 +9,7 @@ import { Locale } from '@/lib/i18n'
 import { type ResolvedAdminGenerationScope } from '@/lib/server/admin-generation-scope'
 import type { AdminTheme } from '@/lib/admin-theme'
 
-/**
- * 모바일(lg 미만) 상단 앱 바.
- *
- * 바는 고정 높이(56px)이고, 메뉴는 `MenuBar`가 왼쪽에서 밀려 들어오는 드로어로 띄운다.
- * 드로어 안에는 데스크톱 사이드바와 같은 `SidebarContent`를 넣어 메뉴 구성을 한 곳에서 관리한다.
- */
+/** 앱 바 높이는 56px이며, 드로어와 데스크톱 사이드바는 같은 SidebarContent로 메뉴 구성을 공유한다. */
 export default function Header({
   navigations,
   locale,
@@ -42,7 +34,7 @@ export default function Header({
         </div>
         <ThemeToggle theme={theme} />
       </header>
-      {/* 드로어 본문은 서버에서 렌더한 사이드바 내용을 그대로 재사용합니다. */}
+      {}
       <MenuBar>
         <SidebarContent
           navigations={navigations}

@@ -1,6 +1,3 @@
-/**
- * 세션 기록 데이터 가공(순수 함수): 제목·장소, 기수·월별 묶음, 필터, 검색, 관련 세션.
- */
 import { pickLocalized, type Locale } from '@/lib/i18n'
 import { sessionMonthKey } from '@/lib/format/datetime'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
@@ -10,7 +7,6 @@ import {
   isSessionCategory,
 } from '@/lib/site/labels'
 
-/** 세션 기록 쿼리가 돌려주는 공개 세션 하나(두 언어 필드 포함). */
 export type LogSession = {
   id: string
   name: string
@@ -29,10 +25,8 @@ export type LogSession = {
   generationStartDate: string
 }
 
-/** 한 달의 세션 묶음. */
 export type LogMonth = { key: string; sessions: LogSession[] }
 
-/** 한 기수의 세션 묶음(월별). */
 export type LogGeneration = {
   name: string
   startDate: string
@@ -43,7 +37,6 @@ export type LogGeneration = {
 /** 시작 시각이 없는 세션을 모으는 월 키(미정). */
 export const TBA_MONTH = 'tba'
 
-/** 현재 언어의 세션 제목(없으면 다른 언어). */
 export function sessionTitle(
   session: Pick<LogSession, 'name' | 'nameKo'>,
   locale: Locale
@@ -51,7 +44,6 @@ export function sessionTitle(
   return pickLocalized(locale, { en: session.name, ko: session.nameKo }) ?? ''
 }
 
-/** 현재 언어의 세션 장소(없으면 다른 언어). */
 export function sessionLocation(
   session: Pick<LogSession, 'location' | 'locationKo'>,
   locale: Locale
@@ -107,7 +99,6 @@ export function groupSessionLog(
     })
 }
 
-/** 필터 선택지: 활동 분류, 파트, 기수와 각 개수. */
 export function sessionFacets(
   sessions: readonly LogSession[],
   locale: Locale
@@ -157,7 +148,6 @@ export function sessionFacets(
   }
 }
 
-/** 검색 대상 문자열(두 언어 제목·장소, 파트, 기수). */
 export function sessionSearchText(session: LogSession): string {
   return normalizeSearchText(
     [
@@ -177,7 +167,6 @@ export function sessionSearchText(session: LogSession): string {
 
 const startTime = (session: LogSession) => session.startAt?.getTime() ?? 0
 
-/** 일정이 있는 최신 세션(홈 화면 "최근 세션" 섹션). */
 export function latestSessions(
   sessions: readonly LogSession[],
   limit: number
@@ -201,10 +190,7 @@ export function adjacentSessions(
   return { previous: dated[index - 1] ?? null, next: dated[index + 1] ?? null }
 }
 
-/**
- * 관련 세션(상세 페이지 하단). 점수가 낮을수록 가깝다:
- * 같은 파트·같은 기수 → 같은 파트 → 같은 분류. 같은 점수면 시간이 가까운 순.
- */
+// 관련 세션은 같은 파트·기수, 같은 파트, 같은 분류 순이다. 동점이면 시각이 가까운 순이다.
 export function relatedSessions(
   sessions: readonly LogSession[],
   current: LogSession,

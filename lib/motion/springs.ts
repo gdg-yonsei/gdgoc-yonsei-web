@@ -1,12 +1,4 @@
-/**
- * 홈 화면 스프링 이징 정의(anime.js `spring()` 매개변수).
- */
-
-/**
- * 홈 화면 스프링 곡선. `site-theme.css`에 같은 곡선이 `linear()` 토큰(--ease-spring, -snap,
- * -soft)으로 있어 CSS 전환과 스크립트 장면이 똑같이 멈춘다. 둘이 어긋나지 않도록
- * `tests/lib/motion/springs.test.ts`가 비교한다.
- */
+// CSS linear() 토큰과 이 곡선이 같아야 CSS 전환·스크립트 연출이 같은 방식으로 멈춘다.
 export const SPRINGS = {
   /** 기본: 빠르게 올라가 살짝 넘쳤다가 멈춘다. */
   spring: { bounce: 0.2, duration: 700 },
@@ -16,9 +8,7 @@ export const SPRINGS = {
   soft: { bounce: 0, duration: 900 },
 } as const
 
-/** 스프링 이름(spring, snap, soft). */
 export type SpringName = keyof typeof SPRINGS
 
-/** CSS `linear()` 토큰의 구간 수. 41개 지점이면 오차 1% 미만으로 곡선을 따라가면서
-    전역 스타일시트도 작게 유지한다. */
+// linear()를 41개 지점으로 근사하면 곡선 오차를 1% 미만으로 유지한다.
 export const SPRING_SAMPLES = 40

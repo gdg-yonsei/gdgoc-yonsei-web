@@ -1,27 +1,15 @@
 'use client'
 
-/**
- * 기수 범위 선택 드롭다운(클라이언트 컴포넌트). 바꾸면 Server Action으로 쿠키를 저장하고 화면을 새로 고친다.
- */
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { setAdminGenerationScopeAction } from '@/app/components/admin/admin-generation-scope-actions'
 
-/** 드롭다운 선택지 하나. */
 type GenerationOption = {
   id: number
   name: string
 }
 
-/**
- * 기수 범위 `<select>`.
- *
- * `useTransition`으로 쿠키 저장과 `router.refresh()`를 묶어, 새로 고치는 동안
- * "갱신 중" 문구를 보여 주고 중복 선택을 막는다.
- * @param canAccessAll "전체 기수" 선택지를 보여 줄지(전체 접근 권한)
- * @param selectedValue 현재 범위의 직렬화 값
- * @param showLabel 라벨·진행 문구 표시 여부
- */
+/** 쿠키 저장·router.refresh를 같은 transition에 묶어 갱신 중 중복 선택을 막는다. */
 export default function AdminGenerationScopeSelect({
   canAccessAll,
   disabled,
@@ -57,10 +45,7 @@ export default function AdminGenerationScopeSelect({
           </span>
         </span>
       )}
-      {/*
-        네이티브 <select>를 유지합니다. e2e 헬퍼가 `aria-label`로 이 요소를 찾아
-        `selectOption()`을 호출하므로 커스텀 리스트박스로 대체하면 안 됩니다.
-      */}
+      {/* e2e가 aria-label로 찾아 selectOption을 호출하므로 네이티브 select를 유지한다. */}
       <select
         aria-label={label}
         className={'admin-input type-body-sm cursor-pointer font-medium'}

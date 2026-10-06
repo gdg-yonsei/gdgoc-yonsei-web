@@ -1,8 +1,3 @@
-/**
- * 소개(about) 섹션의 연출: 단어를 따라가는 괄호 띠와 기둥 아이콘 조립.
- *
- * 장면 함수 규칙은 `../scene.ts` 참고.
- */
 import {
   animate,
   createAnimatable,
@@ -20,10 +15,8 @@ import { arrival } from '../arrival'
 import type { Scene } from '../scene'
 import { sceneTimeline } from '../timeline'
 
-/** 띠가 단어마다 바꿔 가며 쓰는 GDG 색. */
 const HUES = ['blue', 'red', 'yellow', 'green'] as const
 
-/** 문장의 단어들. 각 단어는 뒤의 공백을 빼고 측정한다. */
 function measureWords(statement: HTMLElement, words: HTMLElement[]) {
   const origin = statement.getBoundingClientRect()
   const range = document.createRange()
@@ -39,11 +32,7 @@ function measureWords(statement: HTMLElement, words: HTMLElement[]) {
   })
 }
 
-/**
- * `<about>` 장면. 문장의 단어가 하나씩 켜질 때마다 `< >` 띠가 그 단어 뒤로 이동해 단어를 괄호 안에
- * 넣는다. 이어서 소개 문단이 한 줄씩 떠오르고, 세 기둥(pillar)이 아이콘을 조립한다. 기술 기둥에
- * 마우스를 올리면 꺾쇠가 중괄호로 휜다.
- */
+/** 단어마다 `< >` 띠를 옮기며, 기술 기둥의 꺾쇠·중괄호 변형은 숨은 윤곽선을 쓴다. */
 const manifesto: Scene = ({ root, scope, matches, belowFold }) => {
   const cleanups: Array<() => void> = []
   const statement = root.querySelector<HTMLElement>('.manifesto-statement')
@@ -97,8 +86,8 @@ const manifesto: Scene = ({ root, scope, matches, belowFold }) => {
         enter: '85% top',
         leave: '35% bottom',
         sync: true,
-        // observer의 onUpdate는 교차 지점 자체의 콜백과 달리 문장 위쪽으로 한 번에 건너뛴 경우에도 호출되어
-        // 띠를 끈다.
+        // observer의 onUpdate는 문장 위로 한 번에 건너뛸 때도 호출되어 띠를 끈다.
+
         onUpdate: () => light(wordIndexAt(crossing.progress, words.length)),
       }),
     })
@@ -203,7 +192,6 @@ const manifesto: Scene = ({ root, scope, matches, belowFold }) => {
     }
   }
 
-  // 마우스를 올린 동안 기술 기둥의 꺾쇠가 중괄호로 휜다.
   const tech = root
     .querySelector('.pillar-glyph .glyph-stroke-blue')
     ?.closest('.pillar')

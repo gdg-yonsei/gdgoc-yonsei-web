@@ -1,6 +1,3 @@
-/**
- * 프로젝트 수정 화면(`/admin/projects/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
@@ -24,12 +21,10 @@ import { savedVersionKey } from '@/lib/admin/form-version'
 import ProjectFormFields from '@/app/(admin)/admin/projects/_components/project-form-fields'
 import { connection } from 'next/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Project',
 }
 
-/** 기존 값을 채운 프로젝트 수정 폼. */
 export default async function EditProjectPage({
   params,
 }: PageProps<'/admin/projects/[projectId]/edit'>) {
@@ -42,7 +37,6 @@ export default async function EditProjectPage({
     notFound()
   }
 
-  // 작성자(또는 CORE+)만 수정 화면을 열 수 있다.
   const session = await requirePermission(
     'put',
     'projects',

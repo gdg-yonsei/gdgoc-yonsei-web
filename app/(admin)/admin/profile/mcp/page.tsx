@@ -1,7 +1,4 @@
-/**
- * MCP 연결 관리 화면(`/admin/profile/mcp`): 연결된 AI 도구 목록·연결 끊기, MCP 활동(감사 로그).
- * 권한은 프로필 레이아웃이 확인한다. LEAD는 `?audit=all`로 모든 멤버의 감사 로그를 본다.
- */
+/** 감사 로그는 본인 기록이 기본이며, LEAD만 audit=all로 모든 멤버의 기록을 볼 수 있다. */
 import Link from 'next/link'
 import { forbidden } from 'next/navigation'
 import { connection } from 'next/server'
@@ -29,12 +26,10 @@ import {
 } from '@/lib/server/services/admin/mcp-connections'
 import { getWebActor } from '@/lib/server/services/admin/web-actor'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Connected AI tools',
 }
 
-/** 연결 목록과 감사 로그. */
 export default async function McpConnectionsPage({
   searchParams,
 }: PageProps<'/admin/profile/mcp'>) {
@@ -52,7 +47,7 @@ export default async function McpConnectionsPage({
     listMcpConnections(actor),
     listMcpAuditLog(actor, { allUsers: showAll }),
   ])
-  // 조회 실패는 관리자 오류 화면(`error.tsx`)이 보여 준다.
+
   if (!connections.ok) throw new Error(connections.message)
   if (!audit.ok) throw new Error(audit.message)
 
@@ -116,7 +111,6 @@ export default async function McpConnectionsPage({
   )
 }
 
-/** 연결된 클라이언트 카드 목록. */
 function ConnectionList({
   connections,
   locale,
@@ -196,7 +190,7 @@ function ConnectionList({
   )
 }
 
-/** 감사 로그 표. 행은 링크가 아니므로 `AdminDataTable` 대신 같은 표 스타일만 쓴다. */
+/** 감사 로그 행은 링크가 아니어서 AdminDataTable 대신 같은 표 스타일만 쓴다. */
 function AuditTable({
   entries,
   showUser,
@@ -247,7 +241,7 @@ function AuditTable({
             </span>
             {showUser && (
               <span className={'admin-table-cell'} data-label={t.mcpAuditUser}>
-                {entry.userName ?? '—'}
+                {entry.userName ?? t.notProvided}
               </span>
             )}
             <span className={'admin-table-cell'} data-label={t.mcpAuditTool}>
@@ -267,10 +261,10 @@ function AuditTable({
               )}
             </span>
             <span className={'admin-table-cell'} data-label={t.mcpAuditClient}>
-              {entry.clientName ?? entry.clientId ?? '—'}
+              {entry.clientName ?? entry.clientId ?? t.notProvided}
             </span>
             <span className={'admin-table-cell'} data-label={t.mcpAuditTarget}>
-              {entry.targetId ?? '—'}
+              {entry.targetId ?? t.notProvided}
             </span>
           </li>
         ))}

@@ -1,6 +1,3 @@
-/**
- * 공개 사이트 홈(`/{lang}`).
- */
 import { Suspense } from 'react'
 import '@/app/styles/site-home.css'
 import Hero, { HeroMetaList } from '@/app/(home)/[lang]/_components/home/hero'
@@ -24,7 +21,6 @@ import { getLocale } from '@/lib/i18n/server'
 import { siteMetadataCopy } from '@/lib/contents/site-copy'
 import { homeStructuredData } from '@/lib/site/json-ld'
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = siteMetadataCopy[locale]
@@ -37,17 +33,11 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
-/**
- * 공개 사이트 홈.
- *
- * 히어로 아래 소개·활동·파트·최근 세션·대표 프로젝트·참여 안내 섹션을 차례로 그린다.
- * 스크롤 연출(`HomeMotion`)은 클라이언트에서 유휴 시간에 따로 불러온다.
- */
+/** HomeMotion은 스크롤 연출을 클라이언트 유휴 시간에 따로 불러온다. */
 export default async function HomePage() {
   const lang = await getLocale()
   const copy = siteMetadataCopy[lang]

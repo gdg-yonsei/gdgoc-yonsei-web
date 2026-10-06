@@ -1,10 +1,11 @@
-# Redesign Plan 2 — Data Layer, Admin Tags, Sessions and Projects
+# Redesign Plan 2: Data Layer, Admin Tags, Sessions and Projects
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Rebuild Sessions and Projects as archive-first, filterable, SEO-complete pages on two cached read models, and let admins tag projects by tech stack.
 
 **Architecture:**
+
 - Two bilingual `'use cache: remote'` read models feed every hub, generation page, sitemap entry and the home counter:
   - `getSessionArchive(bucket)` returns every public session.
   - `getProjectShowcase()` returns every project with its tags and contributors.
@@ -15,6 +16,7 @@
 **Tech Stack:** Next.js 16.3 (App Router, `cacheComponents`, `partialPrefetching`), React 19 canary as bundled by Next (`<ViewTransition>`), Drizzle ORM 0.45, Zod 4, Tailwind CSS 4 plus `@tailwindcss/typography`, Vitest with Testing Library, and Playwright with `@next/playwright`.
 
 **Spec:** `docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md`. Relevant sections:
+
 - §2 information architecture
 - §3 Sessions, Projects, and the Landing hero meta strip
 - §4 SEO
@@ -24,12 +26,13 @@
 **Series:** Plan 2 of 3. Plan 1 (foundations, hero, chrome) is complete; its ledger is in the session scratchpad at `plan1-record/progress.md`. Plan 3 covers the landing sections, member/calendar/policy restyles, OG images, ⌘K, the dark scheme and final verification.
 
 **Deliberate deviations from the spec** (each confirmed from the codebase):
+
 - **Session times.** The spec says to check the 25-26 Sixth T19 before choosing a time zone. The code settles it: the admin form parses `datetime-local` on a UTC server, and the edit form reads it back with `toISOString().slice(0, 16)`. So stored session times are KST wall-clock values with a UTC label.
   - All public session formatting uses `timeZone: 'UTC'`, and JSON-LD appends `+09:00`.
   - `createdAt`/`updatedAt` are real instants and use `Asia/Seoul`.
   - The social-image date, which used `Asia/Seoul` for sessions and so dated evening sessions a day late, is fixed here. The template restyle stays in Plan 3.
 - **Hub names.** The Projects hub's H1 stays "Projects"/"프로젝트", with a `<releases />` tag above it. That's the nav label and the word people search for; the spec calls the page "Releases".
-- **Link filters.** "Live demo" and "Open source" are one *Links* facet with all-of semantics, not two separate toggles.
+- **Link filters.** "Live demo" and "Open source" are one _Links_ facet with all-of semantics, not two separate toggles.
 - **Contributors.** Project cards show contributor initials, not avatar images, to keep the grid light. The case study shows avatars (next/image already allows the GitHub, Google and CDN hosts).
 - **Sitemap.** It keeps every member generation page, because member counts aren't queried here. It drops only session or project generation pages that have nothing public.
 - **Locale switch.** It carries the query string through an intent handler (pointer over, focus, click) rather than `useSearchParams`, so the header's static shell stays as it is.
@@ -103,53 +106,53 @@
 
 ## File Structure
 
-| File | Status | Responsibility |
-|---|---|---|
-| `lib/site/datetime.ts` | create | Session wall-clock and instant formatting, `+09:00` ISO |
-| `lib/site/labels.ts` | create | Category labels and hues, part hues |
-| `lib/site/images.ts` | create | `isPlaceholderImage` |
-| `lib/site/format.ts` | create | `fillTemplate`, `countLabel`, `initials` |
-| `lib/site/json-ld.ts` | create | BreadcrumbList, CollectionPage/ItemList, Event, LearningResource, CreativeWork builders |
-| `lib/site/filter-state.ts` | create | Query ↔ filter state, matching, DOM item reader |
-| `lib/site/generations.ts` | create | Per-generation counts, strip ordering, neighbors |
-| `lib/site/session-log.ts` | create | `LogSession` type, titles, grouping, facets, search text, adjacency, related |
-| `lib/site/project-showcase.ts` | create | `ProjectRow`/`ShowcaseProject` types, mapping, facets, search text, next/more |
-| `lib/site/sitemap-paths.ts` | create | Pure sitemap path builder |
-| `lib/site/carry-query.ts` | create | Locale links carry the current query string |
-| `lib/validations/project-tags.ts` | create | `dedupeTags`, tag limits (Zod-free, client-safe) |
-| `lib/validations/project.ts` | modify | `tags` field |
-| `lib/server/form-data/get-project-form-data.ts` | modify | Parse `tags` JSON |
-| `lib/server/services/project-tags.ts` | create | `getTagNames`, `syncProjectTags` |
-| `lib/server/cache/index.ts` | modify | `tagQuery` |
-| `lib/server/queries/public/sessions.ts` | modify | `getSessionArchive`; extend `getSessionById`; drop `getPublishedSessionsByGeneration` |
-| `lib/server/queries/public/projects.ts` | modify | `getProjectShowcase`; extend `getProjectById`; drop `getProjectsByGeneration` |
-| `lib/server/queries/public/sitemap.ts` | modify | Build from archive and showcase |
-| `lib/server/fetcher/admin/get-project.ts` | modify | Include tags |
-| `lib/seo/metadata.ts` | modify | `noindex` option |
-| `lib/seo/social-image-data.ts` | modify | Shared labels and placeholders; UTC session date |
-| `lib/contents/archive-copy.ts` | create | EN/KO copy for the Sessions and Projects pages |
-| `lib/contents/site-copy.ts` | modify | Hero meta templates |
-| `lib/admin-i18n/index.ts` | modify | Tag labels |
-| `app/styles/site-content.css` | create | Content-page styles and View Transition CSS |
-| `app/globals.css` | modify | Import `site-content.css` |
-| `types/react-canary.d.ts` | create | `/// <reference types="react/canary" />` |
-| `vitest.setup.ts` | modify | Pass-through `ViewTransition`; strip router-only `Link` props |
-| `app/components/site/{breadcrumbs,page-header,chip,empty-state,generation-strip,generation-pager,session-poster,page-transition,external-link,hub-breadcrumbs}.tsx` | create | Server primitives |
-| `app/components/site/filter-bar.tsx` | create | Client filter island |
-| `app/components/site/session-log/{session-log,session-row}.tsx` | create | The log |
-| `app/components/site/session-detail/session-detail-view.tsx` | create | Session page view |
-| `app/components/site/project-grid/{project-card,project-grid}.tsx` | create | Release cards |
-| `app/components/site/project-detail/project-detail-view.tsx` | create | Case study view |
-| `app/components/images-slider-controller.tsx` | modify | Site styling, counter, arrow keys |
-| `app/components/site/locale-switch.tsx`, `footer-locale-switch.tsx`, `app/components/header/navigation.tsx` | modify | `onIntent` → `carryQueryString` |
-| `app/components/admin/tags-input.tsx` | create | Chip input for tags |
-| `app/(admin)/admin/projects/{create,[projectId]/edit}/{page,actions}.ts(x)`, `[projectId]/page.tsx` | modify | Tag editing and display |
-| `app/(home)/[lang]/session/page.tsx`, `[generation]/page.tsx`, `[generation]/loading.tsx`, `[generation]/[sessionId]/page.tsx`, `[sessionId]/loading.tsx` | rewrite | Sessions |
-| `app/(home)/[lang]/project/page.tsx`, `[generation]/page.tsx`, `[generation]/loading.tsx`, `[generation]/[projectId]/page.tsx`, `[projectId]/loading.tsx` | rewrite | Projects |
-| `app/(home)/[lang]/_components/home/{hero,hero-meta}.tsx`, `app/(home)/[lang]/page.tsx`, `app/styles/site-hero.css` | modify/create | Live hero meta strip |
-| `app/components/navigation-button.tsx` | delete | Replaced by breadcrumbs |
-| `scripts/verify-instant-navigation.mjs` | modify | New headings |
-| Tests | create/modify | Listed per task |
+| File                                                                                                                                                                | Status        | Responsibility                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------------------------------------------- |
+| `lib/site/datetime.ts`                                                                                                                                              | create        | Session wall-clock and instant formatting, `+09:00` ISO                                 |
+| `lib/site/labels.ts`                                                                                                                                                | create        | Category labels and hues, part hues                                                     |
+| `lib/site/images.ts`                                                                                                                                                | create        | `isPlaceholderImage`                                                                    |
+| `lib/site/format.ts`                                                                                                                                                | create        | `fillTemplate`, `countLabel`, `initials`                                                |
+| `lib/site/json-ld.ts`                                                                                                                                               | create        | BreadcrumbList, CollectionPage/ItemList, Event, LearningResource, CreativeWork builders |
+| `lib/site/filter-state.ts`                                                                                                                                          | create        | Query ↔ filter state, matching, DOM item reader                                         |
+| `lib/site/generations.ts`                                                                                                                                           | create        | Per-generation counts, strip ordering, neighbors                                        |
+| `lib/site/session-log.ts`                                                                                                                                           | create        | `LogSession` type, titles, grouping, facets, search text, adjacency, related            |
+| `lib/site/project-showcase.ts`                                                                                                                                      | create        | `ProjectRow`/`ShowcaseProject` types, mapping, facets, search text, next/more           |
+| `lib/site/sitemap-paths.ts`                                                                                                                                         | create        | Pure sitemap path builder                                                               |
+| `lib/site/carry-query.ts`                                                                                                                                           | create        | Locale links carry the current query string                                             |
+| `lib/validations/project-tags.ts`                                                                                                                                   | create        | `dedupeTags`, tag limits (Zod-free, client-safe)                                        |
+| `lib/validations/project.ts`                                                                                                                                        | modify        | `tags` field                                                                            |
+| `lib/server/form-data/get-project-form-data.ts`                                                                                                                     | modify        | Parse `tags` JSON                                                                       |
+| `lib/server/services/project-tags.ts`                                                                                                                               | create        | `getTagNames`, `syncProjectTags`                                                        |
+| `lib/server/cache/index.ts`                                                                                                                                         | modify        | `tagQuery`                                                                              |
+| `lib/server/queries/public/sessions.ts`                                                                                                                             | modify        | `getSessionArchive`; extend `getSessionById`; drop `getPublishedSessionsByGeneration`   |
+| `lib/server/queries/public/projects.ts`                                                                                                                             | modify        | `getProjectShowcase`; extend `getProjectById`; drop `getProjectsByGeneration`           |
+| `lib/server/queries/public/sitemap.ts`                                                                                                                              | modify        | Build from archive and showcase                                                         |
+| `lib/server/fetcher/admin/get-project.ts`                                                                                                                           | modify        | Include tags                                                                            |
+| `lib/seo/metadata.ts`                                                                                                                                               | modify        | `noindex` option                                                                        |
+| `lib/seo/social-image-data.ts`                                                                                                                                      | modify        | Shared labels and placeholders; UTC session date                                        |
+| `lib/contents/archive-copy.ts`                                                                                                                                      | create        | EN/KO copy for the Sessions and Projects pages                                          |
+| `lib/contents/site-copy.ts`                                                                                                                                         | modify        | Hero meta templates                                                                     |
+| `lib/admin-i18n/index.ts`                                                                                                                                           | modify        | Tag labels                                                                              |
+| `app/styles/site-content.css`                                                                                                                                       | create        | Content-page styles and View Transition CSS                                             |
+| `app/globals.css`                                                                                                                                                   | modify        | Import `site-content.css`                                                               |
+| `types/react-canary.d.ts`                                                                                                                                           | create        | `/// <reference types="react/canary" />`                                                |
+| `vitest.setup.ts`                                                                                                                                                   | modify        | Pass-through `ViewTransition`; strip router-only `Link` props                           |
+| `app/components/site/{breadcrumbs,page-header,chip,empty-state,generation-strip,generation-pager,session-poster,page-transition,external-link,hub-breadcrumbs}.tsx` | create        | Server primitives                                                                       |
+| `app/components/site/filter-bar.tsx`                                                                                                                                | create        | Client filter island                                                                    |
+| `app/components/site/session-log/{session-log,session-row}.tsx`                                                                                                     | create        | The log                                                                                 |
+| `app/components/site/session-detail/session-detail-view.tsx`                                                                                                        | create        | Session page view                                                                       |
+| `app/components/site/project-grid/{project-card,project-grid}.tsx`                                                                                                  | create        | Release cards                                                                           |
+| `app/components/site/project-detail/project-detail-view.tsx`                                                                                                        | create        | Case study view                                                                         |
+| `app/components/images-slider-controller.tsx`                                                                                                                       | modify        | Site styling, counter, arrow keys                                                       |
+| `app/components/site/locale-switch.tsx`, `footer-locale-switch.tsx`, `app/components/header/navigation.tsx`                                                         | modify        | `onIntent` → `carryQueryString`                                                         |
+| `app/components/admin/tags-input.tsx`                                                                                                                               | create        | Chip input for tags                                                                     |
+| `app/(admin)/admin/projects/{create,[projectId]/edit}/{page,actions}.ts(x)`, `[projectId]/page.tsx`                                                                 | modify        | Tag editing and display                                                                 |
+| `app/(home)/[lang]/session/page.tsx`, `[generation]/page.tsx`, `[generation]/loading.tsx`, `[generation]/[sessionId]/page.tsx`, `[sessionId]/loading.tsx`           | rewrite       | Sessions                                                                                |
+| `app/(home)/[lang]/project/page.tsx`, `[generation]/page.tsx`, `[generation]/loading.tsx`, `[generation]/[projectId]/page.tsx`, `[projectId]/loading.tsx`           | rewrite       | Projects                                                                                |
+| `app/(home)/[lang]/_components/home/{hero,hero-meta}.tsx`, `app/(home)/[lang]/page.tsx`, `app/styles/site-hero.css`                                                 | modify/create | Live hero meta strip                                                                    |
+| `app/components/navigation-button.tsx`                                                                                                                              | delete        | Replaced by breadcrumbs                                                                 |
+| `scripts/verify-instant-navigation.mjs`                                                                                                                             | modify        | New headings                                                                            |
+| Tests                                                                                                                                                               | create/modify | Listed per task                                                                         |
 
 ---
 
@@ -163,6 +166,7 @@ Run: `ss -ltn | grep -q ':5439' && echo up || echo down`
 Expected: `up`.
 If it prints `down`, start it in the background with `cd $SCRATCH/pg && node start.mjs > pg.log 2>&1` and wait for `postgres ready on 5439` in `pg.log`.
 If `$SCRATCH/pg` is gone (new session), recreate a disposable DB the way Plan 1 Task 0 did:
+
 - `embedded-postgres` in a scratch directory on port 5439
 - `AUTH_DRIZZLE_URL=postgres://postgres:postgres@localhost:5439/gdgoc pnpm exec drizzle-kit migrate`
 - then `pnpm db:seed` with the same variable
@@ -272,11 +276,13 @@ Expected: `Performance budget passed for 22 route/profile samples.` Stop the ser
 ### Task 1: Dates, labels, placeholder images and copy templates
 
 **Files:**
+
 - Create: `lib/site/datetime.ts`, `lib/site/labels.ts`, `lib/site/images.ts`, `lib/site/format.ts`
 - Modify: `lib/seo/social-image-data.ts`
 - Test: `tests/lib/site/datetime.test.ts`, `tests/lib/site/labels.test.ts`, `tests/lib/site/images.test.ts`, `tests/lib/site/format.test.ts`, `tests/lib/social-image-data.test.ts`
 
 **Interfaces:**
+
 - Produces from `@/lib/site/datetime`:
   - `toKstIso(date: Date): string`
   - `formatSessionTime(date: Date): string`
@@ -496,7 +502,9 @@ vi.mock('@/lib/server/queries/public/projects', () => ({
   getProjectById: mockGetProjectById,
 }))
 vi.mock('@/lib/server/cache/session-visibility', () => ({
-  getCachedSessionVisibilityBucket: vi.fn(async () => '2026-01-01T00:00:00.000Z'),
+  getCachedSessionVisibilityBucket: vi.fn(
+    async () => '2026-01-01T00:00:00.000Z'
+  ),
 }))
 
 describe('social image content', () => {
@@ -559,6 +567,7 @@ describe('social image content', () => {
 
 Run: `pnpm vitest run tests/lib/site/datetime.test.ts tests/lib/site/labels.test.ts tests/lib/site/images.test.ts tests/lib/site/format.test.ts tests/lib/social-image-data.test.ts`
 Expected:
+
 - The four `lib/site` files fail to resolve their module (`Failed to resolve import "@/lib/site/datetime"` and so on).
 - `social-image-data.test.ts` fails on `date`, because `Asia/Seoul` gives `Nov 5, 2025`.
 
@@ -723,7 +732,8 @@ export function toSeoulDateIso(date: Date): string {
 ```ts
 import type { Locale } from '@/i18n-config'
 
-export type Hue = 'blue' | 'sky' | 'red' | 'pink' | 'yellow' | 'green' | 'neutral'
+export type Hue =
+  'blue' | 'sky' | 'red' | 'pink' | 'yellow' | 'green' | 'neutral'
 
 /** Order matches `activityCategoryEnum` in db/schema/sessions.ts. */
 export const SESSION_CATEGORIES = [
@@ -839,6 +849,7 @@ export function initials(name: string): string {
 ```
 
 In `lib/seo/social-image-data.ts`:
+
 - Remove `DEFAULT_SOCIAL_IMAGE_PATHS`, `SESSION_CATEGORY_LABELS`, `imagePath`, `representativeImage` and `formatSocialDate`.
 - Add these imports:
 
@@ -887,11 +898,13 @@ Stage: `lib/site/{datetime,labels,images,format}.ts`, `lib/seo/social-image-data
 ### Task 2: JSON-LD builders and `noindex` metadata
 
 **Files:**
+
 - Create: `lib/site/json-ld.ts`
 - Modify: `lib/seo/metadata.ts:84-133` (`LocalizedMetadataInput`, `createLocalizedMetadata`)
 - Test: `tests/lib/site/json-ld.test.ts`, `tests/lib/seo-metadata.test.ts` (append)
 
 **Interfaces:**
+
 - Consumes: `toKstIso` (Task 1).
 - Produces from `@/lib/site/json-ld`:
   - `type JsonLdCrumb = { name: string; url: string }`
@@ -935,7 +948,12 @@ describe('JSON-LD builders', () => {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://x.dev/en' },
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://x.dev/en',
+        },
         {
           '@type': 'ListItem',
           position: 2,
@@ -1005,7 +1023,10 @@ describe('JSON-LD builders', () => {
         locale: 'ko',
         providerId: organizer.id,
       })
-    ).toMatchObject({ '@type': 'LearningResource', provider: { '@id': organizer.id } })
+    ).toMatchObject({
+      '@type': 'LearningResource',
+      provider: { '@id': organizer.id },
+    })
   })
 
   it('adds SoftwareSourceCode only when a repository exists', () => {
@@ -1043,30 +1064,31 @@ describe('JSON-LD builders', () => {
 Append to `tests/lib/seo-metadata.test.ts`, inside the existing `describe` block:
 
 ```ts
-  it('keeps pages indexable unless asked otherwise', () => {
-    const indexable = createLocalizedMetadata({
-      locale: 'en',
-      path: '/session/25-26',
-      title: '25-26 Sessions',
-      description: 'Sessions',
-    })
-    const hidden = createLocalizedMetadata({
-      locale: 'en',
-      path: '/session/24-25',
-      title: '24-25 Sessions',
-      description: 'Sessions',
-      noindex: true,
-    })
-
-    expect(indexable.robots).toEqual({ index: true, follow: true })
-    expect(hidden.robots).toEqual({ index: false, follow: true })
+it('keeps pages indexable unless asked otherwise', () => {
+  const indexable = createLocalizedMetadata({
+    locale: 'en',
+    path: '/session/25-26',
+    title: '25-26 Sessions',
+    description: 'Sessions',
   })
+  const hidden = createLocalizedMetadata({
+    locale: 'en',
+    path: '/session/24-25',
+    title: '24-25 Sessions',
+    description: 'Sessions',
+    noindex: true,
+  })
+
+  expect(indexable.robots).toEqual({ index: true, follow: true })
+  expect(hidden.robots).toEqual({ index: false, follow: true })
+})
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `pnpm vitest run tests/lib/site/json-ld.test.ts tests/lib/seo-metadata.test.ts`
 Expected:
+
 - `json-ld.test.ts` fails to resolve `@/lib/site/json-ld`.
 - The new metadata test fails, because `robots` stays `{ index: true, follow: true }`. `noindex` is also a TypeScript excess property, which Vitest does not type-check.
 
@@ -1266,6 +1288,7 @@ export function projectWork({
 ```
 
 In `lib/seo/metadata.ts`:
+
 - Add `noindex?: boolean` to `LocalizedMetadataInput`.
 - Add `noindex = false,` to the destructured parameters of `createLocalizedMetadata`.
 - Replace the `robots` block with:
@@ -1293,10 +1316,12 @@ Stage: `lib/site/json-ld.ts`, `lib/seo/metadata.ts`, `tests/lib/site/json-ld.tes
 ### Task 3: Filter state and generation helpers
 
 **Files:**
+
 - Create: `lib/site/filter-state.ts`, `lib/site/generations.ts`
 - Test: `tests/lib/site/filter-state.test.ts`, `tests/lib/site/generations.test.ts`
 
 **Interfaces:**
+
 - Produces from `@/lib/site/filter-state`:
   - types: `FacetOption = { value: string; label: string; count: number }`, `FacetMode = 'any' | 'all'`, `FilterState = { q: string; selected: Readonly<Record<string, readonly string[]>> }`, `FilterableItem`
   - constants: `EMPTY_FILTER`, `VALUE_DELIMITER = '|'`
@@ -1415,7 +1440,9 @@ describe('matchesFilter', () => {
   })
 
   it('needs every search term, in any order, Korean and full-width included', () => {
-    expect(matchesFilter(item, { q: 'cloud  ＴＡＬＫ', selected: {} })).toBe(true)
+    expect(matchesFilter(item, { q: 'cloud  ＴＡＬＫ', selected: {} })).toBe(
+      true
+    )
     expect(matchesFilter(item, { q: '여섯', selected: {} })).toBe(true)
     expect(matchesFilter(item, { q: 'cloud hackathon', selected: {} })).toBe(
       false
@@ -1478,9 +1505,7 @@ describe('generation helpers', () => {
   })
 
   it('orders the strip newest first and keeps empty generations', () => {
-    expect(
-      generationStrip(generations, new Map([['25-26', 3]]))
-    ).toEqual([
+    expect(generationStrip(generations, new Map([['25-26', 3]]))).toEqual([
       { name: '26-27', count: 0 },
       { name: '25-26', count: 3 },
       { name: '24-25', count: 0 },
@@ -1683,13 +1708,16 @@ Expected: both files pass.
 Stage: `lib/site/filter-state.ts`, `lib/site/generations.ts`, `tests/lib/site/filter-state.test.ts`, `tests/lib/site/generations.test.ts`.
 
 ---
+
 ### Task 4: Session log helpers
 
 **Files:**
+
 - Create: `lib/site/session-log.ts`
 - Test: `tests/lib/site/session-log.test.ts`
 
 **Interfaces:**
+
 - Consumes: `sessionMonthKey` (Task 1); `categoryLabel`, `isSessionCategory`, `SESSION_CATEGORIES` (Task 1); `normalizeSearchText`, `FacetOption` (Task 3).
 - Produces from `@/lib/site/session-log`:
   - types: `LogSession` (fields below), `LogMonth = { key: string; sessions: LogSession[] }`, `LogGeneration = { name; startDate; count; months: LogMonth[] }`
@@ -1753,21 +1781,30 @@ describe('session titles and places', () => {
     expect(
       sessionLocation({ location: 'Room 101', locationKo: null }, 'ko')
     ).toBe('Room 101')
-    expect(sessionLocation({ location: null, locationKo: null }, 'en')).toBeNull()
+    expect(
+      sessionLocation({ location: null, locationKo: null }, 'en')
+    ).toBeNull()
   })
 })
 
 describe('groupSessionLog', () => {
   it('groups by generation (newest first), then month, with undated sessions last', () => {
     const log = groupSessionLog([
-      session({ id: 'old', generationName: '24-25', generationStartDate: '2024-03-01', startAt: at('2024-09-10T19:00:00.000Z') }),
+      session({
+        id: 'old',
+        generationName: '24-25',
+        generationStartDate: '2024-03-01',
+        startAt: at('2024-09-10T19:00:00.000Z'),
+      }),
       session({ id: 'oct', startAt: at('2025-10-07T19:00:00.000Z') }),
       session({ id: 'tba', startAt: null, endAt: null }),
       session({ id: 'nov-late', startAt: at('2025-11-25T19:00:00.000Z') }),
       session({ id: 'nov-early', startAt: at('2025-11-04T19:00:00.000Z') }),
     ])
 
-    expect(log.map((generation) => [generation.name, generation.count])).toEqual([
+    expect(
+      log.map((generation) => [generation.name, generation.count])
+    ).toEqual([
       ['25-26', 4],
       ['24-25', 1],
     ])
@@ -1791,7 +1828,13 @@ describe('sessionFacets', () => {
         session({ id: '1', category: 'hackathon', partName: 'UI/UX' }),
         session({ id: '2', category: 'tech_talk', partName: 'Cloud' }),
         session({ id: '3', category: 'tech_talk', partName: 'Cloud' }),
-        session({ id: '4', category: 'tech_talk', partName: null, generationName: '24-25', generationStartDate: '2024-03-01' }),
+        session({
+          id: '4',
+          category: 'tech_talk',
+          partName: null,
+          generationName: '24-25',
+          generationStartDate: '2024-03-01',
+        }),
       ],
       'en'
     )
@@ -1828,9 +1871,19 @@ describe('sessionSearchText', () => {
 describe('session neighbours', () => {
   const archive = [
     session({ id: 'b', startAt: at('2025-11-04T19:00:00.000Z') }),
-    session({ id: 'a', generationName: '24-25', generationStartDate: '2024-03-01', startAt: at('2025-01-10T19:00:00.000Z') }),
+    session({
+      id: 'a',
+      generationName: '24-25',
+      generationStartDate: '2024-03-01',
+      startAt: at('2025-01-10T19:00:00.000Z'),
+    }),
     session({ id: 'undated', startAt: null }),
-    session({ id: 'c', startAt: at('2025-11-11T19:00:00.000Z'), partName: 'UI/UX', category: 'hackathon' }),
+    session({
+      id: 'c',
+      startAt: at('2025-11-11T19:00:00.000Z'),
+      partName: 'UI/UX',
+      category: 'hackathon',
+    }),
   ]
 
   it('walks the whole archive chronologically', () => {
@@ -1845,7 +1898,10 @@ describe('session neighbours', () => {
   })
 
   it('prefers the same part in the same generation, then the category', () => {
-    const current = session({ id: 'x', startAt: at('2025-11-06T19:00:00.000Z') })
+    const current = session({
+      id: 'x',
+      startAt: at('2025-11-06T19:00:00.000Z'),
+    })
     expect(
       relatedSessions([...archive, current], current).map((entry) => entry.id)
     ).toEqual(['b', 'undated', 'a'])
@@ -1951,7 +2007,9 @@ export function groupSessionLog(
     .map(([name, { startDate, sessions: own }]) => {
       const months = new Map<string, LogSession[]>()
       for (const session of [...own].sort(compareNewestFirst)) {
-        const key = session.startAt ? sessionMonthKey(session.startAt) : TBA_MONTH
+        const key = session.startAt
+          ? sessionMonthKey(session.startAt)
+          : TBA_MONTH
         months.set(key, [...(months.get(key) ?? []), session])
       }
       return {
@@ -2076,11 +2134,13 @@ Stage: `lib/site/session-log.ts`, `tests/lib/site/session-log.test.ts`.
 ### Task 5: Session archive read model
 
 **Files:**
+
 - Modify: `lib/server/cache/index.ts` (add `tagQuery`)
 - Modify: `lib/server/queries/public/sessions.ts` (add `getSessionArchive`; extend `getSessionById`)
 - Test: `tests/lib/server/cache.test.ts` (append), `tests/lib/server/fetcher/public-fetchers.test.ts` (modify the cache mock; append and extend tests)
 
 **Interfaces:**
+
 - Consumes: `LogSession` (Task 4).
 - Produces:
   - `tagQuery(tags: readonly string[]): void` from `@/lib/server/cache`
@@ -2092,93 +2152,95 @@ Stage: `lib/site/session-log.ts`, `tests/lib/site/session-log.test.ts`.
 Append to `tests/lib/server/cache.test.ts`, inside `describe('cache utilities')`:
 
 ```ts
-  it('tags query results after the fact, 128 tags per cacheTag call', async () => {
-    const { tagQuery } = await import('@/lib/server/cache')
+it('tags query results after the fact, 128 tags per cacheTag call', async () => {
+  const { tagQuery } = await import('@/lib/server/cache')
 
-    tagQuery([
-      ...Array.from({ length: 130 }, (_, index) => `tag:${index}`),
-      'tag:0',
-    ])
+  tagQuery([
+    ...Array.from({ length: 130 }, (_, index) => `tag:${index}`),
+    'tag:0',
+  ])
 
-    expect(mockCacheTag).toHaveBeenCalledTimes(2)
-    expect(mockCacheTag.mock.calls[0]).toHaveLength(128)
-    expect(mockCacheTag.mock.calls[1]).toEqual(['tag:128', 'tag:129'])
-  })
+  expect(mockCacheTag).toHaveBeenCalledTimes(2)
+  expect(mockCacheTag.mock.calls[0]).toHaveLength(128)
+  expect(mockCacheTag.mock.calls[1]).toEqual(['tag:128', 'tag:129'])
+})
 ```
 
 In `tests/lib/server/fetcher/public-fetchers.test.ts`:
+
 - Add `const mockTagQuery = vi.fn()` next to `mockCacheQuery`.
 - In the `vi.mock('@/lib/server/cache', …)` factory, return `{ ...actual, cacheQuery: mockCacheQuery, tagQuery: mockTagQuery }`.
 - Append these tests inside `describe('public queries')`:
 
 ```ts
-  it('builds one bilingual session archive and tags every generation it contains', async () => {
-    const row = (id: string, generationName: string) => ({
-      id,
-      name: `Session ${id}`,
-      nameKo: `세션 ${id}`,
-      category: 'tech_talk',
-      type: 'General Session',
-      mainImage: '/session-default.png',
-      startAt: new Date('2025-11-04T19:00:00.000Z'),
-      endAt: new Date('2025-11-04T21:00:00.000Z'),
-      location: null,
-      locationKo: null,
-      createdAt: new Date('2025-10-01T00:00:00.000Z'),
-      updatedAt: new Date('2025-10-01T00:00:00.000Z'),
-      partName: 'Cloud',
-      generationName,
-      generationStartDate: '2025-03-01',
-    })
-    const chain = createSelectChainWithOrderByResult([
-      row('s1', '25-26'),
-      row('s2', '24-25'),
-      row('s3', '25-26'),
-    ])
-    mockSelect.mockReturnValue(chain)
-
-    const { getSessionArchive } =
-      await import('@/lib/server/queries/public/sessions')
-    const result = await getSessionArchive('2026-03-07T00:00:00.000Z')
-
-    expect(result.map((session) => session.id)).toEqual(['s1', 's2', 's3'])
-    expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
-      'session:list:en',
-      'session:list:ko',
-    ])
-    expect(mockTagQuery).toHaveBeenCalledWith([
-      'generation:list:en',
-      'session:generation:25-26:en',
-      'session:generation:24-25:en',
-      'generation:list:ko',
-      'session:generation:25-26:ko',
-      'session:generation:24-25:ko',
-    ])
-    expect(chain.innerJoin).toHaveBeenCalledTimes(2)
-    expect(chain.where).toHaveBeenCalledTimes(1)
+it('builds one bilingual session archive and tags every generation it contains', async () => {
+  const row = (id: string, generationName: string) => ({
+    id,
+    name: `Session ${id}`,
+    nameKo: `세션 ${id}`,
+    category: 'tech_talk',
+    type: 'General Session',
+    mainImage: '/session-default.png',
+    startAt: new Date('2025-11-04T19:00:00.000Z'),
+    endAt: new Date('2025-11-04T21:00:00.000Z'),
+    location: null,
+    locationKo: null,
+    createdAt: new Date('2025-10-01T00:00:00.000Z'),
+    updatedAt: new Date('2025-10-01T00:00:00.000Z'),
+    partName: 'Cloud',
+    generationName,
+    generationStartDate: '2025-03-01',
   })
+  const chain = createSelectChainWithOrderByResult([
+    row('s1', '25-26'),
+    row('s2', '24-25'),
+    row('s3', '25-26'),
+  ])
+  mockSelect.mockReturnValue(chain)
+
+  const { getSessionArchive } =
+    await import('@/lib/server/queries/public/sessions')
+  const result = await getSessionArchive('2026-03-07T00:00:00.000Z')
+
+  expect(result.map((session) => session.id)).toEqual(['s1', 's2', 's3'])
+  expect(mockCacheQuery).toHaveBeenCalledWith('sessionList', [
+    'session:list:en',
+    'session:list:ko',
+  ])
+  expect(mockTagQuery).toHaveBeenCalledWith([
+    'generation:list:en',
+    'session:generation:25-26:en',
+    'session:generation:24-25:en',
+    'generation:list:ko',
+    'session:generation:25-26:ko',
+    'session:generation:24-25:ko',
+  ])
+  expect(chain.innerJoin).toHaveBeenCalledTimes(2)
+  expect(chain.where).toHaveBeenCalledTimes(1)
+})
 ```
 
 Then add these assertions to the end of the existing `it('shares visible session detail data across locales', …)`:
 
 ```ts
-    expect(mockSessionsFindFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        columns: expect.objectContaining({ type: true }),
-        with: {
-          part: {
-            columns: { id: true, name: true },
-            with: { generation: { columns: { id: true, name: true } } },
-          },
-        },
-      })
-    )
+expect(mockSessionsFindFirst).toHaveBeenCalledWith(
+  expect.objectContaining({
+    columns: expect.objectContaining({ type: true }),
+    with: {
+      part: {
+        columns: { id: true, name: true },
+        with: { generation: { columns: { id: true, name: true } } },
+      },
+    },
+  })
+)
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `pnpm vitest run tests/lib/server/cache.test.ts tests/lib/server/fetcher/public-fetchers.test.ts`
 Expected:
+
 - `tagQuery is not a function`
 - `getSessionArchive is not a function`
 - the extended detail assertion fails, because `part.columns` lacks `name` and `type` is missing
@@ -2282,6 +2344,7 @@ export function getSessionArchive(visibilityBucket: string) {
 ```
 
 In `getSharedSessionById`:
+
 - Add `type: true` to `columns`.
 - Change `with.part.columns` to `{ id: true, name: true }`.
 
@@ -2301,11 +2364,13 @@ Stage: `lib/server/cache/index.ts`, `lib/server/queries/public/sessions.ts`, `te
 ### Task 6: Project showcase read model and helpers
 
 **Files:**
+
 - Create: `lib/site/project-showcase.ts`
 - Modify: `lib/server/queries/public/projects.ts` (add `getProjectShowcase`; extend `getProjectById`)
 - Test: `tests/lib/site/project-showcase.test.ts`, `tests/lib/server/fetcher/public-fetchers.test.ts` (append, and replace the `getProjectById` test)
 
 **Interfaces:**
+
 - Consumes: `normalizeSearchText`, `FacetOption` (Task 3); `formatUserName` (`@/lib/format-user-name`); `tagQuery` (Task 5).
 - Produces from `@/lib/site/project-showcase`:
   - types: `ProjectUserRow`, `ProjectRow`, `ShowcaseContributor = { id; nameEn; nameKo; image: string | null; githubId: string | null }`, `ShowcaseProject`
@@ -2359,7 +2424,10 @@ function row(overrides: Partial<ProjectRow> = {}): ProjectRow {
     createdAt: new Date('2025-03-01T00:00:00.000Z'),
     updatedAt: new Date('2025-04-01T00:00:00.000Z'),
     generation: { name: '25-26', startDate: '2025-03-01' },
-    projectsToTags: [{ tag: { name: 'Next.js' } }, { tag: { name: 'Firebase' } }],
+    projectsToTags: [
+      { tag: { name: 'Next.js' } },
+      { tag: { name: 'Firebase' } },
+    ],
     usersToProjects: [
       {
         user: {
@@ -2417,9 +2485,22 @@ describe('project text', () => {
 
 describe('showcase ordering and facets', () => {
   const projects = [
-    project({ id: 'old', generationName: '24-25', generationStartDate: '2024-03-01', tags: ['Flutter'] }),
-    project({ id: 'recent', updatedAt: new Date('2025-06-01T00:00:00.000Z'), demoUrl: 'https://demo.example' }),
-    project({ id: 'earlier', updatedAt: new Date('2025-05-01T00:00:00.000Z'), repoUrl: null }),
+    project({
+      id: 'old',
+      generationName: '24-25',
+      generationStartDate: '2024-03-01',
+      tags: ['Flutter'],
+    }),
+    project({
+      id: 'recent',
+      updatedAt: new Date('2025-06-01T00:00:00.000Z'),
+      demoUrl: 'https://demo.example',
+    }),
+    project({
+      id: 'earlier',
+      updatedAt: new Date('2025-05-01T00:00:00.000Z'),
+      repoUrl: null,
+    }),
   ]
 
   it('orders by generation, then by the most recent update', () => {
@@ -2460,48 +2541,48 @@ describe('showcase ordering and facets', () => {
 Append to `tests/lib/server/fetcher/public-fetchers.test.ts`:
 
 ```ts
-  it('builds one project showcase and tags every generation it contains', async () => {
-    const projectRow = (id: string, generation: string, startDate: string) => ({
-      id,
-      name: `Project ${id}`,
-      nameKo: null,
-      description: 'desc',
-      descriptionKo: null,
-      mainImage: '/project-default.png',
-      repoUrl: null,
-      demoUrl: null,
-      createdAt: new Date('2025-03-01T00:00:00.000Z'),
-      updatedAt: new Date('2025-04-01T00:00:00.000Z'),
-      generation: { id: 1, name: generation, startDate },
-      projectsToTags: [{ tagId: 1, tag: { name: 'Go' } }],
-      usersToProjects: [],
-    })
-    mockProjectsFindMany.mockResolvedValue([
-      projectRow('p1', '25-26', '2025-03-01'),
-      projectRow('p2', '24-25', '2024-03-01'),
-    ])
-
-    const { getProjectShowcase } =
-      await import('@/lib/server/queries/public/projects')
-    const result = await getProjectShowcase()
-
-    expect(result.map((project) => [project.id, project.tags])).toEqual([
-      ['p1', ['Go']],
-      ['p2', ['Go']],
-    ])
-    expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
-      'project:list:en',
-      'project:list:ko',
-    ])
-    expect(mockTagQuery).toHaveBeenCalledWith([
-      'generation:list:en',
-      'project:generation:25-26:en',
-      'project:generation:24-25:en',
-      'generation:list:ko',
-      'project:generation:25-26:ko',
-      'project:generation:24-25:ko',
-    ])
+it('builds one project showcase and tags every generation it contains', async () => {
+  const projectRow = (id: string, generation: string, startDate: string) => ({
+    id,
+    name: `Project ${id}`,
+    nameKo: null,
+    description: 'desc',
+    descriptionKo: null,
+    mainImage: '/project-default.png',
+    repoUrl: null,
+    demoUrl: null,
+    createdAt: new Date('2025-03-01T00:00:00.000Z'),
+    updatedAt: new Date('2025-04-01T00:00:00.000Z'),
+    generation: { id: 1, name: generation, startDate },
+    projectsToTags: [{ tagId: 1, tag: { name: 'Go' } }],
+    usersToProjects: [],
   })
+  mockProjectsFindMany.mockResolvedValue([
+    projectRow('p1', '25-26', '2025-03-01'),
+    projectRow('p2', '24-25', '2024-03-01'),
+  ])
+
+  const { getProjectShowcase } =
+    await import('@/lib/server/queries/public/projects')
+  const result = await getProjectShowcase()
+
+  expect(result.map((project) => [project.id, project.tags])).toEqual([
+    ['p1', ['Go']],
+    ['p2', ['Go']],
+  ])
+  expect(mockCacheQuery).toHaveBeenCalledWith('projectList', [
+    'project:list:en',
+    'project:list:ko',
+  ])
+  expect(mockTagQuery).toHaveBeenCalledWith([
+    'generation:list:en',
+    'project:generation:25-26:en',
+    'project:generation:24-25:en',
+    'generation:list:ko',
+    'project:generation:25-26:ko',
+    'project:generation:24-25:ko',
+  ])
+})
 ```
 
 Replace the body of `it('fetches project detail with contributor relation', …)` so that its `with` expectation reads:
@@ -2542,6 +2623,7 @@ Also add `repoUrl: true` and `demoUrl: true` to its `columns: expect.objectConta
 
 Run: `pnpm vitest run tests/lib/site/project-showcase.test.ts tests/lib/server/fetcher/public-fetchers.test.ts`
 Expected:
+
 - the helper module fails to resolve
 - `getProjectShowcase is not a function`
 - the detail test fails on the `with` object
@@ -2692,7 +2774,10 @@ export function projectFacets(projects: readonly ShowcaseProject[]): {
   tags: FacetOption[]
   links: { demo: number; source: number }
 } {
-  const generationCounts = new Map<string, { startDate: string; count: number }>()
+  const generationCounts = new Map<
+    string,
+    { startDate: string; count: number }
+  >()
   const tagCounts = new Map<string, number>()
   for (const project of projects) {
     const entry = generationCounts.get(project.generationName) ?? {
@@ -2703,7 +2788,8 @@ export function projectFacets(projects: readonly ShowcaseProject[]): {
       ...entry,
       count: entry.count + 1,
     })
-    for (const tag of project.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
+    for (const tag of project.tags)
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
   }
 
   return {
@@ -2863,16 +2949,16 @@ export function getProjectShowcase() {
 Rewrite the `findFirst` call in `getSharedProjectById` as:
 
 ```ts
-  return db.query.projects.findFirst({
-    where: eq(projects.id, projectId),
-    columns: {
-      ...PROJECT_CARD_COLUMNS,
-      content: true,
-      contentKo: true,
-      images: true,
-    },
-    with: PROJECT_RELATIONS,
-  })
+return db.query.projects.findFirst({
+  where: eq(projects.id, projectId),
+  columns: {
+    ...PROJECT_CARD_COLUMNS,
+    content: true,
+    contentKo: true,
+    images: true,
+  },
+  with: PROJECT_RELATIONS,
+})
 ```
 
 - [ ] **Step 4: Run them to verify they pass**
@@ -2891,11 +2977,13 @@ Stage: `lib/site/project-showcase.ts`, `lib/server/queries/public/projects.ts`, 
 ### Task 7: Sitemap from the read models
 
 **Files:**
+
 - Create: `lib/site/sitemap-paths.ts`
 - Modify: `lib/server/queries/public/sitemap.ts`
 - Test: `tests/lib/site/sitemap-paths.test.ts`
 
 **Interfaces:**
+
 - Consumes: `countByGeneration`, `GenerationRef` (Task 3); `isPlaceholderImage` (Task 1); `getSessionArchive` (Task 5); `getProjectShowcase` (Task 6).
 - Produces from `@/lib/site/sitemap-paths`:
   - `type SitemapPath = { path: string; lastModified?: Date; images?: string[] }`
@@ -2934,9 +3022,16 @@ describe('buildSitemapPaths', () => {
     generations,
     sessions: [
       item('s1', '25-26', '2025-11-05T00:00:00.000Z'),
-      item('s2', '25-26', '2025-12-01T00:00:00.000Z', 'https://cdn.example/s2.webp'),
+      item(
+        's2',
+        '25-26',
+        '2025-12-01T00:00:00.000Z',
+        'https://cdn.example/s2.webp'
+      ),
     ],
-    projects: [item('p1', '24-25', '2025-06-01T00:00:00.000Z', '/project-default.png')],
+    projects: [
+      item('p1', '24-25', '2025-06-01T00:00:00.000Z', '/project-default.png'),
+    ],
     toAbsolute,
   })
   const byPath = new Map(paths.map((entry) => [entry.path, entry]))
@@ -2994,11 +3089,19 @@ Expected: FAIL (module not found).
 import { countByGeneration, type GenerationRef } from '@/lib/site/generations'
 import { isPlaceholderImage } from '@/lib/site/images'
 
-export type SitemapPath = { path: string; lastModified?: Date; images?: string[] }
+export type SitemapPath = {
+  path: string
+  lastModified?: Date
+  images?: string[]
+}
 
 type Dated = { createdAt: Date; updatedAt: Date }
 
-type ListedItem = Dated & { id: string; generationName: string; mainImage: string }
+type ListedItem = Dated & {
+  id: string
+  generationName: string
+  mainImage: string
+}
 
 export const STATIC_SITEMAP_PATHS: readonly SitemapPath[] = [
   { path: '' },
@@ -3120,14 +3223,17 @@ Expected: types clean, and the suite shows no failures.
 Stage: `lib/site/sitemap-paths.ts`, `lib/server/queries/public/sitemap.ts`, `tests/lib/site/sitemap-paths.test.ts`.
 
 ---
+
 ### Task 8: Tag validation and form data
 
 **Files:**
+
 - Create: `lib/validations/project-tags.ts`
 - Modify: `lib/validations/project.ts`, `lib/server/form-data/get-project-form-data.ts`
 - Test: `tests/lib/validations/project-tags.test.ts`, `tests/lib/server/project-form-data.test.ts`
 
 **Interfaces:**
+
 - Produces from `@/lib/validations/project-tags`:
   - `MAX_PROJECT_TAGS = 12`
   - `MAX_TAG_LENGTH = 32`
@@ -3249,6 +3355,7 @@ describe('getProjectFormData tags', () => {
 
 Run: `pnpm vitest run tests/lib/validations/project-tags.test.ts tests/lib/server/project-form-data.test.ts`
 Expected:
+
 - `Failed to resolve import "@/lib/validations/project-tags"`
 - `tags` is `undefined` in the form-data test
 
@@ -3328,6 +3435,7 @@ function parseStringList(formData: FormData, key: string): string[] {
 ```
 
 Then:
+
 - Add `tags: string[]` to the return type.
 - Add `const tags = parseStringList(formData, 'tags')` before the `return`.
 - Add `tags,` to the returned object.
@@ -3348,6 +3456,7 @@ Stage: `lib/validations/project-tags.ts`, `lib/validations/project.ts`, `lib/ser
 ### Task 9: Admin tag editing (input, persistence, display)
 
 **Files:**
+
 - Create: `app/components/admin/tags-input.tsx`, `lib/server/services/project-tags.ts`
 - Modify:
   - `app/(admin)/admin/projects/create/page.tsx`, `create/actions.ts`
@@ -3358,6 +3467,7 @@ Stage: `lib/validations/project-tags.ts`, `lib/validations/project.ts`, `lib/ser
 - Test: `tests/components/admin-tags-input.test.tsx`, `tests/e2e/admin-crud/projects.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `dedupeTags`, `MAX_PROJECT_TAGS`, `MAX_TAG_LENGTH` (Task 8); `replaceRelationRows` (`@/lib/server/actions/admin`); `invalidateProjectPublicCache` (unchanged; it already refreshes list, detail and generation tags).
 - Produces:
   - `TagsInput({ defaultValue: string[]; suggestions: string[] })` writes the hidden `tags` JSON field. Its text field is a `combobox` labelled with `t('tags')`.
@@ -3385,7 +3495,9 @@ const field = () => screen.getByRole('combobox', { name: 'Tech stack' })
 describe('TagsInput', () => {
   it('adds tags on Enter and comma and skips case-insensitive duplicates', async () => {
     const user = userEvent.setup()
-    const { container } = render(<TagsInput defaultValue={[]} suggestions={[]} />)
+    const { container } = render(
+      <TagsInput defaultValue={[]} suggestions={[]} />
+    )
 
     await user.type(field(), 'Next.js{Enter}firebase,next.js{Enter}')
 
@@ -3423,7 +3535,9 @@ describe('TagsInput', () => {
 
   it('keeps a typed tag when the field loses focus', async () => {
     const user = userEvent.setup()
-    const { container } = render(<TagsInput defaultValue={[]} suggestions={[]} />)
+    const { container } = render(
+      <TagsInput defaultValue={[]} suggestions={[]} />
+    )
 
     await user.type(field(), 'Svelte')
     await user.tab()
@@ -3459,20 +3573,20 @@ describe('TagsInput', () => {
 In `tests/e2e/admin-crud/projects.spec.ts`, add these lines to `createProject`, right before `await setHiddenInputValue(page, 'mainImage', …)`:
 
 ```ts
-  const stack = page.getByRole('combobox', { name: /^(Tech stack|기술 스택)$/ })
-  await stack.fill('Next.js')
-  await stack.press('Enter')
-  await stack.fill('firebase,')
-  await page
-    .locator('input[name="repoUrl"]')
-    .fill('https://github.com/gdg-yonsei/e2e-project')
+const stack = page.getByRole('combobox', { name: /^(Tech stack|기술 스택)$/ })
+await stack.fill('Next.js')
+await stack.press('Enter')
+await stack.fill('firebase,')
+await page
+  .locator('input[name="repoUrl"]')
+  .fill('https://github.com/gdg-yonsei/e2e-project')
 ```
 
 In the test `updates a newly created project`, directly after `await expect(page.getByText(projectName, { exact: true })).toBeVisible()`, add:
 
 ```ts
-      await expect(page.getByText('Next.js', { exact: true })).toBeVisible()
-      await expect(page.getByText('firebase', { exact: true })).toBeVisible()
+await expect(page.getByText('Next.js', { exact: true })).toBeVisible()
+await expect(page.getByText('firebase', { exact: true })).toBeVisible()
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
@@ -3632,7 +3746,9 @@ async function resolveTagIds(names: readonly string[]): Promise<number[]> {
       .from(tags)
       .where(inArray(sql`lower(${tags.name})`, names.map(keyOf)))
 
-  const byKey = new Map((await lookup()).map((tag) => [keyOf(tag.name), tag.id]))
+  const byKey = new Map(
+    (await lookup()).map((tag) => [keyOf(tag.name), tag.id])
+  )
   const missing = names.filter((name) => !byKey.has(keyOf(name)))
 
   if (missing.length > 0) {
@@ -3667,11 +3783,13 @@ export async function syncProjectTags(
 ```
 
 In `create/actions.ts`:
+
 - Import `syncProjectTags` from `@/lib/server/services/project-tags`.
 - Add `tags` to the destructured `parsed.data`.
 - Directly after the `insertRowsIfAny(…usersToProjects…)` call, add `await syncProjectTags(createProject.id, tags)`.
 
 In `[projectId]/edit/actions.ts`:
+
 - Same import and destructuring.
 - Directly after the `replaceRelationRows(…usersToProjects…)` call, add `await syncProjectTags(projectId, tags)`.
 
@@ -3694,44 +3812,46 @@ In `lib/server/fetcher/admin/get-project.ts`, extend `with`:
 ```
 
 In `create/page.tsx`:
+
 - Import `TagsInput` from `@/app/components/admin/tags-input` and `getTagNames` from `@/lib/server/services/project-tags`.
 - Replace `const membersList = await getMembers(null)` with `const [membersList, tagNames] = await Promise.all([getMembers(null), getTagNames()])`.
 - Add `<TagsInput defaultValue={[]} suggestions={tagNames} />` directly after the `Demo URL` `DataInput`.
 
 In `[projectId]/edit/page.tsx`:
+
 - Same imports.
 - Extend the second `Promise.all` to `[resolvedScope, membersList, tagNames]`, adding `getTagNames()` as the third entry.
 - Add, after the `Demo URL` `DataInput`:
 
 ```tsx
-        <TagsInput
-          defaultValue={projectData.projectsToTags.map(({ tag }) => tag.name)}
-          suggestions={tagNames}
-        />
+<TagsInput
+  defaultValue={projectData.projectsToTags.map(({ tag }) => tag.name)}
+  suggestions={tagNames}
+/>
 ```
 
 In `[projectId]/page.tsx`, add after the participants block:
 
 ```tsx
-        <div className={'admin-form-grid-full'}>
-          <div className={'admin-field-label'}>{t.tags}</div>
-          <div className={'flex flex-wrap gap-2'}>
-            {projectData.projectsToTags.length === 0 ? (
-              <div className={'admin-field-value opacity-70'}>—</div>
-            ) : (
-              projectData.projectsToTags.map(({ tag }) => (
-                <span
-                  key={tag.id}
-                  className={
-                    'border-hairline bg-surface rounded-full border px-3 py-1 text-sm'
-                  }
-                >
-                  {tag.name}
-                </span>
-              ))
-            )}
-          </div>
-        </div>
+<div className={'admin-form-grid-full'}>
+  <div className={'admin-field-label'}>{t.tags}</div>
+  <div className={'flex flex-wrap gap-2'}>
+    {projectData.projectsToTags.length === 0 ? (
+      <div className={'admin-field-value opacity-70'}>미제공</div>
+    ) : (
+      projectData.projectsToTags.map(({ tag }) => (
+        <span
+          key={tag.id}
+          className={
+            'border-hairline bg-surface rounded-full border px-3 py-1 text-sm'
+          }
+        >
+          {tag.name}
+        </span>
+      ))
+    )}
+  </div>
+</div>
 ```
 
 In `lib/admin-i18n/index.ts`, add after `participants` in `en`:
@@ -3771,9 +3891,11 @@ Expected: clean, with no failures.
 Stage: `app/components/admin/tags-input.tsx`, `lib/server/services/project-tags.ts`, both project action files, the create, edit and detail pages, `lib/server/fetcher/admin/get-project.ts`, `lib/admin-i18n/index.ts`, `tests/components/admin-tags-input.test.tsx`, `tests/e2e/admin-crud/projects.spec.ts`.
 
 ---
+
 ### Task 10: Site primitives, content styles, page copy and View Transitions
 
 **Files:**
+
 - Create:
   - `types/react-canary.d.ts`
   - `lib/contents/archive-copy.ts`
@@ -3783,6 +3905,7 @@ Stage: `app/components/admin/tags-input.tsx`, `lib/server/services/project-tags.
 - Test: `tests/components/site-primitives.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `Hue` (Task 1); `GenerationRef`, `StripGeneration` (Task 3); `BracketPoster` (Plan 1).
 - Produces, all server components unless noted:
   - `Breadcrumbs({ label, items: BreadcrumbItem[] })`, where `BreadcrumbItem = { label: string; href?: string }` and the last item is `aria-current="page"`
@@ -3839,10 +3962,9 @@ describe('site primitives', () => {
     const trail = screen.getByRole('navigation', { name: 'Breadcrumb' })
 
     expect(within(trail).getAllByRole('listitem')).toHaveLength(3)
-    expect(within(trail).getByRole('link', { name: 'Sessions' })).toHaveAttribute(
-      'href',
-      '/en/session'
-    )
+    expect(
+      within(trail).getByRole('link', { name: 'Sessions' })
+    ).toHaveAttribute('href', '/en/session')
     expect(within(trail).getByText('Sixth T19')).toHaveAttribute(
       'aria-current',
       'page'
@@ -3852,7 +3974,11 @@ describe('site primitives', () => {
 
   it('renders one h1 and keeps the code tag decorative', () => {
     render(
-      <PageHeader tag="<log />" title="Session Log" description="Every session" />
+      <PageHeader
+        tag="<log />"
+        title="Session Log"
+        description="Every session"
+      />
     )
 
     expect(
@@ -4433,7 +4559,7 @@ export default function GenerationStrip({
             ) : (
               <span className="generation-pill" data-empty="">
                 {name}
-                <span className="sr-only"> — {emptyLabel}</span>
+                <span className="sr-only">, {emptyLabel}</span>
               </span>
             )}
           </li>
@@ -4507,7 +4633,7 @@ import type { Hue } from '@/lib/site/labels'
 
 /**
  * Stand-in artwork for sessions that only have the stock image: the
- * category colour, the halftone brackets and the title. Decorative — the
+ * category colour, the halftone brackets and the title. Decorative: the
  * page's h1 already carries the title.
  */
 export default function SessionPoster({
@@ -5872,7 +5998,7 @@ html.site {
   }
 }
 
-/* View Transitions — directional slides between lists and detail pages with
+/* View Transitions: directional slides between lists and detail pages with
    the header anchored (node_modules/next/dist/docs/01-app/02-guides/
    view-transitions.md). */
 ::view-transition {
@@ -5967,11 +6093,13 @@ Stage: `types/react-canary.d.ts`, `vitest.setup.ts`, `app/globals.css`, `app/sty
 ### Task 11: The filter island
 
 **Files:**
+
 - Create: `app/components/site/filter-bar.tsx` (client)
 - Modify: `lib/site/filter-state.ts` (add `FilterBarCopy`), `lib/contents/archive-copy.ts` (add the filter-copy builders)
 - Test: `tests/components/filter-bar.test.tsx`
 
 **Interfaces:**
+
 - Consumes: everything in `@/lib/site/filter-state` (Task 3); `countLabel` (Task 1).
 - Produces:
   - `type FilterBarCopy = { label; search; searchPlaceholder; resultOne; resultMany; noResults; reset }` from `@/lib/site/filter-state`
@@ -5979,6 +6107,7 @@ Stage: `types/react-canary.d.ts`, `vitest.setup.ts`, `app/globals.css`, `app/sty
   - `FilterBar({ scope: string; facets: FilterFacet[]; copy: FilterBarCopy; total: number })`, with `type FilterFacet = { key: string; legend: string; mode?: FacetMode; options: FacetOption[] }` exported from the same module
 
 FilterBar DOM contract:
+
 - The list root has `id={scope}`.
 - Each row is `[data-filter-item]`, with `data-search` (normalized) and `data-f-<key>` (values joined by `|`).
 - Each group is `[data-filter-group]` and hides when no visible item is left inside it.
@@ -6025,17 +6154,29 @@ function renderLog() {
       <div id="log">
         <section data-filter-group="">
           <ol>
-            <li data-filter-item="" data-search="sixth t19 cloud" data-f-category="tech_talk">
+            <li
+              data-filter-item=""
+              data-search="sixth t19 cloud"
+              data-f-category="tech_talk"
+            >
               Sixth T19
             </li>
-            <li data-filter-item="" data-search="seventh t19 ui/ux" data-f-category="tech_talk">
+            <li
+              data-filter-item=""
+              data-search="seventh t19 ui/ux"
+              data-f-category="tech_talk"
+            >
               Seventh T19
             </li>
           </ol>
         </section>
         <section data-filter-group="">
           <ol>
-            <li data-filter-item="" data-search="build day" data-f-category="hackathon">
+            <li
+              data-filter-item=""
+              data-search="build day"
+              data-f-category="hackathon"
+            >
               Build Day
             </li>
           </ol>
@@ -6088,9 +6229,9 @@ describe('FilterBar', () => {
     await user.click(screen.getByRole('button', { name: 'Reset filters' }))
     expect(window.location.search).toBe('')
     expect(screen.getByText('3 sessions shown')).toBeInTheDocument()
-    expect(screen.getByRole('searchbox', { name: 'Search sessions' })).toHaveValue(
-      ''
-    )
+    expect(
+      screen.getByRole('searchbox', { name: 'Search sessions' })
+    ).toHaveValue('')
   })
 
   it('adopts a shared link and ignores keys it does not know', () => {
@@ -6222,15 +6363,19 @@ function createFilterStore(
     const root = document.getElementById(scope)
     let visible = root ? 0 : total
 
-    root?.querySelectorAll<HTMLElement>('[data-filter-item]').forEach((item) => {
-      const show = matchesFilter(readFilterableItem(item, keys), state, modes)
-      item.hidden = !show
-      if (show) visible += 1
-    })
-    root?.querySelectorAll<HTMLElement>('[data-filter-group]').forEach((group) => {
-      group.hidden =
-        group.querySelector('[data-filter-item]:not([hidden])') === null
-    })
+    root
+      ?.querySelectorAll<HTMLElement>('[data-filter-item]')
+      .forEach((item) => {
+        const show = matchesFilter(readFilterableItem(item, keys), state, modes)
+        item.hidden = !show
+        if (show) visible += 1
+      })
+    root
+      ?.querySelectorAll<HTMLElement>('[data-filter-group]')
+      .forEach((group) => {
+        group.hidden =
+          group.querySelector('[data-filter-item]:not([hidden])') === null
+      })
 
     if (search !== snapshot.search || visible !== snapshot.visible) {
       snapshot = { search, visible }
@@ -6285,7 +6430,9 @@ export default function FilterBar({
     createFilterStore(
       scope,
       keys,
-      Object.fromEntries(facets.map((facet) => [facet.key, facet.mode ?? 'any'])),
+      Object.fromEntries(
+        facets.map((facet) => [facet.key, facet.mode ?? 'any'])
+      ),
       total
     )
   )
@@ -6325,7 +6472,10 @@ export default function FilterBar({
                       state.selected[facet.key]?.includes(option.value) ?? false
                     }
                     onChange={() =>
-                      commit(toggleFacetValue(state, facet.key, option.value), keys)
+                      commit(
+                        toggleFacetValue(state, facet.key, option.value),
+                        keys
+                      )
                     }
                   />
                   <span>{option.label}</span>
@@ -6372,15 +6522,18 @@ Expected: clean. In particular there is no `react-hooks/set-state-in-effect` err
 Stage: `app/components/site/filter-bar.tsx`, `lib/site/filter-state.ts`, `lib/contents/archive-copy.ts`, `tests/components/filter-bar.test.tsx`.
 
 ---
-### Task 12: Sessions hub — the Session Log
+
+### Task 12: Sessions hub: the Session Log
 
 **Files:**
+
 - Create: `app/components/site/session-log/session-log.tsx`, `app/components/site/session-log/session-row.tsx`
 - Rewrite: `app/(home)/[lang]/session/page.tsx`
 - Modify: `tests/e2e/instant-navigation.spec.ts` (the "homepage to session index" test), `scripts/verify-instant-navigation.mjs` (session index heading)
 - Test: `tests/components/session-log.test.tsx`, `tests/e2e/session-log.spec.ts`
 
 **Interfaces:**
+
 - Consumes:
   - `getSessionArchive` (Task 5)
   - `groupSessionLog`, `sessionFacets`, `sessionTitle`, `sessionLocation`, `sessionSearchText`, `TBA_MONTH` (Task 4)
@@ -6446,10 +6599,16 @@ describe('SessionLog', () => {
     const generation = screen.getByRole('region', { name: /25-26/ })
 
     expect(
-      within(generation).getByRole('heading', { level: 2, name: '25-26 2 sessions' })
+      within(generation).getByRole('heading', {
+        level: 2,
+        name: '25-26 2 sessions',
+      })
     ).toBeInTheDocument()
     expect(
-      within(generation).getByRole('heading', { level: 3, name: 'November 2025' })
+      within(generation).getByRole('heading', {
+        level: 3,
+        name: 'November 2025',
+      })
     ).toBeInTheDocument()
     expect(
       within(generation).getByRole('heading', {
@@ -6498,10 +6657,16 @@ describe('SessionLog', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'Sixth T19' }).closest('li')?.querySelector('img')
+      screen
+        .getByRole('link', { name: 'Sixth T19' })
+        .closest('li')
+        ?.querySelector('img')
     ).toBeNull()
     expect(
-      screen.getByRole('link', { name: 'Build Day' }).closest('li')?.querySelector('img')
+      screen
+        .getByRole('link', { name: 'Build Day' })
+        .closest('li')
+        ?.querySelector('img')
     ).toHaveAttribute('alt', '')
   })
 
@@ -6557,7 +6722,9 @@ test.describe('session log hub', () => {
     await filters
       .getByRole('searchbox', { name: 'Search sessions' })
       .fill('no-such-session')
-    await expect(page.getByText('No sessions match these filters.')).toBeVisible()
+    await expect(
+      page.getByText('No sessions match these filters.')
+    ).toBeVisible()
     await expect(row).toBeHidden()
 
     await page.reload({ waitUntil: 'domcontentloaded' })
@@ -6594,10 +6761,10 @@ test.describe('session log hub', () => {
 In `tests/e2e/instant-navigation.spec.ts`, inside `homepage to session index exposes a useful shared shell`, replace the two assertions after the header check with:
 
 ```ts
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Session Log' })
-      ).toBeVisible()
-      await expect(page.getByTestId('session-log-shell')).toBeVisible()
+await expect(
+  page.getByRole('heading', { level: 1, name: 'Session Log' })
+).toBeVisible()
+await expect(page.getByTestId('session-log-shell')).toBeVisible()
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
@@ -6774,11 +6941,21 @@ export default function SessionLog({
                 {countLabel(generation.count, copy.countOne, copy.countMany)}
               </span>
             </h2>
-            <Months months={generation.months} lang={lang} copy={copy} level={3} />
+            <Months
+              months={generation.months}
+              lang={lang}
+              copy={copy}
+              level={3}
+            />
           </section>
         ) : (
           <div key={generation.name}>
-            <Months months={generation.months} lang={lang} copy={copy} level={2} />
+            <Months
+              months={generation.months}
+              lang={lang}
+              copy={copy}
+              level={2}
+            />
           </div>
         )
       )}
@@ -6854,7 +7031,9 @@ export default function SessionHubPage({ params }: Props) {
     <PageTransition>
       <div className="site-page" data-testid="session-log-shell">
         <Suspense
-          fallback={<div aria-hidden="true" className="site-breadcrumbs-skeleton" />}
+          fallback={
+            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
+          }
         >
           <HubBreadcrumbs params={params} section="sessions" />
         </Suspense>
@@ -6875,7 +7054,11 @@ export default function SessionHubPage({ params }: Props) {
 
 function SessionHubFallback() {
   return (
-    <div role="status" aria-label="Loading sessions" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading sessions"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar h-10 w-72 max-w-full" />
       <span className="skeleton-bar h-36 w-full rounded-3xl" />
       {Array.from({ length: 4 }, (_, index) => (
@@ -6968,6 +7151,7 @@ async function SessionHubContent({ params }: Props) {
 ```
 
 In `scripts/verify-instant-navigation.mjs`:
+
 - Replace the `homepage -> session index` shell assertion with `page.getByRole('heading', { level: 1, name: 'Session Log' })`.
 - Change its label to `'session index heading'`.
 - The generation assertion `getByRole('heading', { name: 'Sessions' })` keeps working, because it matches `25-26 Sessions`.
@@ -6991,6 +7175,7 @@ Stage: `app/components/site/session-log/*`, `app/(home)/[lang]/session/page.tsx`
 ### Task 13: Session generation pages
 
 **Files:**
+
 - Rewrite: `app/(home)/[lang]/session/[generation]/page.tsx`, `app/(home)/[lang]/session/[generation]/loading.tsx`
 - Modify:
   - `lib/server/queries/public/sessions.ts` (remove `getPublishedSessionsByGeneration` and its request cache)
@@ -6999,6 +7184,7 @@ Stage: `app/components/site/session-log/*`, `app/(home)/[lang]/session/page.tsx`
 - Test: `tests/e2e/session-log.spec.ts` (append)
 
 **Interfaces:**
+
 - Consumes: `generationNeighbors` (Task 3); `GenerationPager`, `Breadcrumbs`, `PageHeader`, `EmptyState` (Task 10); `SessionLog` (Task 12); `fillTemplate` (Task 1); `createLocalizedMetadata({ noindex })` (Task 2).
 - Produces:
   - an H1 of `{generation} Sessions` / `{generation} 세션`
@@ -7061,18 +7247,19 @@ The second e2e generation's only session starts in the future, so it has nothing
 In `tests/e2e/instant-navigation.spec.ts`, inside `session index to a generation is prefetched for a likely navigation`, replace the two assertions after the header check with:
 
 ```ts
-      await expect(
-        page.getByRole('heading', {
-          level: 1,
-          name: `${seededData.generationName} Sessions`,
-        })
-      ).toBeVisible()
+await expect(
+  page.getByRole('heading', {
+    level: 1,
+    name: `${seededData.generationName} Sessions`,
+  })
+).toBeVisible()
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `.superpowers/shared/e2e-prod.sh $W/t13-e2e-red.log tests/e2e/session-log.spec.ts; tail -6 $W/t13-e2e-red.log`
 Expected:
+
 - `show one generation…` fails: the old page's H1 is `Sessions`, not `{generation} Sessions`
 - `keep empty generations…` fails: there is no empty-state text and no `noindex`
 
@@ -7215,7 +7402,11 @@ export default async function SessionGenerationPage({ params }: Props) {
 
 function GenerationLogFallback() {
   return (
-    <div role="status" aria-label="Loading sessions" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading sessions"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar h-28 w-full rounded-3xl" />
       {Array.from({ length: 4 }, (_, index) => (
         <span key={index} className="skeleton-bar h-20 w-full" />
@@ -7254,12 +7445,17 @@ async function SessionGenerationContent({
           ...collectionPage({
             url,
             name: fillTemplate(copy.generationTitle, { generation }),
-            description: fillTemplate(copy.generationDescription, { generation }),
+            description: fillTemplate(copy.generationDescription, {
+              generation,
+            }),
             locale: lang,
             websiteId: `${getSiteUrl()}#website`,
             items: sessions.map((session) => ({
               name: sessionTitle(session, lang),
-              url: getLocalizedUrl(lang, `/session/${generation}/${session.id}`),
+              url: getLocalizedUrl(
+                lang,
+                `/session/${generation}/${session.id}`
+              ),
             })),
           }),
           breadcrumbList([
@@ -7274,7 +7470,11 @@ async function SessionGenerationContent({
         total={sessions.length}
         copy={sessionFilterCopy(lang)}
         facets={[
-          { key: 'category', legend: copy.facetCategory, options: facets.categories },
+          {
+            key: 'category',
+            legend: copy.facetCategory,
+            options: facets.categories,
+          },
           { key: 'part', legend: copy.facetPart, options: facets.parts },
         ]}
       />
@@ -7331,12 +7531,14 @@ Stage: both generation route files, `lib/server/queries/public/sessions.ts`, `te
 ### Task 14: Session detail page and gallery
 
 **Files:**
+
 - Create: `app/components/site/session-detail/session-detail-view.tsx`
 - Rewrite: `app/(home)/[lang]/session/[generation]/[sessionId]/page.tsx`, `[sessionId]/loading.tsx`
 - Modify: `app/components/images-slider-controller.tsx`, `app/components/images-slider.tsx`
 - Test: `tests/components/session-detail-view.test.tsx`, `tests/components/image-slider.test.tsx`, `tests/e2e/session-log.spec.ts` (append)
 
 **Interfaces:**
+
 - Consumes:
   - `getSessionById` (Task 5: `type`, `part.name`) and `getSessionArchive`
   - `adjacentSessions`, `relatedSessions`, `sessionTitle`, `sessionLocation` (Task 4)
@@ -7417,10 +7619,9 @@ describe('SessionDetailView', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Sixth T19' })
     ).toBeInTheDocument()
-    expect(within(trail).getByRole('link', { name: 'Sessions' })).toHaveAttribute(
-      'href',
-      '/en/session'
-    )
+    expect(
+      within(trail).getByRole('link', { name: 'Sessions' })
+    ).toHaveAttribute('href', '/en/session')
     expect(within(trail).getByRole('link', { name: '25-26' })).toHaveAttribute(
       'href',
       '/en/session/25-26'
@@ -7454,13 +7655,17 @@ describe('SessionDetailView', () => {
     })
 
     expect(screen.getByRole('group', { name: 'Sixth T19' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Next image' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Next image' })
+    ).toBeInTheDocument()
   })
 
   it('says when the schedule is not set yet', () => {
     renderDetail({ startAt: null, endAt: null, location: null })
 
-    expect(screen.getAllByText('Date to be announced').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Date to be announced').length).toBeGreaterThan(
+      0
+    )
     expect(screen.getByText('To be announced')).toBeInTheDocument()
   })
 
@@ -7470,10 +7675,9 @@ describe('SessionDetailView', () => {
     expect(
       screen.getByRole('link', { name: /Cloud Run Workshop/ })
     ).toHaveAttribute('href', '/en/session/25-26/r1')
-    expect(screen.getByRole('link', { name: /Previous session/ })).toHaveAttribute(
-      'href',
-      '/en/session/25-26/p1'
-    )
+    expect(
+      screen.getByRole('link', { name: /Previous session/ })
+    ).toHaveAttribute('href', '/en/session/25-26/p1')
     expect(screen.queryByRole('link', { name: /Next session/ })).toBeNull()
   })
 })
@@ -7499,7 +7703,9 @@ describe('ImageSliderGallery', () => {
     const gallery = screen.getByRole('group', { name: 'Sixth T19' })
 
     expect(screen.getByText('1 / 3')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Previous image' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Previous image' })
+    ).toBeDisabled()
 
     gallery.querySelector<HTMLElement>('[tabindex="0"]')?.focus()
     await user.keyboard('{ArrowRight}')
@@ -7516,7 +7722,7 @@ describe('ImageSliderGallery', () => {
     render(<ImageSliderGallery images={['/a.webp']} alt="Poster" />)
 
     expect(screen.queryByRole('button', { name: 'Next image' })).toBeNull()
-    expect(screen.getByAltText('Poster — image 1 of 1')).toBeInTheDocument()
+    expect(screen.getByAltText('Poster, image 1 of 1')).toBeInTheDocument()
   })
 })
 ```
@@ -7563,6 +7769,7 @@ The seeded `E2E Session` is stored as `2025-06-01T10:00Z`–`12:00Z`, which is 1
 
 Run: `pnpm vitest run tests/components/session-detail-view.test.tsx tests/components/image-slider.test.tsx`
 Expected:
+
 - the view module fails to resolve
 - the gallery test fails on `group` and on `1 / 3`
 
@@ -7741,7 +7948,10 @@ export default function SessionDetailView({
               <ul className="detail-links">
                 {related.map((entry) => (
                   <li key={entry.id}>
-                    <Link href={hrefOf(entry)} transitionTypes={['nav-forward']}>
+                    <Link
+                      href={hrefOf(entry)}
+                      transitionTypes={['nav-forward']}
+                    >
                       <span className="detail-link-title">
                         {sessionTitle(entry, lang)}
                       </span>
@@ -7821,7 +8031,7 @@ export default function ImageSliderGallery({
         <Image
           key={`${image}:slide:${index}`}
           src={image}
-          alt={`${alt} — image ${index + 1} of ${images.length}`}
+          alt={`${alt}, image ${index + 1} of ${images.length}`}
           fill
           preload={index === 0}
           sizes="(min-width: 1152px) 720px, calc(100vw - 2rem)"
@@ -8046,7 +8256,11 @@ async function loadSession(
   return { session, archive }
 }
 
-function fallbackDescription(locale: Locale, title: string, generation: string) {
+function fallbackDescription(
+  locale: Locale,
+  title: string,
+  generation: string
+) {
   return locale === 'ko'
     ? `GDGoC Yonsei ${generation} 기수의 ${title} 세션을 소개합니다.`
     : `Learn from ${title}, a GDGoC Yonsei ${generation} session.`
@@ -8158,7 +8372,10 @@ async function SessionDetail({
                 }),
             breadcrumbList([
               { name: common.home, url: getLocalizedUrl(locale) },
-              { name: common.sessions, url: getLocalizedUrl(locale, '/session') },
+              {
+                name: common.sessions,
+                url: getLocalizedUrl(locale, '/session'),
+              },
               {
                 name: generation,
                 url: getLocalizedUrl(locale, `/session/${generation}`),
@@ -8225,6 +8442,7 @@ Expected: `Tests  7 passed (7)`.
 
 Run: `.superpowers/shared/e2e-prod.sh $W/t14-e2e.log tests/e2e/session-log.spec.ts tests/e2e/instant-navigation.spec.ts tests/e2e/social-images.spec.ts; tail -8 $W/t14-e2e.log`
 Expected:
+
 - `session-log.spec.ts` and `instant-navigation.spec.ts` pass
 - `social-images.spec.ts` shows only its known pre-existing failures, and the same ones as before
 
@@ -8235,9 +8453,11 @@ Expected: clean.
 Stage: `app/components/site/session-detail/session-detail-view.tsx`, `app/components/images-slider.tsx`, `app/components/images-slider-controller.tsx`, both `[sessionId]` route files, `tests/components/session-detail-view.test.tsx`, `tests/components/image-slider.test.tsx`, `tests/e2e/session-log.spec.ts`.
 
 ---
+
 ### Task 15: Projects hub and generation pages
 
 **Files:**
+
 - Create: `app/components/site/project-grid/project-card.tsx`, `app/components/site/project-grid/project-grid.tsx`
 - Rewrite: `app/(home)/[lang]/project/page.tsx`, `[generation]/page.tsx`, `[generation]/loading.tsx`
 - Modify:
@@ -8249,6 +8469,7 @@ Stage: `app/components/site/session-detail/session-detail-view.tsx`, `app/compon
 - Test: `tests/components/project-card.test.tsx`, `tests/e2e/project-showcase.spec.ts`
 
 **Interfaces:**
+
 - Consumes: `getProjectShowcase` and every helper in `@/lib/site/project-showcase` (Task 6); `joinFacetValues` (Task 3); `initials`, `fillTemplate` (Task 1); the primitives, `projectFilterCopy`, `FilterBar` (Tasks 10–11).
 - Produces:
   - `ProjectCard({ project, lang, copy, titleLevel: 2 | 3, featured? })`: an `li` with `data-f-generation`, `data-f-tag` and `data-f-links`, and one stretched title link
@@ -8314,7 +8535,10 @@ function renderCard(lang: 'en' | 'ko' = 'en') {
 describe('ProjectCard', () => {
   it('uses one stretched title link and keeps external links separate', () => {
     const { container } = renderCard()
-    const title = screen.getByRole('heading', { level: 2, name: 'Campus Compass' })
+    const title = screen.getByRole('heading', {
+      level: 2,
+      name: 'Campus Compass',
+    })
 
     expect(within(title).getByRole('link')).toHaveAttribute(
       'href',
@@ -8378,7 +8602,10 @@ test.describe('project showcase', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Projects', exact: true })
     ).toBeVisible()
-    const first = page.getByRole('heading', { name: 'E2E Project', exact: true })
+    const first = page.getByRole('heading', {
+      name: 'E2E Project',
+      exact: true,
+    })
     const second = page.getByRole('heading', {
       name: 'E2E Project 2',
       exact: true,
@@ -8400,7 +8627,9 @@ test.describe('project showcase', () => {
     await expect(first).toBeVisible()
   })
 
-  test('generation pages keep a trail back to all projects', async ({ page }) => {
+  test('generation pages keep a trail back to all projects', async ({
+    page,
+  }) => {
     const seeded = await readSeededData()
     await page.goto(`/en/project/${seeded.generationName}`, {
       waitUntil: 'domcontentloaded',
@@ -8439,36 +8668,37 @@ test.describe('project showcase', () => {
 ```
 
 In `tests/e2e/instant-navigation.spec.ts`:
+
 - In `homepage to project index exposes a useful shared shell`, replace the two assertions after the header check with:
 
 ```ts
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Projects', exact: true })
-      ).toBeVisible()
-      await expect(page.getByTestId('project-showcase-shell')).toBeVisible()
+await expect(
+  page.getByRole('heading', { level: 1, name: 'Projects', exact: true })
+).toBeVisible()
+await expect(page.getByTestId('project-showcase-shell')).toBeVisible()
 ```
 
 - In `project index to a generation is prefetched for a likely navigation`, replace the heading assertion with:
 
 ```ts
-      await expect(
-        page.getByRole('heading', {
-          level: 1,
-          name: `${seededData.generationName} Projects`,
-        })
-      ).toBeVisible()
+await expect(
+  page.getByRole('heading', {
+    level: 1,
+    name: `${seededData.generationName} Projects`,
+  })
+).toBeVisible()
 ```
 
 In `tests/e2e/admin-crud/projects.spec.ts`, inside `invalidates localized public caches…`, add directly after the first `/en/project/${seededData.secondGenerationName}` heading assertion:
 
 ```ts
-      const card = page.getByRole('listitem').filter({
-        has: page.getByRole('heading', { name: projectName, exact: true }),
-      })
-      await expect(card.getByText('Next.js', { exact: true })).toBeVisible()
-      await expect(
-        card.getByRole('link', { name: `Source: ${projectName}` })
-      ).toHaveAttribute('href', 'https://github.com/gdg-yonsei/e2e-project')
+const card = page.getByRole('listitem').filter({
+  has: page.getByRole('heading', { name: projectName, exact: true }),
+})
+await expect(card.getByText('Next.js', { exact: true })).toBeVisible()
+await expect(
+  card.getByRole('link', { name: `Source: ${projectName}` })
+).toHaveAttribute('href', 'https://github.com/gdg-yonsei/e2e-project')
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
@@ -8478,6 +8708,7 @@ Expected: FAIL (module not found).
 
 Run: `.superpowers/shared/e2e-prod.sh $W/t15-e2e-red.log tests/e2e/project-showcase.spec.ts; tail -6 $W/t15-e2e-red.log`
 Expected:
+
 - the hub test fails, because the old H1 is `Projects by Generation` and there is no Filters region
 - the generation test fails, because the H1 is not `{generation} Projects`
 
@@ -8710,7 +8941,9 @@ export default function ProjectHubPage({ params }: Props) {
     <PageTransition>
       <div className="site-page" data-testid="project-showcase-shell">
         <Suspense
-          fallback={<div aria-hidden="true" className="site-breadcrumbs-skeleton" />}
+          fallback={
+            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
+          }
         >
           <HubBreadcrumbs params={params} section="projects" />
         </Suspense>
@@ -8731,7 +8964,11 @@ export default function ProjectHubPage({ params }: Props) {
 
 function ProjectGridFallback() {
   return (
-    <div role="status" aria-label="Loading projects" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading projects"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar h-10 w-72 max-w-full" />
       <span className="skeleton-bar h-36 w-full rounded-3xl" />
       <div className="release-grid">
@@ -8967,7 +9204,11 @@ export default async function ProjectGenerationPage({ params }: Props) {
 
 function GenerationGridFallback() {
   return (
-    <div role="status" aria-label="Loading projects" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading projects"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar h-28 w-full rounded-3xl" />
       <div className="release-grid">
         {Array.from({ length: 3 }, (_, index) => (
@@ -9008,12 +9249,17 @@ async function ProjectGenerationContent({
           ...collectionPage({
             url,
             name: fillTemplate(copy.generationTitle, { generation }),
-            description: fillTemplate(copy.generationDescription, { generation }),
+            description: fillTemplate(copy.generationDescription, {
+              generation,
+            }),
             locale: lang,
             websiteId: `${getSiteUrl()}#website`,
             items: projects.map((project) => ({
               name: projectTitle(project, lang),
-              url: getLocalizedUrl(lang, `/project/${generation}/${project.id}`),
+              url: getLocalizedUrl(
+                lang,
+                `/project/${generation}/${project.id}`
+              ),
             })),
           }),
           breadcrumbList([
@@ -9044,7 +9290,12 @@ async function ProjectGenerationContent({
           },
         ]}
       />
-      <ProjectGrid id="project-grid" lang={lang} copy={copy} projects={projects} />
+      <ProjectGrid
+        id="project-grid"
+        lang={lang}
+        copy={copy}
+        projects={projects}
+      />
     </>
   )
 }
@@ -9081,6 +9332,7 @@ Expected: pass.
 
 Run: `.superpowers/shared/e2e-prod.sh $W/t15-e2e.log tests/e2e/project-showcase.spec.ts tests/e2e/instant-navigation.spec.ts tests/e2e/public-route-matrix.spec.ts tests/e2e/admin-crud/projects.spec.ts; tail -8 $W/t15-e2e.log`
 Expected:
+
 - everything passes
 - the admin spec's public card shows `Next.js` and a `Source` link
 - the admin spec runs after the instant spec here, so revalidation cannot affect the instant specs
@@ -9096,6 +9348,7 @@ Stage: `app/components/site/project-grid/*`, the three project route files, `lib
 ### Task 16: Project case study
 
 **Files:**
+
 - Create: `app/components/site/project-detail/project-detail-view.tsx`
 - Rewrite: `app/(home)/[lang]/project/[generation]/[projectId]/page.tsx`, `[projectId]/loading.tsx`
 - Delete: `app/components/navigation-button.tsx`
@@ -9103,6 +9356,7 @@ Stage: `app/components/site/project-grid/*`, the three project route files, `lib
 - Test: `tests/components/project-detail-view.test.tsx`, `tests/e2e/project-showcase.spec.ts` (append), `tests/e2e/admin-crud/projects.spec.ts` (public detail assertions)
 
 **Interfaces:**
+
 - Consumes: `getProjectById`, `getProjectShowcase`, `toShowcaseProject`, `sortShowcase`, `nextProject`, `moreFromGeneration`, `projectTitle`, `projectSummary`, `contributorName` (Task 6); `projectWork`, `breadcrumbList` (Task 2); `formatInstantDate`, `toSeoulDateIso` (Task 1); `ProjectCard` (Task 15).
 - Produces: `ProjectDetailView({ lang, project: ProjectDetail, more, next, copy, common })`, where `ProjectDetail = ShowcaseProject & { content: string; images: string[] }`. It renders an `aside` named `copy.details`.
 
@@ -9136,7 +9390,13 @@ const detail: ProjectDetail = {
   generationStartDate: '2025-03-01',
   tags: ['Firebase', 'Flutter'],
   contributors: [
-    { id: 'u1', nameEn: 'Kim Minji', nameKo: '김민지', image: null, githubId: '@minji' },
+    {
+      id: 'u1',
+      nameEn: 'Kim Minji',
+      nameKo: '김민지',
+      image: null,
+      githubId: '@minji',
+    },
   ],
   content: '## How it works',
   images: [],
@@ -9144,7 +9404,10 @@ const detail: ProjectDetail = {
 
 const sibling = { ...detail, id: 'p2', name: 'Lecture Lens', nameKo: null }
 
-function renderDetail(overrides: Partial<ProjectDetail> = {}, withSibling = false) {
+function renderDetail(
+  overrides: Partial<ProjectDetail> = {},
+  withSibling = false
+) {
   return render(
     <ProjectDetailView
       lang="en"
@@ -9167,10 +9430,9 @@ describe('ProjectDetailView', () => {
     expect(
       screen.getByText('Indoor navigation for Yonsei campus buildings.')
     ).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /^Live demo/ })[0]).toHaveAttribute(
-      'href',
-      'https://campus-compass.example.com'
-    )
+    expect(
+      screen.getAllByRole('link', { name: /^Live demo/ })[0]
+    ).toHaveAttribute('href', 'https://campus-compass.example.com')
     expect(screen.getAllByRole('link', { name: /^Source/ })[0]).toHaveAttribute(
       'href',
       'https://github.com/gdg-yonsei/campus-compass'
@@ -9256,7 +9518,10 @@ test('project pages carry a trail, the team and a CreativeWork', async ({
   const data = JSON.parse(
     (await page.locator('#project-structured-data').textContent()) ?? '[]'
   ) as Record<string, unknown>[]
-  expect(data[0]).toMatchObject({ '@type': 'CreativeWork', name: 'E2E Project' })
+  expect(data[0]).toMatchObject({
+    '@type': 'CreativeWork',
+    name: 'E2E Project',
+  })
   expect(data[1]).toMatchObject({ '@type': 'BreadcrumbList' })
 })
 ```
@@ -9264,15 +9529,15 @@ test('project pages carry a trail, the team and a CreativeWork', async ({
 In `tests/e2e/admin-crud/projects.spec.ts`, directly after the Task 15 card assertions, add:
 
 ```ts
-      await card.getByRole('heading', { name: projectName, exact: true }).click()
-      await expect(
-        page.getByRole('heading', { level: 1, name: projectName })
-      ).toBeVisible()
-      await expect(
-        page
-          .getByRole('complementary', { name: 'Project details' })
-          .getByText('Next.js', { exact: true })
-      ).toBeVisible()
+await card.getByRole('heading', { name: projectName, exact: true }).click()
+await expect(
+  page.getByRole('heading', { level: 1, name: projectName })
+).toBeVisible()
+await expect(
+  page
+    .getByRole('complementary', { name: 'Project details' })
+    .getByText('Next.js', { exact: true })
+).toBeVisible()
 ```
 
 The test's next `page.goto` continues from there, as before.
@@ -9499,7 +9764,9 @@ export default function ProjectDetailView({
       {more.length > 0 && (
         <section aria-labelledby="case-more" className="case-section">
           <h2 id="case-more" className="case-section-title">
-            {fillTemplate(copy.moreFrom, { generation: project.generationName })}
+            {fillTemplate(copy.moreFrom, {
+              generation: project.generationName,
+            })}
           </h2>
           <ul className="release-grid">
             {more.map((entry) => (
@@ -9525,7 +9792,9 @@ export default function ProjectDetailView({
               {copy.nextProject}
               <ArrowRightIcon aria-hidden="true" className="size-3" />
             </span>
-            <span className="detail-link-title">{projectTitle(next, lang)}</span>
+            <span className="detail-link-title">
+              {projectTitle(next, lang)}
+            </span>
           </Link>
         </nav>
       )}
@@ -9600,7 +9869,11 @@ async function loadProject(
   }
 }
 
-function fallbackDescription(locale: Locale, title: string, generation: string) {
+function fallbackDescription(
+  locale: Locale,
+  title: string,
+  generation: string
+) {
   return locale === 'ko'
     ? `GDGoC Yonsei ${generation} 기수의 ${title} 프로젝트를 소개합니다.`
     : `Explore ${title}, a GDGoC Yonsei ${generation} student project.`
@@ -9673,7 +9946,9 @@ async function ProjectDetail({
                 projectSummary(project, locale),
                 fallbackDescription(locale, title, generation)
               ),
-              images: [project.mainImage, ...project.images].map(getAbsoluteUrl),
+              images: [project.mainImage, ...project.images].map(
+                getAbsoluteUrl
+              ),
               locale,
               dateCreated: project.createdAt,
               dateModified: project.updatedAt,
@@ -9686,7 +9961,10 @@ async function ProjectDetail({
             }),
             breadcrumbList([
               { name: common.home, url: getLocalizedUrl(locale) },
-              { name: common.projects, url: getLocalizedUrl(locale, '/project') },
+              {
+                name: common.projects,
+                url: getLocalizedUrl(locale, '/project'),
+              },
               {
                 name: generation,
                 url: getLocalizedUrl(locale, `/project/${generation}`),
@@ -9731,6 +10009,7 @@ export default function ProjectDetailLoading() {
 ```
 
 Then:
+
 - Delete `app/components/navigation-button.tsx`. After both detail pages are rewritten, `rg "components/navigation-button"` lists only the test.
 - In `tests/components/common-components.test.tsx`, remove the import and the `renders navigation button link` test.
 
@@ -9753,6 +10032,7 @@ Stage: `app/components/site/project-detail/project-detail-view.tsx`, both `[proj
 ### Task 17: Live hero meta, locale links that keep filters, bundle guard
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/hero-meta.tsx`, `lib/site/carry-query.ts`
 - Modify:
   - `app/(home)/[lang]/_components/home/hero.tsx`
@@ -9765,6 +10045,7 @@ Stage: `app/components/site/project-detail/project-detail-view.tsx`, both `[proj
 - Test: `tests/components/hero.test.tsx` (append), `tests/components/locale-switch.test.tsx` (append)
 
 **Interfaces:**
+
 - Consumes: `getSessionArchive` (Task 5), `getProjectShowcase` (Task 6), `countLabel` (Task 1).
 - Produces:
   - `HeroMetaList({ lang, counts?: HeroCounts })` from `hero.tsx`, with `HeroCounts = { sessions; projects; generations }`
@@ -9793,7 +10074,12 @@ describe('HeroMetaList', () => {
       within(strip)
         .getAllByRole('listitem')
         .map((item) => item.textContent)
-    ).toEqual(['23 sessions', '1 project', '2 generations', 'T19 · Tue 19:00 KST'])
+    ).toEqual([
+      '23 sessions',
+      '1 project',
+      '2 generations',
+      'T19 · Tue 19:00 KST',
+    ])
   })
 
   it('holds fixed-width placeholders while counts load', () => {
@@ -9810,23 +10096,23 @@ describe('HeroMetaList', () => {
 Append to `tests/components/locale-switch.test.tsx`, and add `fireEvent` and `carryQueryString` to its imports:
 
 ```tsx
-  it('carries the current query string when a link is about to be used', () => {
-    window.history.replaceState(null, '', '/en/session?category=hackathon')
-    render(
-      <LocaleSwitch
-        lang="en"
-        pathname="/en/session"
-        label="Language"
-        onIntent={carryQueryString}
-      />
-    )
-    const korean = screen.getByRole('link', { name: /^KO\b/ })
+it('carries the current query string when a link is about to be used', () => {
+  window.history.replaceState(null, '', '/en/session?category=hackathon')
+  render(
+    <LocaleSwitch
+      lang="en"
+      pathname="/en/session"
+      label="Language"
+      onIntent={carryQueryString}
+    />
+  )
+  const korean = screen.getByRole('link', { name: /^KO\b/ })
 
-    expect(korean).toHaveAttribute('href', '/ko/session')
-    fireEvent.pointerOver(korean)
-    expect(korean).toHaveAttribute('href', '/ko/session?category=hackathon')
-    window.history.replaceState(null, '', '/')
-  })
+  expect(korean).toHaveAttribute('href', '/ko/session')
+  fireEvent.pointerOver(korean)
+  expect(korean).toHaveAttribute('href', '/ko/session?category=hackathon')
+  window.history.replaceState(null, '', '/')
+})
 ```
 
 In `tests/lib/site/client-bundle-guards.test.ts`, add the archive-copy pattern to `FORBIDDEN`:
@@ -9843,6 +10129,7 @@ const FORBIDDEN = [
 
 Run: `pnpm vitest run tests/components/hero.test.tsx tests/components/locale-switch.test.tsx tests/lib/site/client-bundle-guards.test.ts`
 Expected:
+
 - `HeroMetaList` is not exported
 - `@/lib/site/carry-query` does not resolve
 - the guard test passes; it is a regression guard for the island written in Task 11
@@ -9852,13 +10139,13 @@ Expected:
 In `lib/contents/site-copy.ts`, replace `meta: [string, string, string]` in `HeroCopy` with:
 
 ```ts
-  schedule: string
-  sessionsOne: string
-  sessionsMany: string
-  projectsOne: string
-  projectsMany: string
-  generationsOne: string
-  generationsMany: string
+schedule: string
+sessionsOne: string
+sessionsMany: string
+projectsOne: string
+projectsMany: string
+generationsOne: string
+generationsMany: string
 ```
 
 Replace the `meta` values: in `en`,
@@ -9886,11 +10173,16 @@ and in `ko`,
 ```
 
 In `app/(home)/[lang]/_components/home/hero.tsx`:
+
 - Import `type ReactNode` from `react` (alongside `CSSProperties`) and `countLabel` from `@/lib/site/format`.
 - Add above `Hero`:
 
 ```tsx
-export type HeroCounts = { sessions: number; projects: number; generations: number }
+export type HeroCounts = {
+  sessions: number
+  projects: number
+  generations: number
+}
 
 /** The mono meta strip. Without counts it holds fixed-width placeholders. */
 export function HeroMetaList({
@@ -9905,7 +10197,11 @@ export function HeroMetaList({
     ? [
         countLabel(counts.sessions, copy.sessionsOne, copy.sessionsMany),
         countLabel(counts.projects, copy.projectsOne, copy.projectsMany),
-        countLabel(counts.generations, copy.generationsOne, copy.generationsMany),
+        countLabel(
+          counts.generations,
+          copy.generationsOne,
+          copy.generationsMany
+        ),
       ]
     : [null, null, null]
 
@@ -9953,43 +10249,48 @@ export default async function HeroMeta({ lang }: { lang: Locale }) {
   return (
     <HeroMetaList
       lang={lang}
-      counts={{ sessions: sessions.length, projects: projects.length, generations }}
+      counts={{
+        sessions: sessions.length,
+        projects: projects.length,
+        generations,
+      }}
     />
   )
 }
 ```
 
 In `app/(home)/[lang]/page.tsx`:
+
 - Import `Suspense` from `react`, `HeroMeta` from `./_components/home/hero-meta`, and `{ HeroMetaList }` from `./_components/home/hero`.
 - Replace `<Hero lang={lang} />` with:
 
 ```tsx
-        <Hero
-          lang={lang}
-          meta={
-            <Suspense fallback={<HeroMetaList lang={lang} />}>
-              <HeroMeta lang={lang} />
-            </Suspense>
-          }
-        />
+<Hero
+  lang={lang}
+  meta={
+    <Suspense fallback={<HeroMetaList lang={lang} />}>
+      <HeroMeta lang={lang} />
+    </Suspense>
+  }
+/>
 ```
 
 In `app/styles/site-hero.css`, add after the `.hero-meta li:nth-child(3)::before` rule, inside the layer:
 
 ```css
-  .hero-meta li:nth-child(4)::before {
-    background-color: #f9ab00;
-  }
+.hero-meta li:nth-child(4)::before {
+  background-color: #f9ab00;
+}
 
-  /* Fixed width, so the strip doesn't shift when the counts stream in. */
-  .hero-meta-skeleton {
-    display: inline-block;
-    width: 5.5em;
-    height: 0.75em;
-    border-radius: 9999px;
-    background-color: rgb(255 255 255 / 0.12);
-    vertical-align: middle;
-  }
+/* Fixed width, so the strip doesn't shift when the counts stream in. */
+.hero-meta-skeleton {
+  display: inline-block;
+  width: 5.5em;
+  height: 0.75em;
+  border-radius: 9999px;
+  background-color: rgb(255 255 255 / 0.12);
+  vertical-align: middle;
+}
 ```
 
 `lib/site/carry-query.ts`:
@@ -10016,6 +10317,7 @@ export function carryQueryString(event: SyntheticEvent<HTMLElement>) {
 ```
 
 In `app/components/site/locale-switch.tsx`:
+
 - Add `import type { SyntheticEvent } from 'react'`.
 - Add the prop `onIntent?: (event: SyntheticEvent<HTMLElement>) => void`, with the doc comment `/** Runs when a link is hovered, focused or clicked, before it navigates. */`.
 - Put `onPointerOver={onIntent}`, `onFocus={onIntent}` and `onClick={onIntent}` on the `role="group"` div.
@@ -10040,6 +10342,7 @@ Stage: `app/(home)/[lang]/_components/home/{hero,hero-meta}.tsx`, `app/(home)/[l
 ### Task 18: Verification, docs and polish
 
 **Files:**
+
 - Modify: `docs/architecture/caching.md` (document the read models)
 - Test: no new tests. This task runs the whole verification matrix and fixes whatever it finds, with a test first, as usual.
 
@@ -10084,16 +10387,19 @@ pnpm perf:instant
 ```
 
 Expected:
+
 - `Performance budget passed for 22 route/profile samples.`
 - the `perf:instant` script prints `PASS` for all 7 navigations plus the back-navigation check
 
 If the budget fails:
+
 - Read the per-route JS delta against `$W/perf-plan2-start.json`. The filter island is the only new client code on the hubs.
 - If there are more than 25 prefetches, set `prefetch={false}` on `SessionRow` links. Those detail routes still get hover prefetch.
 
 - [ ] **Step 5: Browser QA**
 
 With the server from Step 4 still running:
+
 1. Screenshots at 360, 768, 1280 and 1920 px for `/en/session`, `/ko/session`, `/en/session/25-26`, one session detail, `/en/project` and one project detail: `node .superpowers/shared/shot.mjs <url> <w>x<h> $W/qa-<name>.png --wait=1500`, with `--ko-font` for Korean pages. Look at each one. Check:
    - no clipped text
    - the sticky filter bar clears the header capsule
@@ -10120,6 +10426,7 @@ Ledger the results: suite counts, the e2e failure set against the known list, pe
 Runs right after Task 0. It overrides the Plan 1 ruling that kept system Korean fonts, and the Global Constraints identity line: Hangul now uses Pretendard.
 
 **Files:**
+
 - Modify: `app/styles/site-theme.css` (body, `--font-display` and `--font-code` stacks, plus a `.sr-only` rule)
 - Modify: `scripts/measure-next-performance.mjs` (record `pretendardRequestCount`), `scripts/check-performance-budget.mjs` (exempt those requests from the +4 request-regression rule only)
 - Test: `tests/e2e/fonts.spec.ts`, `tests/scripts/performance-budget.test.ts`

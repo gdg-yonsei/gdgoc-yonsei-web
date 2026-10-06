@@ -1,6 +1,5 @@
 // Usage: node .superpowers/shared/stack-probe.mjs [baseURL]
-// Prints, per viewport and locale, each program card's height, its sticky
-// slot (computed top) and the room left below that slot.
+// Measures each program card's height, sticky top and remaining room per viewport and locale.
 import { chromium } from '@playwright/test'
 
 const base = process.argv[2] ?? 'http://localhost:3100'
@@ -22,7 +21,8 @@ for (const [lang, width, height] of cases) {
   if (only && !only.includes(`${lang}:${width}x${height}`)) continue
   const page = await browser.newPage({ viewport: { width, height } })
   await page.goto(`${base}/${lang}`, { waitUntil: 'load' })
-  if (process.env.PROBE_CSS) await page.addStyleTag({ content: process.env.PROBE_CSS })
+  if (process.env.PROBE_CSS)
+    await page.addStyleTag({ content: process.env.PROBE_CSS })
   await page.locator('.program-stack').scrollIntoViewIfNeeded()
   await page.waitForTimeout(Number(process.env.PROBE_WAIT ?? 150))
   const rows = await page.evaluate(() =>

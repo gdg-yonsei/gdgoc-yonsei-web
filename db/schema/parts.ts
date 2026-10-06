@@ -1,8 +1,3 @@
-/**
- * 파트 테이블(`parts`).
- *
- * 기수 안의 세부 팀(프론트엔드, 백엔드, ML/AI 등). 구성원은 `users_to_parts`로 연결한다.
- */
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { generations } from '@/db/schema/generations'
@@ -23,7 +18,6 @@ export const parts = pgTable('parts', {
   displayOrder: integer('displayOrder').notNull().default(10),
 })
 
-/** 파트가 속한 기수, 구성원, 파트 세션. */
 export const partsRelations = relations(parts, ({ one, many }) => ({
   generation: one(generations, {
     fields: [parts.generationsId],

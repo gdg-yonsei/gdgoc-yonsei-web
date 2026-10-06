@@ -1,6 +1,3 @@
-/**
- * 사이트맵(`/sitemap.xml`) 항목 조회. 기수·세션·프로젝트 목록에서 모든 공개 URL을 만든다.
- */
 import 'server-only'
 
 import type { MetadataRoute } from 'next'
@@ -18,7 +15,6 @@ import { getAbsoluteUrl } from '@/lib/seo/metadata'
 import { localizeSitemapEntries } from '@/lib/seo/sitemap'
 import { buildSitemapPaths } from '@/lib/site/sitemap-paths'
 
-/** 언어별 대체 링크를 포함한 사이트맵 항목 전체(캐시됨). */
 export async function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   'use cache: remote'
 

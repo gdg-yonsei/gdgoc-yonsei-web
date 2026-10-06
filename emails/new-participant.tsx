@@ -1,6 +1,4 @@
-/**
- * React Email 템플릿: 세션 작성자에게 보내는 새 참가자 알림 메일. `pnpm email:dev`로 미리 볼 수 있다.
- */
+// 새 참가자 메일은 pnpm email:dev로 미리 볼 수 있다.
 import {
   Tailwind,
   pixelBasedPreset,
@@ -16,7 +14,6 @@ import {
   Column,
 } from 'react-email'
 
-/** 메일에 넣을 세션 정보와 참가자 이름. */
 interface NewParticipantProps {
   session: {
     name: string
@@ -28,8 +25,7 @@ interface NewParticipantProps {
   participantName: string
 }
 
-// 세션 날짜 포맷을 위한 options — 세션 시간은 Seoul 벽시계를 UTC 라벨로
-// 저장한 값이므로 서버 타임존과 무관하게 UTC 로 표시한다.
+// 세션은 서울 벽시계에 UTC 라벨을 붙여 저장하므로 서버 타임존과 무관하게 UTC로 표시한다.
 const formatOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -40,7 +36,6 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   timeZone: 'UTC',
 }
 
-/** 새 참가자 알림 메일 본문. */
 const NewParticipant = ({ session, participantName }: NewParticipantProps) => {
   return (
     <Html>
@@ -100,7 +95,6 @@ const NewParticipant = ({ session, participantName }: NewParticipantProps) => {
   )
 }
 
-// 테스트 데이터
 NewParticipant.PreviewProps = {
   session: {
     name: 'Front-End 세션',

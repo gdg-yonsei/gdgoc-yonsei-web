@@ -1,7 +1,3 @@
-/**
- * 프로젝트 생성·수정 폼의 입력 필드 목록(서버 컴포넌트). 두 화면이 같은 필드를 같은 순서로 그리도록 한 곳에 둔다.
- * 폼(`DataForm`)과 제출 버튼은 각 페이지가 감싼다.
- */
 import DataInput from '@/app/components/admin/data-input'
 import GenerationField from '@/app/components/admin/generation-field'
 import MembersSelectInput, {
@@ -17,16 +13,8 @@ import {
 import type { AdminMessages } from '@/lib/admin-i18n'
 import type { getProject } from '@/lib/server/fetcher/admin/get-project'
 
-/** 수정 화면이 채워 넣는 기존 프로젝트. */
 type SavedProject = NonNullable<Awaited<ReturnType<typeof getProject>>>
 
-/**
- * 프로젝트 입력 필드. `project`가 있으면 수정 화면으로 보고 기존 값을 채운다.
- *
- * @param generation 프로젝트가 속한 기수(이름은 표시, id는 숨은 필드로 제출)
- * @param members 참여자로 고를 수 있는 멤버
- * @param tagNames 기술 스택 입력의 자동 완성 후보
- */
 export default function ProjectFormFields({
   t,
   generation,

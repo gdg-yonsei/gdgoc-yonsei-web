@@ -1,10 +1,3 @@
-/**
- * 기수 관리 서비스(목록, 상세, 생성, 수정, 삭제).
- *
- * 서비스 함수는 웹 Server Action과 MCP 도구가 함께 쓴다. 모두 같은 순서로 동작한다:
- * 권한 확인(`authorize`, 기수 접근) → 입력 검증(zod) → DB 쓰기 → 공개 캐시 무효화.
- * 결과는 예외 대신 `ServiceResult`(성공 `ok` / 실패 `fail`)로 돌려준다.
- */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -31,7 +24,6 @@ import {
 } from '@/lib/server/services/admin/types'
 import { generationValidation } from '@/lib/validations/generation'
 
-/** 기수 입력(검증 전) 타입. */
 export type GenerationInput = z.input<typeof generationValidation>
 
 const NOT_FOUND = 'Generation not found'
@@ -41,10 +33,7 @@ function parseGenerationInput(input: unknown) {
   return parsed.success ? ok(parsed.data) : fromZodError(parsed.error)
 }
 
-/**
- * 사용자가 접근할 수 있는 기수 목록. 기수 관리 화면 권한과 별개로,
- * 다른 도구의 generationId 를 고르는 데 필요하므로 관리자 페이지 접근자 모두에게 연다.
- */
+// 다른 도구가 generationId를 고르도록 기수 관리 권한 없이도 접근 가능한 기수 목록을 연다.
 export async function listGenerations(
   actor: Actor
 ): Promise<ServiceResult<Awaited<ReturnType<typeof getGenerations>>>> {
@@ -76,7 +65,6 @@ async function loadGenerationDetail(generationId: number) {
   }
 }
 
-/** 기수 상세: 파트와 구성원(공개 가능한 필드만). */
 export type GenerationDetail = NonNullable<
   Awaited<ReturnType<typeof loadGenerationDetail>>
 >
@@ -97,7 +85,6 @@ export async function getGenerationDetail(
   return detail ? ok(detail) : fail('NOT_FOUND', NOT_FOUND)
 }
 
-/** 상세 조회 결과를 기수 입력 형태로 되돌린다(MCP 부분 수정 병합용). */
 export function generationToInput(detail: GenerationDetail): GenerationInput {
   return {
     name: detail.name,
@@ -106,7 +93,6 @@ export function generationToInput(detail: GenerationDetail): GenerationInput {
   }
 }
 
-/** 기수를 만든다(LEAD 전용). */
 export async function createGeneration(
   actor: Actor,
   input: unknown

@@ -1,10 +1,6 @@
-/**
- * 공개 구성원 디렉터리 표시 헬퍼(이름, 프로필 링크).
- */
 import type { Locale } from '@/lib/i18n'
 import { formatUserName } from '@/lib/format/user-name'
 
-/** 공개 디렉터리가 읽는 구성원 컬럼(`lib/server/queries/public/members.ts`). */
 export type MemberProfile = {
   id: string
   name: string
@@ -39,10 +35,8 @@ export function memberName(user: MemberProfile, lang: Locale): string {
   )
 }
 
-/** 프로필 링크 종류. */
 export type MemberLinkKind = 'email' | 'linkedin' | 'instagram' | 'github'
 
-/** 프로필 링크(종류, 주소). */
 export type MemberLink = { kind: MemberLinkKind; href: string }
 
 /** `@minji`, `minji`, 붙여 넣은 프로필 URL(하위 도메인, 끝 슬래시, 쿼리 포함) → `minji` */
@@ -81,8 +75,7 @@ const PROFILES: ReadonlyArray<{
   },
 ]
 
-/** 정해진 순서의 프로필 링크(이메일, LinkedIn, Instagram, GitHub).
-    아이디, `@아이디`, 프로필 URL 중 어떻게 입력했든 같은 주소로 정규화한다. */
+// 아이디·@아이디·프로필 URL을 정규화하고 이메일, LinkedIn, Instagram, GitHub 순서로 반환한다.
 export function memberLinks(user: MemberProfile): MemberLink[] {
   const links: MemberLink[] = []
   if (user.email) {

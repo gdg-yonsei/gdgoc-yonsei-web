@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # Mondays 03:17 KST — new queries run against unchanged code too.
+    # Mondays 03:17 KST also checks unchanged code against new queries.
     - cron: '17 18 * * 0'
 
 permissions:

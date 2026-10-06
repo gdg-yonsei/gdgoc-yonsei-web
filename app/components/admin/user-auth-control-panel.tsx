@@ -1,6 +1,3 @@
-/**
- * 사이드바 하단의 로그인 사용자 카드(서버 컴포넌트): 이름, 이메일, 역할, 로그아웃.
- */
 import { Suspense } from 'react'
 import { getAuthSession } from '@/auth'
 import { SignOutButton } from '@/app/components/auth/sign-out-button'
@@ -9,8 +6,9 @@ import { formatUserName } from '@/lib/format/user-name'
 import { notFound } from 'next/navigation'
 import { getMember } from '@/lib/server/fetcher/admin/get-member'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
+import { AdminCardSkeleton } from '@/app/components/admin/skeleton'
 
-/** 로그인 사용자의 이름·이메일·역할과 로그아웃 버튼. 세션이 없으면 404, 사용자 행이 없으면 아무것도 그리지 않는다. */
+/** 세션이 없으면 404, 사용자 행이 없으면 아무것도 렌더링하지 않는다. */
 async function UserProfile() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)
@@ -57,18 +55,9 @@ async function UserProfile() {
   )
 }
 
-/** 사용자 카드. 세션·사용자 조회가 끝날 때까지 같은 크기의 자리 표시자를 보여 준다. */
 export default function UserAuthControlPanel() {
   return (
-    <Suspense
-      fallback={
-        <div
-          className={
-            'border-hairline bg-surface-sunken h-[124px] w-full animate-pulse rounded-lg border'
-          }
-        />
-      }
-    >
+    <Suspense fallback={<AdminCardSkeleton className={'h-[124px]'} />}>
       <UserProfile />
     </Suspense>
   )

@@ -1,17 +1,8 @@
-/**
- * Tailwind 클래스 병합 헬퍼 `cn()`.
- *
- * 관리자 화면 전용이다. tailwind-merge가 무거워(약 9KB gz) 공개 사이트 클라이언트 번들에는
- * 넣지 않는다(`tests/lib/site/client-bundle-guards.test.ts`가 검사한다).
- */
+// tailwind-merge 비용(약 9KB gz) 때문에 관리자 전용이다. 공개 사이트 클라이언트 번들에 넣지 않는다.
 import { clsx, type ClassValue } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
 
-/**
- * `app/admin.css`에서 `@utility`로 등록한 관리자 프리미티브를 tailwind-merge에 알려 준다.
- * 이렇게 해야 같은 그룹의 클래스가 충돌할 때 나중 값이 이긴다.
- * (예: `cn('admin-btn-primary', 'admin-btn-danger')` → danger만 남음)
- */
+// 관리자 @utility를 등록해 같은 그룹에서 나중에 넘긴 클래스가 이기게 한다.
 type AdminClassGroupId =
   'admin-type' | 'admin-btn' | 'admin-badge' | 'admin-surface'
 
@@ -53,13 +44,7 @@ const twMerge = extendTailwindMerge<AdminClassGroupId>({
   },
 })
 
-/**
- * 조건부 클래스 병합. `clsx`로 조건을 평가하고 `tailwind-merge`로 충돌을 정리한다.
- *
- * 템플릿 리터럴(`` `base ${className}` ``) 대신 쓰는 이유:
- * 1. `className`이 undefined여도 `"undefined"`라는 클래스가 들어가지 않는다
- * 2. 호출부가 넘긴 유틸리티가 기본값과 충돌하면 CSS 소스 순서가 아니라 나중 값이 이긴다
- */
+// 호출부 유틸리티가 기본값과 충돌하면 CSS 소스 순서가 아니라 나중 값이 이긴다.
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

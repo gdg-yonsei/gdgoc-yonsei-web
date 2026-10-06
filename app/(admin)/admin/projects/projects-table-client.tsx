@@ -1,8 +1,5 @@
 'use client'
 
-/**
- * 프로젝트 목록 표(클라이언트 컴포넌트). 검색·필터·정렬·CSV 내보내기는 브라우저에서 한다.
- */
 import { useState } from 'react'
 import Image from 'next/image'
 import type { AdminColumn } from '@/app/components/admin/data-table'
@@ -47,7 +44,6 @@ function compareProjects(
   return new Date(right[field]).getTime() - new Date(left[field]).getTime()
 }
 
-/** 프로젝트 목록 표(검색, 수정일·생성일·이름 정렬, CSV 내보내기, 기수별 묶음). */
 export default function ProjectsTableClient({
   projectsData,
   scope,
@@ -106,7 +102,7 @@ export default function ProjectsTableClient({
       header: t.columnGeneration,
       width: '8rem',
       hideOnMobile: scope?.kind !== 'all',
-      render: (project) => project.generationName ?? '—',
+      render: (project) => project.generationName ?? t.notProvided,
     },
     {
       key: 'updated',

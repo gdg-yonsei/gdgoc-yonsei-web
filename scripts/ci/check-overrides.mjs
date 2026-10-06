@@ -1,8 +1,4 @@
-/**
- * pnpm-workspace.yaml의 `overrides`는 package.json보다 우선한다. package.json에서 직접 의존성을 올리고
- * override는 그대로 두면, pnpm은 아무 경고 없이 예전 버전을 계속 설치한다(package.json은 16.3.6인데
- * next가 16.3.2에 머문 적이 있다). 두 값이 다르면 실패시킨다.
- */
+// pnpm-workspace overrides가 package.json보다 우선해 의존성 업데이트가 무시될 수 있으므로 값이 다르면 실패한다.
 import { readFileSync } from 'node:fs'
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'))

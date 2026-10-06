@@ -1,11 +1,6 @@
 'use client'
 
-/**
- * 소셜 로그인 제출 버튼(클라이언트 컴포넌트).
- *
- * 한 로그인 방식이 진행 중이면 전역 atom(`isAuthenticatingState`)으로 다른 로그인 버튼까지
- * 막아, 여러 인증 흐름이 동시에 시작되지 않게 한다.
- */
+/** 인증 흐름이 겹치지 않도록 진행 중인 로그인 하나가 다른 로그인 버튼도 잠근다. */
 import { useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import { useAtom } from 'jotai'
@@ -18,7 +13,6 @@ import {
   type SocialProvider,
 } from '@/app/(admin)/auth/sign-in/sign-in-options/social-providers'
 
-/** 제공자별 아이콘과 버튼 모양. GitHub이 주 버튼, Google이 보조 버튼이다. */
 const APPEARANCE = {
   github: {
     Icon: Github,
@@ -32,10 +26,6 @@ const APPEARANCE = {
   },
 } as const
 
-/**
- * 제출 중이면 스피너를 보여 주는 로그인 버튼.
- * @param provider 로그인 제공자
- */
 export default function SocialSubmitButton({
   provider,
 }: {
@@ -57,6 +47,7 @@ export default function SocialSubmitButton({
       type={'submit'}
       className={buttonClass}
       disabled={pending || isAuthenticating}
+      aria-busy={pending}
     >
       {pending ? (
         <LoadingSpinner className={spinnerClass} />

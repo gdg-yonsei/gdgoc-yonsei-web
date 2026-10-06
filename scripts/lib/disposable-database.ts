@@ -1,10 +1,4 @@
-/**
- * DB를 지우거나 시드하는 스크립트(Playwright e2e 초기화, `pnpm db:seed`)의 안전장치.
- *
- * 2026-09-25에 e2e 초기화가 운영 DB를 TRUNCATE한 사고가 있었다. Playwright 프로세스가 운영을 가리키는
- * `.env`를 읽었고, `TRUNCATE` 전에 대상을 확인하는 곳이 없었다. 이제 파괴적인 스크립트는 모두 첫 쿼리
- * 전에 `assertDisposableDatabase`를 호출하므로, 원격 DB는 누군가 명시적으로 지정했을 때만 건드린다.
- */
+// 파괴적인 스크립트는 첫 쿼리 전에 assertDisposableDatabase를 호출해야 한다. 원격 DB는 명시적 허용이 필요하다.
 
 /** 이 컴퓨터나 로컬 compose 네트워크를 가리키는 호스트 이름. */
 export const LOCAL_DATABASE_HOSTS: readonly string[] = [
@@ -16,10 +10,7 @@ export const LOCAL_DATABASE_HOSTS: readonly string[] = [
   'postgres',
 ]
 
-/**
- * 지워도 되는 원격 DB 하나를 명시적으로 허용한다(예: 일회용 CI 인스턴스). `AUTH_DRIZZLE_URL`과 정확히
- * 같아야 하므로, 한 DB를 허용해도 같은 호스트의 다른 DB까지 허용되지는 않는다.
- */
+// 원격 허용값은 AUTH_DRIZZLE_URL과 정확히 같아야 한다. 같은 호스트의 다른 DB는 허용되지 않는다.
 export const DISPOSABLE_DATABASE_URL_ENV = 'E2E_DISPOSABLE_DATABASE_URL'
 
 type Env = Readonly<Record<string, string | undefined>>
@@ -38,10 +29,7 @@ export function describeDatabaseTarget(url: string): string {
   }
 }
 
-/**
- * `url`이 지워도 되는 DB인지. 로컬 호스트이거나, 명시적 허용 환경 변수 값과 정확히 같으면 true.
- * URL로 해석할 수 없으면 false(안전한 쪽으로 판단).
- */
+// 로컬 또는 명시적 허용 URL과 정확히 같은 DB만 일회용으로 본다. URL 해석 실패는 거절한다.
 export function isDisposableDatabaseUrl(
   url: string,
   env: Env = process.env
@@ -61,10 +49,7 @@ export function isDisposableDatabaseUrl(
   return Boolean(optIn) && optIn === url
 }
 
-/**
- * `url`이 일회용 DB를 가리키지 않으면 예외를 던진다. `purpose`는 오류 메시지에 들어갈 호출자 이름
- * (예: "e2e database reset").
- */
+// 일회용 DB가 아니면 예외를 던진다. purpose는 오류에 표시할 호출자 이름이다.
 export function assertDisposableDatabase(
   url: string | undefined,
   purpose: string,

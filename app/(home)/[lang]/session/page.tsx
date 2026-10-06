@@ -1,6 +1,3 @@
-/**
- * 세션 허브(`/{lang}/session`): 기수 띠, 검색·필터, 세션 로그.
- */
 import type { Metadata } from 'next'
 import ArchiveHubShell from '@/app/components/site/archive-hub-shell'
 import {
@@ -39,12 +36,10 @@ import { sessionPath } from '@/lib/site/routes'
 const en = sessionArchiveCopy.en
 const ko = sessionArchiveCopy.ko
 
-/** 빌드 시 미리 렌더링할 경로 매개변수. */
 export function generateStaticParams() {
   return localeStaticParams()
 }
 
-/** 언어별 제목·설명·대체 언어 링크(hreflang) 메타데이터. */
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = sessionArchiveCopy[locale]
@@ -57,7 +52,6 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
-/** 페이지 본문. */
 export default function SessionHubPage() {
   return (
     <ArchiveHubShell

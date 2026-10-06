@@ -1,15 +1,4 @@
-/**
- * Cloudflare R2 이미지 저장소 작업 모음.
- *
- * R2 버킷을 읽고 쓰는 코드는 이 파일 하나에만 둔다. 사전 서명 URL 발급, 객체
- * 조회·삭제, 스트리밍 업로드를 모두 이 모듈이 담당한다. 호출부는 객체 키만 다루고
- * 버킷 이름이나 S3 명령 객체를 직접 만들지 않는다.
- *
- * 사용처
- * - 관리자 웹 업로드 API(`lib/server/image-upload-route.ts`, 프로필 이미지 라우트)
- * - MCP 이미지 업로드 서비스(`lib/server/services/admin/images/`)
- * - 프로젝트·세션 수정/삭제 시 더 이상 쓰지 않는 이미지 정리
- */
+// 호출부는 객체 키만 다룬다. 버킷 이름·S3 명령을 만드는 R2 접근은 이 모듈에 둔다.
 import 'server-only'
 
 import {
@@ -35,16 +24,11 @@ export const WEB_UPLOAD_TTL_SECONDS = 3600
 /** MCP 업로드용 사전 서명 URL 유효 시간(초). 크기를 서명에 넣으므로 짧게 15분. */
 export const PRESIGNED_UPLOAD_TTL_SECONDS = 900
 
-/** 매직 바이트로 이미지 형식을 판별할 때 읽는 앞부분 길이. */
 const HEAD_BYTES = 32
 
-/** 환경변수가 없으면 호출 시점에 예외를 던지도록 버킷 이름은 매번 읽는다. */
 const bucket = () => getR2BucketEnv().R2_BUCKET_NAME
 
-/**
- * 관리자 웹 업로드용 PUT URL을 발급한다.
- * 파일 크기는 서명하지 않으며, 형식과 권한 검사는 업로드 API가 발급 전에 끝낸다.
- */
+// 웹 PUT URL은 크기를 서명하지 않는다. 형식·권한은 업로드 API가 발급 전에 검사해야 한다.
 export async function presignImageUpload(
   key: string,
   contentType: string
@@ -60,11 +44,7 @@ export async function presignImageUpload(
   )
 }
 
-/**
- * 크기와 형식을 서명에 포함한 PUT URL을 발급한다(MCP 업로드용).
- * 선언과 다른 크기나 Content-Type으로 올리면 R2가 서명 불일치로 거절하므로, 서버를
- * 거치지 않고도 업로드 한도를 강제할 수 있다.
- */
+// MCP PUT URL은 크기·Content-Type을 서명해 서버를 거치지 않는 업로드도 R2가 선언대로 제한한다.
 export async function presignSizedImageUpload(
   key: string,
   contentType: string,
@@ -104,18 +84,11 @@ export async function readImageHead(key: string): Promise<Uint8Array> {
     : new Uint8Array()
 }
 
-/** 객체 하나를 삭제한다. 실패하면 예외를 그대로 던진다. */
 export async function deleteImage(key: string): Promise<void> {
   await r2Client.send(new DeleteObjectCommand({ Bucket: bucket(), Key: key }))
 }
 
-/**
- * 여러 객체를 한 번의 요청으로 삭제한다.
- *
- * 리소스 삭제 후 이미지 정리처럼 "실패해도 본 작업은 성공으로 끝나야 하는" 곳에서
- * 쓰므로 예외를 던지지 않고 결과를 boolean으로 돌려준다. `true`는 요청이 처리됐다는
- * 뜻일 뿐, 모든 객체가 지워졌다는 보장은 아니다.
- */
+// 삭제 요청 실패는 예외 대신 false다. true는 요청 처리만 뜻하며 모든 객체 삭제를 보장하지 않는다.
 export async function deleteImages(keys: readonly string[]): Promise<boolean> {
   if (keys.length === 0) {
     return true
@@ -135,13 +108,8 @@ export async function deleteImages(keys: readonly string[]): Promise<boolean> {
   }
 }
 
-/**
- * 수정 전후 이미지 목록을 비교해, 더 이상 참조하지 않는 이미지를 R2에서 지운다.
- *
- * 우리 버킷의 해당 접두사(`projects/`, `sessions/`) 객체만 대상으로 하며, 외부 URL이나
- * 기본 이미지는 키 정규화 단계에서 걸러진다. 삭제 실패는 예외로 전파되어 호출한
- * 서비스가 오류 응답을 만든다.
- */
+// 미참조 이미지 삭제는 우리 버킷의 해당 접두사만 대상으로 한다. 외부 URL·기본 이미지는 제외한다.
+// 실패는 호출 서비스로 전달한다.
 export async function deleteRemovedImages({
   previousImages,
   nextImages,
@@ -171,13 +139,8 @@ export async function deleteRemovedImages({
   await Promise.all(imageKeys.map((imageKey) => deleteImage(imageKey)))
 }
 
-/**
- * 스트림을 버퍼링하지 않고 R2 멀티파트 업로드로 흘려 보낸다(10MB 파트 × 4 병렬 ≈ 40MB).
- *
- * `maxBytes`를 넘는 순간 스트림을 오류로 끝내 업로드를 중단시키고, 미완성 멀티파트는
- * lib-storage가 abort한다(`leavePartsOnError: false`). 형식 검사를 위해 앞부분
- * `HEAD_BYTES`도 함께 돌려준다.
- */
+// 10MB 파트 4개 병렬(약 40MB)로 스트리밍한다. maxBytes 초과 시 abort하고 미완성 멀티파트도 정리한다.
+// 매직 바이트 검사에 쓸 HEAD_BYTES를 함께 반환한다.
 export async function streamImageToR2(
   key: string,
   body: ReadableStream<Uint8Array>,

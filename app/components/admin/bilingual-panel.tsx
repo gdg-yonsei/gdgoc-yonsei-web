@@ -1,22 +1,13 @@
 'use client'
 
-/**
- * 영어·한국어 입력 패널(클라이언트 컴포넌트). 관리자 폼의 모든 이중 언어 필드가 이 패널 안에 들어간다.
- */
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import { getLanguageCompletion } from '@/app/components/admin/bilingual-completion'
 import { cn } from '@/lib/cn'
 import { fillTemplate } from '@/lib/format/text'
 
-/**
- * 영어·한국어 입력을 탭(또는 나란히 보기)으로 묶는 패널.
- *
- * - 비활성 탭은 언마운트하지 않고 숨겨 두어, 폼 제출 시 두 언어 값이 모두 전송된다.
- * - `requiredBoth`이면 부모 `<form>`의 입력을 지켜보며 언어별 작성 여부를 표시하고,
- *   제출할 때 빠진 언어 탭으로 전환한다. 제출 자체를 막는 일은 `DataForm`이 한다
- *   (`data-bilingual-*` 속성으로 필드 정보를 넘긴다).
- */
+/** 비활성 언어 탭도 DOM에 남겨 두 언어를 제출한다.
+ * requiredBoth 패널은 빠진 언어 탭으로 전환하며, 제출 차단은 DataForm이 맡는다. */
 export default function BilingualPanel({
   enTitle,
   koTitle,
@@ -137,9 +128,7 @@ export default function BilingualPanel({
         <div className={'admin-field-label'} id={`${panelId}-lang`}>
           {t('language')}
         </div>
-        {/* 선택 상태가 색으로만 전달되지 않도록 tablist/tab 시맨틱을 씁니다.
-            비활성 pane은 언마운트하지 않고 `hidden`으로 남겨야 FormData에
-            두 언어가 모두 포함됩니다. */}
+        {/* tablist/tab 시맨틱으로 선택 상태를 전달한다. 비활성 패널도 hidden으로 유지해 두 언어를 제출한다. */}
         <div
           role={'tablist'}
           aria-labelledby={`${panelId}-lang`}
@@ -171,7 +160,7 @@ export default function BilingualPanel({
                     className={cn(
                       'type-eyebrow rounded-full px-2 py-0.5',
                       isSelected
-                        ? 'bg-on-primary/20 text-on-primary'
+                        ? 'bg-primary-active text-on-primary'
                         : isComplete
                           ? 'bg-success-soft text-success'
                           : 'bg-danger-soft text-danger'

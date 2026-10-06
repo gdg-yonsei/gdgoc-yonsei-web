@@ -1,6 +1,3 @@
-/**
- * "참여 중인 다가오는 세션" 섹션(서버 컴포넌트). 관리자 홈과 세션 화면이 함께 쓴다.
- */
 import { getAuthSession } from '@/auth'
 import { forbidden } from 'next/navigation'
 import SessionCard from '@/app/(admin)/admin/sessions/session-card'
@@ -8,7 +5,6 @@ import AdminEmptyState from '@/app/components/admin/empty-state'
 import { getUserUpcomingSessions } from '@/lib/server/fetcher/admin/get-upcoming-sessions'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
 
-/** 내가 신청한 세션 중 아직 시작하지 않은 것을 시작 순으로 보여 준다. */
 export default async function UpcomingSessions() {
   const locale = await getAdminLocale()
   const t = getAdminMessages(locale)

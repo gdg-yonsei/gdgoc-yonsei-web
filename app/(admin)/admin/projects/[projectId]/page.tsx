@@ -1,6 +1,3 @@
-/**
- * 프로젝트 상세 화면(`/admin/projects/{id}`). 수정·삭제 버튼은 권한이 있을 때만 보인다.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import { notFound } from 'next/navigation'
@@ -20,7 +17,7 @@ import {
 } from '@/lib/admin-i18n/server'
 import BilingualPanel from '@/app/components/admin/bilingual-panel'
 
-/** 탭 제목에 프로젝트 이름을 넣는다(조회는 page와 React cache로 공유된다). */
+/** 메타데이터와 본문 조회는 React cache로 공유한다. */
 export async function generateMetadata({
   params,
 }: PageProps<'/admin/projects/[projectId]'>) {
@@ -32,7 +29,6 @@ export async function generateMetadata({
   }
 }
 
-/** 프로젝트 상세. */
 export default async function ProjectPage({
   params,
 }: PageProps<'/admin/projects/[projectId]'>) {
@@ -156,7 +152,9 @@ export default async function ProjectPage({
           <div className={'admin-field-label'}>{t.tags}</div>
           <div className={'flex flex-wrap gap-2'}>
             {projectData.projectsToTags.length === 0 ? (
-              <div className={'admin-field-value opacity-70'}>—</div>
+              <div className={'admin-field-value text-ink-muted'}>
+                {t.notProvided}
+              </div>
             ) : (
               projectData.projectsToTags.map(({ tag }) => (
                 <span

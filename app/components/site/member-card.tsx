@@ -1,6 +1,3 @@
-/**
- * 멤버 허브의 멤버 카드(서버 컴포넌트): 사진, 이름, 연락 링크.
- */
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 import type { Locale } from '@/lib/i18n'
 import {
@@ -18,7 +15,6 @@ import {
   type MemberProfile,
 } from '@/lib/site/members'
 
-/** 연락 링크 종류별 아이콘. */
 function LinkIcon({ kind }: { kind: MemberLinkKind }) {
   switch (kind) {
     case 'email':
@@ -32,11 +28,8 @@ function LinkIcon({ kind }: { kind: MemberLinkKind }) {
   }
 }
 
-/**
- * 멤버 한 명. 이름이 바로 옆에 있으므로 사진은 장식으로 보고 대체 텍스트를 비운다.
- * 사진이 없으면 이름 머리글자를 보여 준다.
- * @param preload 첫 화면에 보이는 카드면 true(이미지 우선 로드)
- */
+/** 사진 옆에 이름이 있어 대체 텍스트를 비우고, 사진이 없으면 머리글자를 표시한다.
+ * `preload`는 첫 화면 카드의 이미지를 우선 로드한다. */
 export default function MemberCard({
   user,
   lang,

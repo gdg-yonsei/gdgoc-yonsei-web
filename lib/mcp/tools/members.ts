@@ -1,6 +1,3 @@
-/**
- * MCP 멤버·내 프로필 도구.
- */
 import 'server-only'
 
 import { z } from 'zod'
@@ -33,7 +30,7 @@ import { ok } from '@/lib/server/services/admin/types'
 
 const ROLES = ['MEMBER', 'CORE', 'LEAD', 'ALUMNUS', 'UNVERIFIED'] as const
 
-/** 멤버 프로필 필드. 모두 선택 — 보낸 것만 바뀐다. */
+// 프로필 필드는 모두 선택이며 보낸 필드만 바뀐다.
 export const memberPatchFields = {
   name: z.string().optional().describe('Display name.'),
   firstName: z.string().optional().describe('First name in English.'),
@@ -56,7 +53,6 @@ export const memberPatchFields = {
   profileImage: r2ImageUrl('users').nullable().optional(),
 }
 
-/** 멤버 관리 도구 목록(목록, 상세, 수정, 가입 승인, 역할 변경, 삭제). */
 export const memberTools = [
   defineTool({
     name: 'list_members',
@@ -160,7 +156,6 @@ export const memberTools = [
   }),
 ]
 
-/** 내 프로필 도구 목록. */
 export const profileTools = [
   defineTool({
     name: 'get_my_profile',

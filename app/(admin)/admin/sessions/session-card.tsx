@@ -1,6 +1,3 @@
-/**
- * "참여 중인 세션" 카드. 누르면 세션 상세로 간다.
- */
 import { type AdminSessionListItem } from '@/lib/server/fetcher/admin/get-sessions'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -11,7 +8,6 @@ import {
 } from '@/lib/admin-i18n'
 import { pickLocalized, type Locale } from '@/lib/i18n'
 
-/** 대표 이미지, 세션 이름(관리자 언어, 없으면 다른 언어), 파트, 날짜를 보여 주는 링크 카드. */
 export default function SessionCard({
   session,
   locale,

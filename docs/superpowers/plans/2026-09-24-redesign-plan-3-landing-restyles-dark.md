@@ -1,10 +1,11 @@
-# Redesign Plan 3 — Landing, Restyles, Social Cards and the Dark Scheme
+# Redesign Plan 3: Landing, Restyles, Social Cards and the Dark Scheme
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Finish the public-site redesign: the narrative landing sections (`<about>` through `<join>`), restyled Members, Calendar and policy pages, social cards in the new identity, a refreshed `llms.txt`, Suspense-reveal and crossfade transitions, the deferred robustness and chrome fixes from Plans 1–2, and the system dark scheme.
 
 **Architecture:**
+
 - The landing sections are server components under `app/(home)/[lang]/_components/home/`. Motion is CSS only: scroll-driven animations behind `@supports (animation-timeline: view())`, hover and focus glyph animations, and no new client code.
 - The two data sections (latest log, latest releases) read the Plan 2 read models, `getSessionArchive` and `getProjectShowcase`, inside Suspense boundaries whose skeletons slide away through React `<ViewTransition>` (a shared `RevealSuspense`).
 - Members, Calendar and the policy pages move onto the Plan 2 primitives (breadcrumbs, `PageHeader`, the generation pager, `EmptyState`) and the `--s-*` scheme tokens. Once no public surface hard-codes a light colour, `html.site` opts into the dark scheme with `data-color-scheme="auto"`.
@@ -12,6 +13,7 @@
 **Tech Stack:** Next.js 16.3 (App Router, `cacheComponents`, `partialPrefetching`), React 19 canary as bundled by Next (`<ViewTransition>`), Tailwind CSS 4, satori and sharp for social cards, Vitest with Testing Library, and Playwright with `@next/playwright`.
 
 **Spec:** `docs/superpowers/specs/2026-09-23-inside-the-brackets-redesign-design.md`. Relevant sections:
+
 - §1 motion (Suspense reveal, same-route crossfade), dark scheme
 - §3 Landing sections 2–7, Other pages
 - §4 `llms.txt` and social cards
@@ -22,6 +24,7 @@
 **Series:** Plan 3 of 3. Plan 1 (foundations, hero, chrome) and Plan 2 (data layer, admin tags, Sessions, Projects) are complete and committed (`f7b531f..6d9bf46` on `new-landing-page`).
 
 **Deliberate deviations from the spec** (each checked against the codebase):
+
 - **⌘K palette (spec Phase 10, optional): not built.** After this plan removes the legacy activities carousel (2.1 KB gzip), home JS sits about 0.1 KB under its cap of 157,246 B. Any header trigger (about 0.5–0.8 KB gzip on every route) would break the budget again. The Session Log and Projects hubs already have search.
 - **Generated OG images for the home page and hubs (optional): not built.** The static `app/opengraph-image.png` is the official GDG chapter lockup, which is the brand's own asset.
 - **`homeTag`:** the landing's data sections read the shared read models, whose list tags refresh on every session or project write. Plan 2 made the same call for the hero counters.
@@ -97,41 +100,41 @@
 
 ## File Structure
 
-| File | Status | Responsibility |
-|---|---|---|
-| `lib/site/brand.ts` | create | `CAPSULE_HEX`, `hexToUnitRgb` — the one source of the capsule colours |
-| `lib/site/channels.ts` | create | Official channel URLs and the contact address |
-| `lib/site/members.ts` | create | `memberName`, `memberLinks` |
-| `lib/site/session-log.ts` | modify | `latestSessions` |
-| `lib/contents/site-copy.ts` | modify | `landingCopy` (EN/KO) |
-| `lib/contents/archive-copy.ts` | modify | `members` and `calendar` crumbs, `memberArchiveCopy` |
-| `app/components/site/reveal-suspense.tsx` | create | Suspense with slide-down/slide-up View Transitions |
-| `app/components/site/section-tag.tsx` | create | Decorative `<about />` style label |
-| `app/components/site/social-icons.tsx` | create | GitHub, LinkedIn and Instagram glyphs in `currentColor` |
-| `app/components/site/member-card.tsx` | create | One member: avatar or initials, name and links |
-| `app/components/site/page-transition.tsx` | modify | `PAGE_TRANSITIONS` incl. `generation-switch` → crossfade |
-| `app/components/site/generation-pager.tsx`, `generation-strip.tsx` | modify | Transition types; `member` base path |
-| `app/components/site/hub-breadcrumbs.tsx` | modify | `members` and `calendar` sections |
-| `app/components/site/button-link.tsx` | modify | `buttonClasses` for anchors that aren't `next/link` |
-| `app/components/site/not-found-view.tsx` | modify | Locale-neutral links, `lang="ko"` halves |
-| `app/(home)/[lang]/_components/home/{manifesto,pillar-glyph,programs,sc-funnel,parts,part-glyph,latest-log,featured-releases,join}.tsx` | create | Landing sections |
-| `app/(home)/[lang]/_components/home/bracket-{field-gl.ts,stage.tsx}` | modify | Tri-state readiness, chunk-failure catch, renderer fallback, buffer reuse |
-| `app/(home)/[lang]/page.tsx` | modify | The new landing composition |
-| `app/(home)/[lang]/member/page.tsx`, `member/[generation]/{page,loading}.tsx` | rewrite | Members |
-| `app/(home)/[lang]/calendar/{page,google-calendar}.tsx` | rewrite | Calendar |
-| `app/(home)/[lang]/{privacy-policy,terms-of-service}/page.tsx` | modify | Shared prose styles |
-| `app/(home)/[lang]/{session,project}/**/page.tsx` | modify | `RevealSuspense` |
-| `app/(home)/[lang]/layout.tsx`, `app/not-found.tsx` | modify | `data-color-scheme="auto"` |
-| `app/styles/site-home.css` | create | Landing styles |
-| `app/styles/site-content.css` | modify | Reveal and crossfade transitions, members, calendar, policies |
-| `app/styles/site-theme.css`, `site-chrome.css`, `site-hero.css` | modify | Overscroll surfaces, wordmark size, dark-scheme comment, sheet overlap |
-| `app/globals.css` | modify | Import `site-home.css`; drop legacy home CSS |
-| `lib/seo/social-image.tsx` | modify | Stage card with halftone brackets |
-| `app/llms.txt/route.ts` | modify | Refreshed site description |
-| `proxy.ts`, `app/components/site/bracket-poster.tsx` | modify | Use `CAPSULE_HEX` |
-| `app/components/footer.tsx` | modify | Use `CHANNELS` |
-| Legacy home sections, `generation-index-page`, `stage-button-group`, `generation-button-group`, `page-title`, `user-profile-card`, dead motion wrappers, `types/modal.d.ts` | delete | Replaced |
-| Tests | create/modify | Listed per task |
+| File                                                                                                                                                                        | Status        | Responsibility                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------- |
+| `lib/site/brand.ts`                                                                                                                                                         | create        | `CAPSULE_HEX`, `hexToUnitRgb`: the one source of the capsule colours      |
+| `lib/site/channels.ts`                                                                                                                                                      | create        | Official channel URLs and the contact address                             |
+| `lib/site/members.ts`                                                                                                                                                       | create        | `memberName`, `memberLinks`                                               |
+| `lib/site/session-log.ts`                                                                                                                                                   | modify        | `latestSessions`                                                          |
+| `lib/contents/site-copy.ts`                                                                                                                                                 | modify        | `landingCopy` (EN/KO)                                                     |
+| `lib/contents/archive-copy.ts`                                                                                                                                              | modify        | `members` and `calendar` crumbs, `memberArchiveCopy`                      |
+| `app/components/site/reveal-suspense.tsx`                                                                                                                                   | create        | Suspense with slide-down/slide-up View Transitions                        |
+| `app/components/site/section-tag.tsx`                                                                                                                                       | create        | Decorative `<about />` style label                                        |
+| `app/components/site/social-icons.tsx`                                                                                                                                      | create        | GitHub, LinkedIn and Instagram glyphs in `currentColor`                   |
+| `app/components/site/member-card.tsx`                                                                                                                                       | create        | One member: avatar or initials, name and links                            |
+| `app/components/site/page-transition.tsx`                                                                                                                                   | modify        | `PAGE_TRANSITIONS` incl. `generation-switch` → crossfade                  |
+| `app/components/site/generation-pager.tsx`, `generation-strip.tsx`                                                                                                          | modify        | Transition types; `member` base path                                      |
+| `app/components/site/hub-breadcrumbs.tsx`                                                                                                                                   | modify        | `members` and `calendar` sections                                         |
+| `app/components/site/button-link.tsx`                                                                                                                                       | modify        | `buttonClasses` for anchors that aren't `next/link`                       |
+| `app/components/site/not-found-view.tsx`                                                                                                                                    | modify        | Locale-neutral links, `lang="ko"` halves                                  |
+| `app/(home)/[lang]/_components/home/{manifesto,pillar-glyph,programs,sc-funnel,parts,part-glyph,latest-log,featured-releases,join}.tsx`                                     | create        | Landing sections                                                          |
+| `app/(home)/[lang]/_components/home/bracket-{field-gl.ts,stage.tsx}`                                                                                                        | modify        | Tri-state readiness, chunk-failure catch, renderer fallback, buffer reuse |
+| `app/(home)/[lang]/page.tsx`                                                                                                                                                | modify        | The new landing composition                                               |
+| `app/(home)/[lang]/member/page.tsx`, `member/[generation]/{page,loading}.tsx`                                                                                               | rewrite       | Members                                                                   |
+| `app/(home)/[lang]/calendar/{page,google-calendar}.tsx`                                                                                                                     | rewrite       | Calendar                                                                  |
+| `app/(home)/[lang]/{privacy-policy,terms-of-service}/page.tsx`                                                                                                              | modify        | Shared prose styles                                                       |
+| `app/(home)/[lang]/{session,project}/**/page.tsx`                                                                                                                           | modify        | `RevealSuspense`                                                          |
+| `app/(home)/[lang]/layout.tsx`, `app/not-found.tsx`                                                                                                                         | modify        | `data-color-scheme="auto"`                                                |
+| `app/styles/site-home.css`                                                                                                                                                  | create        | Landing styles                                                            |
+| `app/styles/site-content.css`                                                                                                                                               | modify        | Reveal and crossfade transitions, members, calendar, policies             |
+| `app/styles/site-theme.css`, `site-chrome.css`, `site-hero.css`                                                                                                             | modify        | Overscroll surfaces, wordmark size, dark-scheme comment, sheet overlap    |
+| `app/globals.css`                                                                                                                                                           | modify        | Import `site-home.css`; drop legacy home CSS                              |
+| `lib/seo/social-image.tsx`                                                                                                                                                  | modify        | Stage card with halftone brackets                                         |
+| `app/llms.txt/route.ts`                                                                                                                                                     | modify        | Refreshed site description                                                |
+| `proxy.ts`, `app/components/site/bracket-poster.tsx`                                                                                                                        | modify        | Use `CAPSULE_HEX`                                                         |
+| `app/components/footer.tsx`                                                                                                                                                 | modify        | Use `CHANNELS`                                                            |
+| Legacy home sections, `generation-index-page`, `stage-button-group`, `generation-button-group`, `page-title`, `user-profile-card`, dead motion wrappers, `types/modal.d.ts` | delete        | Replaced                                                                  |
+| Tests                                                                                                                                                                       | create/modify | Listed per task                                                           |
 
 ---
 
@@ -147,16 +150,18 @@
 ### Task 1: One source for the capsule colours
 
 **Files:**
+
 - Create: `lib/site/brand.ts`
 - Modify: `app/components/site/bracket-poster.tsx`, `proxy.ts`, `app/(home)/[lang]/_components/home/bracket-field-gl.ts`
 - Test: `tests/lib/site/brand.test.ts`
 
 **Interfaces:**
+
 - Produces from `@/lib/site/brand`:
   - `CAPSULE_HEX: Readonly<Record<CapsuleHue, string>>`
   - `hexToUnitRgb(hex: string): readonly [number, number, number]`
 
-- [ ] **Step 1: Write the failing test** — `tests/lib/site/brand.test.ts`:
+- [ ] **Step 1: Write the failing test**: `tests/lib/site/brand.test.ts`:
 
 ```ts
 import { readFileSync } from 'node:fs'
@@ -170,7 +175,10 @@ describe('capsule colours', () => {
   })
 
   it('matches the GDG palette tokens in the theme', () => {
-    const theme = readFileSync('app/styles/site-theme.css', 'utf8').toLowerCase()
+    const theme = readFileSync(
+      'app/styles/site-theme.css',
+      'utf8'
+    ).toLowerCase()
     for (const [hue, hex] of Object.entries(CAPSULE_HEX)) {
       expect(theme).toContain(`--color-g-${hue}: ${hex.toLowerCase()};`)
     }
@@ -180,7 +188,7 @@ describe('capsule colours', () => {
 
 - [ ] **Step 2: RED.** `pnpm vitest run tests/lib/site/brand.test.ts` → fails to resolve `@/lib/site/brand`.
 
-- [ ] **Step 3: Implement** — `lib/site/brand.ts`:
+- [ ] **Step 3: Implement**: `lib/site/brand.ts`:
 
 ```ts
 import type { CapsuleHue } from '@/lib/site/bracket-geometry'
@@ -201,11 +209,16 @@ export const CAPSULE_HEX: Readonly<Record<CapsuleHue, string>> = {
 export function hexToUnitRgb(hex: string): readonly [number, number, number] {
   const value = Number.parseInt(hex.replace('#', ''), 16)
   const unit = (channel: number) => Math.round((channel / 255) * 1000) / 1000
-  return [unit((value >> 16) & 255), unit((value >> 8) & 255), unit(value & 255)]
+  return [
+    unit((value >> 16) & 255),
+    unit((value >> 8) & 255),
+    unit(value & 255),
+  ]
 }
 ```
 
 Then use it everywhere:
+
 - **`bracket-poster.tsx`:** delete the `HUE_FILL` constant, import `CAPSULE_HEX` from `@/lib/site/brand`, and use `fill={CAPSULE_HEX[capsule.hue]}`.
 - **`proxy.ts`:** delete the `BRACKET_FILL` constant, add `import { CAPSULE_HEX } from '@/lib/site/brand'` after the `bracket-geometry` import, and use `fill="${CAPSULE_HEX[capsule.hue]}"` in `bracketSvg`.
 - **`bracket-field-gl.ts`:** replace the literal `CAPSULE_RGB` table with:
@@ -226,6 +239,7 @@ const CAPSULE_RGB = Object.fromEntries(
 ### Task 2: Suspense reveals and generation crossfades
 
 **Files:**
+
 - Create: `app/components/site/reveal-suspense.tsx`
 - Modify:
   - `app/components/site/page-transition.tsx`
@@ -238,6 +252,7 @@ const CAPSULE_RGB = Object.fromEntries(
 - Test: `tests/components/reveal-suspense.test.tsx`, `tests/components/site-primitives.test.tsx` (extend)
 
 **Interfaces:**
+
 - Produces:
   - `RevealSuspense({ fallback: ReactNode, children: ReactNode })`
   - `PAGE_TRANSITIONS` from `page-transition.tsx`
@@ -248,20 +263,20 @@ const CAPSULE_RGB = Object.fromEntries(
 - [ ] **Step 1: Expose transition types in tests.** In `vitest.setup.ts`, inside the `next/link` mock, delete `void transitionTypes` and pass the types into the anchor:
 
 ```ts
-    // Router-only props never reach the DOM; transition types surface as a
-    // data attribute so tests can assert how a navigation animates.
-    void prefetch
-    void replace
-    void scroll
-    return React.createElement(
-      'a',
-      {
-        href: typeof href === 'string' ? href : href?.pathname,
-        'data-transition-types': transitionTypes?.join(' '),
-        ...props,
-      },
-      children
-    )
+// Router-only props never reach the DOM; transition types surface as a
+// data attribute so tests can assert how a navigation animates.
+void prefetch
+void replace
+void scroll
+return React.createElement(
+  'a',
+  {
+    href: typeof href === 'string' ? href : href?.pathname,
+    'data-transition-types': transitionTypes?.join(' '),
+    ...props,
+  },
+  children
+)
 ```
 
 - [ ] **Step 2: Write the failing tests.**
@@ -301,16 +316,17 @@ describe('RevealSuspense', () => {
 ```
 
 In `tests/components/site-primitives.test.tsx`:
+
 - import `PAGE_TRANSITIONS` next to `PageTransition` (`import PageTransition, { PAGE_TRANSITIONS } from '@/app/components/site/page-transition'`)
 - extend `offers only the neighbouring generations that exist` with `expect(screen.getByRole('link', { name: /이전 기수/ })).toHaveAttribute('data-transition-types', 'generation-switch')`
 - extend `links generations with records and mutes empty ones` with `expect(current).toHaveAttribute('data-transition-types', 'nav-forward')`
 - add:
 
 ```tsx
-  it('crossfades when switching generations', () => {
-    expect(PAGE_TRANSITIONS['generation-switch']).toBe('crossfade')
-    expect(PAGE_TRANSITIONS.default).toBe('none')
-  })
+it('crossfades when switching generations', () => {
+  expect(PAGE_TRANSITIONS['generation-switch']).toBe('crossfade')
+  expect(PAGE_TRANSITIONS.default).toBe('none')
+})
 ```
 
 - [ ] **Step 3: RED.** `pnpm vitest run tests/components/reveal-suspense.test.tsx tests/components/site-primitives.test.tsx` → the reveal module does not resolve, `PAGE_TRANSITIONS` is undefined, and the pager and strip links carry `nav-back`, `nav-forward` or nothing.
@@ -387,6 +403,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
 ```
 
 In `generation-pager.tsx`:
+
 - Replace both `transitionTypes` values with `transitionTypes={['generation-switch']}`.
 - Replace the comment above the component with `/* Same page, another generation: links crossfade (PAGE_TRANSITIONS). Arrows are SVG icons, because arrow glyphs would pull Google Sans Flex's symbols subset. */`.
 - Widen `basePath` to `'session' | 'project' | 'member'`.
@@ -430,14 +447,14 @@ In `app/styles/site-content.css`, directly after the `::view-transition-new(.nav
 
 In each of these pages, import `RevealSuspense from '@/app/components/site/reveal-suspense'` and wrap the main content boundary. Keep `Suspense` imported where the breadcrumb skeleton still uses it; remove the import where it no longer does.
 
-| Page | Replace | With |
-|---|---|---|
-| `session/page.tsx` | `<Suspense fallback={<SessionHubFallback />}>…</Suspense>` | `<RevealSuspense fallback={<SessionHubFallback />}>…</RevealSuspense>` |
-| `project/page.tsx` | `<Suspense fallback={<ProjectGridFallback />}>…</Suspense>` | the same with `RevealSuspense` |
-| `session/[generation]/page.tsx` | `<Suspense fallback={<GenerationLogFallback />}>…</Suspense>` | the same with `RevealSuspense` |
-| `project/[generation]/page.tsx` | `<Suspense fallback={<GenerationGridFallback />}>…</Suspense>` | the same with `RevealSuspense` |
-| `session/[generation]/[sessionId]/page.tsx` | `<Suspense fallback={<SessionDetailLoading />}>…</Suspense>` | the same with `RevealSuspense` |
-| `project/[generation]/[projectId]/page.tsx` | `<Suspense fallback={<ProjectDetailLoading />}>…</Suspense>` | the same with `RevealSuspense` |
+| Page                                        | Replace                                                        | With                                                                   |
+| ------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `session/page.tsx`                          | `<Suspense fallback={<SessionHubFallback />}>…</Suspense>`     | `<RevealSuspense fallback={<SessionHubFallback />}>…</RevealSuspense>` |
+| `project/page.tsx`                          | `<Suspense fallback={<ProjectGridFallback />}>…</Suspense>`    | the same with `RevealSuspense`                                         |
+| `session/[generation]/page.tsx`             | `<Suspense fallback={<GenerationLogFallback />}>…</Suspense>`  | the same with `RevealSuspense`                                         |
+| `project/[generation]/page.tsx`             | `<Suspense fallback={<GenerationGridFallback />}>…</Suspense>` | the same with `RevealSuspense`                                         |
+| `session/[generation]/[sessionId]/page.tsx` | `<Suspense fallback={<SessionDetailLoading />}>…</Suspense>`   | the same with `RevealSuspense`                                         |
+| `project/[generation]/[projectId]/page.tsx` | `<Suspense fallback={<ProjectDetailLoading />}>…</Suspense>`   | the same with `RevealSuspense`                                         |
 
 - [ ] **Step 5: GREEN.** The Step 3 command passes. Then run `.superpowers/shared/e2e-prod.sh $W/t2-e2e.log tests/e2e/session-log.spec.ts tests/e2e/project-showcase.spec.ts tests/e2e/public-route-matrix.spec.ts`. Expected: all pass, including the 7 instant-navigation tests that run first.
 - [ ] **Step 6: Checkpoint.** `pnpm lint --max-warnings=0 && pnpm test:types && pnpm test`, then commit: "reveal streamed content and crossfade between generations".
@@ -447,6 +464,7 @@ In each of these pages, import `RevealSuspense from '@/app/components/site/revea
 ### Task 3: Landing copy, channels and section primitives
 
 **Files:**
+
 - Create:
   - `lib/site/channels.ts`
   - `app/components/site/section-tag.tsx`
@@ -458,6 +476,7 @@ In each of these pages, import `RevealSuspense from '@/app/components/site/revea
 - Test: `tests/lib/contents/landing-copy.test.ts`, `tests/components/section-tag.test.tsx`
 
 **Interfaces:**
+
 - Produces from `@/lib/site/channels`: `CHANNELS = { instagram, linkedin, chapter, source, email }`.
 - Produces from `@/lib/contents/site-copy`: the types `ProgramKey` and `LandingCopy`, and the value `landingCopy: Record<Locale, LandingCopy>` (shape below).
 - Produces `SectionTag({ children: string })`.
@@ -546,6 +565,7 @@ export const CHANNELS = {
 ```
 
 In `app/components/footer.tsx`:
+
 - delete the `EMAIL`, `INSTAGRAM_URL`, `LINKEDIN_URL`, `CHAPTER_URL` and `SOURCE_URL` constants
 - import `CHANNELS` from `@/lib/site/channels`
 - use `CHANNELS.instagram`, `CHANNELS.linkedin`, `mailto:${CHANNELS.email}`, `CHANNELS.chapter` and `CHANNELS.source`
@@ -714,8 +734,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
     parts: {
       tag: '<parts />',
       title: '6개 파트',
-      intro:
-        '모든 멤버는 파트에 속해 함께 공부하고, 워크숍을 열고, 만들어요.',
+      intro: '모든 멤버는 파트에 속해 함께 공부하고, 워크숍을 열고, 만들어요.',
       partLink: '{part} 세션',
     },
     log: {
@@ -863,15 +882,17 @@ In `app/globals.css`, add `@import './styles/site-home.css';` directly after the
 ### Task 4: `<about>` manifesto
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/manifesto.tsx`, `pillar-glyph.tsx`
 - Modify: `app/styles/site-home.css`
 - Test: `tests/components/manifesto.test.tsx`
 
 **Interfaces:**
-- Consumes: `landingCopy[lang].manifesto`, `SectionTag`, `CHANNELS.chapter`, `ExternalLink`, `GDGLogo`, `aboutSectionContents`.
-- Produces: `Manifesto({ lang })` — a `section` labelled by `#manifesto-title`.
 
-- [ ] **Step 1: Write the failing test** — `tests/components/manifesto.test.tsx`:
+- Consumes: `landingCopy[lang].manifesto`, `SectionTag`, `CHANNELS.chapter`, `ExternalLink`, `GDGLogo`, `aboutSectionContents`.
+- Produces: `Manifesto({ lang })`: a `section` labelled by `#manifesto-title`.
+
+- [ ] **Step 1: Write the failing test**: `tests/components/manifesto.test.tsx`:
 
 ```tsx
 import { describe, expect, it } from 'vitest'
@@ -882,7 +903,9 @@ import { landingCopy } from '@/lib/contents/site-copy'
 describe('Manifesto', () => {
   it('reads as one statement, with the introduction and the GDG aside', () => {
     const { container } = render(<Manifesto lang="en" />)
-    const section = screen.getByRole('region', { name: 'What is GDGoC Yonsei?' })
+    const section = screen.getByRole('region', {
+      name: 'What is GDGoC Yonsei?',
+    })
 
     expect(
       container.querySelector('.manifesto-statement')?.textContent?.trim()
@@ -942,14 +965,42 @@ export default function PillarGlyph({ kind }: { kind: PillarKind }) {
         <>
           <path d="M18 8 6 20l12 12" className="glyph-stroke-blue" />
           <path d="m46 8 12 12-12 12" className="glyph-stroke-green" />
-          <rect x="29" y="10" width="5" height="20" rx="2" className="glyph-caret" />
+          <rect
+            x="29"
+            y="10"
+            width="5"
+            height="20"
+            rx="2"
+            className="glyph-caret"
+          />
         </>
       )}
       {kind === 'growth' && (
         <>
-          <rect x="10" y="24" width="10" height="12" rx="3" className="glyph-bar" />
-          <rect x="27" y="16" width="10" height="20" rx="3" className="glyph-bar" />
-          <rect x="44" y="6" width="10" height="30" rx="3" className="glyph-bar" />
+          <rect
+            x="10"
+            y="24"
+            width="10"
+            height="12"
+            rx="3"
+            className="glyph-bar"
+          />
+          <rect
+            x="27"
+            y="16"
+            width="10"
+            height="20"
+            rx="3"
+            className="glyph-bar"
+          />
+          <rect
+            x="44"
+            y="6"
+            width="10"
+            height="30"
+            rx="3"
+            className="glyph-bar"
+          />
         </>
       )}
     </svg>
@@ -1258,15 +1309,17 @@ Append to `app/styles/site-home.css`:
 ### Task 5: `<programs>` sticker stack and the Solution Challenge funnel
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/programs.tsx`, `sc-funnel.tsx`
 - Modify: `app/styles/site-home.css`
 - Test: `tests/components/programs.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `landingCopy[lang].programs`, `landingCopy[lang].funnel`, `ProgramKey`, `activitySectionContents`, `Hue`.
 - Produces: `Programs({ lang })`, `ScFunnel({ lang })`.
 
-- [ ] **Step 1: Write the failing test** — `tests/components/programs.test.tsx`:
+- [ ] **Step 1: Write the failing test**: `tests/components/programs.test.tsx`:
 
 ```tsx
 import { describe, expect, it } from 'vitest'
@@ -1557,17 +1610,19 @@ Append to `app/styles/site-home.css`:
 ### Task 6: `<parts>` modules with generated glyphs
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/parts.tsx`, `part-glyph.tsx`
 - Modify: `app/styles/site-home.css`
 - Test: `tests/components/parts.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `landingCopy[lang].parts`, `partsSectionContent`, `partHue`, `fillTemplate`.
 - Produces:
   - `Parts({ lang })`
   - `PartGlyph({ kind: PartGlyphKind })`, with `PartGlyphKind = 'layout' | 'layers' | 'graph' | 'mesh' | 'curve' | 'rings'`
 
-- [ ] **Step 1: Write the failing test** — `tests/components/parts.test.tsx`:
+- [ ] **Step 1: Write the failing test**: `tests/components/parts.test.tsx`:
 
 ```tsx
 import { describe, expect, it } from 'vitest'
@@ -1580,10 +1635,9 @@ describe('Parts', () => {
     const items = screen.getAllByRole('listitem')
 
     expect(items).toHaveLength(6)
-    expect(screen.getByRole('link', { name: 'ML/AI sessions' })).toHaveAttribute(
-      'href',
-      '/en/session?part=ML%2FAI'
-    )
+    expect(
+      screen.getByRole('link', { name: 'ML/AI sessions' })
+    ).toHaveAttribute('href', '/en/session?part=ML%2FAI')
     expect(
       screen.getByText(/server and infrastructure development/)
     ).toBeInTheDocument()
@@ -1616,12 +1670,7 @@ describe('Parts', () => {
 import type { CSSProperties, ReactNode } from 'react'
 
 export type PartGlyphKind =
-  | 'layout'
-  | 'layers'
-  | 'graph'
-  | 'mesh'
-  | 'curve'
-  | 'rings'
+  'layout' | 'layers' | 'graph' | 'mesh' | 'curve' | 'rings'
 
 const NODES: ReadonlyArray<readonly [number, number]> = [
   [18, 36],
@@ -1636,8 +1685,22 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
     <>
       <rect x="6" y="6" width="108" height="12" rx="4" className="pg-soft" />
       <rect x="6" y="24" width="32" height="42" rx="4" className="pg-accent" />
-      <rect x="44" y="24" width="70" height="18" rx="4" className="pg-soft pg-swap-a" />
-      <rect x="44" y="48" width="70" height="18" rx="4" className="pg-soft pg-swap-b" />
+      <rect
+        x="44"
+        y="24"
+        width="70"
+        height="18"
+        rx="4"
+        className="pg-soft pg-swap-a"
+      />
+      <rect
+        x="44"
+        y="48"
+        width="70"
+        height="18"
+        rx="4"
+        className="pg-soft pg-swap-b"
+      />
     </>
   ),
   layers: (
@@ -1649,7 +1712,10 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
   ),
   graph: (
     <>
-      <path d="M18 36 50 14M18 36 50 58M50 14 84 36M50 58 84 36M84 36 104 18" className="pg-line" />
+      <path
+        d="M18 36 50 14M18 36 50 58M50 14 84 36M50 58 84 36M84 36 104 18"
+        className="pg-line"
+      />
       {NODES.map(([cx, cy], index) => (
         <circle
           key={index}
@@ -1664,7 +1730,10 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
   ),
   mesh: (
     <g className="pg-mesh">
-      <path d="M10 14h100M10 36h100M10 58h100M20 6v60M46 6v60M72 6v60M98 6v60" className="pg-line" />
+      <path
+        d="M10 14h100M10 36h100M10 58h100M20 6v60M46 6v60M72 6v60M98 6v60"
+        className="pg-line"
+      />
       <circle cx="46" cy="36" r="5" className="pg-accent" />
       <circle cx="72" cy="14" r="5" className="pg-accent" />
       <circle cx="98" cy="58" r="5" className="pg-accent" />
@@ -1675,7 +1744,11 @@ const GLYPHS: Record<PartGlyphKind, ReactNode> = {
       <path d="M12 60 40 8M108 12 80 64" className="pg-line" />
       <rect x="36" y="4" width="8" height="8" className="pg-soft" />
       <rect x="76" y="60" width="8" height="8" className="pg-soft" />
-      <path d="M12 60C40 8 80 64 108 12" pathLength={1} className="pg-stroke pg-draw" />
+      <path
+        d="M12 60C40 8 80 64 108 12"
+        pathLength={1}
+        className="pg-stroke pg-draw"
+      />
       <circle cx="12" cy="60" r="5" className="pg-accent" />
       <circle cx="108" cy="12" r="5" className="pg-accent" />
     </>
@@ -1957,8 +2030,7 @@ Append to `app/styles/site-home.css`:
   }
 
   .part-module:is(:hover, :focus-within) .pg-ring {
-    animation: pg-ring 1400ms var(--ease-out) calc(var(--n) * 180ms)
-      infinite;
+    animation: pg-ring 1400ms var(--ease-out) calc(var(--n) * 180ms) infinite;
   }
 }
 
@@ -1999,11 +2071,13 @@ Append to `app/styles/site-home.css`:
 ### Task 7: `<log>` and `<releases>` from the read models
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/latest-log.tsx`, `featured-releases.tsx`
 - Modify: `lib/site/session-log.ts` (add `latestSessions`)
 - Test: `tests/lib/site/session-log.test.ts` (append), `tests/components/home-data-sections.test.tsx`
 
 **Interfaces:**
+
 - Consumes:
   - `getSessionArchive`, `getCachedSessionVisibilityBucket`, `getProjectShowcase`
   - `sortShowcase`, `SessionRow`, `ProjectCard`, `EmptyState`, `RevealSuspense`, `SectionTag`
@@ -2053,7 +2127,9 @@ vi.mock('@/lib/server/queries/public/projects', () => ({
   getProjectShowcase: mockGetProjectShowcase,
 }))
 vi.mock('@/lib/server/cache/session-visibility', () => ({
-  getCachedSessionVisibilityBucket: vi.fn(async () => '2026-01-01T00:00:00.000Z'),
+  getCachedSessionVisibilityBucket: vi.fn(
+    async () => '2026-01-01T00:00:00.000Z'
+  ),
 }))
 
 import { LatestLogList } from '@/app/(home)/[lang]/_components/home/latest-log'
@@ -2212,7 +2288,11 @@ export async function LatestLogList({ lang }: { lang: Locale }) {
 
 function LatestLogSkeleton() {
   return (
-    <div role="status" aria-label="Loading sessions" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading sessions"
+      className="archive-skeleton"
+    >
       {Array.from({ length: LATEST_COUNT }, (_, index) => (
         <span key={index} className="skeleton-bar h-20 w-full" />
       ))}
@@ -2292,7 +2372,11 @@ export async function FeaturedReleasesList({ lang }: { lang: Locale }) {
 
 function ReleasesSkeleton() {
   return (
-    <div role="status" aria-label="Loading projects" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading projects"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar aspect-[16/7] w-full rounded-3xl" />
       <span className="skeleton-bar h-64 w-full rounded-3xl" />
     </div>
@@ -2337,6 +2421,7 @@ export default function FeaturedReleases({ lang }: { lang: Locale }) {
 ### Task 8: `<join>` bookend and the new landing
 
 **Files:**
+
 - Create: `app/(home)/[lang]/_components/home/join.tsx`, `tests/e2e/home.spec.ts`
 - Modify:
   - `app/(home)/[lang]/page.tsx`
@@ -2348,6 +2433,7 @@ export default function FeaturedReleases({ lang }: { lang: Locale }) {
 - Test: `tests/components/join.test.tsx`, `tests/e2e/home.spec.ts`
 
 **Interfaces:**
+
 - Consumes: all home sections (Tasks 4–7), `BracketPoster`, `ButtonLink`, `ExternalLink`, `CHANNELS`, `landingCopy[lang].join`.
 - Produces:
   - `Join({ lang })`
@@ -2392,7 +2478,9 @@ describe('Join', () => {
 import { expect, test } from '@playwright/test'
 
 test.describe('home page', () => {
-  test('tells the story from the hero to the join bookend', async ({ page }) => {
+  test('tells the story from the hero to the join bookend', async ({
+    page,
+  }) => {
     await page.goto('/en', { waitUntil: 'domcontentloaded' })
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
@@ -2684,6 +2772,7 @@ Append to `app/styles/site-home.css`:
 In `app/styles/site-hero.css`, change the `.hero-foot` padding from `padding: 0 1rem 1.75rem;` to `padding: 0 1rem 3.5rem;`, so the sheet's overlap never covers the meta strip or the cue.
 
 In `app/(home)/[lang]/page.tsx`:
+
 - Replace the three legacy imports (`AboutPage`, `ActivitiesPage`, `PartsPage`) with:
 
 ```tsx
@@ -2744,6 +2833,7 @@ In `tests/e2e/public-flows.spec.ts`, delete the `activity cards move with the pr
 ### Task 9: Members
 
 **Files:**
+
 - Create:
   - `lib/site/members.ts`
   - `app/components/site/social-icons.tsx`, `member-card.tsx`
@@ -2758,6 +2848,7 @@ In `tests/e2e/public-flows.spec.ts`, delete the `activity cards move with the pr
 - Test: `tests/lib/site/members.test.ts`, `tests/components/member-card.test.tsx`
 
 **Interfaces:**
+
 - Consumes:
   - `getMembersByGeneration`, `getGenerationSummaries`
   - `GenerationPager` (base path `member`), `generationNeighbors`
@@ -2802,9 +2893,9 @@ describe('memberName', () => {
   })
 
   it('falls back to the username when no real name is set', () => {
-    expect(memberName(member({ firstName: null, firstNameKo: null }), 'en')).toBe(
-      'minji-kim'
-    )
+    expect(
+      memberName(member({ firstName: null, firstNameKo: null }), 'en')
+    ).toBe('minji-kim')
   })
 })
 
@@ -2867,13 +2958,12 @@ describe('MemberCard', () => {
 
     expect(container.querySelector('img')).toBeNull()
     expect(screen.getByText('KM')).toHaveAttribute('aria-hidden', 'true')
-    expect(screen.getByRole('link', { name: 'GitHub · Kim Minji' })).toHaveAttribute(
-      'rel',
-      'noreferrer noopener'
-    )
-    expect(screen.getByRole('link', { name: 'Email · Kim Minji' })).not.toHaveAttribute(
-      'target'
-    )
+    expect(
+      screen.getByRole('link', { name: 'GitHub · Kim Minji' })
+    ).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(
+      screen.getByRole('link', { name: 'Email · Kim Minji' })
+    ).not.toHaveAttribute('target')
   })
 
   it('uses a decorative photo next to the Korean name', () => {
@@ -2931,7 +3021,12 @@ export function memberName(user: MemberProfile, lang: Locale): string {
       true
     )
   }
-  return formatUserName(user.name, user.firstName, user.lastName, user.isForeigner)
+  return formatUserName(
+    user.name,
+    user.firstName,
+    user.lastName,
+    user.isForeigner
+  )
 }
 
 export type MemberLinkKind = 'email' | 'linkedin' | 'instagram' | 'github'
@@ -2949,7 +3044,10 @@ export function memberLinks(user: MemberProfile): MemberLink[] {
       .replace(/^https?:\/\//, '')
       .replace(/^(www\.)?linkedin\.com\/in\//, '')
       .replace(/\/+$/, '')
-    links.push({ kind: 'linkedin', href: `https://www.linkedin.com/in/${handle}` })
+    links.push({
+      kind: 'linkedin',
+      href: `https://www.linkedin.com/in/${handle}`,
+    })
   }
   if (user.instagramId) {
     links.push({
@@ -2968,6 +3066,7 @@ export function memberLinks(user: MemberProfile): MemberLink[] {
 ```
 
 In `lib/contents/archive-copy.ts`:
+
 - Add `members: string` to `ArchiveCommonCopy`, with the values `members: 'Members'` in `en` and `members: '구성원'` in `ko`.
 - Append:
 
@@ -3042,7 +3141,13 @@ type IconProps = SVGProps<SVGSVGElement>
 
 export function GithubIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
       <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.11 3.06.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" />
     </svg>
   )
@@ -3050,7 +3155,13 @@ export function GithubIcon(props: IconProps) {
 
 export function LinkedInIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
       <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z" />
     </svg>
   )
@@ -3058,7 +3169,15 @@ export function LinkedInIcon(props: IconProps) {
 
 export function InstagramIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true" focusable="false" {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
       <rect x="3" y="3" width="18" height="18" rx="5" />
       <circle cx="12" cy="12" r="4.2" />
       <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
@@ -3220,7 +3339,9 @@ export default function MemberIndex({ params }: Props) {
     <PageTransition>
       <div className="site-page" data-testid="member-directory-shell">
         <Suspense
-          fallback={<div aria-hidden="true" className="site-breadcrumbs-skeleton" />}
+          fallback={
+            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
+          }
         >
           <HubBreadcrumbs params={params} section="members" />
         </Suspense>
@@ -3241,7 +3362,11 @@ export default function MemberIndex({ params }: Props) {
 
 function MemberHubSkeleton() {
   return (
-    <div role="status" aria-label="Loading generations" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading generations"
+      className="archive-skeleton"
+    >
       {Array.from({ length: 4 }, (_, index) => (
         <span key={index} className="skeleton-bar h-28 w-full rounded-3xl" />
       ))}
@@ -3297,10 +3422,14 @@ async function MemberHubContent({ params }: Props) {
             >
               <span className="member-generation-name">{generation.name}</span>
               <span className="member-generation-dates">
-                <time dateTime={generation.startDate}>{generation.startDate}</time>
+                <time dateTime={generation.startDate}>
+                  {generation.startDate}
+                </time>
                 <span aria-hidden="true">–</span>
                 {generation.endDate ? (
-                  <time dateTime={generation.endDate}>{generation.endDate}</time>
+                  <time dateTime={generation.endDate}>
+                    {generation.endDate}
+                  </time>
                 ) : (
                   <span className="member-generation-now">{copy.present}</span>
                 )}
@@ -3439,7 +3568,11 @@ export default async function MembersPage({ params }: Props) {
 
 function MemberDirectorySkeleton() {
   return (
-    <div role="status" aria-label="Loading members" className="archive-skeleton">
+    <div
+      role="status"
+      aria-label="Loading members"
+      className="archive-skeleton"
+    >
       <span className="skeleton-bar h-10 w-56 max-w-full" />
       {Array.from({ length: 6 }, (_, index) => (
         <span key={index} className="skeleton-bar h-20 w-full" />
@@ -3486,7 +3619,11 @@ async function MemberDirectory({
               {part.name}
             </h2>
             <span className="member-part-count">
-              {countLabel(part.usersToParts.length, copy.countOne, copy.countMany)}
+              {countLabel(
+                part.usersToParts.length,
+                copy.countOne,
+                copy.countMany
+              )}
             </span>
           </div>
           {part.usersToParts.length === 0 ? (
@@ -3534,211 +3671,211 @@ export default function MemberGenerationLoading() {
 Append to the `@layer components` block of `app/styles/site-content.css`:
 
 ```css
-  /* ── Members ───────────────────────────────────────────────── */
+/* ── Members ───────────────────────────────────────────────── */
+.member-generations {
+  margin-top: 2rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
   .member-generations {
-    margin-top: 2rem;
-    display: grid;
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  @media (min-width: 640px) {
-    .member-generations {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
+.member-generation {
+  display: flex;
+  min-height: 7rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--s-rule);
+  border-radius: 1.5rem;
+  background-color: var(--s-sheet);
+  padding: 1.25rem 1.5rem;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
 
-  .member-generation {
-    display: flex;
-    min-height: 7rem;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1rem;
-    border: 1px solid var(--s-rule);
-    border-radius: 1.5rem;
-    background-color: var(--s-sheet);
-    padding: 1.25rem 1.5rem;
-    transition: border-color var(--dur-fast) var(--ease-out);
-  }
+.member-generation-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+  font-variation-settings: 'ROND' 100;
+}
 
-  .member-generation-name {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    overflow-wrap: anywhere;
-    font-variation-settings: 'ROND' 100;
-  }
+.member-generation-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  color: var(--s-fg-subtle);
+}
 
-  .member-generation-dates {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.375rem;
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
-    color: var(--s-fg-subtle);
-  }
+.member-generation-now {
+  border-radius: 9999px;
+  background-color: var(--s-green-soft);
+  padding: 0.125rem 0.625rem;
+  font-weight: 600;
+  color: var(--s-green-ink);
+}
 
-  .member-generation-now {
-    border-radius: 9999px;
-    background-color: var(--s-green-soft);
-    padding: 0.125rem 0.625rem;
-    font-weight: 600;
-    color: var(--s-green-ink);
-  }
+.member-directory {
+  margin-top: 2.5rem;
+  display: grid;
+  gap: 3rem;
+}
 
-  .member-directory {
-    margin-top: 2.5rem;
-    display: grid;
-    gap: 3rem;
-  }
+.member-part {
+  --hue: var(--s-rule);
+}
 
-  .member-part {
-    --hue: var(--s-rule);
-  }
+.member-part[data-hue='blue'] {
+  --hue: var(--color-g-blue);
+}
 
-  .member-part[data-hue='blue'] {
-    --hue: var(--color-g-blue);
-  }
+.member-part[data-hue='sky'] {
+  --hue: var(--color-g-sky);
+}
 
-  .member-part[data-hue='sky'] {
-    --hue: var(--color-g-sky);
-  }
+.member-part[data-hue='green'] {
+  --hue: var(--color-g-green);
+}
 
-  .member-part[data-hue='green'] {
-    --hue: var(--color-g-green);
-  }
+.member-part[data-hue='yellow'] {
+  --hue: var(--color-g-yellow);
+}
 
-  .member-part[data-hue='yellow'] {
-    --hue: var(--color-g-yellow);
-  }
+.member-part[data-hue='pink'] {
+  --hue: var(--color-g-pink);
+}
 
-  .member-part[data-hue='pink'] {
-    --hue: var(--color-g-pink);
-  }
+.member-part[data-hue='red'] {
+  --hue: var(--color-g-red);
+}
 
-  .member-part[data-hue='red'] {
-    --hue: var(--color-g-red);
-  }
+.member-part-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  border-top: 3px solid var(--hue);
+  padding-top: 1rem;
+}
 
-  .member-part-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.5rem 1rem;
-    border-top: 3px solid var(--hue);
-    padding-top: 1rem;
-  }
+.member-part-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  font-variation-settings: 'ROND' 100;
+}
 
-  .member-part-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    overflow-wrap: anywhere;
-    font-variation-settings: 'ROND' 100;
-  }
+.member-part-count {
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+  color: var(--s-fg-subtle);
+}
 
-  .member-part-count {
-    font-family: var(--font-code);
-    font-size: 0.8125rem;
-    color: var(--s-fg-subtle);
-  }
+.member-part-empty {
+  margin-top: 1rem;
+  color: var(--s-fg-muted);
+}
 
-  .member-part-empty {
-    margin-top: 1rem;
-    color: var(--s-fg-muted);
-  }
+.member-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
 
+@media (min-width: 640px) {
   .member-grid {
-    margin-top: 1.25rem;
-    display: grid;
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  @media (min-width: 640px) {
-    .member-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+@media (min-width: 1024px) {
+  .member-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
-  @media (min-width: 1024px) {
-    .member-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
+.member-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.875rem;
+  border: 1px solid var(--s-rule);
+  border-radius: 1.25rem;
+  background-color: var(--s-sheet);
+  padding: 0.875rem 1rem;
+}
 
-  .member-card {
-    display: flex;
-    min-width: 0;
-    align-items: center;
-    gap: 0.875rem;
-    border: 1px solid var(--s-rule);
-    border-radius: 1.25rem;
-    background-color: var(--s-sheet);
-    padding: 0.875rem 1rem;
-  }
+.member-avatar {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: var(--s-sheet-sunken);
+  font-weight: 700;
+  color: var(--s-fg-muted);
+}
 
-  .member-avatar {
-    display: grid;
-    width: 3.5rem;
-    height: 3.5rem;
-    flex: none;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 9999px;
-    background-color: var(--s-sheet-sunken);
-    font-weight: 700;
-    color: var(--s-fg-muted);
-  }
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .member-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+.member-main {
+  display: grid;
+  min-width: 0;
+  gap: 0.375rem;
+}
 
-  .member-main {
-    display: grid;
-    min-width: 0;
-    gap: 0.375rem;
-  }
+.member-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
 
-  .member-name {
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
+.member-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
 
-  .member-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .member-link {
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    place-items: center;
-    border-radius: 9999px;
-    color: var(--s-fg-muted);
-    transition:
-      background-color var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out);
-  }
+.member-link {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 9999px;
+  color: var(--s-fg-muted);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
 ```
 
 Inside the existing `@media (hover: hover)` block at the end of the file, add:
 
 ```css
-  a.member-generation:hover {
-    border-color: var(--s-fg-subtle);
-  }
+a.member-generation:hover {
+  border-color: var(--s-fg-subtle);
+}
 
-  .member-link:hover {
-    background-color: var(--s-sheet-sunken);
-    color: var(--s-fg);
-  }
+.member-link:hover {
+  background-color: var(--s-sheet-sunken);
+  color: var(--s-fg);
+}
 ```
 
 Delete the replaced files:
@@ -3749,6 +3886,7 @@ git rm "app/(home)/[lang]/member/[generation]/user-profile-card.tsx" \
 ```
 
 Sharpen the member contract in the instant checks:
+
 - In `tests/e2e/instant-navigation.spec.ts`, inside `member index to a generation is prefetched for a likely navigation`, replace `page.getByRole('heading', { name: 'Members' })` with `page.getByRole('heading', { level: 1, name: \`${seededData.generationName} Members\` })`.
 - In `scripts/verify-instant-navigation.mjs`, replace the member assertion's locator with `page.getByRole('heading', { level: 1, name: /Members$/ })`.
 
@@ -3792,7 +3930,9 @@ test.describe('members', () => {
   test('fits a 320px screen without sideways scrolling', async ({ page }) => {
     const seeded = await readSeededData()
     await page.setViewportSize({ width: 320, height: 640 })
-    await page.goto(`/ko/member/${seeded.generationName}`, { waitUntil: 'load' })
+    await page.goto(`/ko/member/${seeded.generationName}`, {
+      waitUntil: 'load',
+    })
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
     expect(
@@ -3816,6 +3956,7 @@ test.describe('members', () => {
 ### Task 10: Calendar, policy pages and the last legacy components
 
 **Files:**
+
 - Rewrite: `app/(home)/[lang]/calendar/page.tsx`, `calendar/google-calendar.tsx`
 - Modify:
   - `app/(home)/[lang]/privacy-policy/page.tsx`, `terms-of-service/page.tsx`
@@ -3827,6 +3968,7 @@ test.describe('members', () => {
 - Test: `tests/components/policy-pages.test.tsx`, `tests/components/calendar-page.test.tsx`
 
 **Interfaces:**
+
 - Produces:
   - `CALENDAR_EMBED_URL` from `google-calendar.tsx`
   - `archiveCommonCopy[lang].calendar`
@@ -3881,9 +4023,10 @@ describe('CalendarPage', () => {
   it('frames the embed and offers the calendar in a new tab', () => {
     render(<CalendarPage params={Promise.resolve({ lang: 'en' })} />)
 
-    expect(
-      screen.getByTitle('GDGoC Yonsei Google Calendar')
-    ).toHaveAttribute('src', CALENDAR_EMBED_URL)
+    expect(screen.getByTitle('GDGoC Yonsei Google Calendar')).toHaveAttribute(
+      'src',
+      CALENDAR_EMBED_URL
+    )
     expect(
       screen.getByRole('link', { name: /Open in Google Calendar/ })
     ).toHaveAttribute('target', '_blank')
@@ -3972,7 +4115,9 @@ export default function CalendarPage({ params }: Props) {
     <PageTransition>
       <div className="site-page">
         <Suspense
-          fallback={<div aria-hidden="true" className="site-breadcrumbs-skeleton" />}
+          fallback={
+            <div aria-hidden="true" className="site-breadcrumbs-skeleton" />
+          }
         >
           <HubBreadcrumbs params={params} section="calendar" />
         </Suspense>
@@ -4000,52 +4145,52 @@ export default function CalendarPage({ params }: Props) {
 Append to the components layer of `site-content.css`:
 
 ```css
-  /* ── Calendar and policies ─────────────────────────────────── */
-  .calendar-frame {
-    margin-top: 2rem;
-    overflow: hidden;
-    border: 1px solid var(--s-rule);
-    border-radius: 1.75rem;
-    background-color: var(--s-sheet);
-  }
+/* ── Calendar and policies ─────────────────────────────────── */
+.calendar-frame {
+  margin-top: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--s-rule);
+  border-radius: 1.75rem;
+  background-color: var(--s-sheet);
+}
 
+.calendar-embed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  /* Google's embed is always light; say so, so it isn't inverted. */
+  color-scheme: light;
+}
+
+@media (min-width: 768px) {
   .calendar-embed {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1;
-    border: 0;
-    /* Google's embed is always light; say so, so it isn't inverted. */
-    color-scheme: light;
+    aspect-ratio: 3 / 2;
   }
+}
 
-  @media (min-width: 768px) {
-    .calendar-embed {
-      aspect-ratio: 3 / 2;
-    }
-  }
+.calendar-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  color: var(--s-blue-ink);
+}
 
-  .calendar-open {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-weight: 600;
-    color: var(--s-blue-ink);
-  }
+.policy-doc {
+  max-width: 46rem;
+}
 
-  .policy-doc {
-    max-width: 46rem;
-  }
+.policy-doc h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.03em;
+  font-variation-settings: 'ROND' 100;
+}
 
-  .policy-doc h1 {
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3rem);
-    letter-spacing: -0.03em;
-    font-variation-settings: 'ROND' 100;
-  }
-
-  .policy-doc [id] {
-    scroll-margin-top: calc(var(--site-header-offset) + 1rem);
-  }
+.policy-doc [id] {
+  scroll-margin-top: calc(var(--site-header-offset) + 1rem);
+}
 ```
 
 - [ ] **Step 4: Restyle the policy pages.** Run this script from the repository root. It asserts every anchor, so a mismatch stops it:
@@ -4122,10 +4267,12 @@ In `app/globals.css`, for each of `content-auto-section`, `interactive-card` and
 ### Task 11: Social cards in the new identity
 
 **Files:**
+
 - Modify: `lib/seo/social-image.tsx`
 - Test: `tests/lib/social-image-renderer.test.ts` (append)
 
 **Interfaces:**
+
 - Consumes: `CAPSULE_HEX`, `bracketCapsulesInViewBox`, `capsulePath`, `BRACKET_VIEWBOX`.
 - Produces: the same `createSocialImageResponse(content)`, now drawing a stage card:
   - `#1E1E1E` background, with halftone brackets when there's no photo
@@ -4135,39 +4282,39 @@ In `app/globals.css`, for each of `content-auto-section`, `interactive-card` and
 - [ ] **Step 1: Write the failing test.** Append inside `describe('social image renderer')`:
 
 ```ts
-  it('draws fallback cards on the GDG stage with halftone brackets', async () => {
-    const response = await createSocialImageResponse({
-      title: 'Stage card',
-      generation: '25-26',
-      category: 'Tech Talk',
-      date: 'Nov 4, 2025',
-      representativeImage: null,
-      version: 'stage-card',
-      locale: 'en',
-    })
-    const { data, info } = await sharp(Buffer.from(await response.arrayBuffer()))
-      .raw()
-      .toBuffer({ resolveWithObject: true })
-    const pixel = (x: number, y: number) => {
-      const index = (y * info.width + x) * info.channels
-      return [data[index]!, data[index + 1]!, data[index + 2]!] as const
-    }
-
-    // A neutral near-black corner, not the old navy.
-    const [r, g, b] = pixel(8, 8)
-    expect(Math.max(r, g, b)).toBeLessThan(48)
-    expect(Math.abs(b - r)).toBeLessThan(10)
-
-    // Capsule colours show through on the right-hand side.
-    let colourful = 0
-    for (let x = 700; x < 1190; x += 7) {
-      for (let y = 100; y < 560; y += 7) {
-        const [pr, pg, pb] = pixel(x, y)
-        if (Math.max(pr, pg, pb) - Math.min(pr, pg, pb) > 80) colourful += 1
-      }
-    }
-    expect(colourful).toBeGreaterThan(50)
+it('draws fallback cards on the GDG stage with halftone brackets', async () => {
+  const response = await createSocialImageResponse({
+    title: 'Stage card',
+    generation: '25-26',
+    category: 'Tech Talk',
+    date: 'Nov 4, 2025',
+    representativeImage: null,
+    version: 'stage-card',
+    locale: 'en',
   })
+  const { data, info } = await sharp(Buffer.from(await response.arrayBuffer()))
+    .raw()
+    .toBuffer({ resolveWithObject: true })
+  const pixel = (x: number, y: number) => {
+    const index = (y * info.width + x) * info.channels
+    return [data[index]!, data[index + 1]!, data[index + 2]!] as const
+  }
+
+  // A neutral near-black corner, not the old navy.
+  const [r, g, b] = pixel(8, 8)
+  expect(Math.max(r, g, b)).toBeLessThan(48)
+  expect(Math.abs(b - r)).toBeLessThan(10)
+
+  // Capsule colours show through on the right-hand side.
+  let colourful = 0
+  for (let x = 700; x < 1190; x += 7) {
+    for (let y = 100; y < 560; y += 7) {
+      const [pr, pg, pb] = pixel(x, y)
+      if (Math.max(pr, pg, pb) - Math.min(pr, pg, pb) > 80) colourful += 1
+    }
+  }
+  expect(colourful).toBeGreaterThan(50)
+})
 ```
 
 - [ ] **Step 2: RED.** `pnpm vitest run tests/lib/social-image-renderer.test.ts` → the corner is navy (`#10243e`, so `b - r` is about 46).
@@ -4253,7 +4400,10 @@ function HalftoneBrackets() {
                 fill={CAPSULE_HEX[capsule.hue]}
                 fillOpacity={0.16}
               />
-              <path d={capsulePath(capsule)} fill={`url(#dots-${capsule.hue})`} />
+              <path
+                d={capsulePath(capsule)}
+                fill={`url(#dots-${capsule.hue})`}
+              />
             </g>
           ))}
         </g>
@@ -4264,6 +4414,7 @@ function HalftoneBrackets() {
 ```
 
 In `renderSocialImageJpeg`, change the card:
+
 - Root `div`: `color: ON_STAGE` and `background: STAGE`.
 - Replace `<BrandedFallback />` with `<HalftoneBrackets />`.
 - The overlay's `background` becomes:
@@ -4277,25 +4428,25 @@ In `renderSocialImageJpeg`, change the card:
 - The chip moves to the top left:
 
 ```tsx
-      <div
-        style={{
-          position: 'absolute',
-          top: 48,
-          left: 58,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 14,
-          padding: '12px 20px',
-          borderRadius: 999,
-          background: STAGE_RAISED,
-          color: ON_STAGE,
-          fontSize: 25,
-          fontWeight: 700,
-        }}
-      >
-        <BracketsMark height={24} />
-        <span>GDGoC Yonsei</span>
-      </div>
+<div
+  style={{
+    position: 'absolute',
+    top: 48,
+    left: 58,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 14,
+    padding: '12px 20px',
+    borderRadius: 999,
+    background: STAGE_RAISED,
+    color: ON_STAGE,
+    fontSize: 25,
+    fontWeight: 700,
+  }}
+>
+  <BracketsMark height={24} />
+  <span>GDGoC Yonsei</span>
+</div>
 ```
 
 - Meta line colour: `color: ON_STAGE_MUTED`. Title colour: `color: ON_STAGE`.
@@ -4308,13 +4459,15 @@ In `renderSocialImageJpeg`, change the card:
 ### Task 12: Refresh `llms.txt`
 
 **Files:**
+
 - Modify: `app/llms.txt/route.ts`
 - Test: `tests/app/llms-route.test.ts`
 
 **Interfaces:**
+
 - Consumes: `CHANNELS`, `partsSectionContent`, `SESSION_CATEGORIES`, `getSiteUrl`.
 
-- [ ] **Step 1: Write the failing test** — `tests/app/llms-route.test.ts`:
+- [ ] **Step 1: Write the failing test**: `tests/app/llms-route.test.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -4325,7 +4478,9 @@ describe('llms.txt', () => {
     const response = GET()
     const text = await response.text()
 
-    expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8')
+    expect(response.headers.get('content-type')).toBe(
+      'text/plain; charset=utf-8'
+    )
     for (const expected of [
       'Session Log',
       'https://gdgoc.yonsei.ac.kr/en/session',
@@ -4413,10 +4568,12 @@ export function GET() {
 ### Task 13: WebGL field robustness (Plan 1 review minors #4, #5, #6, #13)
 
 **Files:**
+
 - Modify: `app/(home)/[lang]/_components/home/bracket-field-gl.ts`, `bracket-stage.tsx`
 - Test: `tests/lib/site/bracket-field-gl.test.ts`, `tests/components/bracket-stage.test.tsx`
 
 **Interfaces:**
+
 - Produces:
   - `FieldStatus = 'pending' | 'ready' | 'failed'`
   - `BracketField.status(): FieldStatus`, replacing `isReady()`
@@ -4464,52 +4621,53 @@ describe('createBracketField renderer check', () => {
 Inside `describe('mountBracketField')`, add:
 
 ```ts
-  it('gives up and restores the poster when the shader fails to link', () => {
-    const { hero, canvas } = heroFixture()
-    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
-    vi.stubGlobal('cancelAnimationFrame', vi.fn())
-    const frames: FrameRequestCallback[] = []
-    vi.stubGlobal(
-      'requestAnimationFrame',
-      vi.fn((callback: FrameRequestCallback) => frames.push(callback))
-    )
-    const field = { ...fakeField(), status: () => 'failed' as const }
-    mountBracketField(canvas, hero, () => field)
+it('gives up and restores the poster when the shader fails to link', () => {
+  const { hero, canvas } = heroFixture()
+  vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+  vi.stubGlobal('cancelAnimationFrame', vi.fn())
+  const frames: FrameRequestCallback[] = []
+  vi.stubGlobal(
+    'requestAnimationFrame',
+    vi.fn((callback: FrameRequestCallback) => frames.push(callback))
+  )
+  const field = { ...fakeField(), status: () => 'failed' as const }
+  mountBracketField(canvas, hero, () => field)
 
-    frames.shift()!(16)
+  frames.shift()!(16)
 
-    expect(field.dispose).toHaveBeenCalledTimes(1)
-    expect(frames).toHaveLength(0)
-  })
+  expect(field.dispose).toHaveBeenCalledTimes(1)
+  expect(frames).toHaveLength(0)
+})
 ```
 
 In `tests/components/bracket-stage.test.tsx`:
+
 - At the top, add `vi.mock('@/app/(home)/[lang]/_components/home/bracket-field-gl', () => { throw new Error('stale chunk') })`.
 - Strengthen the reduced-motion test: also stub `requestIdleCallback` with a `vi.fn()` and assert `expect(idle).not.toHaveBeenCalled()`.
 - Add:
 
 ```tsx
-  it('keeps the poster when the field chunk fails to load', async () => {
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({ matches: false, media: query }))
-    )
-    let start: (() => void) | undefined
-    vi.stubGlobal(
-      'requestIdleCallback',
-      vi.fn((callback: () => void) => {
-        start = callback
-        return 1
-      })
-    )
-    vi.stubGlobal('cancelIdleCallback', vi.fn())
-    const { container } = renderInHero()
+it('keeps the poster when the field chunk fails to load', async () => {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn((query: string) => ({ matches: false, media: query }))
+  )
+  let start: (() => void) | undefined
+  vi.stubGlobal(
+    'requestIdleCallback',
+    vi.fn((callback: () => void) => {
+      start = callback
+      return 1
+    })
+  )
+  vi.stubGlobal('cancelIdleCallback', vi.fn())
+  const { container } = renderInHero()
 
-    start?.()
-    await new Promise((resolve) => setTimeout(resolve, 0))
+  start?.()
+  await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(container.querySelector('[data-hero]')).not.toHaveAttribute('data-gl')
-  })
+  expect(container.querySelector('[data-hero]')).not.toHaveAttribute('data-gl')
+})
 ```
 
 - [ ] **Step 2: RED.** Run `pnpm vitest run tests/lib/site/bracket-field-gl.test.ts tests/components/bracket-stage.test.tsx`. Expected:
@@ -4592,39 +4750,39 @@ function isSoftwareRenderer(gl: WebGL2RenderingContext) {
     },
 ```
 
-  - In `draw`, replace `const packed = packCapsules(capsules, dpr)` with `packCapsules(capsules, dpr, packed)`.
-  - At the end of `dispose()`, add:
+- In `draw`, replace `const packed = packCapsules(capsules, dpr)` with `packCapsules(capsules, dpr, packed)`.
+- At the end of `dispose()`, add:
 
 ```ts
-      // Give the full-viewport drawing buffer back, e.g. while the home
-      // route sits hidden in <Activity>.
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
-      canvas.width = 1
-      canvas.height = 1
+// Give the full-viewport drawing buffer back, e.g. while the home
+// route sits hidden in <Activity>.
+gl.getExtension('WEBGL_lose_context')?.loseContext()
+canvas.width = 1
+canvas.height = 1
 ```
 
 - In `mountBracketField`'s `frame`, replace `if (!field.isReady()) return` with:
 
 ```ts
-    const status = field.status()
-    if (status === 'failed') {
-      teardown()
-      return
-    }
-    if (status === 'pending') return
+const status = field.status()
+if (status === 'failed') {
+  teardown()
+  return
+}
+if (status === 'pending') return
 ```
 
 In `bracket-stage.tsx`, change `start` to catch a failed chunk load:
 
 ```tsx
-    const start = () => {
-      import('./bracket-field-gl')
-        .then(({ mountBracketField }) => {
-          if (!cancelled) teardown = mountBracketField(canvas, hero)
-        })
-        // A stale or blocked chunk only costs the live field; the poster stays.
-        .catch(() => {})
-    }
+const start = () => {
+  import('./bracket-field-gl')
+    .then(({ mountBracketField }) => {
+      if (!cancelled) teardown = mountBracketField(canvas, hero)
+    })
+    // A stale or blocked chunk only costs the live field; the poster stays.
+    .catch(() => {})
+}
 ```
 
 - [ ] **Step 4: GREEN.** The Step 2 command passes.
@@ -4635,6 +4793,7 @@ In `bracket-stage.tsx`, change `start` to catch a failed chunk load:
 ### Task 14: Chrome polish and test gaps (Plan 1 review minors #9, #10, #11, #13)
 
 **Files:**
+
 - Modify:
   - `app/components/site/not-found-view.tsx`
   - `app/styles/site-theme.css` (overscroll surfaces), `app/styles/site-chrome.css` (wordmark size)
@@ -4645,6 +4804,7 @@ In `bracket-stage.tsx`, change `start` to catch a failed chunk load:
   - `tests/e2e/public-flows.spec.ts` (append to `mobile navigation`)
 
 **Interfaces:**
+
 - Produces:
   - Root 404 links `/`, `/session` and `/project`; the proxy picks the locale.
   - `html.site` paints the stage and `body` paints the paper.
@@ -4654,14 +4814,14 @@ In `bracket-stage.tsx`, change `start` to catch a failed chunk load:
 In `tests/components/not-found-view.test.tsx`, add:
 
 ```tsx
-  it('lets the proxy choose the language for its links', () => {
-    render(<NotFoundView />)
+it('lets the proxy choose the language for its links', () => {
+  render(<NotFoundView />)
 
-    expect(
-      screen.getAllByRole('link').map((link) => link.getAttribute('href'))
-    ).toEqual(['/', '/session', '/project'])
-    expect(screen.getByText('세션')).toHaveAttribute('lang', 'ko')
-  })
+  expect(
+    screen.getAllByRole('link').map((link) => link.getAttribute('href'))
+  ).toEqual(['/', '/session', '/project'])
+  expect(screen.getByText('세션')).toHaveAttribute('lang', 'ko')
+})
 ```
 
 Append to `tests/e2e/site-layout.spec.ts`:
@@ -4686,7 +4846,9 @@ test('the footer wordmark fits a 320px screen', async ({ page }) => {
   const wordmark = page.locator('.site-footer-wordmark')
 
   expect(
-    await wordmark.evaluate((element) => element.scrollWidth <= element.clientWidth)
+    await wordmark.evaluate(
+      (element) => element.scrollWidth <= element.clientWidth
+    )
   ).toBe(true)
 })
 ```
@@ -4694,20 +4856,20 @@ test('the footer wordmark fits a 320px screen', async ({ page }) => {
 Append inside `test.describe('mobile navigation')` in `tests/e2e/public-flows.spec.ts`:
 
 ```ts
-  test('Escape closes the menu and returns focus to its button', async ({
-    page,
-  }) => {
-    await page.goto('/en', { waitUntil: 'domcontentloaded' })
-    const trigger = page.getByRole('button', { name: 'Open navigation menu' })
+test('Escape closes the menu and returns focus to its button', async ({
+  page,
+}) => {
+  await page.goto('/en', { waitUntil: 'domcontentloaded' })
+  const trigger = page.getByRole('button', { name: 'Open navigation menu' })
 
-    await trigger.click()
-    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
-    await page.keyboard.press('Escape')
+  await trigger.click()
+  await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
+  await page.keyboard.press('Escape')
 
-    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeHidden()
-    await expect(trigger).toBeFocused()
-    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
-  })
+  await expect(page.getByRole('dialog', { name: 'Menu' })).toBeHidden()
+  await expect(trigger).toBeFocused()
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+})
 ```
 
 Replace the traversal in `tests/lib/site/client-bundle-guards.test.ts`, so it follows relative imports, directory `index` files and `export … from` re-exports, and checks resolved paths instead of import strings:
@@ -4797,9 +4959,12 @@ describe('public client bundles', () => {
   })
 
   it('resolves relative and index imports', () => {
-    expect(resolveImport('app/components/site/filter-bar.tsx', '../../../lib/site/format')).toBe(
-      'lib/site/format.ts'
-    )
+    expect(
+      resolveImport(
+        'app/components/site/filter-bar.tsx',
+        '../../../lib/site/format'
+      )
+    ).toBe('lib/site/format.ts')
   })
 })
 ```
@@ -4829,12 +4994,12 @@ The component's comment becomes `/** Root 404 content. No locale is known here, 
 In `app/styles/site-theme.css`, inside the `html.site` rule, change `background-color: var(--s-paper);` to `background-color: var(--s-stage);`. After that rule, add:
 
 ```css
-  /* Overscroll past either end shows the stage (the header, hero, footer and
+/* Overscroll past either end shows the stage (the header, hero, footer and
      404 are all stage) while the page itself is paper. */
-  html.site > body {
-    min-height: 100svh;
-    background-color: var(--s-paper);
-  }
+html.site > body {
+  min-height: 100svh;
+  background-color: var(--s-paper);
+}
 ```
 
 In `app/styles/site-chrome.css`, change the wordmark size to `font-size: clamp(2rem, 11.4vw, 10rem);`.
@@ -4849,6 +5014,7 @@ In `app/styles/site-chrome.css`, change the wordmark size to `font-size: clamp(2
 ### Task 15: The dark scheme
 
 **Files:**
+
 - Modify:
   - `app/(home)/[lang]/layout.tsx`, `app/not-found.tsx`
   - `app/styles/site-theme.css` (comment; reflow the `--font-code` stack)
@@ -4858,6 +5024,7 @@ In `app/styles/site-chrome.css`, change the wordmark size to `font-size: clamp(2
   - `tests/e2e/dark-scheme.spec.ts`
 
 **Interfaces:**
+
 - Produces: `<html data-color-scheme="auto" class="site …">` on every public page, so `site-theme.css` switches tokens with `prefers-color-scheme`.
 
 - [ ] **Step 1: Write the failing tests.**
@@ -4943,10 +5110,14 @@ describe('public surfaces follow the colour scheme', () => {
 Extend `tests/lib/site/theme-contrast.test.ts` with the dark tints, which are OKLab `color-mix()`es:
 
 ```ts
-const darkTokens = theme.slice(theme.indexOf('@media (prefers-color-scheme: dark)'))
+const darkTokens = theme.slice(
+  theme.indexOf('@media (prefers-color-scheme: dark)')
+)
 
 function darkToken(name: string): string {
-  const match = darkTokens.match(new RegExp(`--s-${name}:\\s*(#[0-9a-f]{6})`, 'i'))
+  const match = darkTokens.match(
+    new RegExp(`--s-${name}:\\s*(#[0-9a-f]{6})`, 'i')
+  )
   if (!match?.[1]) throw new Error(`missing dark --s-${name}`)
   return match[1]
 }
@@ -4955,11 +5126,9 @@ const toLinear = (channel: number) =>
   channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
 
 function hexToLinear(hex: string): [number, number, number] {
-  return [1, 3, 5].map((index) => toLinear(parseInt(hex.slice(index, index + 2), 16) / 255)) as [
-    number,
-    number,
-    number,
-  ]
+  return [1, 3, 5].map((index) =>
+    toLinear(parseInt(hex.slice(index, index + 2), 16) / 255)
+  ) as [number, number, number]
 }
 
 function linearToOklab([r, g, b]: [number, number, number]) {
@@ -4994,7 +5163,9 @@ function mixedLuminance(hue: string, percent: number, base: string) {
   const a = linearToOklab(hexToLinear(hue))
   const b = linearToOklab(hexToLinear(base))
   const p = percent / 100
-  return linearLuminance(oklabToLinear(a.map((value, index) => value * p + b[index]! * (1 - p))))
+  return linearLuminance(
+    oklabToLinear(a.map((value, index) => value * p + b[index]! * (1 - p)))
+  )
 }
 
 describe('dark scheme hue tokens', () => {
@@ -5002,7 +5173,10 @@ describe('dark scheme hue tokens', () => {
     '%s ink passes AA on dark paper and on its dark tint',
     (hue) => {
       const mix = darkTokens.match(
-        new RegExp(`--s-${hue}-soft: color-mix\\(in oklab, (#[0-9a-f]{6}) (\\d+)%, (#[0-9a-f]{6})\\)`, 'i')
+        new RegExp(
+          `--s-${hue}-soft: color-mix\\(in oklab, (#[0-9a-f]{6}) (\\d+)%, (#[0-9a-f]{6})\\)`,
+          'i'
+        )
       )
       if (!mix) throw new Error(`missing dark --s-${hue}-soft`)
       const ink = linearLuminance(hexToLinear(darkToken(`${hue}-ink`)))
@@ -5029,10 +5203,10 @@ describe('dark scheme hue tokens', () => {
   - Reflow the `--font-code` value to:
 
 ```css
-  --font-code:
-    var(--font-code-mono), 'Pretendard Variable', 'Apple SD Gothic Neo',
-    'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace,
-    SFMono-Regular, Menlo, Consolas, monospace;
+--font-code:
+  var(--font-code-mono), 'Pretendard Variable', 'Apple SD Gothic Neo',
+  'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', ui-monospace,
+  SFMono-Regular, Menlo, Consolas, monospace;
 ```
 
 - [ ] **Step 4: GREEN.** Rerun the Step 2 commands. Expected: all pass.
@@ -5063,6 +5237,7 @@ pnpm perf:instant
 ```
 
 Expected:
+
 - home encoded JS ≤ 157,246 B, now that the legacy carousel is gone
 - no route over 170,000 B
 - CLS ≤ 0.05

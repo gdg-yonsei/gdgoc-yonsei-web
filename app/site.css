@@ -1,17 +1,11 @@
-/*
- * 공개 사이트 스타일시트. 공개 [lang] 루트 레이아웃, 전역 404(`global-not-found.tsx`), 전역 오류 화면이 불러온다.
- * 디자인 시스템은 `styles/site-theme.css` 머리말 참고.
- */
+/* 공개 레이아웃·전역 404·전역 오류가 공유하며, 디자인 토큰은 styles/site-theme.css에 있다. */
 @import './globals.css';
 @import './styles/site-theme.css';
 @import './styles/site-hero.css';
 @import './styles/site-chrome.css';
 @import './styles/site-content.css';
 
-/*
- * URL과 무관한 셸은 두 언어 문구를 모두 담을 수 있다. 이미 마운트된 언어별 레이아웃이 클라이언트
- * 경계를 추가하지 않고 그중 하나를 고른다.
- */
+/* 언어에 무관한 셸은 두 언어를 담고, 현재 레이아웃의 CSS가 클라이언트 경계 없이 하나를 고른다. */
 .locale-copy-ko {
   display: none;
 }
@@ -25,7 +19,6 @@ html[lang='ko'] .locale-copy-ko {
 }
 
 @layer components {
-  /* 누르면 살짝 줄어드는 버튼·링크(헤더 메뉴, 버튼 링크, 404·오류 화면). */
   .pressable {
     transition:
       transform 160ms cubic-bezier(0.23, 1, 0.32, 1),

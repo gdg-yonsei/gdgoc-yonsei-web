@@ -1,8 +1,4 @@
-/**
- * 세션 참가 신청 서비스: 신청, 본인 취소, 운영진의 참가자 제거.
- *
- * 정원 초과를 막기 위해 신청은 세션 행을 잠그는 트랜잭션 안에서 처리한다.
- */
+// 동시 신청이 정원을 넘지 않도록 세션 행을 잠그는 트랜잭션에서 등록한다.
 import 'server-only'
 
 import { and, eq, sql } from 'drizzle-orm'
@@ -29,17 +25,13 @@ import { NOT_FOUND } from '@/lib/server/services/admin/sessions/shared'
 
 class SessionFullError extends Error {}
 
-/**
- * 세션 참가를 신청한다. 신청이 열려 있고 아직 끝나지 않은 세션이어야 한다.
- * 정원 확인과 등록은 세션 행을 잠근 트랜잭션 안에서 해 동시 신청이 정원을 넘지 않게 한다.
- */
+// 신청이 열려 있고 아직 끝나지 않은 세션이어야 한다.
 export async function registerForSession(
   actor: Actor,
   sessionId: string
 ): Promise<ServiceResult<{ sessionId: string }>> {
   if (!isUuid(sessionId)) return fail('NOT_FOUND', NOT_FOUND)
 
-  // 사용자가 session에 등록할 권한이 있는지 확인
   // 신청·취소는 쓰기다. 권한 매트릭스는 조회 권한으로 판단하므로 스코프를 따로 본다.
   if (!hasScope(actor, 'gyms:write')) {
     return fail('FORBIDDEN', 'The access token does not grant this operation.')
@@ -128,10 +120,7 @@ export async function registerForSession(
   return ok({ sessionId })
 }
 
-/**
- * 참가자 본인이 세션 등록을 취소한다.
- * 세션이 이미 끝난 뒤에는 이력을 지울 수 없다.
- */
+// 세션이 끝난 뒤에는 본인이 취소해 참가 이력을 지울 수 없다.
 export async function unregisterFromSession(
   actor: Actor,
   sessionId: string
@@ -171,9 +160,7 @@ export async function unregisterFromSession(
   return ok({ sessionId })
 }
 
-/**
- * 세션 작성자·코어 이상이 특정 참가자를 명단에서 제거한다.
- */
+// 세션 작성자·코어 이상만 다른 참가자를 명단에서 제거할 수 있다.
 export async function removeSessionParticipant(
   actor: Actor,
   sessionId: string,

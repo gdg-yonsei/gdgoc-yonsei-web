@@ -1,6 +1,3 @@
-/**
- * Better Auth 인증 토큰 테이블(`verificationToken`). 이메일 확인, OAuth 상태 등 일회성 값을 저장한다.
- */
 import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 /** 일회성 인증 값. 만료되면 Better Auth가 정리한다. */

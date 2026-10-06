@@ -244,7 +244,7 @@ describe('admin fetchers', () => {
         generationName: '11th',
       }),
     ])
-    // partId 가 nullable 이라 parts 는 left join — 파트가 삭제된 세션도 목록에 남는다.
+    // partId가 nullable이라 left join으로 파트가 삭제된 세션도 목록에 남긴다.
     expect(chain.leftJoin).toHaveBeenCalledTimes(2)
     expect(chain.innerJoin).not.toHaveBeenCalled()
   })

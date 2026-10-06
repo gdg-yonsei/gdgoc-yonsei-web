@@ -136,7 +136,7 @@ Redis 핸들러:
 
 - [`incremental-redis-cache-handler.cjs`](../../lib/server/cache/handlers/incremental-redis-cache-handler.cjs)
 - [`remote-cache-handler.cjs`](../../lib/server/cache/handlers/remote-cache-handler.cjs)
-- [`redis-shared.cjs`](../../lib/server/cache/handlers/redis-shared.cjs) — 연결, 태그 상태, TTL 계산 공용
+- [`redis-shared.cjs`](../../lib/server/cache/handlers/redis-shared.cjs): 연결, 태그 상태, TTL 계산 공용
 
 핸들러는 Next가 TypeScript 변환 없이 직접 불러오므로 CommonJS(`.cjs`)로 둔다.
 

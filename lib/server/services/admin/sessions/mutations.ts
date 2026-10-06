@@ -1,9 +1,3 @@
-/**
- * 세션 생성·수정·삭제 서비스.
- *
- * 웹 Server Action과 MCP 도구가 함께 쓴다. 권한 확인 → 입력 검증 → DB 쓰기 →
- * 공개 캐시 무효화 순서로 동작하며, R2 이미지 정리와 알림 메일도 여기서 처리한다.
- */
 import 'server-only'
 
 import { eq } from 'drizzle-orm'
@@ -44,17 +38,12 @@ import {
 } from '@/lib/server/services/admin/sessions/shared'
 import { sendNewSessionEmails } from '@/lib/server/services/admin/sessions/notifications'
 
-/**
- * 세션과 참가자를 한 트랜잭션으로 만든다. 고른 파트의 기수에 접근할 수 있어야 한다.
- * 멤버 내부 신청이 열린 미래 세션이면 응답 뒤에 같은 기수 멤버에게 안내 메일을 보낸다.
- *
- * @param options.expectedGenerationId - 웹 폼이 선택한 기수. 파트가 다른 기수면 거절한다.
- */
+// 웹 폼의 expectedGenerationId와 파트의 기수가 같아야 한다. 세션·참가자는 함께 커밋한다.
+// 내부 신청이 열린 미래 세션은 응답 뒤에 같은 기수 멤버에게 안내 메일을 보낸다.
 export async function createSession(
   actor: Actor,
   input: unknown,
   options: {
-    /** 웹 폼은 선택된 기수에서만 만든다. 파트가 그 기수가 아니면 거절한다. */
     expectedGenerationId?: number
   } = {}
 ): Promise<ServiceResult<{ id: string }>> {
@@ -194,10 +183,8 @@ export async function createSession(
   return ok({ id: sessionId })
 }
 
-/**
- * 세션을 고친다. 기수(파트의 기수)는 바꿀 수 없다.
- * 작성자는 기수와 무관하게 자기 세션을 고칠 수 있다. 커밋 뒤에 쓰지 않는 이미지를 지운다.
- */
+// 기수는 바꿀 수 없다. 작성자는 소속 기수와 무관하게 자기 세션을 고친다.
+// DB 커밋 뒤에 쓰지 않는 R2 이미지를 지운다.
 export async function updateSession(
   actor: Actor,
   sessionId: string,
@@ -288,7 +275,6 @@ export async function updateSession(
         return fail('NOT_FOUND', NOT_FOUND)
       }
 
-      // 세션 행과 참가자 교체는 하나의 트랜잭션으로 처리한다.
       await db.transaction(async (tx) => {
         await tx
           .update(sessions)

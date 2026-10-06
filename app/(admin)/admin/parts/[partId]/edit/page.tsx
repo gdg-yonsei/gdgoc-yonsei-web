@@ -1,6 +1,3 @@
-/**
- * 파트 수정 화면(`/admin/parts/{id}/edit`). 권한은 레이아웃이 확인하고, 항목이 없으면 404.
- */
 import AdminDefaultLayout from '@/app/components/admin/admin-default-layout'
 import AdminNavigationButton from '@/app/components/admin/admin-navigation-button'
 import { ChevronLeftIcon } from '@heroicons/react/24/outline'
@@ -23,12 +20,10 @@ import {
 import AdminGenerationScopeMismatchNotice from '@/app/components/admin/admin-generation-scope-mismatch-notice'
 import { connection } from 'next/server'
 
-/** 브라우저 탭 제목. */
 export const metadata: Metadata = {
   title: 'Edit Part',
 }
 
-/** 기존 값을 채운 파트 수정 폼. */
 export default async function EditPartPage({
   params,
 }: PageProps<'/admin/parts/[partId]/edit'>) {
@@ -73,8 +68,7 @@ export default async function EditPartPage({
       <div className={'admin-title py-4'}>
         {t.edit} {partData.name}
       </div>
-      {/* Next는 방문한 페이지를 마운트된 채 유지한다. 저장된 버전마다 key를 바꿔, 비제어 입력이
-          이전 편집 내용 대신 저장된 값으로 다시 채워지게 한다. */}
+      {/* Next가 방문 페이지를 유지하므로, 저장 버전을 key로 써 비제어 입력에 최신 저장값을 채운다. */}
       <DataForm
         key={savedVersionKey(partData.updatedAt)}
         action={updatePartActionWithPartId}

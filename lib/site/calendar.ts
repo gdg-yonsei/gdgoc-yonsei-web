@@ -1,13 +1,9 @@
-/**
- * 공개 캘린더 데이터 가공(순수 함수). 세션을 서울 날짜 기준 일정으로 바꾸고 달력 격자를 만든다.
- */
 import type { Locale } from '@/lib/i18n'
 import { formatSessionTime, toKstIso } from '@/lib/format/datetime'
 import { categoryHue, categoryLabel, type Hue } from '@/lib/site/labels'
 import { sessionLocation, sessionTitle } from '@/lib/site/session-log'
 import { sessionPath, localeHref } from '@/lib/site/routes'
 
-/** 캘린더 쿼리가 돌려주는 일정이 있는 공개 세션. */
 export type CalendarSession = {
   id: string
   name: string
@@ -21,10 +17,7 @@ export type CalendarSession = {
   generationName: string
 }
 
-/**
- * 캘린더 일정 하나. 클라이언트로 그대로 넘길 수 있게 현재 언어로 바꾸고 문자열로 평탄화했다.
- * 날짜는 서울 기준(`YYYY-MM-DD`)이다.
- */
+// 클라이언트 전달용 날짜는 서울 기준 YYYY-MM-DD 문자열이다.
 export type CalendarEvent = {
   id: string
   title: string
@@ -42,7 +35,6 @@ export type CalendarEvent = {
   href: string | null
 }
 
-/** 세션 벽시계 시각의 서울 날짜: `2026-09-24` */
 function sessionDay(date: Date): string {
   return toKstIso(date).slice(0, 10)
 }
@@ -58,11 +50,7 @@ function lastSessionDay(start: Date, end: Date | null): string {
   return day < startDay ? startDay : day
 }
 
-/**
- * 세션 목록을 캘린더 일정으로 바꾼다.
- * `visibilityBucket`은 세션 기록·상세 페이지와 같은 공개 기준 시각이라, 상세 페이지가
- * 존재할 때만 일정이 링크로 연결된다.
- */
+// visibilityBucket을 세션 기록·상세와 맞춰 상세 페이지가 공개됐을 때만 일정에 링크를 붙인다.
 export function toCalendarEvents(
   sessions: readonly CalendarSession[],
   locale: Locale,
@@ -107,7 +95,6 @@ function compareEvents(a: CalendarEvent, b: CalendarEvent): number {
   )
 }
 
-/** 날짜가 속한 달: `2026-09-24` → `2026-09` */
 export function monthOfDay(day: string): string {
   return day.slice(0, 7)
 }
@@ -120,7 +107,6 @@ function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
-/** 달을 앞뒤로 옮긴다: `shiftMonth('2026-12', 1)` → `2027-01` */
 export function shiftMonth(month: string, delta: number): string {
   const [year = 1970, index = 1] = month.split('-').map(Number)
   return dayKey(new Date(Date.UTC(year, index - 1 + delta, 1))).slice(0, 7)
@@ -145,7 +131,6 @@ export function monthWeeks(month: string): string[][] {
   return weeks
 }
 
-/** `day`에 열리는 일정(여러 날 일정 포함). */
 export function eventsOnDay(
   events: readonly CalendarEvent[],
   day: string
@@ -153,7 +138,6 @@ export function eventsOnDay(
   return events.filter((event) => event.startDay <= day && day <= event.endDay)
 }
 
-/** `month`와 조금이라도 겹치는 일정. */
 export function eventsInMonth(
   events: readonly CalendarEvent[],
   month: string
