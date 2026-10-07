@@ -4,13 +4,13 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 overrides:
-  '@types/react': 19.3.0
-  '@types/react-dom': 19.3.0
+  '@types/react': $@types/react
+  '@types/react-dom': $@types/react-dom
   # 개발 도구의 취약한 전이 의존성을 패치판으로 고정한다: next >=16.2.11, postcss >=8.5.23.
   # sharp >=0.35.0, 폐기된 @esbuild-kit 경유 esbuild >=0.24.3도 같은 이유로 고정한다.
-  next: 16.3.6
-  postcss: 8.5.28
-  sharp: 0.35.4
+  next: $next
+  postcss: $postcss
+  sharp: $sharp
   esbuild: 0.28.1
 minimumReleaseAgeExclude:
   - '@aws-sdk/checksums@3.1000.26'
