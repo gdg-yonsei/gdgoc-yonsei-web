@@ -9,9 +9,10 @@ describe('Hero', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'GDGoC Yonsei' })
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: /Explore sessions/ })
-    ).toHaveAttribute('href', '/en/session')
+    expect(screen.getByRole('link', { name: /^See sessions/ })).toHaveAttribute(
+      'href',
+      '/en/session'
+    )
     expect(screen.getByRole('link', { name: 'See projects' })).toHaveAttribute(
       'href',
       '/en/project'
@@ -31,7 +32,7 @@ describe('Hero', () => {
   it('uses Korean copy and routes on /ko', () => {
     render(<Hero lang="ko" />)
 
-    expect(screen.getByRole('link', { name: /세션 둘러보기/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^세션 보기/ })).toHaveAttribute(
       'href',
       '/ko/session'
     )

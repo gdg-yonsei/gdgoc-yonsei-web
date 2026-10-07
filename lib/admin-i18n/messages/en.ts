@@ -147,9 +147,11 @@ export const en = {
   profilePrivacyNoticeStrong:
     'Your major, student ID, and phone number are private and will not be disclosed to the public.',
   qrCodeGenerator: 'QR Code Generator',
-  qrValuePlaceholder: 'Please enter the value.',
-  qrCaptureHint: 'Please capture the QR Code and use it.',
-  qrTooLong: 'The value is too long. Please enter a shorter value.',
+  qrValueLabel: 'Text or URL to encode',
+  qrEmpty: 'Type text or a URL above to see its QR code here.',
+  qrCaptureHint: 'Take a screenshot of the code to share it.',
+  qrTooLong:
+    'This is too long for a QR code. Shorten it to under 23,648 characters.',
   githubName: 'Github Name',
   linkedInProfileUrl: 'Linked In Profile URL',
   instagramId: 'Instagram ID',

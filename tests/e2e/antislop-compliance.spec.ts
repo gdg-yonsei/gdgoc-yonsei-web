@@ -74,6 +74,13 @@ async function expectTouchTarget(locator: Locator) {
   expect(box!.height).toBeGreaterThanOrEqual(44)
 }
 
+async function expectTextContrast(locator: Locator) {
+  // Visibility and completion labels update before opacity and color transitions finish.
+  await expect
+    .poll(async () => (await ratio(locator)).ratio)
+    .toBeGreaterThanOrEqual(4.5)
+}
+
 async function expectNoPageOverflow(page: Page) {
   expect(
     await page.evaluate(
@@ -247,9 +254,9 @@ for (const theme of ['light', 'dark'] as const) {
       await expect(dialog).toBeVisible()
       const danger = dialog.getByRole('button', { name: /Confirm/i })
       await expectTouchTarget(danger)
-      expect((await ratio(danger)).ratio).toBeGreaterThanOrEqual(4.5)
+      await expectTextContrast(danger)
       await danger.hover()
-      expect((await ratio(danger)).ratio).toBeGreaterThanOrEqual(4.5)
+      await expectTextContrast(danger)
       await page.keyboard.press('Escape')
       await expect(dialog).toBeHidden()
       await expect(trigger).toBeFocused()
@@ -271,10 +278,8 @@ for (const theme of ['light', 'dark'] as const) {
       const tabs = page.getByRole('tab').filter({ hasText: /Done/ })
       await expect(tabs).toHaveCount(2)
       for (const tab of await tabs.all()) {
-        expect((await ratio(tab)).ratio).toBeGreaterThanOrEqual(4.5)
-        expect((await ratio(tab.locator('span'))).ratio).toBeGreaterThanOrEqual(
-          4.5
-        )
+        await expectTextContrast(tab)
+        await expectTextContrast(tab.locator('span'))
       }
       const navigation = page.getByRole('navigation', {
         name: 'Main navigation',
@@ -402,6 +407,46 @@ test('text and controls reflow at 200 percent desktop zoom', async ({
 
 test.describe('admin loading and gallery accessibility', () => {
   test.use({ storageState: ADMIN_STORAGE_STATE, reducedMotion: 'reduce' })
+
+  for (const [locale, label] of [
+    ['en', 'Loading'],
+    ['ko', '불러오는 중'],
+  ] as const) {
+    test(`initial ${locale} admin navigation announces its locale while the layout is pending`, async ({
+      page,
+      baseURL,
+    }) => {
+      const databaseURL = process.env.AUTH_DRIZZLE_URL
+      assertDisposableDatabase(databaseURL, 'e2e initial admin loading')
+      await page.context().addCookies([
+        {
+          name: 'admin-locale',
+          value: locale === 'ko' ? 'en' : 'ko',
+          url: baseURL!,
+          httpOnly: true,
+          sameSite: 'Lax',
+        },
+      ])
+      const sql = postgres(databaseURL, { max: 1 })
+      const reserved = await sql.reserve()
+      try {
+        await reserved`BEGIN`
+        await reserved`LOCK TABLE "user" IN ACCESS EXCLUSIVE MODE`
+        await page.goto(`/${locale}/admin/members`, { waitUntil: 'commit' })
+        const status = page.getByRole('status')
+        await expect(status).toBeVisible()
+        await expect(status).toHaveText(label)
+        await expect(status).toHaveAttribute('lang', locale)
+        await expect(page.locator('#admin-theme-root')).toHaveCount(0)
+      } finally {
+        await reserved`ROLLBACK`
+        reserved.release()
+        await sql.end()
+      }
+      await expect(page.locator('#admin-theme-root')).toBeVisible()
+      await expect(page.getByRole('status')).toHaveCount(0)
+    })
+  }
 
   test('a delayed admin response announces loading until content arrives', async ({
     page,

@@ -43,8 +43,8 @@ function page(...names: string[]) {
   document.body.innerHTML = `<main>${names
     .map((name) => `<section data-scene="${name}"></section>`)
     .join('')}</main>`
-  return names.map(
-    (name) => document.querySelector<HTMLElement>(`[data-scene="${name}"]`)!
+  return names.map((name) =>
+    document.querySelector<HTMLElement>(`[data-scene="${name}"]`)!
   )
 }
 
@@ -88,9 +88,7 @@ describe('mountHomeScenes', () => {
     const scene = vi.fn<Scene>()
     mountHomeScenes(document, { programs: scene })
 
-    expect(DrivenObserver.current?.options?.rootMargin).toBe(
-      '0px 0px 100% 0px'
-    )
+    expect(DrivenObserver.current?.options?.rootMargin).toBe('0px 0px 100% 0px')
     expect(scene).not.toHaveBeenCalled()
 
     // In range, a section arms when the browser is next idle, keeping the

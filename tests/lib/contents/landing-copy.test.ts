@@ -45,6 +45,14 @@ describe('landing copy', () => {
     }
   })
 
+  it('names the same Bridge Hackathon universities in both languages', () => {
+    for (const copy of [landingCopy.en, landingCopy.ko]) {
+      expect(copy.programs.kickers['The Bridge Hackathon']).toBe(
+        'Yonsei · Korea · UTokyo · Waseda'
+      )
+    }
+  })
+
   it('keeps the Solution Challenge numbers identical across languages', () => {
     expect(landingCopy.ko.funnel.steps.map((step) => step.value)).toEqual(
       landingCopy.en.funnel.steps.map((step) => step.value)

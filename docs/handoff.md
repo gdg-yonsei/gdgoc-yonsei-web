@@ -23,8 +23,6 @@
 - 브라우저로 공개 사이트(홈, 세션 로그, 404)와 관리자 화면(대시보드, 세션·파트·프로젝트 생성·수정, 멤버 선택기, 기수 범위,
   MCP 연결 관리)을 확인했다. 컴파일된 CSS는 분리 전과 선택자를 비교했다.
 
-
-
 ## 3. 주의
 
 - 일부 GPU 드라이버가 ASCII가 아닌 셰이더 소스를 거부할 수 있기 때문에 **GLSL 셰이더 주석은 영어**로 남겨두었습니다.
@@ -33,13 +31,13 @@
 
 ## 6. 운영 계정·외부 서비스
 
-| 서비스           | 용도                      | 확인할 곳                                                            |
-| ---------------- | ------------------------- | -------------------------------------------------------------------- |
-| Dokploy          | 운영 배포                 | [`architecture/ci-cd.md`](./architecture/ci-cd.md) "처음 한 번 설정" |
-| GitHub           | 저장소, Actions, OAuth 앱 | Settings → Environments `production`                                 |
-| Google Cloud     | Google OAuth 클라이언트   | 승인된 리디렉션 URI                                                  |
-| Cloudflare       | R2 버킷, 이미지 도메인    | 버킷 CORS, 공개 도메인                                               |
-| Resend           | 메일 발송                 | 발신 도메인 인증                                                     |
-| Google Analytics | 공개 사이트 통계          | 측정 ID는 `app/(home)/[lang]/layout.tsx`의 `GA_MEASUREMENT_ID`, gdgoc yonsei 구글 지메일 계정으로 Analytics 관리중       |     |
+| 서비스           | 용도                      | 확인할 곳                                                                                                          |
+| ---------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Dokploy          | 운영 배포                 | [`architecture/ci-cd.md`](./architecture/ci-cd.md) "처음 한 번 설정"                                               |
+| GitHub           | 저장소, Actions, OAuth 앱 | Settings → Environments `production`                                                                               |
+| Google Cloud     | Google OAuth 클라이언트   | 승인된 리디렉션 URI                                                                                                |
+| Cloudflare       | R2 버킷, 이미지 도메인    | 버킷 CORS, 공개 도메인                                                                                             |
+| Resend           | 메일 발송                 | 발신 도메인 인증                                                                                                   |
+| Google Analytics | 공개 사이트 통계          | 측정 ID는 `app/(home)/[lang]/layout.tsx`의 `GA_MEASUREMENT_ID`, gdgoc yonsei 구글 지메일 계정으로 Analytics 관리중 |     |
 
 비밀값과 계정 권한은 저장소에 없습니다. 이전 관리자에게서 직접 넘겨 받아야 합니다.

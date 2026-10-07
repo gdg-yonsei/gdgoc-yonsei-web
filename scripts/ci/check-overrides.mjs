@@ -13,9 +13,10 @@ for (const line of readFileSync('pnpm-workspace.yaml', 'utf8').split('\n')) {
   if (match) overrides[match[2]] = match[3]
 }
 
-const mismatches = Object.entries(overrides).filter(
-  ([name, version]) => name in direct && direct[name] !== version
-)
+const mismatches = Object.entries(overrides).filter(([name, version]) => {
+  const resolved = version.startsWith('$') ? direct[version.slice(1)] : version
+  return resolved === undefined || (name in direct && direct[name] !== resolved)
+})
 
 for (const [name, version] of mismatches) {
   console.log(

@@ -124,7 +124,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
     eyebrow: 'Google Developer Groups on Campus · Yonsei University',
     tagline:
       "Yonsei University's student developer community. We connect, learn, and grow, then ship what we build.",
-    primaryCta: 'Explore sessions',
+    primaryCta: 'See sessions',
     secondaryCta: 'See projects',
     metaLabel: 'At a glance',
     schedule: 'T19 · Tue 19:00 KST',
@@ -140,7 +140,7 @@ export const heroCopy: Record<Locale, HeroCopy> = {
     eyebrow: 'Google Developer Groups on Campus · 연세대학교',
     tagline:
       '연세대학교 학생 개발자 커뮤니티. 함께 연결하고, 배우고, 성장하며 만든 것을 세상에 내놓습니다.',
-    primaryCta: '세션 둘러보기',
+    primaryCta: '세션 보기',
     secondaryCta: '프로젝트 보기',
     metaLabel: '한눈에 보기',
     schedule: 'T19 · 매주 화 19:00',
@@ -227,7 +227,7 @@ export const landingCopy: Record<Locale, LandingCopy> = {
         oTP: 'Open Tech Project',
         'Solution Challenge': 'Google for Developers',
         'Yonsei X Korea Demo Day': 'With GDGoC Korea',
-        'The Bridge Hackathon': 'Yonsei · Korea · Tokyo · Waseda',
+        'The Bridge Hackathon': 'Yonsei · Korea · UTokyo · Waseda',
       },
     },
     funnel: {

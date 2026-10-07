@@ -3,7 +3,7 @@
 /** 서버 헤더가 필요한 링크·문구만 props로 넘겨, 이중 언어 사전과 tailwind-merge가 브라우저 번들에 실리지 않게 한다. */
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Bars2Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import type { Locale } from '@/lib/i18n'
 import LocaleSwitch from '@/app/components/site/locale-switch'
@@ -52,7 +52,8 @@ function DesktopNavigation({
   )
 }
 
-/** 네이티브 dialog.showModal로 포커스 가두기와 Escape 닫기를 브라우저에 맡긴다. */
+/** 네이티브 dialog.showModal로 포커스 가두기와 Escape 닫기를 브라우저에 맡긴다.
+ * command 속성은 스크립트 실행 전의 탭도 처리하고, onClick은 이를 지원하지 않는 브라우저를 맡는다. */
 function MobileMenu({
   lang,
   links,
@@ -62,8 +63,14 @@ function MobileMenu({
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
+  // hydration 전에 command로 열린 메뉴의 aria-expanded를 맞춘다.
+  useEffect(() => {
+    if (dialogRef.current?.open) setIsOpen(true)
+  }, [])
+
   const openMenu = () => {
-    dialogRef.current?.showModal()
+    // 이미 열린 모달에 showModal을 다시 부르면 일부 브라우저가 예외를 던진다.
+    if (!dialogRef.current?.open) dialogRef.current?.showModal()
     setIsOpen(true)
   }
   const closeMenu = () => dialogRef.current?.close()
@@ -72,6 +79,8 @@ function MobileMenu({
     <>
       <button
         type="button"
+        command="show-modal"
+        commandfor="mobile-primary-navigation"
         onClick={openMenu}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
@@ -97,6 +106,8 @@ function MobileMenu({
           </span>
           <button
             type="button"
+            command="close"
+            commandfor="mobile-primary-navigation"
             onClick={closeMenu}
             aria-label={copy.closeMenu}
             className="site-icon-button"

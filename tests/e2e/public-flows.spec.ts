@@ -60,7 +60,8 @@ test.describe('mobile navigation', () => {
   test('menu button opens navigation and routes to calendar', async ({
     page,
   }) => {
-    await page.goto('/en', { waitUntil: 'domcontentloaded' })
+    // The menu button only works once React mounts; a tap before the scripts run is lost.
+    await page.goto('/en', { waitUntil: 'load' })
 
     const menuOpenButton = page.getByRole('button', {
       name: 'Open navigation menu',
@@ -83,10 +84,35 @@ test.describe('mobile navigation', () => {
     await expect(page).toHaveURL(/\/en\/calendar$/)
   })
 
+  test('a tap before the scripts run still opens the menu', async ({
+    page,
+  }) => {
+    let releaseScripts!: () => void
+    const scriptsHeld = new Promise<void>((resolve) => {
+      releaseScripts = resolve
+    })
+    await page.route('**/_next/static/chunks/**', async (route) => {
+      await scriptsHeld
+      await route.continue()
+    })
+    await page.goto('/en', { waitUntil: 'commit' })
+    const trigger = page.getByRole('button', { name: 'Open navigation menu' })
+
+    await trigger.click()
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
+
+    releaseScripts()
+    await page.waitForLoadState('load')
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await page.getByRole('button', { name: 'Close navigation menu' }).click()
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeHidden()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
   test('Escape closes the menu and returns focus to its button', async ({
     page,
   }) => {
-    await page.goto('/en', { waitUntil: 'domcontentloaded' })
+    await page.goto('/en', { waitUntil: 'load' })
     const trigger = page.getByRole('button', { name: 'Open navigation menu' })
 
     await trigger.click()
