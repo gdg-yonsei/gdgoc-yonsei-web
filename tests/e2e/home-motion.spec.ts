@@ -416,6 +416,11 @@ test.describe('home motion', () => {
     await page.goto('/en', { waitUntil: 'load' })
     await motionReady(page)
     await page.locator('.part-grid').scrollIntoViewIfNeeded()
+    // The scene arms on idle after scrolling; hovering earlier fires pointerenter before its listener exists.
+    await expect(page.locator('[data-scene="parts"]')).toHaveAttribute(
+      'data-motion',
+      'js'
+    )
     const rider = page.locator('.pg-rider')
     const place = () => rider.evaluate((dot) => getComputedStyle(dot).transform)
 

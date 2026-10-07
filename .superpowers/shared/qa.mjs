@@ -5,7 +5,7 @@ const results = []
 const check = (name, ok, detail = '') =>
   results.push(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ': ' + detail : ''}`)
 
-// 1) No horizontal overflow at key widths
+// No horizontal overflow at key widths
 for (const path of ['/en', '/ko']) {
   for (const width of [320, 360, 390, 768, 1280, 1920]) {
     const ctx = await browser.newContext({ viewport: { width, height: 900 } })
@@ -20,7 +20,7 @@ for (const path of ['/en', '/ko']) {
   }
 }
 
-// 2) Skip link
+// Skip link
 {
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
@@ -48,7 +48,7 @@ for (const path of ['/en', '/ko']) {
   await ctx.close()
 }
 
-// 3) Mobile menu lifecycle
+// Mobile menu lifecycle
 {
   const ctx = await browser.newContext({ ...devices['iPhone 13'] })
   const page = await ctx.newPage()
@@ -85,7 +85,7 @@ for (const path of ['/en', '/ko']) {
   await ctx.close()
 }
 
-// 4) Reduced motion keeps the poster
+// Reduced motion keeps the poster
 {
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
@@ -107,7 +107,7 @@ for (const path of ['/en', '/ko']) {
   await ctx.close()
 }
 
-// 5) Language switch keeps the path
+// Language switch keeps the path
 {
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 800 },
@@ -126,7 +126,7 @@ for (const path of ['/en', '/ko']) {
   await ctx.close()
 }
 
-// 6) 404
+// 404
 {
   const ctx = await browser.newContext()
   const page = await ctx.newPage()

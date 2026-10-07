@@ -54,6 +54,20 @@ describe('HeaderNavigation', () => {
     ).toHaveAttribute('href', '/ko/session/25-26')
   })
 
+  it('lets the browser open and close the menu before scripts run', () => {
+    renderNavigation()
+    const trigger = screen.getByRole('button', { name: 'Open navigation menu' })
+    const close = screen.getByRole('button', {
+      name: 'Close navigation menu',
+      hidden: true,
+    })
+
+    expect(trigger).toHaveAttribute('command', 'show-modal')
+    expect(trigger).toHaveAttribute('commandfor', 'mobile-primary-navigation')
+    expect(close).toHaveAttribute('command', 'close')
+    expect(close).toHaveAttribute('commandfor', 'mobile-primary-navigation')
+  })
+
   it('opens the menu dialog and closes it when a link is chosen', async () => {
     const user = userEvent.setup()
     renderNavigation()
