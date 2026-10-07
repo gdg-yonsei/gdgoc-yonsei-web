@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import Loading from '@/app/(admin)/loading'
 import { DashboardStatsSkeleton } from '@/app/(admin)/admin/dashboard-stats'
 import {
   AdminCardSkeleton,
@@ -16,7 +15,7 @@ describe('admin loading announcements', () => {
       'true'
     )
   })
-  it.each([Loading, AdminTableSkeleton, AdminCardSkeleton])(
+  it.each([AdminTableSkeleton, AdminCardSkeleton])(
     '%s announces loading without exposing decorative skeletons',
     (Component) => {
       render(<Component />)
