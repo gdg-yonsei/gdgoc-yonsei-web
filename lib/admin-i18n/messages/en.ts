@@ -287,6 +287,47 @@ export const en = {
   mcpAuditOk: 'OK',
   mcpAuditError: 'Error',
   mcpAuditEmpty: 'No MCP activity yet.',
+  mcpGuideTitle: 'GYMS MCP',
+  mcpGuideDescription:
+    'Connect GYMS to an AI tool such as Claude, ChatGPT or Codex, then check schedules and update records by chatting instead of clicking through pages.',
+  mcpGuideCapabilities: 'What the AI can do for you',
+  mcpGuideCapabilitiesHint:
+    'The AI gets the same permissions as your role. Each row adds to the ones above it.',
+  mcpGuideRoleEveryone: 'Every member',
+  mcpGuideRoleEveryoneTasks:
+    'View sessions and register or cancel your spot, view projects and generations, view and edit your own profile',
+  mcpGuideRoleMember: 'Member, Core, Lead',
+  mcpGuideRoleMemberTasks: 'Add projects and edit the projects you own',
+  mcpGuideRoleCore: 'Core, Lead',
+  mcpGuideRoleCoreTasks:
+    'View members and parts, create and edit sessions, projects and parts, manage session participants',
+  mcpGuideRoleLead: 'Lead',
+  mcpGuideRoleLeadTasks:
+    'Manage generations, approve new members, change roles, remove members',
+  mcpGuideExamples: 'Things to ask',
+  mcpGuideExample1: 'What sessions are on this week?',
+  mcpGuideExample2: 'Sign me up for the next session.',
+  mcpGuideExample3: 'Change the GitHub ID on my profile.',
+  mcpGuideManageTitle: 'Already connected?',
+  mcpGuideManageHint:
+    'See which AI tools can use your account, review what they did, and disconnect any of them.',
+  mcpGuideManageLink: 'Manage connected AI tools',
+  announcement: 'Announcement',
+  announcements: 'Announcements',
+  announcementsDescription:
+    'Each announcement opens once as a dialog for every GYMS member. It stays hidden for a member after they close it or press its button.',
+  newAnnouncement: 'Write announcement',
+  publishAnnouncement: 'Send announcement',
+  announcementTitle: 'Title',
+  announcementBody: 'Message',
+  announcementCtaLabel: 'Button label (optional)',
+  announcementCtaHref: 'Button link (optional)',
+  announcementCtaHrefHint:
+    'Only GYMS paths starting with /admin work, for example /admin/mcp. Fill in both button fields or leave both empty.',
+  announcementReadCount: 'Seen by {count}',
+  announcementsEmpty: 'No announcements yet',
+  announcementsEmptyHint:
+    'Write one and every member sees it as a dialog the next time they open GYMS.',
   notFoundTitle: 'Page not found',
   notFoundHint: 'The item may have been deleted, or the address is wrong.',
   backToDashboard: 'Back to dashboard',

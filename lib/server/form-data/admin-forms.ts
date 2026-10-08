@@ -27,6 +27,15 @@ export function parseDeleteMemberForm(formData: FormData) {
   return { userId: readString(formData, 'userId') }
 }
 
+export function parseAnnouncementForm(formData: FormData) {
+  return {
+    title: readString(formData, 'title'),
+    body: readString(formData, 'body'),
+    ctaLabel: readTrimmedOrNull(formData, 'ctaLabel'),
+    ctaHref: readTrimmedOrNull(formData, 'ctaHref'),
+  }
+}
+
 export function parseGenerationForm(formData: FormData) {
   return {
     name: readString(formData, 'name'),

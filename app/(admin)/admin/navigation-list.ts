@@ -12,6 +12,7 @@ export type NavigationKey =
   | 'members'
   | 'sessions'
   | 'projects'
+  | 'announcements'
   | 'profile'
 
 export interface NavigationItem {
@@ -68,6 +69,12 @@ export default async function getAdminNavigationItems(
       name: t.parts,
       path: localizeAdminHref('/admin/parts', locale),
       dataResource: 'partsPage',
+    },
+    {
+      key: 'announcements',
+      name: t.announcements,
+      path: localizeAdminHref('/admin/announcements', locale),
+      dataResource: 'announcementsPage',
     },
     {
       key: 'profile',

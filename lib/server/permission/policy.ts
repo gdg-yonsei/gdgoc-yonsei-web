@@ -21,6 +21,8 @@ export type ResourceType =
   | 'sessionsPage'
   | 'generationsPage'
   | 'partsPage'
+  | 'announcements'
+  | 'announcementsPage'
 
 // true는 항상 허용, own은 요청자 ID와 데이터 소유자 ID가 같을 때만 허용한다.
 type Rule = true | 'own'
@@ -62,6 +64,7 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       membersPage: true,
       generationsPage: true,
       partsPage: true,
+      announcementsPage: true,
     },
     post: {
       members: true,
@@ -70,6 +73,7 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       projects: true,
       sessions: true,
       parts: true,
+      announcements: true,
     },
     put: {
       members: true,
@@ -87,6 +91,7 @@ export const PERMISSION_POLICY: Record<Role, RolePolicy> = {
       projects: true,
       sessions: true,
       parts: true,
+      announcements: true,
     },
   },
   ALUMNUS: {

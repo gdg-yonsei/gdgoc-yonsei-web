@@ -107,6 +107,8 @@ export default async function AdminPage() {
       <section className={'border-hairline flex flex-col gap-3 border-t pt-6'}>
         <h2 className={'type-heading-3 text-ink'}>{t.tools}</h2>
         <div className={'grid grid-cols-1 gap-4 lg:grid-cols-2'}>
+          <McpInstallGuide mcpUrl={getMcpResourceUrl()} />
+
           <QRCodeGenerator />
 
           <div className={'admin-card flex flex-col gap-3'}>
@@ -152,8 +154,6 @@ export default async function AdminPage() {
               </ol>
             </div>
           </div>
-
-          <McpInstallGuide mcpUrl={getMcpResourceUrl()} />
         </div>
       </section>
     </AdminDefaultLayout>

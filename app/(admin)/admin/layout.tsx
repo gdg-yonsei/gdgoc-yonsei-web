@@ -9,6 +9,8 @@ import { getUserRole } from '@/lib/server/fetcher/admin/get-user-role'
 import getAdminNavigationItems from '@/app/(admin)/admin/navigation-list'
 import { forbidden, redirect } from 'next/navigation'
 import Modal from '@/app/components/admin/modal'
+import AnnouncementModal from '@/app/components/admin/announcement-modal'
+import { getUnreadAnnouncement } from '@/lib/server/fetcher/admin/get-announcements'
 import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
 import MobileTabBar from '@/app/components/admin/mobile-tab-bar'
 import { getAdminLocale, getAdminMessages } from '@/lib/admin-i18n/server'
@@ -46,11 +48,13 @@ export default async function AdminLayout({
   }
 
   // 역할 조회는 요청 단위로 캐시되므로 아래 작업들은 서로 기다릴 필요가 없다.
-  const [navigations, resolvedScope, cookieStore] = await Promise.all([
-    getAdminNavigationItems(userId, locale),
-    resolveAdminGenerationScope(userId),
-    cookies(),
-  ])
+  const [navigations, resolvedScope, cookieStore, announcement] =
+    await Promise.all([
+      getAdminNavigationItems(userId, locale),
+      resolveAdminGenerationScope(userId),
+      cookies(),
+      getUnreadAnnouncement(userId),
+    ])
   const theme = normalizeAdminTheme(cookieStore.get(ADMIN_THEME_COOKIE)?.value)
 
   return (
@@ -92,6 +96,12 @@ export default async function AdminLayout({
           </main>
           <MobileTabBar navigations={navigations} />
           <Modal />
+          {announcement && (
+            <AnnouncementModal
+              key={announcement.id}
+              announcement={announcement}
+            />
+          )}
         </div>
       </JotaiProvider>
     </AdminI18nProvider>

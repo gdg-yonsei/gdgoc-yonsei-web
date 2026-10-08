@@ -8,6 +8,7 @@ import {
   CodeBracketIcon,
   DocumentTextIcon,
   HomeIcon,
+  MegaphoneIcon,
   UserCircleIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
@@ -31,6 +32,7 @@ export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   projects: DocumentTextIcon,
   generations: CalendarDaysIcon,
   parts: CodeBracketIcon,
+  announcements: MegaphoneIcon,
   profile: UserCircleIcon,
 }
 

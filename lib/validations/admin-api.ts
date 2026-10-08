@@ -50,18 +50,23 @@ const deleteResourceTypeSchema = z.enum([
   'projects',
   'generations',
   'parts',
+  'announcements',
 ])
 
 export type DeleteResourceType = z.infer<typeof deleteResourceTypeSchema>
 
-/** 공용 삭제 버튼 요청. 세션·프로젝트 ID는 UUID, 기수·파트 ID는 양의 정수여야 한다. */
+/** 공용 삭제 버튼 요청. 세션·프로젝트·공지 ID는 UUID, 기수·파트 ID는 양의 정수여야 한다. */
 export const deleteResourceValidation = z
   .object({
     dataType: deleteResourceTypeSchema,
     dataId: z.string().trim().min(1, 'Data ID not found'),
   })
   .superRefine(({ dataType, dataId }, ctx) => {
-    if (dataType === 'sessions' || dataType === 'projects') {
+    if (
+      dataType === 'sessions' ||
+      dataType === 'projects' ||
+      dataType === 'announcements'
+    ) {
       if (!z.string().uuid().safeParse(dataId).success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

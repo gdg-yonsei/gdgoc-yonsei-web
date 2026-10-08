@@ -4,6 +4,7 @@ import {
   runAdminFormAction,
   type AdminFormState,
 } from '@/lib/server/actions/admin-form-action'
+import { deleteAnnouncement } from '@/lib/server/services/admin/announcements'
 import { deleteGeneration } from '@/lib/server/services/admin/generations'
 import { deletePart } from '@/lib/server/services/admin/parts'
 import { deleteProject } from '@/lib/server/services/admin/projects'
@@ -14,7 +15,7 @@ import {
   type DeleteResourceType,
 } from '@/lib/validations/admin-api'
 
-/** 세션·프로젝트 id는 UUID 문자열, 기수·파트 id는 숫자여서 삭제 서비스에 맞춰 변환한다. */
+/** 세션·프로젝트·공지 id는 UUID 문자열, 기수·파트 id는 숫자여서 삭제 서비스에 맞춰 변환한다. */
 const deleteServices: Record<
   DeleteResourceType,
   (actor: Actor, id: string) => Promise<ServiceResult<unknown>>
@@ -24,6 +25,7 @@ const deleteServices: Record<
   generations: (actor: Actor, id: string) =>
     deleteGeneration(actor, Number(id)),
   parts: (actor: Actor, id: string) => deletePart(actor, Number(id)),
+  announcements: (actor: Actor, id: string) => deleteAnnouncement(actor, id),
 }
 
 export async function deleteResourceAction(
