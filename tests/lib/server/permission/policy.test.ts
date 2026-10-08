@@ -33,6 +33,17 @@ describe('permission policy', () => {
     expect(isAllowed('CORE', 'delete', 'sessions')).toBe(true)
   })
 
+  it('lets only lead manage announcements', () => {
+    expect(isAllowed('LEAD', 'get', 'announcementsPage')).toBe(true)
+    expect(isAllowed('LEAD', 'post', 'announcements')).toBe(true)
+    expect(isAllowed('LEAD', 'delete', 'announcements')).toBe(true)
+    for (const role of ['MEMBER', 'CORE', 'ALUMNUS'] as const) {
+      expect(isAllowed(role, 'get', 'announcementsPage')).toBe(false)
+      expect(isAllowed(role, 'post', 'announcements')).toBe(false)
+      expect(isAllowed(role, 'delete', 'announcements')).toBe(false)
+    }
+  })
+
   it('denies unverified all permissions, even on own data', () => {
     const own = { isOwner: true }
 

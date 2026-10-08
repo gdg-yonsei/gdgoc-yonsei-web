@@ -280,6 +280,46 @@ export const ko = {
   mcpAuditOk: '성공',
   mcpAuditError: '실패',
   mcpAuditEmpty: 'MCP 활동 기록이 없습니다.',
+  mcpGuideTitle: 'GYMS MCP',
+  mcpGuideDescription:
+    'Claude, ChatGPT, Codex 같은 AI 도구에 GYMS를 연결하면, 페이지를 오가지 않고 대화로 일정을 확인하고 정보를 고칠 수 있습니다.',
+  mcpGuideCapabilities: 'AI에게 맡길 수 있는 일',
+  mcpGuideCapabilitiesHint:
+    'AI는 내 역할과 같은 권한으로만 움직입니다. 아래 줄로 갈수록 위 줄의 작업에 더해 할 수 있는 일입니다.',
+  mcpGuideRoleEveryone: '모든 멤버',
+  mcpGuideRoleEveryoneTasks:
+    '세션 일정 확인과 참가 신청·취소, 프로젝트와 기수 조회, 내 프로필 확인과 수정',
+  mcpGuideRoleMember: 'Member, Core, Lead',
+  mcpGuideRoleMemberTasks: '프로젝트 등록, 내가 만든 프로젝트 수정',
+  mcpGuideRoleCore: 'Core, Lead',
+  mcpGuideRoleCoreTasks:
+    '멤버와 파트 조회, 세션·프로젝트·파트 만들기와 수정, 세션 참가자 관리',
+  mcpGuideRoleLead: 'Lead',
+  mcpGuideRoleLeadTasks: '기수 관리, 가입 승인, 역할 변경, 멤버 삭제',
+  mcpGuideExamples: '이렇게 물어보세요',
+  mcpGuideExample1: '이번 주에 어떤 세션이 있어?',
+  mcpGuideExample2: '다음 세션에 참가 신청해 줘.',
+  mcpGuideExample3: '내 프로필의 GitHub 아이디를 바꿔 줘.',
+  mcpGuideManageTitle: '이미 연결했나요?',
+  mcpGuideManageHint:
+    '내 계정을 쓰는 AI 도구와 그 도구가 한 작업을 확인하고, 필요 없는 연결은 끊을 수 있습니다.',
+  mcpGuideManageLink: '연결된 AI 도구 관리',
+  announcement: '공지',
+  announcements: '공지',
+  announcementsDescription:
+    '공지는 GYMS의 모든 멤버에게 모달로 한 번 표시됩니다. 멤버가 닫거나 버튼을 누르면 그 멤버에게는 다시 뜨지 않습니다.',
+  newAnnouncement: '공지 쓰기',
+  publishAnnouncement: '공지 보내기',
+  announcementTitle: '제목',
+  announcementBody: '내용',
+  announcementCtaLabel: '버튼 문구 (선택)',
+  announcementCtaHref: '버튼 링크 (선택)',
+  announcementCtaHrefHint:
+    '/admin 으로 시작하는 GYMS 경로만 쓸 수 있습니다. 예: /admin/mcp. 버튼 문구와 링크는 둘 다 채우거나 둘 다 비워 두세요.',
+  announcementReadCount: '{count}명 확인',
+  announcementsEmpty: '아직 보낸 공지가 없습니다',
+  announcementsEmptyHint:
+    '공지를 쓰면 멤버가 다음에 GYMS에 들어올 때 모달로 보게 됩니다.',
   notFoundTitle: '페이지를 찾을 수 없습니다',
   notFoundHint: '항목이 삭제되었거나 주소가 잘못되었을 수 있습니다.',
   backToDashboard: '대시보드로 돌아가기',
