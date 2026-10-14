@@ -41,7 +41,6 @@
     "@formatjs/intl-localematcher": "^0.9.0",
     "@heroicons/react": "^2.2.0",
     "@modelcontextprotocol/server": "2.1.0",
-    "@next/third-parties": "^16.3.8",
     "@tailwindcss/postcss": "^4.3.3",
     "animejs": "^4.5.0",
     "better-auth": "^1.7.7",

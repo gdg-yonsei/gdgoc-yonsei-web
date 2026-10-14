@@ -4,15 +4,14 @@ import type { Metadata, Viewport } from 'next'
 import '../../site.css'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { Suspense } from 'react'
+import AnalyticsTracker from '@/app/components/site/analytics-tracker'
 import { googleSansCode, googleSansFlex } from '@/app/fonts'
 import { chromeCopy, siteMetadataCopy } from '@/lib/contents/site-copy'
 import { cn } from '@/lib/cn'
 import { localeStaticParams } from '@/lib/i18n'
 import { getLocale } from '@/lib/i18n/server'
 import { rootMetadata, rootViewport } from '@/lib/seo/metadata'
-
-const GA_MEASUREMENT_ID = 'G-D77HTXJVT8'
 
 export function generateStaticParams() {
   return localeStaticParams()
@@ -58,7 +57,9 @@ export default async function LocaleLayout({
           {children}
         </main>
         <Footer lang={lang} />
-        <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   )

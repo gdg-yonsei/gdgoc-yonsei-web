@@ -39,7 +39,6 @@ minimumReleaseAgeExclude:
   - '@next/swc-linux-x64-musl@16.3.6'
   - '@next/swc-win32-arm64-msvc@16.3.6'
   - '@next/swc-win32-x64-msvc@16.3.6'
-  - '@next/third-parties@16.3.6'
   - eslint-config-next@16.3.6
   - next@16.3.6
   - resend@6.29.0
