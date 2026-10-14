@@ -21,11 +21,25 @@ async function analyticsMigrationSql(): Promise<string[]> {
   return statements.map((statement) => statement.trim()).filter(Boolean)
 }
 
-/** 테스트마다 새 DB를 만든다. `vi.mock('@/db')`에서 `db`로 넘겨 서비스 코드를 그대로 실행한다. */
-export async function createAnalyticsTestDb() {
+async function startDb() {
   const client = new PGlite()
   for (const statement of await analyticsMigrationSql()) {
     await client.exec(statement)
   }
   return { client, db: drizzle(client, { schema: analyticsSchema }) }
+}
+
+let shared: ReturnType<typeof startDb> | null = null
+
+/**
+ * 테스트마다 빈 분석 테이블을 돌려준다. `vi.mock('@/db')`에서 `db`로 넘겨 서비스 코드를 그대로 실행한다.
+ * WASM Postgres는 시작이 느려(부하가 걸리면 10초 이상) 테스트 파일마다 한 번만 띄우고 테이블만 비운다.
+ */
+export async function createAnalyticsTestDb() {
+  shared ??= startDb()
+  const instance = await shared
+  await instance.client.exec(
+    'TRUNCATE analytics_events, analytics_page_views, analytics_sessions RESTART IDENTITY CASCADE'
+  )
+  return instance
 }
