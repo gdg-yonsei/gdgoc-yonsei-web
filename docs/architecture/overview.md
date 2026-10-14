@@ -18,6 +18,7 @@ GDGoC Yonsei 웹은 하나의 Next.js 16 앱 안에 세 가지 제품을 담고 
 - 캐시와 무효화: [`caching.md`](./caching.md)
 - 이미지 업로드: [`uploads.md`](./uploads.md)
 - MCP 서버: [`mcp.md`](./mcp.md)
+- 방문 분석: [`analytics.md`](./analytics.md)
 - CI/CD와 배포: [`ci-cd.md`](./ci-cd.md)
 - 개발 환경: [`../development.md`](../development.md), 인수인계 메모: [`../handoff.md`](../handoff.md)
 
@@ -232,6 +233,8 @@ lib/
     uploads/             MCP 업로드(매직 바이트, SSRF 방어, 한도, 토큰)
     actions/, form-data/ Server Action 공통 실행기와 FormData 파서
     env.ts, env-core.ts  환경 변수 검증
+  analytics/             방문 분석 트래커(클라이언트)와 공용 이벤트 타입
+  server/analytics/      수집 API 처리(검증·보강·저장·정리)
   mcp/                   MCP 서버, 도구, 감사 로그, 동의 화면 로직
   site/                  공개 사이트 도메인 로직(순수 함수: 경로, 필터, 세션 로그, JSON-LD …)
   format/, i18n/         날짜·이름 포매터, 언어 유틸
