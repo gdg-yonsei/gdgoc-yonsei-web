@@ -73,7 +73,9 @@ export default function TimeSeriesChart({
               borderRadius: 8,
               color: 'var(--ink)',
             }}
-            labelFormatter={(value) => formatBucketLabel(String(value), locale)}
+            labelFormatter={(value) =>
+              typeof value === 'string' ? formatBucketLabel(value, locale) : ''
+            }
             formatter={(value) => valueFormat(Number(value))}
           />
           {showLegend && (
