@@ -113,7 +113,9 @@ export default function OverviewView({
           rows: chartData.map((row) => [
             formatBucketLabel(row.bucket, locale),
             format(metric, row.current),
-            ...(row.previous !== undefined ? [format(metric, row.previous)] : []),
+            ...(row.previous !== undefined
+              ? [format(metric, row.previous)]
+              : []),
           ]),
         }}
         actions={
