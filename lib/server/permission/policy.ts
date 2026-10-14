@@ -23,6 +23,7 @@ export type ResourceType =
   | 'partsPage'
   | 'announcements'
   | 'announcementsPage'
+  | 'analyticsPage'
 
 // true는 항상 허용, own은 요청자 ID와 데이터 소유자 ID가 같을 때만 허용한다.
 type Rule = true | 'own'
@@ -36,6 +37,7 @@ const BASE_PAGES = {
   profilePage: true,
   projectsPage: true,
   sessionsPage: true,
+  analyticsPage: true,
 } as const
 
 /** 역할별 허용 표. 키가 없는 작업은 거부된다. */

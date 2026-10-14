@@ -13,6 +13,7 @@ export type NavigationKey =
   | 'sessions'
   | 'projects'
   | 'announcements'
+  | 'analytics'
   | 'profile'
 
 export interface NavigationItem {
@@ -57,6 +58,12 @@ export default async function getAdminNavigationItems(
       name: t.projects,
       path: localizeAdminHref('/admin/projects', locale),
       dataResource: 'projectsPage',
+    },
+    {
+      key: 'analytics',
+      name: t.analytics,
+      path: localizeAdminHref('/admin/analytics', locale),
+      dataResource: 'analyticsPage',
     },
     {
       key: 'generations',
