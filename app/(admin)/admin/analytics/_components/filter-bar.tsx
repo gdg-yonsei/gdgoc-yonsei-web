@@ -70,7 +70,11 @@ export default function FilterBar() {
   const filter = parseAnalyticsFilter(Object.fromEntries(searchParams))
 
   function update(next: AnalyticsFilter) {
-    const query = analyticsFilterToSearchParams(next).toString()
+    const params = analyticsFilterToSearchParams(next)
+    // 페이지 상세의 경로는 필터가 아니라서 직렬화에 없다. 필터를 바꿔도 같은 페이지를 보게 남긴다.
+    const page = searchParams.get('page')
+    if (page) params.set('page', page)
+    const query = params.toString()
     startTransition(() => {
       router.replace(query ? `${pathname}?${query}` : pathname, {
         scroll: false,

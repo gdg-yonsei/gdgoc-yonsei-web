@@ -67,6 +67,15 @@ describe('FilterBar', () => {
       { scroll: false }
     )
   })
+  it('keeps the page detail path when a filter changes', async () => {
+    navigation.search = 'page=%2Fko'
+    renderWithI18n(<FilterBar />)
+    await userEvent.selectOptions(screen.getByLabelText('Device'), 'desktop')
+    expect(navigation.replace).toHaveBeenLastCalledWith(
+      '/ko/admin/analytics/acquisition?device=desktop&page=%2Fko',
+      { scroll: false }
+    )
+  })
 })
 
 describe('AnalyticsTabs', () => {
