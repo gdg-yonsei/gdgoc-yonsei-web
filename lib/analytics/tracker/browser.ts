@@ -2,6 +2,7 @@
 import { ANALYTICS_ENDPOINT } from '@/lib/analytics/constants'
 import type { KeyValueStorage } from '@/lib/analytics/tracker/identity'
 import { createTracker, type Tracker } from '@/lib/analytics/tracker/tracker'
+import { observeWebVitals } from '@/lib/analytics/tracker/web-vitals'
 
 let tracker: Tracker | null = null
 
@@ -59,6 +60,8 @@ export function getBrowserTracker(): Tracker | null {
   if (typeof window === 'undefined') return null
   if (!tracker) {
     const { storage, persistent } = readBrowserStorage()
+    // 트래커보다 먼저 등록해야 탭이 숨겨질 때 지표가 트래커의 전송보다 먼저 큐에 들어간다.
+    observeWebVitals(window, (metric) => tracker?.reportWebVital(metric))
     tracker = createTracker({
       window,
       storage,

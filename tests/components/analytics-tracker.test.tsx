@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const pathname = vi.hoisted(() => ({ value: '/ko' }))
 
 vi.mock('next/navigation', () => ({ usePathname: () => pathname.value }))
-vi.mock('next/web-vitals', () => ({ useReportWebVitals: vi.fn() }))
 
 import AnalyticsTracker from '@/app/components/site/analytics-tracker'
 
