@@ -69,7 +69,9 @@ export default function RealtimeCard({
                 borderRadius: 8,
                 color: 'var(--ink)',
               }}
-              labelFormatter={(value) => `-${String(value)}m`}
+              labelFormatter={(value) =>
+                typeof value === 'number' ? `-${value}m` : ''
+              }
             />
             <Bar
               dataKey={'views'}
