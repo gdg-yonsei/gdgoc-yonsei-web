@@ -22,6 +22,7 @@ import * as oauthSchema from './schema/oauth'
 import * as mcpAuditLogSchema from './schema/mcp-audit-log'
 import * as mcpImageUploadSchema from './schema/mcp-image-upload'
 import * as announcementsSchema from './schema/announcements'
+import * as analyticsSchema from './schema/analytics'
 import { getDatabaseEnv } from '@/lib/server/env-core'
 
 const databaseEnv = getDatabaseEnv()
@@ -54,6 +55,7 @@ export const db = drizzle(client, {
     ...mcpAuditLogSchema,
     ...mcpImageUploadSchema,
     ...announcementsSchema,
+    ...analyticsSchema,
   },
 })
 

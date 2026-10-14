@@ -267,6 +267,13 @@
       "when": 1791455375631,
       "tag": "0037_seed_mcp_announcement",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792015095741,
+      "tag": "0038_add_analytics",
+      "breakpoints": true
     }
   ]
 }
