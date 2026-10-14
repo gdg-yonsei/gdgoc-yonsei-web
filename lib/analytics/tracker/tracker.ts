@@ -170,8 +170,9 @@ export function createTracker(environment: TrackerEnvironment): Tracker {
   }
 
   function onClick(event: MouseEvent) {
-    if (!current || !allowed() || !(event.target instanceof win.Element)) return
-    const element = event.target.closest(`a[href], [${CTA_ATTRIBUTE}]`)
+    const { target } = event
+    if (!current || !allowed() || !(target instanceof Element)) return
+    const element = target.closest(`a[href], [${CTA_ATTRIBUTE}]`)
     if (!element) return
     const click = classifyClick(
       {
