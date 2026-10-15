@@ -71,6 +71,9 @@ export function createTracker(environment: TrackerEnvironment): Tracker {
   const doc = win.document
   const queue = createEventQueue(environment.send, now)
   let current: CurrentPage | null = null
+  // Web Vitals는 전체 페이지 로드 한 번에 대한 값이다. soft navigation 뒤에 보고돼도 처음 연 페이지에 붙인다.
+  let landing: Pick<CurrentPage, 'pageViewId' | 'sessionId' | 'path'> | null =
+    null
   let scrollFrame = 0
 
   const allowed = () => isTrackingAllowed(win.navigator, storage)
@@ -124,6 +127,7 @@ export function createTracker(environment: TrackerEnvironment): Tracker {
       maxScroll: 0,
       timer: createEngagementTimer(now, isActive()),
     }
+    landing ??= current
     updateScroll()
 
     queue.push(
@@ -155,14 +159,14 @@ export function createTracker(environment: TrackerEnvironment): Tracker {
   }
 
   function reportWebVital(metric: WebVitalReport) {
-    if (!current || !allowed()) return
+    if (!landing || !allowed()) return
     if (!(WEB_VITAL_NAMES as readonly string[]).includes(metric.name)) return
     if (!metric.rating || !RATINGS.includes(metric.rating)) return
     queue.push({
       type: 'web_vital',
-      pageViewId: current.pageViewId,
-      sessionId: current.sessionId,
-      path: current.path,
+      pageViewId: landing.pageViewId,
+      sessionId: landing.sessionId,
+      path: landing.path,
       metric: metric.name as WebVitalName,
       value: metric.value,
       rating: metric.rating as WebVitalRating,

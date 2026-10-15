@@ -186,6 +186,23 @@ describe('createTracker', () => {
     ])
   })
 
+  it('files web vitals under the landing page after in-app navigation', () => {
+    const t = start()
+    t.trackPageView()
+    const landing = events()[0]!
+    window.history.pushState(null, '', '/ko/session')
+    t.trackPageView()
+    t.reportWebVital({ name: 'LCP', value: 2100, rating: 'good' })
+    window.dispatchEvent(new Event('pagehide'))
+    expect(events().filter((event) => event.type === 'web_vital')).toEqual([
+      expect.objectContaining({
+        path: '/ko',
+        pageViewId: landing.pageViewId,
+        sessionId: landing.sessionId,
+      }),
+    ])
+  })
+
   it('sends nothing after the visitor opts out', () => {
     const storage = memoryStorage()
     storage.setItem('gyms_optout', '1')
