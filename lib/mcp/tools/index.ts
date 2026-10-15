@@ -1,6 +1,7 @@
 import 'server-only'
 
 import type { ToolDefinition } from '@/lib/mcp/registry'
+import { analyticsTools } from '@/lib/mcp/tools/analytics'
 import { whoami } from '@/lib/mcp/tools/context'
 import { generationTools } from '@/lib/mcp/tools/generations'
 import { imageTools } from '@/lib/mcp/tools/images'
@@ -19,4 +20,5 @@ export const ALL_TOOLS: ToolDefinition[] = [
   ...projectTools,
   ...sessionTools,
   ...imageTools,
+  ...analyticsTools,
 ]
