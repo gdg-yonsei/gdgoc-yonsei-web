@@ -76,6 +76,15 @@ describe('FilterBar', () => {
       { scroll: false }
     )
   })
+  it('keeps explore breakdowns when a filter changes', async () => {
+    navigation.search = 'range=7d&dims=channel%2Cos&metrics=users&limit=50'
+    renderWithI18n(<FilterBar />)
+    await userEvent.selectOptions(screen.getByLabelText('Device'), 'mobile')
+    expect(navigation.replace).toHaveBeenLastCalledWith(
+      '/ko/admin/analytics/acquisition?range=7d&device=mobile&dims=channel%2Cos&metrics=users&limit=50',
+      { scroll: false }
+    )
+  })
 })
 
 describe('AnalyticsTabs', () => {

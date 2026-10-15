@@ -29,6 +29,22 @@ const RANGE_LABELS: Record<(typeof RANGE_PRESETS)[number], AdminMessageKey> = {
   custom: 'analyticsRangeCustom',
 }
 
+// analyticsFilterToSearchParams가 쓰는 쿼리 키. 이 밖의 키는 다른 화면 상태라 필터 변경과 무관하게 유지한다.
+const FILTER_KEYS = new Set([
+  'range',
+  'from',
+  'to',
+  'compare',
+  'channel',
+  'device',
+  'country',
+  'locale',
+  'visitor',
+  'group',
+  'path',
+  'internal',
+])
+
 function Select({
   id,
   label,
@@ -71,9 +87,10 @@ export default function FilterBar() {
 
   function update(next: AnalyticsFilter) {
     const params = analyticsFilterToSearchParams(next)
-    // 페이지 상세의 경로는 필터가 아니라서 직렬화에 없다. 필터를 바꿔도 같은 페이지를 보게 남긴다.
-    const page = searchParams.get('page')
-    if (page) params.set('page', page)
+    // 페이지 상세 경로(page)·탐색 설정(dims, metrics, limit)은 필터가 아니라 직렬화에 없다. 필터를 바꿔도 남긴다.
+    searchParams.forEach((value, key) => {
+      if (!FILTER_KEYS.has(key)) params.set(key, value)
+    })
     const query = params.toString()
     startTransition(() => {
       router.replace(query ? `${pathname}?${query}` : pathname, {
