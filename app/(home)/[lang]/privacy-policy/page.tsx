@@ -221,7 +221,7 @@ export default async function PrivacyPolicyPage() {
                     <li>이메일: jhyunwoo0228@gmail.com</li>
                   </ul>
                 </section>
-                {};
+                {}
                 <section id="analytics">
                   <h2>8. 자동 수집 장치의 설치·운영 및 거부</h2>
                   <p>
@@ -507,7 +507,7 @@ export default async function PrivacyPolicyPage() {
                     <li>Email: jhyunwoo0228@gmail.com</li>
                   </ul>
                 </section>
-                {};
+                {}
                 <section id="analytics">
                   <h2>8. Automatic Data Collection and How to Opt Out</h2>
                   <p>
