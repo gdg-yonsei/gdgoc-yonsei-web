@@ -4,13 +4,17 @@ import {
   getImgProps,
   type ImageProps,
 } from 'next/dist/shared/lib/get-img-props'
+import { prepareImageConfig } from 'next/dist/shared/lib/image-config'
 import defaultLoader from 'next/dist/shared/lib/image-loader'
+
+// next/image와 마찬가지로 빌드 시 `images` 설정 값으로 치환된다.
+// Next 16.4부터 getImgProps는 기본값과 allSizes를 채운 설정을 받는다.
+const imageConfig = prepareImageConfig(process.env.__NEXT_IMAGE_OPTS as never)
 
 export default function StaticImage(props: ImageProps) {
   const { props: imgProps } = getImgProps(props, {
     defaultLoader,
-    // next/image와 마찬가지로 빌드 시 `images` 설정 값으로 치환된다.
-    imgConf: process.env.__NEXT_IMAGE_OPTS as never,
+    imgConf: imageConfig,
   })
   // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- alt는 getImgProps가 넣는다
   return <img {...imgProps} />
