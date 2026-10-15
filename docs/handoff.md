@@ -31,13 +31,14 @@
 
 ## 6. 운영 계정·외부 서비스
 
-| 서비스       | 용도                      | 확인할 곳                                                                                                                       |
-| ------------ | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Dokploy      | 운영 배포                 | [`architecture/ci-cd.md`](./architecture/ci-cd.md) "처음 한 번 설정"                                                            |
-| GitHub       | 저장소, Actions, OAuth 앱 | Settings → Environments `production`                                                                                            |
-| Google Cloud | Google OAuth 클라이언트   | 승인된 리디렉션 URI                                                                                                             |
-| Cloudflare   | R2 버킷, 이미지 도메인    | 버킷 CORS, 공개 도메인                                                                                                          |
-| Resend       | 메일 발송                 | 발신 도메인 인증                                                                                                                |
-| 방문 분석    | 공개 사이트 통계          | 자체 수집(`analytics_*` 테이블). GA4는 2026-10에 제거했고 과거 데이터는 gdgoc yonsei 구글 계정의 Google Analytics 화면에서 본다 |
+| 서비스         | 용도                                | 확인할 곳                                                                                                                       |
+| -------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Dokploy        | 운영 배포                           | [`architecture/ci-cd.md`](./architecture/ci-cd.md) "처음 한 번 설정"                                                            |
+| GitHub         | 저장소, Actions, OAuth 앱           | Settings → Environments `production`                                                                                            |
+| Google Cloud   | Google OAuth 클라이언트             | 승인된 리디렉션 URI                                                                                                             |
+| Cloudflare     | R2 버킷, 이미지 도메인              | 버킷 CORS, 공개 도메인                                                                                                          |
+| Resend         | 메일 발송                           | 발신 도메인 인증                                                                                                                |
+| 방문 분석      | 공개 사이트 통계                    | 자체 수집(`analytics_*` 테이블). GA4는 2026-10에 제거했고 과거 데이터는 gdgoc yonsei 구글 계정의 Google Analytics 화면에서 본다 |
+| Search Console | 검색어·노출·순위(GYMS 분석 검색 탭) | gdgoc yonsei 구글 계정. 서비스 계정 연결 방법은 [`architecture/analytics.md`](./architecture/analytics.md)                      |
 
 비밀값과 계정 권한은 저장소에 없습니다. 이전 관리자에게서 직접 넘겨 받아야 합니다.

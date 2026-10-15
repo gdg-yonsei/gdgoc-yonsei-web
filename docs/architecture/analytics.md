@@ -46,3 +46,31 @@ e2e에서 수집을 확인하려면 `tests/e2e/analytics-collection.spec.ts`처�
 - CSV: `GET /api/admin/analytics/export?report=…`(`ANALYTICS_TABLE_REPORTS`). 실시간: `GET /api/admin/analytics/realtime`.
 - 차트 색은 `app/admin.css`의 `--chart-*`(dataviz 스킬로 검증). 범주 색은 고정 순서, 8개를 넘으면 "Other"로 접는다.
 - 개발 데이터: `pnpm db:seed`가 90일치 가상 방문을 넣는다(방문자 ID 접두사 `de5eed00`).
+
+## Search Console
+
+검색 탭과 MCP `search_console_report`·`seo_opportunities`는 Search Console API를 쓴다(`lib/server/analytics/search-console/*`).
+
+### 연결 (LEAD, 한 번)
+
+1. Google Cloud(구글 로그인 클라이언트가 있는 프로젝트)에서 **Search Console API**를 사용 설정한다.
+2. 서비스 계정을 만들고 JSON 키를 내려받는다.
+3. Search Console → 사이트 속성 → 설정 → **사용자 및 권한**에서 서비스 계정 이메일을 **제한됨** 권한으로 추가한다.
+4. Dokploy 환경 변수: `GSC_CLIENT_EMAIL`(키의 `client_email`), `GSC_PRIVATE_KEY`(키의 `private_key`, 한 줄로 넣어도 `\n`이 줄바꿈으로 바뀐다),
+   `GSC_SITE_URL`(URL 접두어 속성이면 `https://gdgoc.yonsei.ac.kr/`, 도메인 속성이면 `sc-domain:gdgoc.yonsei.ac.kr`). 다시 배포한다.
+
+### 동작
+
+- 서비스 계정 JWT(RS256)를 `node:crypto`로 서명해 읽기 전용 토큰을 받는다. 토큰은 메모리에 1시간 보관한다.
+- 응답은 `'use cache: remote'`로 6시간 캐시한다(`cacheLife('searchConsole')`, 태그 `search-console`). 오류는 캐시되지 않는다.
+- 종료일은 서울 기준 어제로 자르고 `dataState: 'all'`로 받는다. 화면에 기준일을 표시한다.
+- 우리 필터 중 기기·페이지 경로만 Search Console 요청에 반영된다.
+- 개선 기회 기준은 `lib/analytics/seo.ts`에 있다(노출 50 이상·일반 클릭률의 절반 미만 / 8~20위·노출 20 이상 / 자연 검색 세션 5 이상·참여율 50% 미만).
+
+### 오류
+
+| 증상                           | 원인                                                     |
+| ------------------------------ | -------------------------------------------------------- |
+| "Search Console denied access" | 서비스 계정 이메일이 속성 사용자에 없다(3단계)           |
+| "rejected the request"         | `GSC_SITE_URL` 형식이 속성 종류와 다르거나 키가 잘못됐다 |
+| "quota is used up"             | API 할당량 초과. 캐시가 차면 줄어든다                    |
