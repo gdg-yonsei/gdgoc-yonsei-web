@@ -3,3 +3,5 @@ drizzle/meta/
 pnpm-lock.yaml
 # Vendored font stylesheet: keep the upstream formatting byte for byte.
 app/pretendard.css
+# Vendored bklit ui charts (shadcn registry): keep upstream formatting so updates diff cleanly.
+app/components/admin/charts/

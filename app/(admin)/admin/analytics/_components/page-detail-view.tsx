@@ -1,9 +1,11 @@
 'use client'
 
-/** 페이지 상세: 지표, 조회 추이, 스크롤 깊이, 이전·다음 페이지, 유입 채널. */
+/** 페이지 상세: 지표, 조회 추이, 이전→이 페이지→다음 흐름(Sankey), 스크롤 깊이 깔때기, 유입 채널. */
 import BarList from '@/app/(admin)/admin/analytics/_components/bar-list'
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
 import MetricTile from '@/app/(admin)/admin/analytics/_components/metric-tile'
+import PageFlowSankey from '@/app/(admin)/admin/analytics/_components/page-flow-sankey'
+import ScrollFunnel from '@/app/(admin)/admin/analytics/_components/scroll-funnel'
 import TimeSeriesChart from '@/app/(admin)/admin/analytics/_components/time-series-chart'
 import {
   formatBucketLabel,
@@ -32,6 +34,15 @@ export default function PageDetailView({
       : value === EXIT
         ? t('analyticsExitTarget')
         : value
+
+  const previous = data.previousPages.map((row) => ({
+    label: flowLabel(row.path),
+    value: row.views,
+  }))
+  const next = data.nextPages.map((row) => ({
+    label: flowLabel(row.path),
+    value: row.views,
+  }))
 
   return (
     <div className={'flex flex-col gap-4'}>
@@ -84,42 +95,72 @@ export default function PageDetailView({
           valueFormat={(value) => formatNumber(value, locale)}
         />
       </ChartFrame>
-      <div className={'grid gap-4 lg:grid-cols-2 xl:grid-cols-4'}>
-        <section className={'admin-card flex flex-col gap-3'}>
-          <h3 className={'type-title text-ink'}>{t('analyticsScrollDepth')}</h3>
-          <BarList
-            valueLabel={t('analyticsScrollDepth')}
+      <ChartFrame
+        title={t('analyticsPageFlow')}
+        summary={`${t('analyticsPreviousPages')}: ${previous.map((row) => row.label).join(', ')}. ${t('analyticsNextPages')}: ${next.map((row) => row.label).join(', ')}`}
+        table={{
+          columns: ['', t('analyticsPage'), t('analyticsViews')],
+          rows: [
+            ...previous.map((row) => [
+              t('analyticsPreviousPages'),
+              row.label,
+              formatNumber(row.value, locale),
+            ]),
+            ...next.map((row) => [
+              t('analyticsNextPages'),
+              row.label,
+              formatNumber(row.value, locale),
+            ]),
+          ],
+        }}
+      >
+        {/* 좁은 화면에서는 양쪽 경로 라벨이 흐름을 짓눌러, 같은 데이터를 순위 목록 두 개로 보여 준다. */}
+        <div className={'hidden sm:block'}>
+          <PageFlowSankey
+            page={path}
+            previous={previous}
+            next={next}
+            valueLabel={t('analyticsViews')}
+            format={(value) => formatNumber(value, locale)}
+          />
+        </div>
+        <div className={'flex flex-col gap-4 sm:hidden'}>
+          {[
+            { title: t('analyticsPreviousPages'), rows: previous },
+            { title: t('analyticsNextPages'), rows: next },
+          ].map((group) => (
+            <div key={group.title} className={'flex flex-col gap-2'}>
+              <h3 className={'type-caption text-ink-muted'}>{group.title}</h3>
+              <BarList
+                valueLabel={group.title}
+                format={(value) => formatNumber(value, locale)}
+                items={group.rows}
+              />
+            </div>
+          ))}
+        </div>
+      </ChartFrame>
+      <div className={'grid gap-4 lg:grid-cols-2'}>
+        <ChartFrame
+          title={t('analyticsScrollDepth')}
+          summary={data.scrollDepth
+            .map(
+              (step) => `${step.threshold}% ${formatPercent(step.rate, locale)}`
+            )
+            .join(', ')}
+          table={{
+            columns: [t('analyticsScrollDepth'), t('analyticsViews')],
+            rows: data.scrollDepth.map((step) => [
+              `${step.threshold}%`,
+              formatPercent(step.rate, locale),
+            ]),
+          }}
+        >
+          <ScrollFunnel
+            steps={data.scrollDepth}
             format={(value) => formatPercent(value, locale)}
-            items={data.scrollDepth.map((step) => ({
-              label: `${step.threshold}%`,
-              value: step.rate,
-            }))}
           />
-        </section>
-        <section className={'admin-card flex flex-col gap-3'}>
-          <h3 className={'type-title text-ink'}>
-            {t('analyticsPreviousPages')}
-          </h3>
-          <BarList
-            valueLabel={t('analyticsPreviousPages')}
-            format={(value) => formatNumber(value, locale)}
-            items={data.previousPages.map((row) => ({
-              label: flowLabel(row.path),
-              value: row.views,
-            }))}
-          />
-        </section>
-        <section className={'admin-card flex flex-col gap-3'}>
-          <h3 className={'type-title text-ink'}>{t('analyticsNextPages')}</h3>
-          <BarList
-            valueLabel={t('analyticsNextPages')}
-            format={(value) => formatNumber(value, locale)}
-            items={data.nextPages.map((row) => ({
-              label: flowLabel(row.path),
-              value: row.views,
-            }))}
-          />
-        </section>
+        </ChartFrame>
         <section className={'admin-card flex flex-col gap-3'}>
           <h3 className={'type-title text-ink'}>{t('analyticsChannel')}</h3>
           <BarList

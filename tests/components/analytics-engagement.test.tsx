@@ -1,18 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('recharts', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('recharts')>()),
-  ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
-    <div style={{ width: 600, height: 280 }}>{children}</div>
-  ),
-}))
-
+import { describe, expect, it } from 'vitest'
 import EngagementView from '@/app/(admin)/admin/analytics/_components/engagement-view'
 import PageDetailView from '@/app/(admin)/admin/analytics/_components/page-detail-view'
 import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
 import { getAdminMessages } from '@/lib/admin-i18n'
 import { DEFAULT_ANALYTICS_FILTER } from '@/lib/analytics/filters'
+import { stubResizeObserver } from '@/tests/helpers/resize-observer'
+
+stubResizeObserver()
 
 function withI18n(node: React.ReactNode) {
   return (

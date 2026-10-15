@@ -1,6 +1,9 @@
 'use client'
 
-/** 성능 탭: Web Vitals 지표별 p75와 등급 분포, LCP·INP·CLS 추이(지표마다 따로 그려 단위를 섞지 않는다), 기기별, 느린 페이지. */
+/**
+ * 성능 탭: Web Vitals 지표별 p75와 등급 분포, LCP·INP·CLS 추이(지표마다 따로 그려 단위를 섞지 않는다), 기기별, 느린 페이지.
+ * 추이 차트 뒤에는 좋음·개선 필요·나쁨 기준 구간을 띠로 깔아 각 점이 어느 구간인지 바로 보이게 한다.
+ */
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
 import CsvLink from '@/app/(admin)/admin/analytics/_components/csv-link'
 import MetricTable from '@/app/(admin)/admin/analytics/_components/metric-table'
@@ -15,7 +18,7 @@ import { useAdminI18n } from '@/app/components/admin/admin-i18n-provider'
 import type { AdminMessageKey } from '@/lib/admin-i18n'
 import type { WebVitalName, WebVitalRating } from '@/lib/analytics/events'
 import type { AnalyticsFilter } from '@/lib/analytics/filters'
-import { rateWebVital } from '@/lib/analytics/metrics'
+import { WEB_VITAL_THRESHOLDS, rateWebVital } from '@/lib/analytics/metrics'
 import type { WebVitalsReport } from '@/lib/server/analytics/queries/vitals'
 
 const RATING_LABEL: Record<WebVitalRating, AdminMessageKey> = {
@@ -82,6 +85,11 @@ export default function PerformanceView({
       <div className={'grid gap-4 xl:grid-cols-3'}>
         {TREND_METRICS.map((metric) => {
           const points = data.series.filter((point) => point.metric === metric)
+          const threshold = WEB_VITAL_THRESHOLDS[metric]
+          const top = Math.max(
+            threshold.poor * 1.5,
+            ...points.map((point) => point.p75 ?? 0)
+          )
           return (
             <ChartFrame
               key={metric}
@@ -108,6 +116,26 @@ export default function PerformanceView({
                   xKey={'bucket'}
                   series={[{ key: 'p75', label: `${metric} p75` }]}
                   valueFormat={(value) => formatVital(metric, value)}
+                  bands={[
+                    {
+                      from: 0,
+                      to: threshold.good,
+                      color: 'var(--status-good)',
+                      label: labels.good,
+                    },
+                    {
+                      from: threshold.good,
+                      to: threshold.poor,
+                      color: 'var(--status-warning)',
+                      label: labels.needsImprovement,
+                    },
+                    {
+                      from: threshold.poor,
+                      to: top,
+                      color: 'var(--status-critical)',
+                      label: labels.poor,
+                    },
+                  ]}
                   height={200}
                 />
               )}

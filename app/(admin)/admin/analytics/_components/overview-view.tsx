@@ -1,11 +1,12 @@
 'use client'
 
-/** 개요 탭 본문: 지표 타일 6개, 지표를 고르는 추이 차트, 상위 채널·페이지·기기. 데이터는 서버에서 받은 직렬화 값이다. */
+/** 개요 탭 본문: 지표 타일 6개, 지표를 고르는 추이 차트, 상위 채널·페이지 목록과 기기 비중 도넛. 데이터는 서버에서 받은 직렬화 값이다. */
 import { useState } from 'react'
 import BarList from '@/app/(admin)/admin/analytics/_components/bar-list'
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
 import MetricTile from '@/app/(admin)/admin/analytics/_components/metric-tile'
 import { ReportEmpty } from '@/app/(admin)/admin/analytics/_components/report-states'
+import ShareDonut from '@/app/(admin)/admin/analytics/_components/share-donut'
 import TimeSeriesChart from '@/app/(admin)/admin/analytics/_components/time-series-chart'
 import {
   formatBucketLabel,
@@ -162,11 +163,18 @@ export default function OverviewView({
             }))}
           />
         </section>
-        <TopList
-          title={t('analyticsDevices')}
-          rows={data.devices}
-          valueLabel={t('analyticsSessions')}
-        />
+        <section className={'admin-card flex flex-col gap-3'}>
+          <h2 className={'type-title text-ink'}>{t('analyticsDevices')}</h2>
+          <ShareDonut
+            items={data.devices.map((row) => ({
+              label: row.name,
+              value: row.sessions,
+            }))}
+            totalLabel={t('analyticsSessions')}
+            otherLabel={t('analyticsOther')}
+            format={(value) => formatNumber(value, locale)}
+          />
+        </section>
       </div>
     </div>
   )

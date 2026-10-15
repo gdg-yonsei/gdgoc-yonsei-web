@@ -60,5 +60,7 @@ export default defineConfig([
     'playwright-report/**',
     'test-results/**',
     '.superpowers/**',
+    // shadcn CLI로 받은 bklit ui 차트 원본. 업스트림과 비교·갱신하기 쉽게 고치지 않고 둔다.
+    'app/components/admin/charts/**',
   ]),
 ])
