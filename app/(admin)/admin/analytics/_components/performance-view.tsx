@@ -95,16 +95,22 @@ export default function PerformanceView({
                 ]),
               }}
             >
-              <TimeSeriesChart
-                data={points.map((point) => ({
-                  bucket: point.bucket,
-                  p75: point.p75,
-                }))}
-                xKey={'bucket'}
-                series={[{ key: 'p75', label: `${metric} p75` }]}
-                valueFormat={(value) => formatVital(metric, value)}
-                height={200}
-              />
+              {points.length === 0 ? (
+                <p className={'type-body-sm text-ink-muted py-8 text-center'}>
+                  {t('analyticsNoData')}
+                </p>
+              ) : (
+                <TimeSeriesChart
+                  data={points.map((point) => ({
+                    bucket: point.bucket,
+                    p75: point.p75,
+                  }))}
+                  xKey={'bucket'}
+                  series={[{ key: 'p75', label: `${metric} p75` }]}
+                  valueFormat={(value) => formatVital(metric, value)}
+                  height={200}
+                />
+              )}
             </ChartFrame>
           )
         })}

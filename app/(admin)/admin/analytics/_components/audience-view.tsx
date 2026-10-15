@@ -107,13 +107,17 @@ export default function AudienceView({
                 <tr>
                   <th
                     scope={'col'}
-                    className={'text-ink-muted pr-2 text-left font-normal'}
+                    className={
+                      'text-ink-muted pr-2 text-left font-normal whitespace-nowrap'
+                    }
                   >
                     {t('analyticsCohort')}
                   </th>
                   <th
                     scope={'col'}
-                    className={'text-ink-muted px-1 font-normal'}
+                    className={
+                      'text-ink-muted px-1 font-normal whitespace-nowrap'
+                    }
                   >
                     {t('analyticsUsers')}
                   </th>
@@ -136,7 +140,7 @@ export default function AudienceView({
                     <th
                       scope={'row'}
                       className={
-                        'text-ink pr-2 text-left font-normal tabular-nums'
+                        'text-ink pr-2 text-left font-normal whitespace-nowrap tabular-nums'
                       }
                     >
                       {row.cohort}

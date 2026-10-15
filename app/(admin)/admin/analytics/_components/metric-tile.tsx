@@ -65,7 +65,9 @@ export default function MetricTile({
       }
     >
       <span className={'type-caption text-ink-muted'}>{label}</span>
-      <span className={'type-heading-1 text-ink'}>{value}</span>
+      <span className={'type-heading-2 text-ink whitespace-nowrap'}>
+        {value}
+      </span>
       {signed && (
         <span className={'type-caption flex flex-wrap items-center gap-1'}>
           <span

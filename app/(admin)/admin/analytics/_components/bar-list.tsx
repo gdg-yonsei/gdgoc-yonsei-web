@@ -23,7 +23,7 @@ export default function BarList({
       {items.map((item) => {
         const width = max > 0 ? `${(item.value / max) * 100}%` : '0%'
         const label = (
-          <span className={'text-ink truncate'} title={item.label}>
+          <span className={'text-ink block truncate'} title={item.label}>
             {item.label}
           </span>
         )
@@ -48,7 +48,9 @@ export default function BarList({
               {item.href ? (
                 <Link
                   href={item.href}
-                  className={'hover:underline focus-visible:underline'}
+                  className={
+                    'block min-w-0 hover:underline focus-visible:underline'
+                  }
                 >
                   {label}
                 </Link>
@@ -56,7 +58,7 @@ export default function BarList({
                 label
               )}
               {item.secondary && (
-                <span className={'type-caption text-ink-muted truncate'}>
+                <span className={'type-caption text-ink-muted block truncate'}>
                   {item.secondary}
                 </span>
               )}

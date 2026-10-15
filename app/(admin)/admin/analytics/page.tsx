@@ -28,7 +28,7 @@ export default async function AnalyticsOverviewPage({
   ])
 
   return (
-    <div className={'grid gap-4 xl:grid-cols-[1fr_320px]'}>
+    <div className={'grid items-start gap-4 xl:grid-cols-[1fr_320px]'}>
       <div className={'min-w-0'}>
         {overview.ok ? (
           <OverviewView data={overview.data} filter={filter} />

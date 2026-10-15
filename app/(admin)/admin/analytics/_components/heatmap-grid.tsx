@@ -55,7 +55,7 @@ export default function HeatmapGrid({
                     key={column}
                     aria-label={`${row} ${column}: ${format(value)}`}
                     title={`${row} ${column}: ${format(value)}`}
-                    className={'size-5 min-w-5 rounded-[3px]'}
+                    className={'size-4 min-w-4 rounded-[3px]'}
                     style={{
                       background:
                         level === 0

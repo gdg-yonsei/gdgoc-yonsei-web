@@ -81,7 +81,11 @@ export default function TimeSeriesChart({
           {showLegend && (
             <Legend
               iconType={'plainline'}
-              wrapperStyle={{ color: 'var(--ink-secondary)', fontSize: 12 }}
+              wrapperStyle={{ fontSize: 12 }}
+              // 범례 글자는 시리즈 색이 아니라 잉크색이다. 색은 옆의 선 표시가 맡는다.
+              formatter={(value) => (
+                <span style={{ color: 'var(--ink-secondary)' }}>{value}</span>
+              )}
             />
           )}
           {compareKey && (
