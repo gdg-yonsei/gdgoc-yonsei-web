@@ -17,12 +17,12 @@ test.describe('member', () => {
       await sql`
         insert into analytics_sessions (id, "visitorId", "startedAt", "lastSeenAt", "isNewVisitor", "isInternal",
           "landingPath", "referrerHost", channel, "deviceType", browser, os, country)
-        values (${sessionId}, ${visitorId}, now() at time zone 'utc' - interval '1 hour', now() at time zone 'utc',
+        values (${sessionId}, ${visitorId}, now() at time zone 'utc' - interval '1 day', now() at time zone 'utc',
           true, false, '/ko/e2e-analytics', 'google.com', 'Organic Search', 'mobile', 'Safari', 'iOS', 'KR')`
       await sql`
         insert into analytics_page_views (id, "sessionId", "visitorId", "occurredAt", sequence, path, locale, title,
           "engagementMs", "maxScrollPercent")
-        values (${randomUUID()}, ${sessionId}, ${visitorId}, now() at time zone 'utc' - interval '1 hour', 1,
+        values (${randomUUID()}, ${sessionId}, ${visitorId}, now() at time zone 'utc' - interval '1 day', 1,
           '/ko/e2e-analytics', 'ko', 'E2E 분석 | GDGoC Yonsei', 30000, 80)`
 
       await page.goto('/admin/analytics?range=7d')

@@ -1,6 +1,7 @@
 /**
  * 보고서 기간을 서울 날짜 경계로 계산한다. 서울은 일광 절약 시간이 없어 UTC+9 고정 오프셋으로 충분하다.
  * 끝은 포함하지 않는다(`[start, end)`). 직전 기간은 같은 길이로 바로 앞이다.
+ * 7일·28일·90일·12개월은 GA4처럼 어제까지다. 오늘의 일부만 넣으면 직전 기간과의 비교가 늘 낮게 나온다.
  */
 import { RETENTION_MONTHS } from '@/lib/analytics/constants'
 import type { AnalyticsFilter } from '@/lib/analytics/filters'
@@ -84,9 +85,11 @@ export function resolveDateRange(
     return build(start, Math.max(end, start + DAY_MS))
   }
 
+  if (filter.range === 'today') return build(tomorrow - DAY_MS, tomorrow)
   const days =
     filter.range === 'custom' ? PRESET_DAYS['28d'] : PRESET_DAYS[filter.range]
-  return build(tomorrow - days * DAY_MS, tomorrow)
+  const today = tomorrow - DAY_MS
+  return build(today - days * DAY_MS, today)
 }
 
 /** SQL `bucketSql`과 같은 형식의 구간 키 목록. 빈 구간을 0으로 채울 때 쓴다. */

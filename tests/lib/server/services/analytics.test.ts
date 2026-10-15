@@ -81,12 +81,13 @@ describe('analytics service', () => {
       engagementRate: 0,
     })
     expect(result.data.series).toHaveLength(28)
-    expect(result.data.series.at(-2)).toMatchObject({
+    // 기간은 오늘을 빼고 어제까지다(직전 기간과 같은 길이의 온전한 날끼리 비교).
+    expect(result.data.series.at(-1)).toMatchObject({
       bucket: '2026-10-13',
       sessions: 1,
     })
-    expect(result.data.series.at(-1)).toMatchObject({
-      bucket: '2026-10-14',
+    expect(result.data.series.at(-2)).toMatchObject({
+      bucket: '2026-10-12',
       sessions: 0,
       engagementRate: 0,
     })

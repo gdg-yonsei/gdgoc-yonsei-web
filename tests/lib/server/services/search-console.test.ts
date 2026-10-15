@@ -55,10 +55,10 @@ beforeEach(() => {
 describe('searchDateWindow', () => {
   it('ends no later than yesterday in Seoul', () => {
     expect(searchDateWindow(DEFAULT_ANALYTICS_FILTER, NOW)).toEqual({
-      startDate: '2026-09-17',
+      startDate: '2026-09-16',
       endDate: '2026-10-13',
-      previousStartDate: '2026-08-20',
-      previousEndDate: '2026-09-16',
+      previousStartDate: '2026-08-19',
+      previousEndDate: '2026-09-15',
     })
   })
 })

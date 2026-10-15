@@ -20,12 +20,12 @@ describe('resolveDateRange', () => {
     expect(range).toMatchObject({ bucket: 'hour', days: 1 })
   })
 
-  it('covers 28 days including today with the previous 28 days before it', () => {
+  it('covers the 28 full days before today with the previous 28 days before it', () => {
     const range = resolveDateRange({ range: '28d', from: null, to: null }, NOW)
-    expect(range.start.toISOString()).toBe('2026-09-16T15:00:00.000Z')
-    expect(range.end.toISOString()).toBe('2026-10-14T15:00:00.000Z')
+    expect(range.start.toISOString()).toBe('2026-09-15T15:00:00.000Z')
+    expect(range.end.toISOString()).toBe('2026-10-13T15:00:00.000Z')
     expect(range.previousEnd.toISOString()).toBe(range.start.toISOString())
-    expect(range.previousStart.toISOString()).toBe('2026-08-19T15:00:00.000Z')
+    expect(range.previousStart.toISOString()).toBe('2026-08-18T15:00:00.000Z')
     expect(range).toMatchObject({ bucket: 'day', days: 28 })
   })
 
@@ -65,13 +65,13 @@ describe('bucketKeys', () => {
   it('lists Seoul days, hours and Monday weeks', () => {
     const range = resolveDateRange({ range: '7d', from: null, to: null }, NOW)
     expect(bucketKeys(range.start, range.end, 'day')).toEqual([
+      '2026-10-07',
       '2026-10-08',
       '2026-10-09',
       '2026-10-10',
       '2026-10-11',
       '2026-10-12',
       '2026-10-13',
-      '2026-10-14',
     ])
     const today = resolveDateRange(
       { range: 'today', from: null, to: null },
