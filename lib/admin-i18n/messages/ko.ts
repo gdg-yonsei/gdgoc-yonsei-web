@@ -447,6 +447,36 @@ export const ko = {
   analyticsDimReferrer: '참조 사이트',
   analyticsDimWeekday: '요일',
   analyticsDimHour: '시간(서울)',
-  analyticsSearchConsoleSoon:
-    'Search Console을 연결하면 여기에 검색 데이터가 나타납니다.',
+  analyticsSearchClicks: '클릭수',
+  analyticsSearchImpressions: '노출수',
+  analyticsSearchCtr: '클릭률',
+  analyticsSearchPosition: '평균 순위',
+  analyticsSearchQueries: '검색어',
+  analyticsSearchQuery: '검색어',
+  analyticsSearchPages: '검색 결과에 나온 페이지',
+  analyticsSearchDataThrough: 'Search Console 데이터 기준일 {date}',
+  analyticsSearchFilterNote:
+    'Search Console 데이터에는 기기와 페이지 경로 필터만 적용됩니다.',
+  analyticsSearchSetupTitle: 'Google Search Console 연결',
+  analyticsSearchSetupIntro:
+    '검색어·노출·순위는 Search Console에서 가져옵니다. GDGoC 구글 계정에 접근할 수 있는 LEAD가 한 번 연결하면 됩니다.',
+  analyticsSearchSetupStep1:
+    'Google Cloud(구글 로그인 클라이언트가 있는 프로젝트)에서 Search Console API를 사용 설정합니다.',
+  analyticsSearchSetupStep2: '서비스 계정을 만들고 JSON 키를 내려받습니다.',
+  analyticsSearchSetupStep3:
+    "Search Console에서 사이트 속성을 열고 설정 → 사용자 및 권한에서 서비스 계정 이메일을 '제한됨' 권한으로 추가합니다.",
+  analyticsSearchSetupStep4:
+    'Dokploy에 GSC_CLIENT_EMAIL, GSC_PRIVATE_KEY, GSC_SITE_URL을 등록하고 다시 배포합니다.',
+  analyticsSeoOpportunities: '개선 기회',
+  analyticsSeoLowCtr: '노출은 많은데 클릭이 적은 검색어',
+  analyticsSeoLowCtrHint:
+    '이 순위의 일반적인 클릭률의 절반에 못 미칩니다. 검색어에 맞게 페이지 제목과 설명을 고쳐 보세요.',
+  analyticsSeoStriking: '조금만 올리면 첫 페이지',
+  analyticsSeoStrikingHint:
+    '평균 순위 8~20위입니다. 페이지에 이 검색어 내용을 보강하고 관련 페이지에서 링크를 걸어 보세요.',
+  analyticsSeoLowEngagement: '검색으로 와서 금방 떠나는 페이지',
+  analyticsSeoLowEngagementHint:
+    '자연 검색 방문의 참여율이 50% 미만입니다. 검색 결과가 약속한 내용을 페이지가 바로 보여 주는지 확인하세요.',
+  analyticsSeoExpectedCtr: '일반 클릭률(참고치)',
+  analyticsSeoNone: '이 기간에는 눈에 띄는 항목이 없습니다.',
 } as const satisfies AdminMessages

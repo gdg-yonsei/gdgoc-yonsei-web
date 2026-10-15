@@ -455,6 +455,37 @@ export const en = {
   analyticsDimReferrer: 'Referring site',
   analyticsDimWeekday: 'Weekday',
   analyticsDimHour: 'Hour (Seoul)',
-  analyticsSearchConsoleSoon:
-    'Search Console data appears here once it is connected.',
+  analyticsSearchClicks: 'Clicks',
+  analyticsSearchImpressions: 'Impressions',
+  analyticsSearchCtr: 'CTR',
+  analyticsSearchPosition: 'Avg. position',
+  analyticsSearchQueries: 'Search queries',
+  analyticsSearchQuery: 'Query',
+  analyticsSearchPages: 'Pages in search results',
+  analyticsSearchDataThrough: 'Search Console data through {date}',
+  analyticsSearchFilterNote:
+    'Only the device and page path filters apply to Search Console data.',
+  analyticsSearchSetupTitle: 'Connect Google Search Console',
+  analyticsSearchSetupIntro:
+    'Search queries, impressions and rankings come from Search Console. A LEAD with access to the GDGoC Google account connects it once.',
+  analyticsSearchSetupStep1:
+    'In Google Cloud (the project that holds the Google sign-in client), enable the Search Console API.',
+  analyticsSearchSetupStep2:
+    'Create a service account and download its JSON key.',
+  analyticsSearchSetupStep3:
+    'In Search Console, open the site property, go to Settings → Users and permissions, and add the service account email with Restricted permission.',
+  analyticsSearchSetupStep4:
+    'Set GSC_CLIENT_EMAIL, GSC_PRIVATE_KEY and GSC_SITE_URL in Dokploy, then redeploy.',
+  analyticsSeoOpportunities: 'Improvement opportunities',
+  analyticsSeoLowCtr: 'Shown often, clicked rarely',
+  analyticsSeoLowCtrHint:
+    'CTR is under half the typical rate for this position. Rewrite the page title and description so they match the query.',
+  analyticsSeoStriking: 'Almost on page one',
+  analyticsSeoStrikingHint:
+    'Average position 8 to 20. Cover the query in the page and link to it from related pages.',
+  analyticsSeoLowEngagement: 'Search visitors leave quickly',
+  analyticsSeoLowEngagementHint:
+    'Engagement under 50% for visits from organic search. Check that the page answers what the search result promised.',
+  analyticsSeoExpectedCtr: 'Typical CTR (reference)',
+  analyticsSeoNone: 'Nothing stands out for this period.',
 } as const
