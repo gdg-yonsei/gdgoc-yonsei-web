@@ -39,6 +39,9 @@ const baseServerEnvSchema = z.object({
   R2_BUCKET_NAME: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
   REDIS_URL: redisUrlSchema.optional(),
+  GSC_CLIENT_EMAIL: z.string().email().optional(),
+  GSC_PRIVATE_KEY: z.string().min(1).optional(),
+  GSC_SITE_URL: z.string().min(1).optional(),
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
     .default('development'),
@@ -125,4 +128,23 @@ export function getR2BucketEnv() {
 
 export function getResendEnv() {
   return resendEnvSchema.parse(getBaseServerEnv())
+}
+
+export type SearchConsoleEnv = {
+  clientEmail: string
+  privateKey: string
+  siteUrl: string
+}
+
+/** Search Console 연동은 선택 기능이라 값이 하나라도 없으면 오류 대신 null이다. 배포 패널은 키를 한 줄로 받으므로 `\n`을 줄바꿈으로 되돌린다. */
+export function getSearchConsoleEnv(): SearchConsoleEnv | null {
+  const env = getBaseServerEnv()
+  if (!env.GSC_CLIENT_EMAIL || !env.GSC_PRIVATE_KEY || !env.GSC_SITE_URL) {
+    return null
+  }
+  return {
+    clientEmail: env.GSC_CLIENT_EMAIL,
+    privateKey: env.GSC_PRIVATE_KEY.replaceAll('\\n', '\n'),
+    siteUrl: env.GSC_SITE_URL,
+  }
 }

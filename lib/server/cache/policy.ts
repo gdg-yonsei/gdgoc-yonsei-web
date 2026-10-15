@@ -44,6 +44,12 @@ export const cacheLifeConfig = {
     revalidate: 60 * 60 * 6,
     expire: 60 * 60 * 24 * 7,
   },
+  // Search Console 데이터는 2~3일 늦게 쌓이고 API 할당량이 있어 길게 캐시한다.
+  searchConsole: {
+    stale: 60 * 60,
+    revalidate: 60 * 60 * 6,
+    expire: 60 * 60 * 24,
+  },
 } as const
 
 export const publicCachePolicy = {
