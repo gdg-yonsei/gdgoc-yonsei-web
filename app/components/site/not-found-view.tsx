@@ -12,6 +12,8 @@ const links = [
 export default function NotFoundView() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 text-center">
+      {/* 방문 분석 수집기가 이 조회를 404로 기록하는 표지(NOT_FOUND_MARKER_ATTRIBUTE) */}
+      <span hidden data-analytics-not-found="" />
       <div className="flex items-center gap-[0.12em] text-[clamp(4.5rem,18vw,12rem)]">
         <span className="bracket-slot" aria-hidden="true">
           <BracketPoster side="left" />

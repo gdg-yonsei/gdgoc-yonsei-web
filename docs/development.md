@@ -27,19 +27,20 @@ pnpm dev                  # http://localhost:3000
 
 ## 3. 환경 변수
 
-| 변수                                                                        | 필수      | 용도                                                                             |
-| --------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------- |
-| `AUTH_DRIZZLE_URL`                                                          | 예        | PostgreSQL 연결 문자열                                                           |
-| `BETTER_AUTH_SECRET`                                                        | 예        | 세션·JWT·MCP 업로드 토큰 서명 키(32자 이상)                                      |
-| `BETTER_AUTH_URL`                                                           | 예        | 인증 서버 origin(로컬은 `http://localhost:3000`). MCP 리소스 URL도 여기서 만든다 |
-| `NEXT_PUBLIC_SITE_URL`                                                      | 예        | 공개 사이트 origin(메타데이터, 사이트맵, 메일 링크)                              |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`                                  | 로그인 시 | GitHub OAuth 앱. 콜백: `{BETTER_AUTH_URL}/api/auth/callback/github`              |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                  | 로그인 시 | Google OAuth 클라이언트. 콜백: `{BETTER_AUTH_URL}/api/auth/callback/google`      |
-| `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `CLOUDFLARE_ACCOUNT_ID`, `R2_BUCKET_NAME` | 업로드 시 | Cloudflare R2                                                                    |
-| `NEXT_PUBLIC_IMAGE_URL`                                                     | 업로드 시 | R2 버킷 공개 도메인                                                              |
-| `RESEND_API_KEY`                                                            | 메일 시   | 세션 알림 메일                                                                   |
-| `REDIS_URL`                                                                 | 아니오    | 공유 캐시. `redis://` 또는 `rediss://`                                           |
-| `E2E_DISPOSABLE_DATABASE_URL`                                               | 아니오    | 로컬이 아닌 일회용 DB(CI 등)를 e2e·시드 대상으로 명시적으로 허용                 |
+| 변수                                                                        | 필수      | 용도                                                                                    |
+| --------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| `AUTH_DRIZZLE_URL`                                                          | 예        | PostgreSQL 연결 문자열                                                                  |
+| `BETTER_AUTH_SECRET`                                                        | 예        | 세션·JWT·MCP 업로드 토큰 서명 키(32자 이상)                                             |
+| `BETTER_AUTH_URL`                                                           | 예        | 인증 서버 origin(로컬은 `http://localhost:3000`). MCP 리소스 URL도 여기서 만든다        |
+| `NEXT_PUBLIC_SITE_URL`                                                      | 예        | 공개 사이트 origin(메타데이터, 사이트맵, 메일 링크)                                     |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`                                  | 로그인 시 | GitHub OAuth 앱. 콜백: `{BETTER_AUTH_URL}/api/auth/callback/github`                     |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                  | 로그인 시 | Google OAuth 클라이언트. 콜백: `{BETTER_AUTH_URL}/api/auth/callback/google`             |
+| `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `CLOUDFLARE_ACCOUNT_ID`, `R2_BUCKET_NAME` | 업로드 시 | Cloudflare R2                                                                           |
+| `NEXT_PUBLIC_IMAGE_URL`                                                     | 업로드 시 | R2 버킷 공개 도메인                                                                     |
+| `RESEND_API_KEY`                                                            | 메일 시   | 세션 알림 메일                                                                          |
+| `REDIS_URL`                                                                 | 아니오    | 공유 캐시. `redis://` 또는 `rediss://`                                                  |
+| `GSC_CLIENT_EMAIL`, `GSC_PRIVATE_KEY`, `GSC_SITE_URL`                       | 아니오    | Search Console 연동(GYMS 분석 검색 탭·MCP). 설정 방법: `docs/architecture/analytics.md` |
+| `E2E_DISPOSABLE_DATABASE_URL`                                               | 아니오    | 로컬이 아닌 일회용 DB(CI 등)를 e2e·시드 대상으로 명시적으로 허용                        |
 
 환경 변수는 `lib/server/env-core.ts`의 기능별 함수로 검증한다. 그 기능을 처음 쓸 때 빠진 값을 알려 주므로,
 R2·Resend 값이 없어도 공개 페이지 개발은 할 수 있다.

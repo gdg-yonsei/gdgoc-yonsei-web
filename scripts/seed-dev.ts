@@ -1,7 +1,12 @@
 // dev-seed- 마커가 있는 이전 시드만 지운다. TRUNCATE하지 않으며 일회용 DB가 아니면 실행을 거절한다.
 import 'dotenv/config'
-import { eq, inArray, like } from 'drizzle-orm'
+import { eq, inArray, like, sql } from 'drizzle-orm'
 import { db } from '../db'
+import {
+  analyticsEvents,
+  analyticsPageViews,
+  analyticsSessions,
+} from '../db/schema/analytics'
 import { generations } from '../db/schema/generations'
 import { parts } from '../db/schema/parts'
 import { projects } from '../db/schema/projects'
@@ -13,6 +18,7 @@ import { usersToParts } from '../db/schema/users-to-parts'
 import { usersToProjects } from '../db/schema/users-to-projects'
 import { userToSession } from '../db/schema/user-to-session'
 import { assertDisposableDatabase } from './lib/disposable-database'
+import { SEED_VISITOR_PREFIX, buildAnalyticsSeed } from './seed/analytics'
 import { buildSessionPlans } from './seed/helpers'
 
 const SEED_PREFIX = 'dev-seed-'
@@ -157,6 +163,12 @@ async function cleanupPreviousSeed() {
   }
 
   await db.delete(users).where(like(users.id, `${SEED_PREFIX}%`))
+  // 분석 시드는 방문자 ID 접두사로 구분한다. 세션을 지우면 조회·이벤트가 함께 지워진다.
+  await db
+    .delete(analyticsSessions)
+    .where(
+      like(sql`${analyticsSessions.visitorId}::text`, `${SEED_VISITOR_PREFIX}%`)
+    )
   // tags는 실데이터와 공유될 수 있으므로 삭제하지 않고 onConflictDoNothing으로 upsert한다.
 }
 
@@ -316,10 +328,41 @@ async function main() {
     )
   )
 
+  const analyticsSeed = buildAnalyticsSeed({
+    now: new Date(),
+    days: 90,
+    seed: 2026,
+    paths: [
+      '/ko',
+      '/en',
+      `/ko/session/${SEED_GENERATION_NAME}`,
+      `/ko/project/${SEED_GENERATION_NAME}`,
+      `/ko/member/${SEED_GENERATION_NAME}`,
+      '/ko/calendar',
+      '/en/session',
+    ],
+  })
+  // 한 번에 너무 많은 파라미터를 보내지 않게 나눠 넣는다.
+  for (let index = 0; index < analyticsSeed.sessions.length; index += 500) {
+    await db
+      .insert(analyticsSessions)
+      .values(analyticsSeed.sessions.slice(index, index + 500))
+  }
+  for (let index = 0; index < analyticsSeed.pageViews.length; index += 500) {
+    await db
+      .insert(analyticsPageViews)
+      .values(analyticsSeed.pageViews.slice(index, index + 500))
+  }
+  for (let index = 0; index < analyticsSeed.events.length; index += 500) {
+    await db
+      .insert(analyticsEvents)
+      .values(analyticsSeed.events.slice(index, index + 500))
+  }
+
   console.log(
     `Seeded: generation "${generation.name}", ${insertedParts.length} parts, ${
       memberRows.length + 1
-    } users, ${insertedSessions.length} sessions, ${attendanceRows.length} attendances, ${insertedProjects.length} projects.`
+    } users, ${insertedSessions.length} sessions, ${attendanceRows.length} attendances, ${insertedProjects.length} projects, ${analyticsSeed.sessions.length} analytics sessions, ${analyticsSeed.pageViews.length} page views.`
   )
   process.exit(0)
 }

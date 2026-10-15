@@ -22,6 +22,8 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     // The cold Next module graph can exceed Vitest's 5s default when isolated workers start together.
     testTimeout: 15_000,
+    // PGlite(WASM Postgres)를 띄우는 beforeEach가 병렬 실행 부하에서 10초 기본값을 넘는다.
+    hookTimeout: 30_000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

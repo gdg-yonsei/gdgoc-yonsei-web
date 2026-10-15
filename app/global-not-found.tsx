@@ -1,7 +1,10 @@
 /** 공통 루트 레이아웃이 없어 `<html>`·스타일·폰트를 직접 갖춘다.
- * 공개 페이지 내부의 `notFound()`는 언어별 사이트 셸 안에서 렌더링한다. */
+ * 공개 페이지 내부의 `notFound()`는 언어별 사이트 셸 안에서 렌더링한다.
+ * 공개 레이아웃 밖이라 방문 분석 수집기를 직접 렌더링한다. */
 import type { Metadata } from 'next'
 import './site.css'
+import { Suspense } from 'react'
+import AnalyticsTracker from '@/app/components/site/analytics-tracker'
 import NotFoundView from '@/app/components/site/not-found-view'
 import { googleSansCode, googleSansFlex } from '@/app/fonts'
 import { cn } from '@/lib/cn'
@@ -27,6 +30,9 @@ export default function GlobalNotFound() {
         <main>
           <NotFoundView />
         </main>
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   )

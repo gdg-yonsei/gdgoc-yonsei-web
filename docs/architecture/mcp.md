@@ -99,6 +99,7 @@ MCP 클라이언트 ──► POST /api/mcp (토큰 없음) ─► 401 + WWW-Aut
 | 프로젝트 | `list_projects`, `get_project`, `create_project`, `update_project`, `delete_project`                                                                         |
 | 세션     | `list_sessions`, `get_session`, `create_session`, `update_session`, `register_session`, `unregister_session`, `remove_session_participant`, `delete_session` |
 | 이미지   | `create_image_upload`, `complete_image_upload`, `import_image_from_url`                                                                                      |
+| 분석     | `analytics_overview`, `analytics_report`, `analytics_page_detail`, `search_console_report`, `seo_opportunities` (모두 읽기 전용, 승인된 모든 역할)           |
 
 - 수정 도구는 부분 수정이다. 빠진 필드는 현재 값을 유지한다.
 - 오프셋 없는 세션 시각은 서울 벽시계 시각으로 본다. 오프셋이 있으면 서울 시각으로 바꾼다.
@@ -106,6 +107,7 @@ MCP 클라이언트 ──► POST /api/mcp (토큰 없음) ─► 401 + WWW-Aut
 - 접근할 수 없는 `generationId`를 명시하면 `FORBIDDEN`이다(생략하면 기본 기수).
 - `list_sessions`에 `openForRegistration`을 주면 끝난 세션과 정원이 찬 세션을 뺀다. 각 행에 `participantCount`가 있다.
 - 날짜가 없는 오래된 세션을 `update_session`할 때는 `startAt`과 `endAt`을 함께 넣어야 한다.
+- 분석 도구의 필터 인자는 웹 분석 화면의 URL 쿼리와 같은 파서로 검증한다. Search Console이 연결되지 않았으면 검색 도구는 `NOT_FOUND`와 연결 방법을 돌려준다.
 
 ### 이미지 (최대 200MB, Cloudflare R2)
 

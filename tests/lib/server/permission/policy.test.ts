@@ -70,3 +70,17 @@ describe('permission policy', () => {
     expect(isAllowed('ALUMNUS', 'put', 'publicCache')).toBe(false)
   })
 })
+
+describe('analyticsPage', () => {
+  it.each(['MEMBER', 'CORE', 'LEAD', 'ALUMNUS'] as const)(
+    'lets %s open the analytics pages',
+    (role) => {
+      expect(isAllowed(role, 'get', 'analyticsPage')).toBe(true)
+    }
+  )
+
+  it('keeps unverified accounts out and grants no write access', () => {
+    expect(isAllowed('UNVERIFIED', 'get', 'analyticsPage')).toBe(false)
+    expect(isAllowed('LEAD', 'post', 'analyticsPage')).toBe(false)
+  })
+})

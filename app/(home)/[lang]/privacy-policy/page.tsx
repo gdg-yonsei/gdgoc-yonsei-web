@@ -7,6 +7,8 @@ import { createLocalizedMetadata } from '@/lib/seo/metadata'
 import { localeStaticParams } from '@/lib/i18n'
 import { getLocale } from '@/lib/i18n/server'
 import { localeHref } from '@/lib/site/routes'
+import AnalyticsOptOut from '@/app/components/site/analytics-opt-out'
+import { buttonClasses } from '@/app/components/site/button-link'
 
 export function generateStaticParams() {
   return localeStaticParams()
@@ -68,7 +70,6 @@ export default async function PrivacyPolicyPage() {
                   </p>
                   <hr />
                 </section>
-
                 {}
                 <nav aria-label="섹션 목록">
                   <h2>목차</h2>
@@ -99,11 +100,15 @@ export default async function PrivacyPolicyPage() {
                       <a href="#dpo">개인정보 보호책임자</a>
                     </li>
                     <li>
+                      <a href="#analytics">
+                        자동 수집 장치의 설치·운영 및 거부
+                      </a>
+                    </li>
+                    <li>
                       <a href="#change">개인정보처리방침의 변경</a>
                     </li>
                   </ol>
                 </nav>
-
                 {}
                 <section id="purpose">
                   <h2>1. 개인정보의 수집 및 이용 목적</h2>
@@ -128,7 +133,6 @@ export default async function PrivacyPolicyPage() {
                     </li>
                   </ul>
                 </section>
-
                 {}
                 <section id="items">
                   <h2>2. 수집하는 개인정보 항목 및 수집 방법</h2>
@@ -155,7 +159,6 @@ export default async function PrivacyPolicyPage() {
                     </p>
                   </div>
                 </section>
-
                 {}
                 <section id="retention">
                   <h2>3. 개인정보의 처리 및 보유 기간</h2>
@@ -173,7 +176,6 @@ export default async function PrivacyPolicyPage() {
                     </li>
                   </ul>
                 </section>
-
                 {}
                 <section id="outsourcing">
                   <h2>4. 개인정보의 제3자 제공 및 처리 위탁</h2>
@@ -190,7 +192,6 @@ export default async function PrivacyPolicyPage() {
                     </ul>
                   </div>
                 </section>
-
                 {}
                 <section id="rights">
                   <h2>5. 정보주체와 법정대리인의 권리·의무 및 행사 방법</h2>
@@ -199,7 +200,6 @@ export default async function PrivacyPolicyPage() {
                     할 수 있습니다.
                   </p>
                 </section>
-
                 {}
                 <section id="security">
                   <h2>6. 개인정보의 안전성 확보 조치</h2>
@@ -211,7 +211,6 @@ export default async function PrivacyPolicyPage() {
                     <li>물리적 조치: 전산실 접근통제</li>
                   </ul>
                 </section>
-
                 {}
                 <section id="dpo">
                   <h2>7. 개인정보 보호책임자</h2>
@@ -222,17 +221,70 @@ export default async function PrivacyPolicyPage() {
                     <li>이메일: jhyunwoo0228@gmail.com</li>
                   </ul>
                 </section>
-
+                {}
+                <section id="analytics">
+                  <h2>8. 자동 수집 장치의 설치·운영 및 거부</h2>
+                  <p>
+                    ‘GDGoC Yonsei’는 웹사이트를 개선하기 위해 방문 기록을
+                    자동으로 수집합니다. 이 정보만으로는 이용자가 누구인지 알 수
+                    없습니다.
+                  </p>
+                  <div>
+                    <h3>수집 항목</h3>
+                    <ul>
+                      <li>
+                        브라우저 저장소(localStorage)에 저장하는 무작위 방문자
+                        식별값
+                      </li>
+                      <li>방문한 페이지와 시각, 머문 시간, 스크롤 깊이</li>
+                      <li>유입 경로(이전 페이지 주소, 캠페인 정보)</li>
+                      <li>
+                        기기 종류, 브라우저, 운영체제, 화면 크기, 언어, 시간대
+                      </li>
+                      <li>페이지 로딩 성능 지표, 외부 링크와 주요 버튼 클릭</li>
+                    </ul>
+                    <p>
+                      IP 주소는 비정상적인 대량 요청을 막는 데에만 잠시 사용하고
+                      저장하지 않습니다.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>이용 목적 및 보유 기간</h3>
+                    <p>
+                      서비스 개선, 검색 노출 개선, 콘텐츠 기획에 사용하며
+                      수집일로부터 26개월이 지나면 지체 없이 파기합니다.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>거부 방법</h3>
+                    <p>
+                      아래 버튼으로 수집을 거부할 수 있습니다. 브라우저의
+                      GPC(Global Privacy Control) 설정을 켜거나 브라우저
+                      저장소를 삭제해도 됩니다. 수집을 거부해도 웹사이트
+                      이용에는 제한이 없습니다.
+                    </p>
+                    <AnalyticsOptOut
+                      buttonClassName={buttonClasses('solid')}
+                      copy={{
+                        enabled: '현재 방문 분석 수집이 켜져 있습니다.',
+                        disabled: '방문 분석 수집을 거부했습니다.',
+                        gpc: '브라우저의 GPC 설정에 따라 방문 분석을 수집하지 않습니다.',
+                        disable: '수집 거부',
+                        enable: '수집 허용',
+                      }}
+                    />
+                  </div>
+                </section>
                 {}
                 <section id="change">
-                  <h2>8. 개인정보처리방침의 변경</h2>
+                  <h2>9. 개인정보처리방침의 변경</h2>
                   <p>법령 및 방침 변경 시 공지사항을 통해 고지합니다.</p>
                   <div className="policy-note">
                     <p>
-                      <strong>공고일자:</strong> 2025년 8월 27일
+                      <strong>공고일자:</strong> 2026년 10월 14일
                     </p>
                     <p>
-                      <strong>시행일자:</strong> 2025년 8월 27일
+                      <strong>시행일자:</strong> 2026년 10월 14일
                     </p>
                   </div>
                 </section>
@@ -257,7 +309,6 @@ export default async function PrivacyPolicyPage() {
                   </p>
                   <hr />
                 </section>
-
                 {}
                 <nav aria-label="Table of Contents">
                   <h2>Table of Contents</h2>
@@ -299,11 +350,15 @@ export default async function PrivacyPolicyPage() {
                       <a href="#dpo">Data Protection Officer</a>
                     </li>
                     <li>
+                      <a href="#analytics">
+                        Automatic Data Collection and How to Opt Out
+                      </a>
+                    </li>
+                    <li>
                       <a href="#change">Changes to the Privacy Policy</a>
                     </li>
                   </ol>
                 </nav>
-
                 {}
                 <section id="purpose">
                   <h2>
@@ -334,7 +389,6 @@ export default async function PrivacyPolicyPage() {
                     </li>
                   </ul>
                 </section>
-
                 {}
                 <section id="items">
                   <h2>
@@ -364,7 +418,6 @@ export default async function PrivacyPolicyPage() {
                     </p>
                   </div>
                 </section>
-
                 {}
                 <section id="retention">
                   <h2>
@@ -387,7 +440,6 @@ export default async function PrivacyPolicyPage() {
                     </li>
                   </ul>
                 </section>
-
                 {}
                 <section id="outsourcing">
                   <h2>
@@ -415,7 +467,6 @@ export default async function PrivacyPolicyPage() {
                     </ul>
                   </div>
                 </section>
-
                 {}
                 <section id="rights">
                   <h2>
@@ -427,7 +478,6 @@ export default async function PrivacyPolicyPage() {
                     suspend the processing of their personal information.
                   </p>
                 </section>
-
                 {}
                 <section id="security">
                   <h2>
@@ -447,7 +497,6 @@ export default async function PrivacyPolicyPage() {
                     </li>
                   </ul>
                 </section>
-
                 {}
                 <section id="dpo">
                   <h2>7. Data Protection Officer</h2>
@@ -458,20 +507,81 @@ export default async function PrivacyPolicyPage() {
                     <li>Email: jhyunwoo0228@gmail.com</li>
                   </ul>
                 </section>
-
+                {}
+                <section id="analytics">
+                  <h2>8. Automatic Data Collection and How to Opt Out</h2>
+                  <p>
+                    &#39;GDGoC Yonsei&#39; automatically records visits to
+                    improve this website. This information alone cannot identify
+                    who you are.
+                  </p>
+                  <div>
+                    <h3>Collected Items</h3>
+                    <ul>
+                      <li>
+                        A random visitor ID stored in your browser
+                        (localStorage)
+                      </li>
+                      <li>
+                        Pages visited, visit times, time on page, scroll depth
+                      </li>
+                      <li>
+                        How you arrived (previous page address, campaign tags)
+                      </li>
+                      <li>
+                        Device type, browser, operating system, screen size,
+                        language, time zone
+                      </li>
+                      <li>
+                        Page loading performance, clicks on outbound links and
+                        key buttons
+                      </li>
+                    </ul>
+                    <p>
+                      Your IP address is used only briefly to block abusive
+                      request floods and is never stored.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>Purpose and Retention</h3>
+                    <p>
+                      We use this data to improve the service, search visibility
+                      and content, and delete it 26 months after collection.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>How to Opt Out</h3>
+                    <p>
+                      Use the button below to opt out. Turning on Global Privacy
+                      Control (GPC) in your browser or clearing browser storage
+                      also works. Opting out does not limit your use of the
+                      website.
+                    </p>
+                    <AnalyticsOptOut
+                      buttonClassName={buttonClasses('solid')}
+                      copy={{
+                        enabled: 'Visit analytics is currently on.',
+                        disabled: 'You have opted out of visit analytics.',
+                        gpc: 'Your browser sends GPC, so we do not collect visit analytics.',
+                        disable: 'Opt out',
+                        enable: 'Allow analytics',
+                      }}
+                    />
+                  </div>
+                </section>
                 {}
                 <section id="change">
-                  <h2>8. Changes to the Privacy Policy</h2>
+                  <h2>9. Changes to the Privacy Policy</h2>
                   <p>
                     Any changes to this Privacy Policy will be announced through
                     notices on the website.
                   </p>
                   <div className="policy-note">
                     <p>
-                      <strong>Announcement Date:</strong> August 27, 2025
+                      <strong>Announcement Date:</strong> October 14, 2026
                     </p>
                     <p>
-                      <strong>Effective Date:</strong> August 27, 2025
+                      <strong>Effective Date:</strong> October 14, 2026
                     </p>
                   </div>
                 </section>

@@ -34,6 +34,7 @@ export default function Join({ lang }: { lang: Locale }) {
               <ExternalLink
                 href={CHANNELS.instagram}
                 className={buttonClasses('stageSolid')}
+                data-analytics="join_instagram"
               >
                 {copy.instagram}
               </ExternalLink>
@@ -42,6 +43,7 @@ export default function Join({ lang }: { lang: Locale }) {
               <ExternalLink
                 href={CHANNELS.linkedin}
                 className={buttonClasses('stageOutline')}
+                data-analytics="join_linkedin"
               >
                 {copy.linkedin}
               </ExternalLink>
@@ -50,6 +52,7 @@ export default function Join({ lang }: { lang: Locale }) {
               <ButtonLink
                 href={localeHref(lang, '/calendar')}
                 tone="stageOutline"
+                data-analytics="join_calendar"
               >
                 {copy.calendar}
               </ButtonLink>

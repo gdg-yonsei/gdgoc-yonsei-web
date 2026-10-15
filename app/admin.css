@@ -27,6 +27,26 @@
     --danger: #c92a20;
     --on-danger: #ffffff;
     --danger-soft: #fdecea;
+    /* 차트 범주 색은 고정 순서다. dataviz 검증: 카드 면 #ffffff에서 CVD·명도 기준 통과, 슬롯 3·4·5는 3:1 미만이라 표 보기가 필수다. */
+    --chart-1: #2a78d6;
+    --chart-2: #eb6834;
+    --chart-3: #1baf7a;
+    --chart-4: #eda100;
+    --chart-5: #e87ba4;
+    --chart-6: #008300;
+    --chart-7: #6250d6;
+    --chart-8: #e34948;
+    --chart-compare: #9b958f;
+    --chart-grid: #ecebe9;
+    --chart-seq-1: #e6f1fb;
+    --chart-seq-2: #b7d3f6;
+    --chart-seq-3: #6da7ec;
+    --chart-seq-4: #2a78d6;
+    --chart-seq-5: #184f95;
+    /* Web Vitals 등급 전용 상태 색. 항상 아이콘과 라벨을 함께 쓴다. */
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-critical: #d03b3b;
   }
 
   .dark {
@@ -50,6 +70,24 @@
     --danger: #f4796a;
     --on-danger: #29100d;
     --danger-soft: #361916;
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+    --chart-4: #c98500;
+    --chart-5: #d55181;
+    --chart-6: #008300;
+    --chart-7: #9085e9;
+    --chart-8: #e66767;
+    --chart-compare: #6f6963;
+    --chart-grid: #2f2f34;
+    --chart-seq-1: #16324a;
+    --chart-seq-2: #1c5cab;
+    --chart-seq-3: #2a78d6;
+    --chart-seq-4: #5598e7;
+    --chart-seq-5: #9ec5f4;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-critical: #d03b3b;
   }
 
   /* 다크 모드에서 네이티브 컨트롤(select 화살표, 스크롤바, 달력 선택기)도 함께 어둡게 바꾼다. */

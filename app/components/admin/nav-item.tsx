@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   BookOpenIcon,
   CalendarDaysIcon,
+  ChartBarIcon,
   CodeBracketIcon,
   DocumentTextIcon,
   HomeIcon,
@@ -30,6 +31,7 @@ export const NAV_ICONS: Record<NavigationKey, IconComponent> = {
   members: UsersIcon,
   sessions: BookOpenIcon,
   projects: DocumentTextIcon,
+  analytics: ChartBarIcon,
   generations: CalendarDaysIcon,
   parts: CodeBracketIcon,
   announcements: MegaphoneIcon,
