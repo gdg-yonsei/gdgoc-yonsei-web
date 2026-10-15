@@ -1,11 +1,15 @@
 'use client'
 
-/** 사용자 탭: 신규·재방문 추이, 주간 리텐션, 요일×시간 히트맵, 기기·브라우저·OS·화면·언어·국가. 국가는 눌러서 필터로 건다. */
+/**
+ * 사용자 탭: 신규·재방문 누적 막대(합계와 구성을 한 번에), 주간 리텐션, 요일×시간 히트맵, 기기 비중 도넛,
+ * 브라우저·OS·화면·언어·국가 순위 목록. 국가는 눌러서 필터로 건다.
+ */
 import { usePathname } from 'next/navigation'
 import BarList from '@/app/(admin)/admin/analytics/_components/bar-list'
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
-import HeatmapGrid from '@/app/(admin)/admin/analytics/_components/heatmap-grid'
-import TimeSeriesChart from '@/app/(admin)/admin/analytics/_components/time-series-chart'
+import HourHeatmap from '@/app/(admin)/admin/analytics/_components/hour-heatmap'
+import ShareDonut from '@/app/(admin)/admin/analytics/_components/share-donut'
+import StackedBarChart from '@/app/(admin)/admin/analytics/_components/stacked-bar-chart'
 import {
   formatBucketLabel,
   formatNumber,
@@ -40,6 +44,18 @@ export default function AudienceView({
           (cell) => cell.weekday === weekday && cell.hour === hour
         )?.sessions ?? 0
     )
+  )
+  // 요약 문장은 가장 붐비는 칸 하나를 말한다. 표 보기에 전체 값이 있다.
+  const peak = heat.reduce(
+    (best, values, row) =>
+      values.reduce(
+        (inner, value, hour) =>
+          value > inner.value
+            ? { weekday: weekdays[row] ?? '', hour: hours[hour] ?? '', value }
+            : inner,
+        best
+      ),
+    { weekday: '', hour: '', value: 0 }
   )
   const maxWeeks = Math.max(1, ...data.retention.map((row) => row.rates.length))
   const weekLabels = Array.from({ length: maxWeeks }, (_, week) =>
@@ -85,7 +101,7 @@ export default function AudienceView({
           ]),
         }}
       >
-        <TimeSeriesChart
+        <StackedBarChart
           data={data.newVsReturning}
           xKey={'bucket'}
           series={[
@@ -185,21 +201,41 @@ export default function AudienceView({
             </table>
           </div>
         </section>
-        <section className={'admin-card flex min-w-0 flex-col gap-3'}>
-          <h2 className={'type-title text-ink'}>
-            {t('analyticsTrafficByHour')}
-          </h2>
-          <HeatmapGrid
+        <ChartFrame
+          title={t('analyticsTrafficByHour')}
+          summary={`${t('analyticsTrafficByHour')}: ${peak.weekday} ${peak.hour}, ${formatNumber(peak.value, locale)}`}
+          table={{
+            columns: ['', ...hours],
+            rows: weekdays.map((weekday, row) => [
+              weekday,
+              ...(heat[row] ?? []).map((value) => formatNumber(value, locale)),
+            ]),
+          }}
+        >
+          <HourHeatmap
             rows={weekdays}
             columns={hours}
             values={heat}
             format={(value) => formatNumber(value, locale)}
+            lessLabel={t('analyticsLess')}
+            moreLabel={t('analyticsMore')}
           />
-        </section>
+        </ChartFrame>
       </div>
 
       <div className={'grid gap-4 md:grid-cols-2 xl:grid-cols-3'}>
-        {list(t('analyticsDevices'), data.devices)}
+        <section className={'admin-card flex min-w-0 flex-col gap-3'}>
+          <h2 className={'type-title text-ink'}>{t('analyticsDevices')}</h2>
+          <ShareDonut
+            items={data.devices.map((row) => ({
+              label: row.name,
+              value: row.users,
+            }))}
+            totalLabel={t('analyticsUsers')}
+            otherLabel={t('analyticsOther')}
+            format={(value) => formatNumber(value, locale)}
+          />
+        </section>
         {list(t('analyticsBrowsers'), data.browsers)}
         {list(t('analyticsOperatingSystems'), data.operatingSystems)}
         {list(t('analyticsScreens'), data.screens)}

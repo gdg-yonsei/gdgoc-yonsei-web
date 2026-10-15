@@ -3,11 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import BarList from '@/app/(admin)/admin/analytics/_components/bar-list'
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
-import HeatmapGrid from '@/app/(admin)/admin/analytics/_components/heatmap-grid'
 import MetricTile from '@/app/(admin)/admin/analytics/_components/metric-tile'
 import RatingBar from '@/app/(admin)/admin/analytics/_components/rating-bar'
+import ShareDonut from '@/app/(admin)/admin/analytics/_components/share-donut'
 import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
 import { getAdminMessages } from '@/lib/admin-i18n'
+import { stubResizeObserver } from '@/tests/helpers/resize-observer'
+
+stubResizeObserver()
 
 function withI18n(node: React.ReactNode) {
   return (
@@ -83,19 +86,30 @@ describe('MetricTile', () => {
   })
 })
 
-describe('HeatmapGrid', () => {
-  it('labels every cell for screen readers', () => {
+describe('ShareDonut', () => {
+  it('folds the tail into Other and prints each share as text', () => {
     render(
-      <HeatmapGrid
-        rows={['Mon']}
-        columns={['0', '1']}
-        values={[[0, 4]]}
-        format={(value) => `${value} sessions`}
-      />
+      withI18n(
+        <ShareDonut
+          items={[
+            { label: 'mobile', value: 50 },
+            { label: 'desktop', value: 30 },
+            { label: 'tablet', value: 10 },
+            { label: 'tv', value: 5 },
+            { label: 'console', value: 3 },
+            { label: 'watch', value: 2 },
+          ]}
+          totalLabel={'Sessions'}
+          otherLabel={'Other'}
+          format={(value) => String(value)}
+        />
+      )
     )
-    expect(
-      screen.getByRole('cell', { name: 'Mon 1: 4 sessions' })
-    ).toBeInTheDocument()
+    const items = screen.getAllByRole('listitem')
+    expect(items).toHaveLength(5)
+    expect(items[0]).toHaveTextContent('mobile5050.0%')
+    expect(items[3]).toHaveTextContent('tv55.0%')
+    expect(items[4]).toHaveTextContent('Other55.0%')
   })
 })
 

@@ -1,12 +1,12 @@
 'use client'
 
-/** 유입 탭: 채널별 세션 추이, 채널 표, 검색 엔진·AI 어시스턴트, 소스/매체, 참조 사이트, 캠페인, 방문 시작 페이지. */
+/** 유입 탭: 채널별 세션 누적 막대(구성 변화), 채널 표, 검색 엔진·AI 어시스턴트, 소스/매체, 참조 사이트, 캠페인, 방문 시작 페이지. */
 import ChartFrame from '@/app/(admin)/admin/analytics/_components/chart-frame'
 import CsvLink from '@/app/(admin)/admin/analytics/_components/csv-link'
 import MetricTable, {
   type MetricColumn,
 } from '@/app/(admin)/admin/analytics/_components/metric-table'
-import TimeSeriesChart from '@/app/(admin)/admin/analytics/_components/time-series-chart'
+import StackedBarChart from '@/app/(admin)/admin/analytics/_components/stacked-bar-chart'
 import {
   formatBucketLabel,
   formatDuration,
@@ -119,7 +119,7 @@ export default function AcquisitionView({
           ]),
         }}
       >
-        <TimeSeriesChart
+        <StackedBarChart
           data={data.channelSeries}
           xKey={'bucket'}
           series={data.channelOrder.map((name) => ({ key: name, label: name }))}

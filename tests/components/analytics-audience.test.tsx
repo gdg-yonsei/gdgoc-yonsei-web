@@ -1,12 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('recharts', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('recharts')>()),
-  ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
-    <div style={{ width: 600, height: 280 }}>{children}</div>
-  ),
-}))
 vi.mock('next/navigation', () => ({
   usePathname: () => '/en/admin/analytics/audience',
 }))
@@ -19,12 +13,15 @@ import {
   deriveSessionMetrics,
   EMPTY_SESSION_METRICS,
 } from '@/lib/analytics/metrics'
+import { stubResizeObserver } from '@/tests/helpers/resize-observer'
+
+stubResizeObserver()
 
 const m = (sessions: number) =>
   deriveSessionMetrics({ ...EMPTY_SESSION_METRICS, sessions, users: sessions })
 
 describe('AudienceView', () => {
-  it('renders the retention grid, the weekday heatmap and country filter links', () => {
+  it('renders the retention grid, the weekday heatmap summary and country filter links', () => {
     render(
       <AdminI18nProvider locale={'en'} messages={getAdminMessages('en')}>
         <AudienceView
@@ -48,7 +45,12 @@ describe('AudienceView', () => {
     expect(
       screen.getByRole('cell', { name: '2026-09-28 Week 1: 30.0%' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('cell', { name: 'Mon 21: 3' })).toBeInTheDocument()
+    const heatmap = screen.getByRole('figure', {
+      name: 'Sessions by weekday and hour (Seoul)',
+    })
+    expect(heatmap).toHaveAccessibleDescription(
+      'Sessions by weekday and hour (Seoul): Mon 21, 3'
+    )
     expect(screen.getByRole('link', { name: 'KR' })).toHaveAttribute(
       'href',
       '/en/admin/analytics/audience?country=KR'

@@ -1,17 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('recharts', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('recharts')>()
-  // jsdom에는 레이아웃이 없어 ResponsiveContainer가 0px로 그린다. 고정 크기로 바꿔 렌더링만 확인한다.
-  return {
-    ...actual,
-    ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
-      <div style={{ width: 600, height: 280 }}>{children}</div>
-    ),
-  }
-})
-
+import { describe, expect, it } from 'vitest'
 import OverviewView from '@/app/(admin)/admin/analytics/_components/overview-view'
 import AdminI18nProvider from '@/app/components/admin/admin-i18n-provider'
 import { getAdminMessages } from '@/lib/admin-i18n'
@@ -21,6 +9,9 @@ import {
   EMPTY_SESSION_METRICS,
 } from '@/lib/analytics/metrics'
 import type { AnalyticsOverview } from '@/lib/server/services/admin/analytics'
+import { stubResizeObserver } from '@/tests/helpers/resize-observer'
+
+stubResizeObserver()
 
 const metrics = (sessions: number) =>
   deriveSessionMetrics({

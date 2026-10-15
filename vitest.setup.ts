@@ -140,6 +140,7 @@ vi.mock('motion/react', () => ({
   motion: createMotionProxy(),
   // AnimatePresence는 테스트에서 exit 애니메이션 없이 자식을 그대로 통과시킵니다.
   AnimatePresence: ({ children }: React.PropsWithChildren) => children,
+  MotionConfig: ({ children }: React.PropsWithChildren) => children,
   useReducedMotion: () => false,
 }))
 

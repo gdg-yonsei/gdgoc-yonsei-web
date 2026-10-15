@@ -90,6 +90,38 @@
     --status-critical: #d03b3b;
   }
 
+  /*
+   * bklit ui 차트(app/components/admin/charts)가 읽는 변수를 관리자 토큰에 연결한다.
+   * var()는 선언한 요소에서 풀리므로 .dark에도 다시 선언해야 다크 값을 따라간다.
+   */
+  :root,
+  .dark {
+    --foreground: var(--ink);
+    --muted-foreground: var(--ink-muted);
+    --background: var(--surface);
+    --border: var(--hairline);
+    --chart-background: var(--surface);
+    --chart-foreground: var(--ink);
+    --chart-foreground-muted: var(--ink-muted);
+    --chart-label: var(--ink-muted);
+    --chart-line-primary: var(--chart-1);
+    --chart-line-secondary: var(--chart-compare);
+    --chart-crosshair: var(--control-border);
+    --chart-brush-border: var(--chart-grid);
+    --chart-tooltip-background: var(--surface);
+    --chart-tooltip-foreground: var(--ink);
+    --chart-tooltip-muted: var(--ink-muted);
+    --chart-marker-background: var(--surface-sunken);
+    --chart-marker-border: var(--hairline);
+    --chart-marker-foreground: var(--ink-secondary);
+    --chart-scale-01: var(--chart-seq-1);
+    --chart-scale-02: var(--chart-seq-2);
+    --chart-scale-03: var(--chart-seq-3);
+    --chart-scale-04: var(--chart-seq-4);
+    --chart-scale-05: var(--chart-seq-5);
+    --chart-scale-pattern-color: var(--surface-sunken);
+  }
+
   /* 다크 모드에서 네이티브 컨트롤(select 화살표, 스크롤바, 달력 선택기)도 함께 어둡게 바꾼다. */
   .dark {
     color-scheme: dark;
@@ -123,6 +155,15 @@
   --color-danger: var(--danger);
   --color-on-danger: var(--on-danger);
   --color-danger-soft: var(--danger-soft);
+  /* bklit ui 차트가 쓰는 유틸리티 이름(text-foreground, bg-chart-tooltip-background 등). */
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-background: var(--background);
+  --color-muted: var(--surface-sunken);
+  --color-chart-label: var(--chart-label);
+  --color-chart-tooltip-background: var(--chart-tooltip-background);
+  --color-chart-tooltip-foreground: var(--chart-tooltip-foreground);
+  --color-chart-tooltip-muted: var(--chart-tooltip-muted);
 }
 
 @layer components {
