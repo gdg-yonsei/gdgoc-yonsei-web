@@ -160,6 +160,17 @@ describe('aggregateSessions', () => {
     ).toBe(1)
   })
 
+  it('counts only matching pages in views and engagement under a page filter', async () => {
+    const [row] = await run({ contentGroup: 'session-list' })
+    // 세션 1의 두 조회 중 /ko/session/25-26만 맞는다. 참여 여부는 세션 전체 기준이다.
+    expect(row!.metrics).toMatchObject({
+      sessions: 1,
+      views: 1,
+      engagementMs: 3_000,
+      engagedSessions: 1,
+    })
+  })
+
   it('matches path filters literally, not as LIKE wildcards', async () => {
     expect(
       (await run({ includeInternal: true, path: '100%_' }))[0]!.metrics.sessions

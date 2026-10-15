@@ -104,19 +104,24 @@ function sessionStatsCte(filter: AnalyticsFilter, start: Date, end: Date): SQL {
       sql`EXISTS (SELECT 1 FROM analytics_page_views fv WHERE fv."sessionId" = s.id AND ${whereAll(pageFilter)})`
     )
   }
+  // 페이지 필터가 있으면 조회수·참여 시간은 맞는 페이지만 센다(GA4와 같음). 참여 세션 판정은 세션 전체 기준이다.
+  const matchesPage = whereAll(pageConditions(filter, 'pv'))
   return sql`
     ss AS (
       SELECT s.*,
         coalesce(v.views, 0) AS views,
         coalesce(v.engagement_ms, 0) AS engagement_ms,
         coalesce(e.key_events, 0) AS key_events,
-        (coalesce(v.engagement_ms, 0) >= ${ENGAGED_MIN_ENGAGEMENT_MS}
-          OR coalesce(v.views, 0) >= ${ENGAGED_MIN_VIEWS}
+        (coalesce(v.all_engagement_ms, 0) >= ${ENGAGED_MIN_ENGAGEMENT_MS}
+          OR coalesce(v.all_views, 0) >= ${ENGAGED_MIN_VIEWS}
           OR coalesce(e.key_events, 0) > 0) AS engaged
       FROM analytics_sessions s
       LEFT JOIN LATERAL (
-        SELECT count(*) AS views, sum("engagementMs") AS engagement_ms
-        FROM analytics_page_views WHERE "sessionId" = s.id
+        SELECT count(*) AS all_views,
+          sum(pv."engagementMs") AS all_engagement_ms,
+          count(*) FILTER (WHERE ${matchesPage}) AS views,
+          sum(pv."engagementMs") FILTER (WHERE ${matchesPage}) AS engagement_ms
+        FROM analytics_page_views pv WHERE pv."sessionId" = s.id
       ) v ON TRUE
       LEFT JOIN LATERAL (
         SELECT count(*) AS key_events
