@@ -118,7 +118,7 @@ describe('querySearchAnalytics', () => {
         device: 'MOBILE',
         pageContains: '/ko/session',
       },
-      fetchImpl
+      fetchImpl as unknown as typeof fetch
     )
     expect(rows).toEqual([
       {
@@ -176,7 +176,7 @@ describe('querySearchAnalytics', () => {
           dimensions: [],
           rowLimit: 1,
         },
-        empty
+        empty as unknown as typeof fetch
       )
     ).resolves.toEqual([])
 
@@ -197,7 +197,7 @@ describe('querySearchAnalytics', () => {
         dimensions: [],
         rowLimit: 1,
       },
-      denied
+      denied as unknown as typeof fetch
     ).catch((caught: unknown) => caught)
     expect(error).toBeInstanceOf(SearchConsoleError)
     expect(error).toMatchObject({ status: 403 })
