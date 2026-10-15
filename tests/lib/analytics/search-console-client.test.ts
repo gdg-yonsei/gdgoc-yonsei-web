@@ -72,7 +72,7 @@ describe('getAccessToken', () => {
       RequestInit,
     ]
     expect(url).toBe('https://oauth2.googleapis.com/token')
-    expect(String(init.body)).toContain(
+    expect((init.body as URLSearchParams).toString()).toContain(
       'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer'
     )
 
@@ -138,7 +138,7 @@ describe('querySearchAnalytics', () => {
       'https://searchconsole.googleapis.com/webmasters/v3/sites/https%3A%2F%2Fgdgoc.yonsei.ac.kr%2F/searchAnalytics/query'
     )
     expect(init.headers).toMatchObject({ Authorization: 'Bearer token-1' })
-    expect(JSON.parse(String(init.body))).toEqual({
+    expect(JSON.parse(init.body as string)).toEqual({
       startDate: '2026-09-16',
       endDate: '2026-10-13',
       dimensions: ['query'],
