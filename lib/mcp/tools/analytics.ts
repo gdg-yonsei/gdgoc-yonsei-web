@@ -7,6 +7,7 @@ import 'server-only'
 import { z } from 'zod'
 import { CHANNELS } from '@/lib/analytics/constants'
 import { CONTENT_GROUPS } from '@/lib/analytics/content-groups'
+import { resolveDateRange } from '@/lib/analytics/date-range'
 import {
   DEVICE_TYPES,
   RANGE_PRESETS,
@@ -28,10 +29,29 @@ import {
 } from '@/lib/server/services/admin/search-console'
 import { fail, ok } from '@/lib/server/services/admin/types'
 
-const date = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .describe('Seoul date, YYYY-MM-DD.')
+// 형식만 보는 정규식은 2026-02-30 같은 없는 날짜를 통과시켜, 웹 파서가 조용히 28일로 되돌린다.
+const date = z.iso.date().describe('Seoul date, YYYY-MM-DD.')
+
+/** 직접 지정 기간은 from·to를 모두 요구하고, 다른 프리셋과 함께 온 날짜는 거절한다. 엉뚱한 기간의 숫자를 답하지 않게 한다. */
+function checkCustomRange(
+  input: { range?: string; from?: string; to?: string },
+  context: z.RefinementCtx
+) {
+  if (input.range === 'custom' && (!input.from || !input.to)) {
+    context.addIssue({
+      code: 'custom',
+      message: 'range "custom" needs both from and to.',
+      path: ['range'],
+    })
+  }
+  if (input.range !== 'custom' && (input.from || input.to)) {
+    context.addIssue({
+      code: 'custom',
+      message: 'from and to are only used with range "custom".',
+      path: ['range'],
+    })
+  }
+}
 
 const filterFields = {
   range: z
@@ -114,7 +134,7 @@ export const analyticsTools = [
     scope: 'gyms:read',
     gate,
     annotations: readOnly,
-    input: z.object(filterFields),
+    input: z.object(filterFields).superRefine(checkCustomRange),
     run: (actor, input) => getAnalyticsOverview(actor, toFilter(input)),
   }),
   defineTool({
@@ -125,39 +145,45 @@ export const analyticsTools = [
     scope: 'gyms:read',
     gate,
     annotations: readOnly,
-    input: z.object({
-      ...filterFields,
-      report: z.enum(ANALYTICS_TABLE_REPORTS),
-      dimensions: z
-        .array(z.enum(SESSION_DIMENSIONS))
-        .max(2)
-        .optional()
-        .describe('explore only. Up to two breakdowns.'),
-      metrics: z
-        .array(z.enum(SESSION_METRIC_KEYS))
-        .min(1)
-        .optional()
-        .describe('explore only.'),
-      limit: z.number().int().min(1).max(100).default(50),
-    }),
+    input: z
+      .object({
+        ...filterFields,
+        report: z.enum(ANALYTICS_TABLE_REPORTS),
+        dimensions: z
+          .array(z.enum(SESSION_DIMENSIONS))
+          .max(2)
+          .optional()
+          .describe('explore only. Up to two breakdowns.'),
+        metrics: z
+          .array(z.enum(SESSION_METRIC_KEYS))
+          .min(1)
+          .optional()
+          .describe('explore only.'),
+        limit: z.number().int().min(1).max(100).default(50),
+      })
+      .superRefine(checkCustomRange),
     run: async (actor, input) => {
-      const result = await getAnalyticsTable(
-        actor,
-        input.report,
-        toFilter(input),
-        {
-          dimensions: input.dimensions ?? ['channel'],
-          metrics: input.metrics ?? [
-            'users',
-            'sessions',
-            'engagementRate',
-            'avgEngagementSeconds',
-          ],
-          limit: input.limit,
-        }
-      )
+      const filter = toFilter(input)
+      const range = resolveDateRange(filter, new Date())
+      const result = await getAnalyticsTable(actor, input.report, filter, {
+        dimensions: input.dimensions ?? ['channel'],
+        metrics: input.metrics ?? [
+          'users',
+          'sessions',
+          'engagementRate',
+          'avgEngagementSeconds',
+        ],
+        limit: input.limit,
+      })
       return result.ok
-        ? ok({ ...result.data, rows: result.data.rows.slice(0, input.limit) })
+        ? ok({
+            ...result.data,
+            rows: result.data.rows.slice(0, input.limit),
+            range: {
+              start: range.start.toISOString(),
+              end: range.end.toISOString(),
+            },
+          })
         : result
     },
   }),
@@ -169,14 +195,16 @@ export const analyticsTools = [
     scope: 'gyms:read',
     gate,
     annotations: readOnly,
-    input: z.object({
-      ...filterFields,
-      path: z
-        .string()
-        .startsWith('/')
-        .max(512)
-        .describe('Page path starting with /.'),
-    }),
+    input: z
+      .object({
+        ...filterFields,
+        path: z
+          .string()
+          .startsWith('/')
+          .max(512)
+          .describe('Page path starting with /.'),
+      })
+      .superRefine(checkCustomRange),
     run: (actor, input) =>
       getAnalyticsPageDetail(
         actor,
@@ -192,15 +220,17 @@ export const analyticsTools = [
     scope: 'gyms:read',
     gate,
     annotations: readOnly,
-    input: z.object({
-      range: filterFields.range,
-      from: filterFields.from,
-      to: filterFields.to,
-      device: filterFields.device,
-      path: filterFields.path,
-      dimension: z.enum(['query', 'page', 'device', 'country', 'date']),
-      limit: z.number().int().min(1).max(500).default(50),
-    }),
+    input: z
+      .object({
+        range: filterFields.range,
+        from: filterFields.from,
+        to: filterFields.to,
+        device: filterFields.device,
+        path: filterFields.path,
+        dimension: z.enum(['query', 'page', 'device', 'country', 'date']),
+        limit: z.number().int().min(1).max(500).default(50),
+      })
+      .superRefine(checkCustomRange),
     run: async (actor, input) => {
       const result = await getSearchConsoleTable(
         actor,
@@ -222,13 +252,15 @@ export const analyticsTools = [
     scope: 'gyms:read',
     gate,
     annotations: readOnly,
-    input: z.object({
-      range: filterFields.range,
-      from: filterFields.from,
-      to: filterFields.to,
-      device: filterFields.device,
-      path: filterFields.path,
-    }),
+    input: z
+      .object({
+        range: filterFields.range,
+        from: filterFields.from,
+        to: filterFields.to,
+        device: filterFields.device,
+        path: filterFields.path,
+      })
+      .superRefine(checkCustomRange),
     run: async (actor, input) => {
       const result = await getSeoOpportunities(actor, toFilter(input))
       if (!result.ok) return result

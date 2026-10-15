@@ -70,6 +70,27 @@ describe('analytics tools', () => {
     ).toBe(false)
   })
 
+  it('rejects impossible or incomplete custom dates instead of falling back to 28 days', () => {
+    const input = tool('analytics_report').input
+    const parse = (extra: object) =>
+      input.safeParse({ report: 'pages', ...extra }).success
+    expect(
+      parse({ range: 'custom', from: '2026-02-30', to: '2026-03-10' })
+    ).toBe(false)
+    expect(parse({ range: 'custom', from: '2026-03-01' })).toBe(false)
+    expect(parse({ from: '2026-03-01', to: '2026-03-10' })).toBe(false)
+    expect(
+      parse({ range: 'custom', from: '2026-03-01', to: '2026-03-10' })
+    ).toBe(true)
+    expect(
+      tool('search_console_report').input.safeParse({
+        dimension: 'query',
+        range: 'custom',
+        to: '2026-03-10',
+      }).success
+    ).toBe(false)
+  })
+
   it('passes a parsed filter to the overview service', async () => {
     services.getAnalyticsOverview.mockResolvedValue({
       ok: true,
@@ -122,6 +143,8 @@ describe('analytics tools', () => {
       data: {
         columns: ['channel', 'sessions'],
         rows: [{ channel: 'Direct', sessions: 3 }],
+        // 어떤 기간의 숫자인지 클라이언트가 알 수 있게 해석된 기간을 함께 준다.
+        range: { start: expect.any(String), end: expect.any(String) },
       },
     })
   })
