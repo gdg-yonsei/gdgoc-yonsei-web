@@ -56,6 +56,43 @@ describe('Redis entry invalidation tags', () => {
   })
 })
 
+describe('Redis tag state status (matches Next tags-manifest rules)', () => {
+  const {
+    tagStateStatus,
+  } = require('../../../lib/server/cache/handlers/redis-shared.cjs')
+  const now = 1_000_000
+
+  it('expires only when the deadline has passed after the entry was built', () => {
+    expect(tagStateStatus([{ expired: now - 10 }], now - 20, now)).toBe(
+      'expired'
+    )
+    // 항목이 만료 이후에 만들어졌으면 만료가 아니다.
+    expect(tagStateStatus([{ expired: now - 10 }], now - 5, now)).toBe('fresh')
+  })
+
+  it('does not treat a future expire from revalidateTag(..., "max") as expired', () => {
+    const backgroundRevalidation = {
+      stale: now - 10,
+      expired: now + 31_536_000,
+    }
+    expect(tagStateStatus([backgroundRevalidation], now - 20, now)).toBe(
+      'stale'
+    )
+    expect(tagStateStatus([backgroundRevalidation], now - 5, now)).toBe('fresh')
+  })
+
+  it('prefers expired over stale across tags and ignores missing states', () => {
+    expect(
+      tagStateStatus(
+        [null, { stale: now - 1 }, { expired: now }],
+        now - 20,
+        now
+      )
+    ).toBe('expired')
+    expect(tagStateStatus([null, undefined], now - 20, now)).toBe('fresh')
+  })
+})
+
 describe('Redis entry expiry', () => {
   const {
     expireToSetOptions,
