@@ -308,7 +308,7 @@ jobs:
       # Blocks PRs that add a dependency with a known high/critical advisory.
       - name: Dependency review
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v5.0.0
+        uses: actions/dependency-review-action@v5.0.1
         with:
           fail-on-severity: high
 
