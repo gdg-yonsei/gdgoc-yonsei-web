@@ -25,6 +25,12 @@ const securityHeaders = [
     key: 'Strict-Transport-Security',
     value: 'max-age=31536000; includeSubDomains',
   },
+  {
+    // 스크립트 출처는 제한하지 않는다(Next 인라인 스크립트·인라인 CSS에 nonce가 필요하다).
+    // 주입된 마크업이 쓸 수 있는 통로만 막는다: <base> 바꿔치기, 플러그인 객체, 프레임 삽입.
+    key: 'Content-Security-Policy',
+    value: "base-uri 'self'; object-src 'none'; frame-ancestors 'none'",
+  },
 ]
 
 const noIndexHeaders = [

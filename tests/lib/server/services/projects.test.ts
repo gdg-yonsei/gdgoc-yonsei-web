@@ -118,4 +118,46 @@ describe('projects service', () => {
       code: 'NOT_FOUND',
     })
   })
+
+  it('refuses to store images that were not uploaded through GYMS', async () => {
+    for (const images of [
+      { mainImage: 'https://tracker.example/pixel.png' },
+      { contentImages: ['https://cdn.example/sessions/other-kind.png'] },
+      { contentImages: ['https://cdn.example/projects/b.png?v=2'] },
+    ]) {
+      await expect(
+        createProject(member, { ...validProject, ...images })
+      ).resolves.toMatchObject({ ok: false, code: 'VALIDATION' })
+    }
+    expect(dbInsert).not.toHaveBeenCalled()
+  })
+
+  it('lets an update keep images already on the row but not add foreign ones', async () => {
+    findProject.mockResolvedValue({
+      id: PID,
+      authorId: 'me',
+      generationId: 7,
+      mainImage: '/project-default.png',
+      images: ['legacy/key.png'],
+    })
+
+    // 새로 들어온 외부 주소는 거절한다.
+    await expect(
+      updateProject(member, PID, {
+        ...validProject,
+        mainImage: '/project-default.png',
+        contentImages: ['legacy/key.png', 'https://evil.example/x.png'],
+      })
+    ).resolves.toMatchObject({ ok: false, code: 'VALIDATION' })
+    expect(dbUpdate).not.toHaveBeenCalled()
+  })
+
+  it('denies an author outside the generation the same way for an unknown role rule', async () => {
+    // ALUMNUS에게는 프로젝트 수정 규칙이 없어 조회 전에 거부된다(ID 존재 여부를 알 수 없다).
+    const alumnus: Actor = { ...member, role: 'ALUMNUS' }
+    await expect(
+      updateProject(alumnus, PID, validProject)
+    ).resolves.toMatchObject({ ok: false, code: 'FORBIDDEN' })
+    expect(findProject).not.toHaveBeenCalled()
+  })
 })

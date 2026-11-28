@@ -15,8 +15,14 @@ import {
   authorize,
   canChangeMemberEmail,
   canEditMember,
+  emailVerifiedAfterChange,
   sharesGenerationWith,
 } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
+import {
+  UNACCEPTABLE_IMAGE,
+  findUnacceptableImages,
+} from '@/lib/server/services/admin/images/shared'
 import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import {
   fail,
@@ -167,17 +173,29 @@ export function memberToInput(detail: MemberRecord): MemberInput {
   }
 }
 
-// 멤버 수정은 역할 매트릭스와 대상 역할 제한을 함께 본다. CORE는 낮은 역할만 고친다.
+type EditableMember = {
+  id: string
+  role: Role
+  email: string
+  image: string | null
+}
+
+// 멤버 수정은 정책 표(본인 또는 같은 기수)와 대상 역할 제한을 함께 본다. CORE는 낮은 역할만 고친다.
 export async function authorizeMemberEdit(
   actor: Actor,
   memberId: string
-): Promise<ServiceResult<{ id: string; role: Role; email: string }>> {
-  const authorization = authorize(actor, 'put', 'members', memberId)
-  if (!authorization.ok) return authorization
+): Promise<ServiceResult<EditableMember>> {
+  // 대상을 읽기 전에 "같은 기수라면 가능한 역할인지"를 본다. 남의 정보를 고칠 수 없는 역할이
+  // 멤버 ID의 존재 여부를 알아내지 못하게 한다.
+  const gate = await authorizeAccess(actor, 'put', 'members', {
+    ownerId: memberId,
+    inGeneration: true,
+  })
+  if (!gate.ok) return gate
 
   const target = await db.query.users.findFirst({
     where: eq(users.id, memberId),
-    columns: { id: true, role: true, email: true },
+    columns: { id: true, role: true, email: true, image: true },
   })
   if (!target) return fail('NOT_FOUND', NOT_FOUND)
   if (!canEditMember(actor, target)) {
@@ -186,13 +204,13 @@ export async function authorizeMemberEdit(
       'Only a LEAD can edit members whose role is CORE or LEAD.'
     )
   }
-  if (!(await sharesGenerationWith(actor, memberId))) {
-    return fail(
-      'FORBIDDEN',
-      'You can only edit members of your own generations.'
-    )
-  }
-  return ok(target)
+  const access = await authorizeAccess(actor, 'put', 'members', {
+    ownerId: memberId,
+    inGeneration: await sharesGenerationWith(actor, memberId),
+    generationDenied: 'You can only edit members of your own generations.',
+  })
+  if (!access.ok) return access
+  return ok({ ...target, image: target.image ?? null })
 }
 
 /** 멤버 정보를 갱신한다. 역할 필드는 역할 변경 권한이 있을 때만 반영한다. */
@@ -208,11 +226,18 @@ export async function updateMember(
   const parsed = memberValidation.safeParse(input)
   if (!parsed.success) return fromZodError(parsed.error)
 
-  if (
-    parsed.data.email !== target.email &&
-    !canChangeMemberEmail(actor, memberId)
-  ) {
+  // 검증 스키마가 이메일을 소문자로 맞추므로 대소문자만 다른 값은 변경으로 보지 않는다.
+  const emailChanged = parsed.data.email !== target.email.toLowerCase()
+  if (emailChanged && !canChangeMemberEmail(actor, memberId)) {
     return fail('FORBIDDEN', "Only a LEAD can change another member's email.")
+  }
+  if (
+    findUnacceptableImages([parsed.data.profileImage], [target.image], 'users')
+      .length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      profileImage: [UNACCEPTABLE_IMAGE],
+    })
   }
 
   const {
@@ -248,7 +273,10 @@ export async function updateMember(
           firstNameKo,
           lastName,
           lastNameKo,
-          email,
+          // 바뀐 주소는 소유를 확인하지 않았으므로 확인 상태를 다시 정한다.
+          ...(emailChanged
+            ? { email, emailVerified: emailVerifiedAfterChange(actor) }
+            : {}),
           githubId,
           instagramId,
           linkedInId,
@@ -287,6 +315,14 @@ export async function updateMemberProfileImage(
   const parsed = updateMemberProfileImageValidation.safeParse(input)
   if (!parsed.success) return fromZodError(parsed.error)
   const { profileImage } = parsed.data
+  if (
+    findUnacceptableImages([profileImage], [editable.data.image], 'users')
+      .length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      profileImage: [UNACCEPTABLE_IMAGE],
+    })
+  }
 
   return withDbErrors(
     'api.admin.members.profile-image',

@@ -34,4 +34,9 @@ describe('getAdminRouteIdentity', () => {
       expect(getAdminRouteIdentity(path), path).toBeNull()
     }
   })
+
+  it('treats malformed percent-encoding as not a detail screen instead of throwing', () => {
+    expect(getAdminRouteIdentity('/admin/members/%E0%A4%A')).toBeNull()
+    expect(getAdminRouteIdentity('/admin/projects/%zz/edit')).toBeNull()
+  })
 })

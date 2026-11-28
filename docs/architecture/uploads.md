@@ -23,17 +23,22 @@ sequenceDiagram
   participant R2 as Cloudflare R2
   participant SA as Server Action → 서비스
 
-  B->>API: POST { fileName }
-  API->>API: 권한(리소스 post/put) · 확장자 · 객체 키 `{리소스}/{uuid}.{ext}`
-  API-->>B: { uploadUrl (1시간), fileName }
-  B->>R2: PUT 파일
+  B->>API: POST { fileName, type, size }
+  API->>API: 권한(역할) · 확장자→형식 · 크기 한도 · 시간당 한도 · 객체 키 `{리소스}/{uuid}.{ext}`
+  API-->>B: { uploadUrl (15분), fileName, contentType }
+  B->>R2: PUT 파일 (서명된 Content-Type 그대로)
   B->>B: 공개 URL을 숨은 필드에 넣고, 기존 저장 이미지는 유지
   B->>SA: 폼 제출
-  SA->>SA: URL → 객체 키 정규화(우리 버킷·해당 접두사만 인정) 후 저장
-  SA->>R2: DB 커밋 뒤 교체된 이미지 정리
+  SA->>SA: 새 이미지 값이 우리 업로드 URL(해당 접두사)인지 확인 후 저장
+  SA->>R2: DB 커밋 뒤, 다른 행이 쓰지 않는 교체된 이미지만 정리
 ```
 
-- 파일은 서버를 거치지 않는다. 서버는 서명만 한다.
+- 파일은 서버를 거치지 않는다. 서버는 서명만 한다. 그래서 **서명이 유일한 통제 지점**이다.
+  - 형식은 확장자로 서버가 정한다(jpg, jpeg, png, webp, gif, avif. SVG는 받지 않는다). 요청의 `type`이 그 형식과 다르면 거절한다.
+  - `Content-Type`과 `Content-Length`를 서명에 넣는다. 서명하지 않으면 업로더가 `text/html`로 올려 이미지 도메인에서
+    스크립트를 실행시키거나 한도를 넘는 파일을 올릴 수 있다. 서명하지 않는 발급 함수는 두지 않는다(`presignSizedImageUpload`만 있다).
+  - 사용자당 시간당 300장까지 발급한다(`mcp_image_upload`에 키 없는 예약으로 센다). 넘으면 429.
+- 이미지 삭제 API는 없다. 쓰지 않게 된 이미지는 아래 정리 절차로만 지운다.
 - 업로드 중에는 전역 atom(`lib/admin/atoms.ts`)으로 제출 버튼을 막는다. 업로드가 끝나기 전에 제출하면 이미지가 빠진 채 저장되기 때문이다.
 - 다중 이미지 입력은 미리보기·공개 URL을 고유 ID가 있는 한 항목으로 관리한다. 업로드 중 삭제한 항목은 완료 후 다시 추가하지 않고, 실패 시 해당 배치만 제거한다.
 - 업로드에 실패하면 이전 값을 유지한다. `lib/upload-image.ts`가 응답 상태와 모양을 검사해, 오류 응답이 URL처럼 저장되는 일을 막는다.
@@ -47,6 +52,20 @@ sequenceDiagram
 | 삭제 | DB 행을 **먼저** 지우고 `cleanupDeletedResource`가 공개 캐시와 이미지를 정리한다. 캐시 실패가 이미지 정리를 막지 않으며, R2 정리 실패는 로그로 남긴다(이미 커밋된 삭제는 성공).        |
 
 키 정규화 단계에서 외부 URL(GitHub 아바타 등)과 기본 이미지는 걸러지므로 우리 버킷의 해당 접두사 객체만 지운다.
+
+정리 전에 `findReferencedImageKeys`(`lib/server/storage/image-references.ts`)로 프로젝트·세션·프로필 행이 그 객체를
+아직 쓰는지 확인하고, 쓰고 있으면 남긴다. 이미지 URL은 공개돼 있어서, 참조 확인이 없으면 남의 이미지 URL을 자기 항목에
+넣었다가 빼는 것만으로 그 이미지를 지울 수 있기 때문이다. 확인에 실패하면 아무것도 지우지 않는다.
+
+### 저장할 수 있는 이미지 값
+
+서비스(`findUnacceptableImages`)는 폼·MCP가 보낸 이미지 값을 다음 중 하나일 때만 저장한다.
+
+- 그 행에 이미 있던 값(옛 형식, 소셜 아바타 포함): 그대로 유지할 수 있다.
+- 해당 접두사(`projects/`, `sessions/`, `users/`)로 우리 업로드가 만든 공개 URL 그대로.
+- 사이트 정적 이미지(`/project-default.png` 등 고정 목록).
+
+외부 주소, 다른 종류의 객체, 쿼리가 붙은 URL은 거절한다.
 
 ## 2. MCP 업로드 (최대 200MB)
 
@@ -92,3 +111,6 @@ SSRF 방어가 핵심이다(`lib/server/uploads/remote-fetch.ts`).
 환경 변수와 함께 이 목록도 고쳐야 한다.
 
 R2 버킷에는 브라우저 PUT을 허용하는 CORS 설정이 필요하다(사이트 origin, `PUT`, `Content-Type` 헤더).
+
+이미지 도메인은 사이트와 다른 출처지만 같은 상위 도메인을 쓸 수 있다. 스크립트가 실행되는 형식(HTML, SVG)이
+올라가지 않도록 위 서명 규칙을 유지해야 한다.

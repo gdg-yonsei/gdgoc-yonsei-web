@@ -33,13 +33,23 @@ export default function AdminError({
       <p className={'type-body-sm text-ink-muted max-w-prose'}>
         {t('errorOccurredHint')}
       </p>
-      {error.message && (
+      {/* 운영에서는 내부 오류 문구를 화면에 내보내지 않고 로그 대조용 id만 보여 준다. */}
+      {process.env.NODE_ENV === 'development' && error.message && (
         <code
           className={
             'bg-surface-sunken text-ink-muted type-caption max-w-full overflow-x-auto rounded-md px-3 py-1.5'
           }
         >
           {error.message}
+        </code>
+      )}
+      {process.env.NODE_ENV !== 'development' && error.digest && (
+        <code
+          className={
+            'bg-surface-sunken text-ink-muted type-caption max-w-full overflow-x-auto rounded-md px-3 py-1.5'
+          }
+        >
+          {error.digest}
         </code>
       )}
       <button onClick={() => retry()} className={'admin-btn-primary mt-2'}>

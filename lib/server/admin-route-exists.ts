@@ -48,9 +48,18 @@ export function getAdminRouteIdentity(
     return null
   }
 
+  // 잘못된 퍼센트 인코딩(`%zz`)은 예외를 던진다. 로그인 전 요청도 여기를 지나므로
+  // 500 대신 "상세 화면이 아님"으로 처리해 페이지가 404를 그리게 한다.
+  let decodedId: string
+  try {
+    decodedId = decodeURIComponent(id)
+  } catch {
+    return null
+  }
+
   return {
     resource: resource as AdminRouteIdentity['resource'],
-    id: decodeURIComponent(id),
+    id: decodedId,
   }
 }
 

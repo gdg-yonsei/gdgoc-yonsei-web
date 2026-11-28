@@ -1,5 +1,6 @@
 import { type Locale, pickLocalized } from '@/lib/i18n'
 import { formatUserName } from '@/lib/format/user-name'
+import { httpUrlOrNull } from '@/lib/safe-url'
 import { normalizeSearchText, type FacetOption } from '@/lib/site/filter-state'
 
 export type ProjectUserRow = {
@@ -63,8 +64,8 @@ export function toShowcaseProject(row: ProjectRow): ShowcaseProject {
     description: row.description,
     descriptionKo: row.descriptionKo,
     mainImage: row.mainImage,
-    repoUrl: row.repoUrl,
-    demoUrl: row.demoUrl,
+    repoUrl: httpUrlOrNull(row.repoUrl),
+    demoUrl: httpUrlOrNull(row.demoUrl),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     generationName: row.generation.name,

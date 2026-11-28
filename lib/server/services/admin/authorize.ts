@@ -1,4 +1,5 @@
-// 역할 정책에 MCP 스코프·기수 접근·수정 대상 역할 제한을 추가로 확인한다.
+// 역할 정책에 MCP 스코프와 수정 대상 역할 제한을 추가로 확인한다.
+// 기수 범위까지 한 번에 판정하는 진입점은 authorize-access.ts의 authorizeAccess다.
 import 'server-only'
 
 import { desc, eq } from 'drizzle-orm'
@@ -8,6 +9,8 @@ import { parts } from '@/db/schema/parts'
 import { usersToParts } from '@/db/schema/users-to-parts'
 import {
   isAllowed,
+  isEverAllowed,
+  type AccessContext,
   type ActionType,
   type ResourceType,
 } from '@/lib/server/permission/policy'
@@ -29,25 +32,30 @@ export function requiredScopeFor(
   return 'gyms:write'
 }
 
-/** 역할 정책 표상 작업이 허용되는지. `ownerId`가 요청자와 같으면 본인 데이터 규칙이 적용된다. */
+/**
+ * 역할 정책 표상 작업이 허용되는지. `ownerId`가 요청자와 같으면 본인 데이터 규칙이 적용된다.
+ * 기수 범위 규칙은 `inGeneration`을 넘겨야 충족되며, 넘기지 않으면 거부된다.
+ */
 export function roleAllows(
   actor: Pick<Actor, 'userId' | 'role'>,
   action: ActionType,
   resource: ResourceType,
-  ownerId?: string
+  ownerId?: string | null,
+  inGeneration?: AccessContext['inGeneration']
 ): boolean {
   return isAllowed(actor.role, action, resource, {
-    isOwner: actor.userId === ownerId,
+    isOwner: Boolean(ownerId) && actor.userId === ownerId,
+    inGeneration,
   })
 }
 
-/** 소유권을 무시하고(본인 데이터라고 가정하고) 역할상 가능한지. 도구 목록 필터용. */
+/** 소유권·기수 조건을 무시하고(모두 충족된다고 가정하고) 역할상 가능한지. 도구 목록 필터용. */
 export function roleCouldEver(
   role: Role,
   action: ActionType,
   resource: ResourceType
 ): boolean {
-  return isAllowed(role, action, resource, { isOwner: true })
+  return isEverAllowed(role, action, resource)
 }
 
 /** Actor가 해당 스코프를 가졌는지. 웹 세션은 스코프 제한이 없다. */
@@ -55,18 +63,41 @@ export function hasScope(actor: Actor, scope: Scope): boolean {
   return actor.scopes === 'session' || actor.scopes.includes(scope)
 }
 
+export const SCOPE_DENIED = 'The access token does not grant this operation.'
+export const ROLE_DENIED = 'You do not have permission for this operation.'
+
 // 역할과 스코프 중 하나라도 부족하면 FORBIDDEN이다. ownerId는 데이터 소유자 ID다.
+// 기수 범위 규칙이 걸린 리소스는 이 함수로 통과할 수 없다. authorizeAccess를 써야 한다.
 export function authorize(
   actor: Actor,
   action: ActionType,
   resource: ResourceType,
-  ownerId?: string
+  ownerId?: string | null
 ): ServiceResult<void> {
   if (!hasScope(actor, requiredScopeFor(action, resource))) {
-    return fail('FORBIDDEN', 'The access token does not grant this operation.')
+    return fail('FORBIDDEN', SCOPE_DENIED)
   }
   if (!roleAllows(actor, action, resource, ownerId)) {
-    return fail('FORBIDDEN', 'You do not have permission for this operation.')
+    return fail('FORBIDDEN', ROLE_DENIED)
+  }
+  return ok(undefined)
+}
+
+/**
+ * 대상을 읽기 전의 1차 관문: 스코프와 "역할상 가능한 작업인지"만 본다.
+ * 통과해도 접근이 허용된 것은 아니다. 대상을 읽은 뒤 authorizeAccess로 최종 판정해야 한다.
+ * 권한 없는 요청이 ID의 존재 여부를 알아내지 못하도록 DB 조회보다 먼저 부른다.
+ */
+export function authorizeRole(
+  actor: Actor,
+  action: ActionType,
+  resource: ResourceType
+): ServiceResult<void> {
+  if (!hasScope(actor, requiredScopeFor(action, resource))) {
+    return fail('FORBIDDEN', SCOPE_DENIED)
+  }
+  if (!isEverAllowed(actor.role, action, resource)) {
+    return fail('FORBIDDEN', ROLE_DENIED)
   }
   return ok(undefined)
 }
@@ -125,6 +156,16 @@ export function canChangeMemberEmail(
   targetId: string
 ): boolean {
   return targetId === actor.userId || actor.role === 'LEAD'
+}
+
+/**
+ * 프로필에서 이메일을 바꾼 뒤의 `emailVerified` 값.
+ * Better Auth는 확인된 이메일이 같은 소셜 계정을 기존 사용자에 자동으로 연결한다. 본인이 적어 넣은
+ * 주소는 소유를 확인한 적이 없으므로 미확인으로 돌려, 남의 주소를 적어 두고 그 주인의 로그인을
+ * 자기 계정에 묶는 일을 막는다. LEAD가 바꾼 주소만 확인된 것으로 둔다(계정 복구 절차).
+ */
+export function emailVerifiedAfterChange(actor: Pick<Actor, 'role'>): boolean {
+  return actor.role === 'LEAD'
 }
 
 // 공유 기수는 연락처 공개·CORE 수정 범위를 정한다. 본인·LEAD는 항상 허용한다.

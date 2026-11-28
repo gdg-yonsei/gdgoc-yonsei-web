@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { isAllowed, PERMISSION_POLICY } from '@/lib/server/permission/policy'
+import {
+  isAllowed,
+  isEverAllowed,
+  PERMISSION_POLICY,
+  ruleFor,
+} from '@/lib/server/permission/policy'
+
+const inGeneration = { inGeneration: true }
 
 describe('permission policy', () => {
   it('grants member ownership-based permissions for own data', () => {
@@ -16,8 +23,47 @@ describe('permission policy', () => {
     expect(isAllowed('MEMBER', 'put', 'projects')).toBe(false)
   })
 
-  it('lets members create projects regardless of ownership', () => {
-    expect(isAllowed('MEMBER', 'post', 'projects')).toBe(true)
+  it('lets members create projects only in their own generations', () => {
+    expect(isAllowed('MEMBER', 'post', 'projects', inGeneration)).toBe(true)
+    expect(
+      isAllowed('MEMBER', 'post', 'projects', { inGeneration: false })
+    ).toBe(false)
+  })
+
+  it('denies generation-scoped rules when the generation is not established', () => {
+    // 기수를 확인하지 않은 호출은 거부된다(fail closed).
+    expect(isAllowed('MEMBER', 'post', 'projects')).toBe(false)
+    expect(isAllowed('CORE', 'post', 'sessions')).toBe(false)
+    expect(isAllowed('CORE', 'put', 'parts')).toBe(false)
+    expect(isAllowed('CORE', 'delete', 'projects')).toBe(false)
+    // 소유자라는 사실은 기수 전용 규칙을 대신하지 못한다.
+    expect(isAllowed('CORE', 'delete', 'projects', { isOwner: true })).toBe(
+      false
+    )
+  })
+
+  it('lets core edit own content outside their generations but nothing else', () => {
+    expect(isAllowed('CORE', 'put', 'projects', { isOwner: true })).toBe(true)
+    expect(isAllowed('CORE', 'put', 'sessions', inGeneration)).toBe(true)
+    expect(
+      isAllowed('CORE', 'put', 'sessions', {
+        isOwner: false,
+        inGeneration: false,
+      })
+    ).toBe(false)
+  })
+
+  it('never scopes lead to a generation', () => {
+    for (const resource of ['projects', 'sessions', 'parts'] as const) {
+      expect(ruleFor('LEAD', 'put', resource)).toBe(true)
+      expect(isAllowed('LEAD', 'delete', resource)).toBe(true)
+    }
+  })
+
+  it('reports whether a role could ever perform an action', () => {
+    expect(isEverAllowed('MEMBER', 'post', 'projects')).toBe(true)
+    expect(isEverAllowed('MEMBER', 'post', 'sessions')).toBe(false)
+    expect(isEverAllowed('UNVERIFIED', 'get', 'adminPage')).toBe(false)
   })
 
   it('grants lead full permissions', () => {
@@ -30,7 +76,7 @@ describe('permission policy', () => {
     expect(isAllowed('CORE', 'get', 'generationsPage')).toBe(false)
     expect(isAllowed('CORE', 'put', 'membersRole')).toBe(false)
     expect(isAllowed('CORE', 'delete', 'parts')).toBe(false)
-    expect(isAllowed('CORE', 'delete', 'sessions')).toBe(true)
+    expect(isAllowed('CORE', 'delete', 'sessions', inGeneration)).toBe(true)
   })
 
   it('lets only lead manage announcements', () => {

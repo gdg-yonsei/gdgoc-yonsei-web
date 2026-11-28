@@ -7,6 +7,7 @@ import { getImageEnv } from '@/lib/server/env'
 /** 리소스별 R2 객체 키 접두사. 다른 리소스의 이미지를 지우지 못하도록 키 검사에 쓴다. */
 export type R2ImagePrefix = 'projects' | 'sessions' | 'users'
 
+// SVG는 스크립트를 담을 수 있어 받지 않는다(uploads/image-signature.ts와 같은 목록).
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
   'jpg',
   'jpeg',
@@ -14,7 +15,6 @@ const ALLOWED_IMAGE_EXTENSIONS = new Set([
   'webp',
   'gif',
   'avif',
-  'svg',
 ])
 
 function getBaseImageUrlWithoutTrailingSlash(): string {
@@ -55,6 +55,18 @@ export function getSafeImageExtension(fileName: string): string | null {
   }
 
   return extension
+}
+
+/**
+ * 우리 업로드가 만든 공개 URL 그대로인지. 다른 호스트·다른 접두사·쿼리가 붙은 URL은 거절한다.
+ * 폼과 MCP가 새로 저장하는 이미지 값은 이 검사를 통과해야 한다.
+ */
+export function isUploadedImageUrl(
+  value: string,
+  prefix: R2ImagePrefix
+): boolean {
+  const objectKey = normalizeR2ImageObjectKey(value, prefix)
+  return objectKey !== null && value === publicImageUrl(objectKey)
 }
 
 // 삭제 키는 반드시 정규화해야 한다. 다른 버킷·지정 접두사 밖·.. 경로 이탈은 null이다.

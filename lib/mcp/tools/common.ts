@@ -84,7 +84,7 @@ export async function patchWith<Detail, Input extends object, Out>(
 }
 
 // 이미지 필드는 해당 접두사의 우리 R2 URL만 받는다. 외부 호스트는 공개 이미지가 깨질 수 있다.
-// 다른 항목의 공유 객체는 그 항목 수정 시 deleteRemovedImages가 지울 수 있다.
+// 서비스도 같은 규칙을 다시 확인하며, 다른 항목이 아직 쓰는 객체는 정리 때 지우지 않는다.
 export function r2ImageUrl(prefix: 'sessions' | 'projects' | 'users') {
   return z
     .string()

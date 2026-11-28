@@ -14,10 +14,8 @@ import {
 import { uniqueStrings } from '@/lib/server/cache/utils'
 import { logger } from '@/lib/server/logger'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
-import {
-  authorize,
-  canAccessGeneration,
-} from '@/lib/server/services/admin/authorize'
+import { authorize, authorizeRole } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
 import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
@@ -106,9 +104,11 @@ export async function getPartDetail(
 
   const detail = await loadPartDetail(partId)
   if (!detail) return fail('NOT_FOUND', NOT_FOUND)
-  if (!(await canAccessGeneration(actor, detail.generationsId))) {
-    return fail('FORBIDDEN', 'You cannot view parts of this generation.')
-  }
+  const access = await authorizeAccess(actor, 'get', 'parts', {
+    generationId: detail.generationsId,
+    generationDenied: 'You cannot view parts of this generation.',
+  })
+  if (!access.ok) return access
   return ok(detail)
 }
 
@@ -132,7 +132,7 @@ export async function createPart(
   actor: Actor,
   input: unknown
 ): Promise<ServiceResult<{ id: number }>> {
-  const authorization = authorize(actor, 'post', 'parts')
+  const authorization = authorizeRole(actor, 'post', 'parts')
   if (!authorization.ok) return authorization
 
   const parsed = parsePartInput(input)
@@ -147,9 +147,11 @@ export async function createPart(
     doubleBoardMembersList,
   } = parsed.data
 
-  if (!(await canAccessGeneration(actor, generationId))) {
-    return fail('FORBIDDEN', 'You cannot create parts in this generation.')
-  }
+  const access = await authorizeAccess(actor, 'post', 'parts', {
+    generationId,
+    generationDenied: 'You cannot create parts in this generation.',
+  })
+  if (!access.ok) return access
 
   return withDbErrors('admin.parts.create', async () => {
     const generation = await getGenerationNameById(generationId)
@@ -195,6 +197,9 @@ export async function updatePart(
   partId: number,
   input: unknown
 ): Promise<ServiceResult<{ id: number }>> {
+  // 권한 없는 요청이 파트 ID의 존재 여부를 알아내지 못하도록 조회보다 먼저 확인한다.
+  const authorization = authorizeRole(actor, 'put', 'parts')
+  if (!authorization.ok) return authorization
   if (!Number.isInteger(partId)) return fail('NOT_FOUND', NOT_FOUND)
 
   const existingPart = await db.query.parts.findFirst({
@@ -206,12 +211,11 @@ export async function updatePart(
   })
   if (!existingPart) return fail('NOT_FOUND', NOT_FOUND)
 
-  const authorization = authorize(actor, 'put', 'parts')
-  if (!authorization.ok) return authorization
-
-  if (!(await canAccessGeneration(actor, existingPart.generationsId))) {
-    return fail('FORBIDDEN', 'You cannot manage parts of this generation.')
-  }
+  const access = await authorizeAccess(actor, 'put', 'parts', {
+    generationId: existingPart.generationsId,
+    generationDenied: 'You cannot manage parts of this generation.',
+  })
+  if (!access.ok) return access
 
   const parsed = parsePartInput(input)
   if (!parsed.ok) return parsed
@@ -296,7 +300,7 @@ export async function deletePart(
   actor: Actor,
   partId: number
 ): Promise<ServiceResult<{ id: number }>> {
-  const authorization = authorize(actor, 'delete', 'parts')
+  const authorization = authorizeRole(actor, 'delete', 'parts')
   if (!authorization.ok) return authorization
   if (!Number.isInteger(partId) || partId < 1) {
     return fail('NOT_FOUND', 'Data not found')
@@ -308,9 +312,11 @@ export async function deletePart(
   })
   if (!existingPart) return fail('NOT_FOUND', 'Data not found')
 
-  if (!(await canAccessGeneration(actor, existingPart.generationsId))) {
-    return fail('FORBIDDEN', 'You cannot manage parts of this generation.')
-  }
+  const access = await authorizeAccess(actor, 'delete', 'parts', {
+    generationId: existingPart.generationsId,
+    generationDenied: 'You cannot manage parts of this generation.',
+  })
+  if (!access.ok) return access
 
   try {
     const previousPartGenerationName = await getGenerationNameForPartId(partId)

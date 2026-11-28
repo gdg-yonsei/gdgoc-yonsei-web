@@ -4,6 +4,7 @@ vi.mock('@/db', () => ({ db: {} }))
 
 import {
   authorize,
+  authorizeRole,
   canChangeMemberEmail,
   canEditMember,
   requiredScopeFor,
@@ -52,7 +53,9 @@ describe('authorize', () => {
       scopes: 'session',
       via: 'web',
     }
-    expect(authorize(web, 'delete', 'sessions').ok).toBe(true)
+    expect(authorizeRole(web, 'delete', 'sessions').ok).toBe(true)
+    // 기수 범위 규칙은 기수를 확인하는 authorizeAccess로만 통과한다.
+    expect(authorize(web, 'delete', 'sessions').ok).toBe(false)
   })
 
   it('UNVERIFIED can do nothing', () => {

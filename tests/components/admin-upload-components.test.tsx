@@ -18,6 +18,7 @@ describe('admin upload components', () => {
           JSON.stringify({
             uploadUrl: 'https://upload.example/signed-url',
             fileName: 'projects/new-main-image.png',
+            contentType: 'image/png',
           }),
           { status: 200, headers: { 'Content-Type': 'application/json' } }
         )
@@ -52,6 +53,12 @@ describe('admin upload components', () => {
       '/api/admin/projects/main-image',
       expect.objectContaining({
         method: 'POST',
+        // 서버가 형식과 크기를 서명할 수 있게 파일 크기를 함께 보낸다.
+        body: JSON.stringify({
+          fileName: 'new-main-image.png',
+          type: 'image/png',
+          size: file.size,
+        }),
       })
     )
     expect(fetch).toHaveBeenNthCalledWith(
@@ -60,6 +67,8 @@ describe('admin upload components', () => {
       expect.objectContaining({
         method: 'PUT',
         body: file,
+        // 서명된 Content-Type을 그대로 보내야 R2가 받는다.
+        headers: { 'Content-Type': 'image/png' },
       })
     )
 
@@ -82,10 +91,12 @@ describe('admin upload components', () => {
             uploadUrls: [
               {
                 fileName: 'projects/content-1.png',
+                contentType: 'image/png',
                 uploadUrl: 'https://upload.example/content-1',
               },
               {
                 fileName: 'projects/content-2.png',
+                contentType: 'image/png',
                 uploadUrl: 'https://upload.example/content-2',
               },
             ],
@@ -275,10 +286,12 @@ describe('admin upload components', () => {
                   uploadUrls: [
                     {
                       fileName: 'projects/one.png',
+                      contentType: 'image/png',
                       uploadUrl: 'https://upload.example/one',
                     },
                     {
                       fileName: 'projects/two.png',
+                      contentType: 'image/png',
                       uploadUrl: 'https://upload.example/two',
                     },
                   ],

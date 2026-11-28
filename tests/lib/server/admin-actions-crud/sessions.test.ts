@@ -97,6 +97,10 @@ vi.mock('@/db', () => {
   }
 })
 
+vi.mock('@/lib/server/storage/image-references', () => ({
+  findReferencedImageKeys: vi.fn(async () => new Set<string>()),
+}))
+
 vi.mock('@/lib/server/storage/r2-client', () => ({
   r2Client: {
     send: mockR2Send,
@@ -227,7 +231,7 @@ describe('sessions CRUD server actions', () => {
       nameKo: 'CRUD 세션',
       description: '<p>Session Description</p>',
       descriptionKo: '<p>세션 설명</p>',
-      mainImage: 'https://image.gdgyonsei.moveto.kr/sessions/crud-session.webp',
+      mainImage: 'https://cdn.example/sessions/crud-session.webp',
       contentImages: JSON.stringify([]),
       startAt: '2026-03-20T10:00',
       endAt: '2026-03-20T12:00',
@@ -250,8 +254,7 @@ describe('sessions CRUD server actions', () => {
         nameKo: 'CRUD 세션',
         description: 'pSession Description/p',
         descriptionKo: 'p세션 설명/p',
-        mainImage:
-          'https://image.gdgyonsei.moveto.kr/sessions/crud-session.webp',
+        mainImage: 'https://cdn.example/sessions/crud-session.webp',
         partId: 2,
         publicOpen: true,
       })

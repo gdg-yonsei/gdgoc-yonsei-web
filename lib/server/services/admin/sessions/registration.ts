@@ -10,9 +10,10 @@ import { logger } from '@/lib/server/logger'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import {
   authorize,
-  canAccessGeneration,
+  authorizeRole,
   hasScope,
 } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
 import {
   fail,
   ok,
@@ -169,6 +170,9 @@ export async function removeSessionParticipant(
   // users.id 는 Better Auth 가 발급하는 임의 문자열이라 UUID 가 아닐 수 있다.
   // 삭제는 (sessionId, userId) 복합키에 한정되므로 형식 검증은 sessionId 만 한다.
   if (!isUuid(sessionId) || !userId) return fail('NOT_FOUND', NOT_FOUND)
+  // 권한 없는 요청이 세션 ID의 존재 여부를 알아내지 못하도록 조회보다 먼저 확인한다.
+  const gate = authorizeRole(actor, 'put', 'sessions')
+  if (!gate.ok) return gate
 
   const sessionData = await db.query.sessions.findFirst({
     where: eq(sessions.id, sessionId),
@@ -177,21 +181,13 @@ export async function removeSessionParticipant(
   })
   if (!sessionData) return fail('NOT_FOUND', NOT_FOUND)
 
-  // 세션 작성자 또는 sessions 수정 권한자만 참가자를 제거할 수 있다.
-  const authorization = authorize(
-    actor,
-    'put',
-    'sessions',
-    sessionData.authorId
-  )
+  // 세션 작성자이거나, 소속 기수의 세션을 수정할 수 있는 사람만 참가자를 제거한다.
+  const authorization = await authorizeAccess(actor, 'put', 'sessions', {
+    ownerId: sessionData.authorId,
+    generationId: sessionData.part?.generationsId,
+    generationDenied: 'You cannot manage sessions of this generation.',
+  })
   if (!authorization.ok) return authorization
-
-  if (
-    sessionData.authorId !== actor.userId &&
-    !(await canAccessGeneration(actor, sessionData.part?.generationsId))
-  ) {
-    return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
-  }
 
   await db
     .delete(userToSession)

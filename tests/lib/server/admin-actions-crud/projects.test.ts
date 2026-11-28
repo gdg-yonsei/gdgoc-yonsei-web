@@ -83,6 +83,10 @@ vi.mock('@/db', () => {
   }
 })
 
+vi.mock('@/lib/server/storage/image-references', () => ({
+  findReferencedImageKeys: vi.fn(async () => new Set<string>()),
+}))
+
 vi.mock('@/lib/server/storage/r2-client', () => ({
   r2Client: {
     send: mockR2Send,

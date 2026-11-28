@@ -32,26 +32,54 @@
 
 ## 3. 권한 표 (`lib/server/permission/policy.ts`)
 
-모든 권한 판단의 기준은 **역할 × 작업(get/post/put/delete) × 리소스** 표 하나다.
+모든 권한 판단의 기준은 **역할 × 작업(get/post/put/delete) × 리소스** 표 하나다. 소유자·기수 범위 조건도
+표의 규칙 값으로 선언한다.
 
-- 규칙 값: `true`(허용) 또는 `'own'`(본인 데이터일 때만 허용). 표에 없는 조합은 거부.
+| 규칙 값             | 뜻                                             |
+| ------------------- | ---------------------------------------------- |
+| `true`              | 항상 허용                                      |
+| `'own'`             | 요청자가 데이터 소유자(작성자·본인)일 때만     |
+| `'generation'`      | 대상이 요청자가 속한 기수의 데이터일 때만      |
+| `'ownOrGeneration'` | 소유자이거나, 요청자가 속한 기수의 데이터일 때 |
+
+- 표에 없는 조합은 거부한다.
+- **조건에 필요한 사실이 없으면 거부한다(fail closed).** 기수 범위 규칙을 기수 정보 없이 평가하면 통과할 수 없다.
+  서비스가 기수 확인을 빠뜨려도 권한이 열리지 않고 닫힌다.
+- LEAD만 데이터 리소스가 `true`다. 그래서 "LEAD가 아니면 자신이 속한 기수만 다룬다"가 표에 그대로 보인다.
 - 리소스 종류
   - 데이터: `members`, `membersRole`, `projects`, `sessions`, `generations`, `parts`, `publicCache`
   - 화면: `adminPage`, `membersPage`, `profilePage`, `projectsPage`, `sessionsPage`, `generationsPage`, `partsPage`
-- 표를 쓰는 곳
-  - `hasPermission(userId, action, resource, ownerId?)`: 버튼·메뉴 노출
-  - `requirePermission(...)` / `requireOwnPermission(...)`: 레이아웃·페이지 가드(없으면 `forbidden()`)
-  - `authorize(actor, action, resource, ownerId?)`: 서비스(웹 Server Action과 MCP 공통)
-  - `getAdminNavigationItems`: 메뉴 목록(화면 리소스 `get`)
+
+### 표를 쓰는 진입점
+
+| 진입점                                                                | 쓰는 곳                 | 확인하는 것                                                     |
+| --------------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------- |
+| `authorizeAccess(actor, action, resource, { ownerId, generationId })` | 서비스(웹·MCP 공통)     | 스코프 → 규칙 → 소유자 → 기수. **데이터 접근의 최종 판정**      |
+| `authorizeRole(actor, action, resource)`                              | 서비스, 대상을 읽기 전  | 스코프와 "역할상 가능한 작업인지"만. ID 존재 여부 노출을 막는다 |
+| `authorize(actor, action, resource, ownerId?)`                        | 서비스                  | 기수 조건이 없는 규칙(`true`, `'own'`)                          |
+| `hasPermission` / `requirePermission` / `requireOwnPermission`        | 버튼·메뉴·레이아웃 가드 | 역할과 소유자. 기수는 "소속 기수라면"으로 가정한다(노출 제어용) |
+| `getAdminNavigationItems`                                             | 메뉴 목록               | 화면 리소스 `get`                                               |
+
+서비스는 대상을 읽기 전에 `authorizeRole`로 거르고, 대상을 읽은 뒤 `authorizeAccess`로 판정한다.
+`authorizeAccess`는 규칙이 소유자·무조건으로 이미 충족되면 기수를 조회하지 않고, 기수가 필요한데 넘기지 않았거나
+접근할 수 없는 기수면 거부한다(`lib/server/services/admin/authorize-access.ts`).
 
 ### 표로 표현하지 않는 규칙 (`lib/server/services/admin/authorize.ts`)
 
-| 규칙                                                                       | 함수                                                    |
-| -------------------------------------------------------------------------- | ------------------------------------------------------- |
-| LEAD가 아니면 자신이 속한 파트의 기수만 다룰 수 있다                       | `canAccessGeneration`, `loadAccessibleGenerations`      |
-| CORE는 MEMBER·ALUMNUS·UNVERIFIED만, 그리고 같은 기수 멤버만 수정할 수 있다 | `canEditMember` + `authorizeMemberEdit`(members 서비스) |
-| 다른 사람의 이메일은 LEAD만 바꾼다(이메일로 계정을 연결하므로)             | `canChangeMemberEmail`                                  |
-| 연락처(이메일·전화·학번)는 본인, LEAD, 같은 기수 멤버에게만 보인다         | `sharesGenerationWith`                                  |
+| 규칙                                                                  | 함수                                                    |
+| --------------------------------------------------------------------- | ------------------------------------------------------- |
+| CORE는 MEMBER·ALUMNUS·UNVERIFIED만 수정할 수 있다(대상 역할 제한)     | `canEditMember` + `authorizeMemberEdit`(members 서비스) |
+| 다른 사람의 이메일은 LEAD만 바꾼다(이메일로 계정을 연결하므로)        | `canChangeMemberEmail`                                  |
+| 본인이 바꾼 이메일은 미확인으로 돌린다. LEAD가 바꾼 주소만 확인됨이다 | `emailVerifiedAfterChange`                              |
+| 연락처(이메일·전화·학번)는 본인, LEAD, 같은 기수 멤버에게만 보인다    | `sharesGenerationWith`                                  |
+
+기수 소속 판정은 `canAccessGeneration`·`loadAccessibleGenerations`가 맡고 `authorizeAccess`가 부른다. 멤버끼리
+"같은 기수인지"는 `sharesGenerationWith`가 판정해 `authorizeAccess`의 `inGeneration`으로 넘긴다.
+
+Better Auth는 **확인된** 이메일이 같은 소셜 계정을 기존 사용자에 자동으로 연결한다. 프로필에서 적어 넣은 주소는
+소유를 확인한 적이 없으므로, 본인이 바꾸면 `emailVerified`를 `false`로 돌린다. 그러지 않으면 아직 가입하지 않은
+사람의 주소를 적어 두고 그 사람의 첫 로그인을 자기 계정에 묶을 수 있다. 다른 소셜 계정을 연결해야 하면 LEAD가
+주소를 바꿔 준다.
 
 ## 4. 행위자(Actor)와 서비스 결과
 
@@ -70,7 +98,7 @@ type Actor = {
 - 웹: `getWebActor()`가 로그인 세션과 역할로 만든다(`runAdminFormAction`이 호출).
 - MCP: `actorFromClaims()`가 JWT 클레임과 DB 역할로 만든다.
 
-`authorize`는 두 가지를 모두 본다.
+`authorize`·`authorizeRole`·`authorizeAccess`는 모두 다음 두 가지를 본다(`authorizeAccess`는 여기에 소유자·기수 조건을 더한다).
 
 1. **스코프**: `requiredScopeFor(action, resource)`: 조회는 `gyms:read`, 쓰기는 `gyms:write`, 삭제·역할 변경은 `gyms:admin`. 웹 세션은 통과.
 2. **역할**: 위 권한 표.

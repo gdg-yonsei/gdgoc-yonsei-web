@@ -18,33 +18,16 @@ import {
 } from '@/lib/server/storage/object-key'
 import { r2Client } from '@/lib/server/storage/r2-client'
 
-/** 관리자 웹 업로드용 사전 서명 URL 유효 시간(초). 브라우저가 바로 PUT하므로 넉넉히 1시간. */
-export const WEB_UPLOAD_TTL_SECONDS = 3600
-
-/** MCP 업로드용 사전 서명 URL 유효 시간(초). 크기를 서명에 넣으므로 짧게 15분. */
+/** 사전 서명 업로드 URL 유효 시간(초). 웹과 MCP 모두 크기·형식을 서명에 넣고 15분만 연다. */
 export const PRESIGNED_UPLOAD_TTL_SECONDS = 900
 
 const HEAD_BYTES = 32
 
 const bucket = () => getR2BucketEnv().R2_BUCKET_NAME
 
-// 웹 PUT URL은 크기를 서명하지 않는다. 형식·권한은 업로드 API가 발급 전에 검사해야 한다.
-export async function presignImageUpload(
-  key: string,
-  contentType: string
-): Promise<string> {
-  return getSignedUrl(
-    r2Client,
-    new PutObjectCommand({
-      Bucket: bucket(),
-      Key: key,
-      ContentType: contentType,
-    }),
-    { expiresIn: WEB_UPLOAD_TTL_SECONDS }
-  )
-}
-
-// MCP PUT URL은 크기·Content-Type을 서명해 서버를 거치지 않는 업로드도 R2가 선언대로 제한한다.
+// PUT URL은 크기·Content-Type을 서명해 서버를 거치지 않는 업로드도 R2가 선언대로 제한한다.
+// Content-Type을 서명하지 않으면 업로더가 text/html 같은 형식으로 올려 이미지 도메인에서
+// 스크립트를 실행시킬 수 있으므로, 서명하지 않는 발급 함수는 두지 않는다.
 export async function presignSizedImageUpload(
   key: string,
   contentType: string,
@@ -109,19 +92,23 @@ export async function deleteImages(keys: readonly string[]): Promise<boolean> {
 }
 
 // 미참조 이미지 삭제는 우리 버킷의 해당 접두사만 대상으로 한다. 외부 URL·기본 이미지는 제외한다.
-// 실패는 호출 서비스로 전달한다.
+// 다른 행이 아직 쓰는 객체는 지우지 않는다. 남의 이미지 URL을 자기 항목에 넣었다가 빼는
+// 방법으로 그 이미지를 지울 수 없게 하기 위해서다. 실패는 호출 서비스로 전달한다.
 export async function deleteRemovedImages({
   previousImages,
   nextImages,
   previousMainImage,
   nextMainImage,
   prefix,
+  findReferencedKeys,
 }: {
   previousImages: readonly string[]
   nextImages: readonly string[]
   previousMainImage?: string | null
   nextMainImage?: string | null
   prefix: Extract<R2ImagePrefix, 'projects' | 'sessions'>
+  /** DB 커밋 뒤에도 어떤 행이 참조하는 키를 돌려준다(storage/image-references.ts). */
+  findReferencedKeys: (keys: readonly string[]) => Promise<ReadonlySet<string>>
 }): Promise<void> {
   const nextImageSet = new Set(nextImages)
   const removedImages = previousImages.filter(
@@ -132,11 +119,21 @@ export async function deleteRemovedImages({
     removedImages.push(previousMainImage)
   }
 
-  const imageKeys = removedImages
-    .map((imageUrl) => normalizeR2ImageObjectKey(imageUrl, prefix))
-    .filter((imageKey): imageKey is string => Boolean(imageKey))
+  const imageKeys = [
+    ...new Set(
+      removedImages
+        .map((imageUrl) => normalizeR2ImageObjectKey(imageUrl, prefix))
+        .filter((imageKey): imageKey is string => Boolean(imageKey))
+    ),
+  ]
+  if (imageKeys.length === 0) return
 
-  await Promise.all(imageKeys.map((imageKey) => deleteImage(imageKey)))
+  const referencedKeys = await findReferencedKeys(imageKeys)
+  await Promise.all(
+    imageKeys
+      .filter((imageKey) => !referencedKeys.has(imageKey))
+      .map((imageKey) => deleteImage(imageKey))
+  )
 }
 
 // 10MB 파트 4개 병렬(약 40MB)로 스트리밍한다. maxBytes 초과 시 abort하고 미완성 멀티파트도 정리한다.

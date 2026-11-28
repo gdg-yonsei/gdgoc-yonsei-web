@@ -43,6 +43,56 @@ export async function reserveUpload(upload: {
   })
 }
 
+// 웹 업로드는 완료 단계가 없어 객체 키를 기록하지 않는다. 키 없는 기록은 한도 계산에만 쓰이고
+// 만료 정리 때 R2 객체를 지우지 않는다. count개를 모두 예약할 수 없으면 하나도 예약하지 않는다.
+export async function reserveUploadSlots(upload: {
+  userId: string
+  count: number
+  expiresAt: Date
+  limit: number
+  windowStart: Date
+}): Promise<boolean> {
+  if (upload.count < 1) return true
+
+  return db.transaction(async (tx) => {
+    await tx.execute(
+      sql`select pg_advisory_xact_lock(hashtextextended(${`mcp_image_upload:${upload.userId}`}, 0))`
+    )
+    const [used] = await tx
+      .select({ value: count() })
+      .from(mcpImageUpload)
+      .where(
+        and(
+          eq(mcpImageUpload.userId, upload.userId),
+          gt(mcpImageUpload.createdAt, upload.windowStart)
+        )
+      )
+    if ((used?.value ?? 0) + upload.count > upload.limit) return false
+
+    // 창을 벗어난 키 없는 예약은 더는 한도에 쓰이지 않는다. 여기서 지워 기록이 쌓이지 않게 한다.
+    await tx
+      .delete(mcpImageUpload)
+      .where(
+        and(
+          eq(mcpImageUpload.userId, upload.userId),
+          eq(mcpImageUpload.kind, 'presigned'),
+          isNull(mcpImageUpload.objectKey),
+          lt(mcpImageUpload.createdAt, upload.windowStart)
+        )
+      )
+
+    await tx.insert(mcpImageUpload).values(
+      Array.from({ length: upload.count }, () => ({
+        userId: upload.userId,
+        kind: 'presigned' as const,
+        objectKey: null,
+        expiresAt: upload.expiresAt,
+      }))
+    )
+    return true
+  })
+}
+
 export async function assignUploadKey(id: string, objectKey: string) {
   await db
     .update(mcpImageUpload)

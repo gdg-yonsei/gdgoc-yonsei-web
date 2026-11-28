@@ -284,4 +284,104 @@ describe('members service', () => {
       data: { telephone: '010' },
     })
   })
+
+  describe('email changes and account linking', () => {
+    const setValues = () => {
+      const set = vi.fn((values: Record<string, unknown>) => {
+        void values
+        return { where: vi.fn(async () => undefined) }
+      })
+      dbUpdate.mockReturnValue({ set })
+      return set
+    }
+
+    beforeEach(() => {
+      sharesGenerationWith.mockResolvedValue(true)
+    })
+
+    it('marks an email a member typed in for themselves as unverified', async () => {
+      findUser.mockResolvedValue({
+        id: 'me',
+        role: 'MEMBER',
+        email: 'me@example.com',
+        image: null,
+      })
+      const set = setValues()
+
+      const result = await updateMember(actor('MEMBER'), 'me', {
+        ...validMember,
+        email: 'Future.Lead@Example.com',
+      })
+
+      expect(result.ok).toBe(true)
+      // 확인되지 않은 주소가 "확인됨"으로 남으면 그 주소 주인의 소셜 로그인이 이 계정에 묶인다.
+      expect(set.mock.calls[0]![0]).toMatchObject({
+        email: 'future.lead@example.com',
+        emailVerified: false,
+      })
+    })
+
+    it('keeps an address a LEAD set for another member verified', async () => {
+      findUser.mockResolvedValue({
+        id: 'm1',
+        role: 'MEMBER',
+        email: 'old@example.com',
+        image: null,
+      })
+      const set = setValues()
+
+      const result = await updateMember(actor('LEAD'), 'm1', {
+        ...validMember,
+        email: 'new@example.com',
+      })
+
+      expect(result.ok).toBe(true)
+      expect(set.mock.calls[0]![0]).toMatchObject({
+        email: 'new@example.com',
+        emailVerified: true,
+      })
+    })
+
+    it('does not touch the email or its verified flag when only the case differs', async () => {
+      findUser.mockResolvedValue({
+        id: 'm1',
+        role: 'MEMBER',
+        email: 'M@Example.com',
+        image: null,
+      })
+      const set = setValues()
+
+      const result = await updateMember(actor('CORE'), 'm1', validMember)
+
+      expect(result.ok).toBe(true)
+      expect(set.mock.calls[0]![0]).not.toHaveProperty('email')
+      expect(set.mock.calls[0]![0]).not.toHaveProperty('emailVerified')
+    })
+
+    it('rejects a profile image outside our storage but keeps the existing one', async () => {
+      const avatar = 'https://avatars.githubusercontent.com/u/1'
+      findUser.mockResolvedValue({
+        id: 'm1',
+        role: 'MEMBER',
+        email: 'm@example.com',
+        image: avatar,
+      })
+      setValues()
+
+      expect(
+        await updateMember(actor('LEAD'), 'm1', {
+          ...validMember,
+          profileImage: 'https://tracker.example/pixel.png',
+        })
+      ).toMatchObject({ ok: false, code: 'VALIDATION' })
+      expect(
+        (
+          await updateMember(actor('LEAD'), 'm1', {
+            ...validMember,
+            profileImage: avatar,
+          })
+        ).ok
+      ).toBe(true)
+    })
+  })
 })

@@ -11,9 +11,9 @@ import { logger } from '@/lib/server/logger'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import {
   authorize,
-  canAccessGeneration,
   loadAccessibleGenerations,
 } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
 import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
   fail,
@@ -77,9 +77,11 @@ export async function getGenerationDetail(
   const authorization = authorize(actor, 'get', 'adminPage')
   if (!authorization.ok) return authorization
 
-  if (!(await canAccessGeneration(actor, generationId))) {
-    return fail('FORBIDDEN', 'You cannot view this generation.')
-  }
+  const access = await authorizeAccess(actor, 'get', 'generations', {
+    generationId,
+    generationDenied: 'You cannot view this generation.',
+  })
+  if (!access.ok) return access
 
   const detail = await loadGenerationDetail(generationId)
   return detail ? ok(detail) : fail('NOT_FOUND', NOT_FOUND)

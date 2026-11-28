@@ -10,7 +10,12 @@ import {
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/services/admin/shared'
+import { findReferencedImageKeys } from '@/lib/server/storage/image-references'
 import { deleteRemovedImages } from '@/lib/server/storage/r2'
+import {
+  UNACCEPTABLE_IMAGE,
+  findUnacceptableImages,
+} from '@/lib/server/services/admin/images/shared'
 import { invalidateProjectPublicCache } from '@/lib/server/cache'
 import { getProject } from '@/lib/server/fetcher/admin/get-project'
 import {
@@ -21,10 +26,8 @@ import { logger } from '@/lib/server/logger'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { cleanupDeletedResource } from '@/lib/server/services/admin/deleted-resource-cleanup'
-import {
-  authorize,
-  canAccessGeneration,
-} from '@/lib/server/services/admin/authorize'
+import { authorize, authorizeRole } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
 import { resolveRequestedGenerationScope } from '@/lib/server/services/admin/generation-scope'
 import { toPublicUser } from '@/lib/server/services/admin/public-user'
 import {
@@ -121,7 +124,7 @@ export async function createProject(
   actor: Actor,
   input: unknown
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'post', 'projects')
+  const authorization = authorizeRole(actor, 'post', 'projects')
   if (!authorization.ok) return authorization
 
   const parsed = parseProjectInput(input)
@@ -143,8 +146,19 @@ export async function createProject(
     tags,
   } = parsed.data
 
-  if (!(await canAccessGeneration(actor, Number(generationId)))) {
-    return fail('FORBIDDEN', 'You cannot create projects in this generation.')
+  const access = await authorizeAccess(actor, 'post', 'projects', {
+    generationId: Number(generationId),
+    generationDenied: 'You cannot create projects in this generation.',
+  })
+  if (!access.ok) return access
+
+  if (
+    findUnacceptableImages([mainImage, ...contentImages], [], 'projects')
+      .length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      mainImage: [UNACCEPTABLE_IMAGE],
+    })
   }
 
   let projectId = ''
@@ -207,28 +221,28 @@ export async function updateProject(
   input: unknown
 ): Promise<ServiceResult<{ id: string }>> {
   if (!isUuid(projectId)) return fail('NOT_FOUND', NOT_FOUND)
+  // 권한 없는 요청이 프로젝트 ID의 존재 여부를 알아내지 못하도록 조회보다 먼저 확인한다.
+  const gate = authorizeRole(actor, 'put', 'projects')
+  if (!gate.ok) return gate
 
   const existingProject = await db.query.projects.findFirst({
     where: eq(projects.id, projectId),
-    columns: { authorId: true, generationId: true },
+    columns: {
+      authorId: true,
+      generationId: true,
+      mainImage: true,
+      images: true,
+    },
   })
   if (!existingProject) return fail('NOT_FOUND', NOT_FOUND)
 
-  // dataOwnerId 는 프로젝트 행의 authorId 여야 한다 (projectId 가 아니라).
-  const authorization = authorize(
-    actor,
-    'put',
-    'projects',
-    existingProject.authorId
-  )
+  // 소유자는 프로젝트 행의 authorId다(projectId가 아니다). 작성자가 아니면 소속 기수여야 한다.
+  const authorization = await authorizeAccess(actor, 'put', 'projects', {
+    ownerId: existingProject.authorId,
+    generationId: existingProject.generationId,
+    generationDenied: 'You cannot manage projects of this generation.',
+  })
   if (!authorization.ok) return authorization
-
-  if (
-    existingProject.authorId !== actor.userId &&
-    !(await canAccessGeneration(actor, existingProject.generationId))
-  ) {
-    return fail('FORBIDDEN', 'You cannot manage projects of this generation.')
-  }
 
   const parsed = parseProjectInput(input)
   if (!parsed.ok) return parsed
@@ -254,6 +268,18 @@ export async function updateProject(
       'VALIDATION',
       'Project generation cannot be changed from this screen.'
     )
+  }
+  // 이미 이 프로젝트에 있던 이미지는 유지할 수 있고, 새 이미지는 우리 업로드 URL이어야 한다.
+  if (
+    findUnacceptableImages(
+      [mainImage, ...contentImages],
+      [existingProject.mainImage, ...(existingProject.images ?? [])],
+      'projects'
+    ).length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      mainImage: [UNACCEPTABLE_IMAGE],
+    })
   }
 
   return withDbErrors(
@@ -314,6 +340,7 @@ export async function updateProject(
         previousMainImage: prevImages.mainImage,
         nextMainImage: mainImage,
         prefix: 'projects',
+        findReferencedKeys: findReferencedImageKeys,
       }).catch((error: unknown) =>
         logger.error('admin.projects.update.r2-cleanup', error, { projectId })
       )
@@ -339,7 +366,7 @@ export async function deleteProject(
   actor: Actor,
   projectId: string
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'delete', 'projects')
+  const authorization = authorizeRole(actor, 'delete', 'projects')
   if (!authorization.ok) return authorization
   if (!isUuid(projectId)) return fail('NOT_FOUND', 'Data not found')
 
@@ -356,9 +383,11 @@ export async function deleteProject(
     return fail('NOT_FOUND', 'Data not found')
   }
 
-  if (!(await canAccessGeneration(actor, projectImageList.generationId))) {
-    return fail('FORBIDDEN', 'You cannot manage projects of this generation.')
-  }
+  const access = await authorizeAccess(actor, 'delete', 'projects', {
+    generationId: projectImageList.generationId,
+    generationDenied: 'You cannot manage projects of this generation.',
+  })
+  if (!access.ok) return access
 
   return withDbErrors(
     'admin.delete-resource',

@@ -40,4 +40,41 @@ describe('projectValidation urls', () => {
       })
     ).toThrow()
   })
+
+  it.each([
+    'javascript:alert(document.cookie)',
+    'JaVaScRiPt:alert(1)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    'file:///etc/passwd',
+  ])('rejects the non-web url %s', (url) => {
+    for (const field of ['repoUrl', 'demoUrl'] as const) {
+      const result = projectValidation.safeParse({
+        ...baseProject,
+        repoUrl: null,
+        demoUrl: null,
+        [field]: url,
+      })
+      expect(result.success).toBe(false)
+    }
+  })
+
+  it('rejects oversized text and lists', () => {
+    expect(
+      projectValidation.safeParse({
+        ...baseProject,
+        repoUrl: null,
+        demoUrl: null,
+        name: 'n'.repeat(201),
+      }).success
+    ).toBe(false)
+    expect(
+      projectValidation.safeParse({
+        ...baseProject,
+        repoUrl: null,
+        demoUrl: null,
+        participants: Array.from({ length: 1001 }, (_, index) => `u${index}`),
+      }).success
+    ).toBe(false)
+  })
 })

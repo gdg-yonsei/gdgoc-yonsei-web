@@ -16,6 +16,7 @@ import type {
 } from '@/lib/contents/archive-copy'
 import { formatInstantDate, toSeoulDateIso } from '@/lib/format/datetime'
 import { fillTemplate, initials } from '@/lib/format/text'
+import { httpUrlOrNull } from '@/lib/safe-url'
 import { isPlaceholderImage } from '@/lib/site/images'
 import {
   contributorName,
@@ -53,13 +54,12 @@ export default function ProjectDetailView({
     generationPath('project', project.generationName)
   )
   const gallery = project.images.filter((image) => !isPlaceholderImage(image))
+  // 검증이 생기기 전에 저장된 값도 있을 수 있어 http(s)가 아닌 링크는 그리지 않는다.
+  const demoUrl = httpUrlOrNull(project.demoUrl)
+  const repoUrl = httpUrlOrNull(project.repoUrl)
   const links = [
-    ...(project.demoUrl
-      ? [{ href: project.demoUrl, label: copy.demo, solid: true }]
-      : []),
-    ...(project.repoUrl
-      ? [{ href: project.repoUrl, label: copy.source, solid: false }]
-      : []),
+    ...(demoUrl ? [{ href: demoUrl, label: copy.demo, solid: true }] : []),
+    ...(repoUrl ? [{ href: repoUrl, label: copy.source, solid: false }] : []),
   ]
 
   return (

@@ -10,17 +10,20 @@ import {
   replaceRelationRows,
   stripHtmlCharacters,
 } from '@/lib/server/services/admin/shared'
+import { findReferencedImageKeys } from '@/lib/server/storage/image-references'
 import { deleteRemovedImages } from '@/lib/server/storage/r2'
+import {
+  UNACCEPTABLE_IMAGE,
+  findUnacceptableImages,
+} from '@/lib/server/services/admin/images/shared'
 import { invalidateSessionPublicCache } from '@/lib/server/cache'
 import { runAfterResponse } from '@/lib/server/after-response'
 import { logger } from '@/lib/server/logger'
 import { withDbErrors } from '@/lib/server/services/admin/db-errors'
 import { isUuid } from '@/lib/server/queries/public/uuid'
 import { cleanupDeletedResource } from '@/lib/server/services/admin/deleted-resource-cleanup'
-import {
-  authorize,
-  canAccessGeneration,
-} from '@/lib/server/services/admin/authorize'
+import { authorizeRole } from '@/lib/server/services/admin/authorize'
+import { authorizeAccess } from '@/lib/server/services/admin/authorize-access'
 import {
   fail,
   ok,
@@ -47,7 +50,7 @@ export async function createSession(
     expectedGenerationId?: number
   } = {}
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'post', 'sessions')
+  const authorization = authorizeRole(actor, 'post', 'sessions')
   if (!authorization.ok) return authorization
 
   const parsed = parseSessionInput(input)
@@ -74,6 +77,15 @@ export async function createSession(
     displayOnWebsite,
   } = parsed.data
 
+  if (
+    findUnacceptableImages([mainImage, ...contentImages], [], 'sessions')
+      .length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      mainImage: [UNACCEPTABLE_IMAGE],
+    })
+  }
+
   const created = await withDbErrors('admin.sessions.create', async () => {
     const [selectedPart, nextGenerationName] = await Promise.all([
       db.query.parts.findFirst({
@@ -97,15 +109,14 @@ export async function createSession(
       )
     }
 
-    if (
-      !selectedPart?.generationsId ||
-      !(await canAccessGeneration(actor, selectedPart.generationsId))
-    ) {
-      return fail(
-        'FORBIDDEN',
-        'The selected part does not belong to the current generation scope.'
-      )
-    }
+    const outOfScope =
+      'The selected part does not belong to the current generation scope.'
+    if (!selectedPart?.generationsId) return fail('FORBIDDEN', outOfScope)
+    const access = await authorizeAccess(actor, 'post', 'sessions', {
+      generationId: selectedPart.generationsId,
+      generationDenied: outOfScope,
+    })
+    if (!access.ok) return access
 
     // 세션 행과 참가자 목록은 함께 저장되거나 함께 실패해야 한다.
     const createdSession = await db.transaction(async (tx) => {
@@ -191,30 +202,25 @@ export async function updateSession(
   input: unknown
 ): Promise<ServiceResult<{ id: string }>> {
   if (!isUuid(sessionId)) return fail('NOT_FOUND', NOT_FOUND)
+  // 권한 없는 요청이 세션 ID의 존재 여부를 알아내지 못하도록 조회보다 먼저 확인한다.
+  const gate = authorizeRole(actor, 'put', 'sessions')
+  if (!gate.ok) return gate
 
   const existingSession = await db.query.sessions.findFirst({
     where: eq(sessions.id, sessionId),
-    columns: { id: true, authorId: true },
+    columns: { id: true, authorId: true, mainImage: true, images: true },
     with: { part: { columns: { generationsId: true } } },
   })
   if (!existingSession) return fail('NOT_FOUND', NOT_FOUND)
 
-  // dataOwnerId 는 세션 작성자 id 여야 한다 (sessionId 가 아니라).
-  const authorization = authorize(
-    actor,
-    'put',
-    'sessions',
-    existingSession.authorId
-  )
+  // 소유자는 세션 작성자다(sessionId가 아니다). 작성자는 자기 세션을 기수와 무관하게
+  // 고칠 수 있고(프로젝트와 같은 규칙), 그 외에는 소속 기수의 세션만 고친다.
+  const authorization = await authorizeAccess(actor, 'put', 'sessions', {
+    ownerId: existingSession.authorId,
+    generationId: existingSession.part?.generationsId,
+    generationDenied: 'You cannot manage sessions of this generation.',
+  })
   if (!authorization.ok) return authorization
-
-  // 작성자는 자기 세션을 기수와 무관하게 고칠 수 있다(프로젝트와 같은 규칙).
-  if (
-    existingSession.authorId !== actor.userId &&
-    !(await canAccessGeneration(actor, existingSession.part?.generationsId))
-  ) {
-    return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
-  }
 
   const parsed = parseSessionInput(input)
   if (!parsed.ok) return parsed
@@ -239,6 +245,19 @@ export async function updateSession(
     category,
     displayOnWebsite,
   } = parsed.data
+
+  // 이미 이 세션에 있던 이미지는 유지할 수 있고, 새 이미지는 우리 업로드 URL이어야 한다.
+  if (
+    findUnacceptableImages(
+      [mainImage, ...contentImages],
+      [existingSession.mainImage, ...(existingSession.images ?? [])],
+      'sessions'
+    ).length > 0
+  ) {
+    return fail('VALIDATION', UNACCEPTABLE_IMAGE, {
+      mainImage: [UNACCEPTABLE_IMAGE],
+    })
+  }
 
   return withDbErrors(
     'admin.sessions.update',
@@ -323,6 +342,7 @@ export async function updateSession(
         previousMainImage: prevImages.mainImage,
         nextMainImage: mainImage,
         prefix: 'sessions',
+        findReferencedKeys: findReferencedImageKeys,
       }).catch((error: unknown) =>
         logger.error('admin.sessions.update.r2-cleanup', error, { sessionId })
       )
@@ -347,7 +367,7 @@ export async function deleteSession(
   actor: Actor,
   sessionId: string
 ): Promise<ServiceResult<{ id: string }>> {
-  const authorization = authorize(actor, 'delete', 'sessions')
+  const authorization = authorizeRole(actor, 'delete', 'sessions')
   if (!authorization.ok) return authorization
   if (!isUuid(sessionId)) return fail('NOT_FOUND', 'Data not found')
 
@@ -364,11 +384,11 @@ export async function deleteSession(
     return fail('NOT_FOUND', 'Data not found')
   }
 
-  if (
-    !(await canAccessGeneration(actor, sessionImageList.part?.generationsId))
-  ) {
-    return fail('FORBIDDEN', 'You cannot manage sessions of this generation.')
-  }
+  const access = await authorizeAccess(actor, 'delete', 'sessions', {
+    generationId: sessionImageList.part?.generationsId,
+    generationDenied: 'You cannot manage sessions of this generation.',
+  })
+  if (!access.ok) return access
 
   return withDbErrors(
     'admin.delete-resource',

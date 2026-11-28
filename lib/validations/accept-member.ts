@@ -6,6 +6,7 @@ export const acceptMemberValidation = z.object({
   userId: z
     .string({ message: 'User Id is required' })
     .trim()
-    .nonempty('User Id is required'),
+    .nonempty('User Id is required')
+    .max(128, 'Invalid User Id'),
   role: z.enum(['member', 'core', 'alumni']),
 })

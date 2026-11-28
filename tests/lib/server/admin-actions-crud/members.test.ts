@@ -83,7 +83,12 @@ describe('members CRUD server actions', () => {
     mockDeleteWhere.mockResolvedValue(undefined)
     mockDelete.mockReturnValue({ where: mockDeleteWhere })
     mockGetUserRole.mockResolvedValue('LEAD')
-    mockUserFindFirst.mockResolvedValue({ id: 'pending-1', role: 'UNVERIFIED' })
+    mockUserFindFirst.mockResolvedValue({
+      id: 'pending-1',
+      role: 'UNVERIFIED',
+      email: 'pending-1@example.com',
+      image: null,
+    })
   })
 
   it('returns forbidden when member edit permission is denied', async () => {
