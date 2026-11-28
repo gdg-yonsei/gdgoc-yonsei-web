@@ -28,17 +28,12 @@ function toVisibilityDate(visibilityBucket: string): Date {
   return new Date(visibilityBucket)
 }
 
-async function getSharedSessionArchive(
-  visibilityBucket: string
+/** 공개 기록(표시 설정이 켜졌고 버킷까지 끝난 세션). 기수 이름을 주면 그 기수만 읽는다. */
+function selectSessionArchive(
+  visibilityBucket: string,
+  generationName?: string
 ): Promise<LogSession[]> {
-  'use cache: remote'
-
-  cacheQuery(
-    publicCachePolicy.sessionList,
-    forEachPublicLocale((locale) => [sessionListTag(locale)])
-  )
-
-  const rows = await db
+  return db
     .select({
       id: sessions.id,
       name: sessions.name,
@@ -62,10 +57,26 @@ async function getSharedSessionArchive(
     .where(
       and(
         eq(sessions.displayOnWebsite, true),
-        lte(sessions.endAt, toVisibilityDate(visibilityBucket))
+        lte(sessions.endAt, toVisibilityDate(visibilityBucket)),
+        generationName === undefined
+          ? undefined
+          : eq(generations.name, generationName)
       )
     )
     .orderBy(desc(sessions.startAt))
+}
+
+async function getSharedSessionArchive(
+  visibilityBucket: string
+): Promise<LogSession[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [sessionListTag(locale)])
+  )
+
+  const rows = await selectSessionArchive(visibilityBucket)
 
   // 기수 페이지도 이 항목을 읽으므로, 관리자가 기수 페이지를 위해 즉시 무효화하는
   // 태그에도 반응하도록 결과에 나온 기수마다 태그를 단다(lib/server/cache/invalidation.ts).
@@ -86,6 +97,40 @@ const getSessionArchiveForRequest = cache((visibilityBucket: string) =>
 
 export function getSessionArchive(visibilityBucket: string) {
   return getSessionArchiveForRequest(visibilityBucket)
+}
+
+// 기수 기록 페이지 전용 캐시. 반드시 `connection()` 뒤(요청 시점)에서만 읽는다.
+// prerender에서 읽힌 캐시 값은 Resume Data Cache에 남고, Next 16.4는 만료된 기수 페이지를
+// 이어 그릴 때 이전 요청에서 만료된 태그를 확인하지 않아 빌드 시점 값을 보여 준다.
+// prerender에서 한 번도 읽히지 않은 키는 캐시 핸들러가 태그 만료를 확인해 돌려준다.
+async function getSharedGenerationSessionArchive(
+  visibilityBucket: string,
+  generationName: string
+): Promise<LogSession[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.sessionList,
+    forEachPublicLocale((locale) => [
+      sessionListTag(locale),
+      sessionGenerationTag(generationName, locale),
+    ])
+  )
+
+  return selectSessionArchive(visibilityBucket, generationName)
+}
+
+const getGenerationSessionArchiveForRequest = cache(
+  (visibilityBucket: string, generationName: string) =>
+    getSharedGenerationSessionArchive(visibilityBucket, generationName)
+)
+
+/** 한 기수의 공개 기록. 기수 기록 페이지가 요청 시점에 읽는다. */
+export function getGenerationSessionArchive(
+  visibilityBucket: string,
+  generationName: string
+) {
+  return getGenerationSessionArchiveForRequest(visibilityBucket, generationName)
 }
 
 async function getSharedCalendarSessions(): Promise<CalendarSession[]> {

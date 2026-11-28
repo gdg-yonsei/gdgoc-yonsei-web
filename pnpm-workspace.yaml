@@ -12,6 +12,13 @@ overrides:
   postcss: $postcss
   sharp: $sharp
   esbuild: 0.28.1
+  # 같은 메이저 안의 패치판으로 고정한다(2026-11 audit):
+  # vite >=8.3.3(vitest 경유, launch-editor·server.fs), fflate >=0.7.5(satori 경유, 손상된 ZIP 무한 루프),
+  # fast-uri >=3.1.9(ajv 경유, URI 스킴 위장), postcss-selector-parser >=6.1.5(@tailwindcss/typography 경유, 2차 복잡도).
+  vite: ~8.3.3
+  fflate: 0.7.5
+  fast-uri: ^3.1.9
+  postcss-selector-parser@6: 6.1.6
 minimumReleaseAgeExclude:
   - '@aws-sdk/checksums@3.1000.26'
   - '@aws-sdk/client-s3@3.1103.0'
