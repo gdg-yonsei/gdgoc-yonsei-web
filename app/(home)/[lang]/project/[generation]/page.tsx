@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { connection } from 'next/server'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import EmptyState from '@/app/components/site/empty-state'
@@ -14,7 +15,10 @@ import {
   projectFilterCopy,
 } from '@/lib/contents/archive-copy'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
-import { getProjectShowcase } from '@/lib/server/queries/public/projects'
+import {
+  getGenerationProjectShowcase,
+  getProjectShowcase,
+} from '@/lib/server/queries/public/projects'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import {
   createLocalizedMetadata,
@@ -37,20 +41,25 @@ export async function generateStaticParams() {
   return getGenerationStaticParams()
 }
 
+// 목록은 요청 시점에만 읽는다. 빌드 때 prerender하면 그 값이 Resume Data Cache에 남고,
+// Next 16.4는 만료된 기수 페이지를 이어 그릴 때 이전 요청에서 만료된 태그를 확인하지 않아
+// 관리자가 바꾼 프로젝트 대신 빌드 시점 목록을 보여 준다. 이 키는 prerender에서 한 번도
+// 읽히지 않으므로 캐시 핸들러가 태그 만료를 확인한 값을 돌려준다.
 async function generationProjects(generation: string) {
-  const projects = await getProjectShowcase()
-  return sortShowcase(
-    projects.filter((project) => project.generationName === generation)
-  )
+  await connection()
+  return sortShowcase(await getGenerationProjectShowcase(generation))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { generation } = await params
   const locale = await getLocale()
-  const [generations, projects] = await Promise.all([
+  const [generations, showcase] = await Promise.all([
     getGenerationSummaries(),
-    generationProjects(generation),
+    getProjectShowcase(),
   ])
+  const projects = showcase.filter(
+    (project) => project.generationName === generation
+  )
 
   if (!generations.some(({ name }) => name === generation)) {
     notFound()

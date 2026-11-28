@@ -44,8 +44,15 @@ test.describe('member', () => {
       }
 
       await page.getByRole('link', { name: 'Engagement' }).click()
+      await expect(page).toHaveURL(/\/admin\/analytics\/engagement\?/)
+      // Cached navigations keep the previous tab mounted while it hides, so a
+      // page-wide `.first()` can grab Explore's CSV link. Scope to the Pages table.
+      const pagesCsv = page
+        .getByRole('region', { name: 'Pages' })
+        .getByRole('link', { name: 'Download CSV' })
+      await expect(pagesCsv).toHaveAttribute('href', /report=pages/)
       const download = page.waitForEvent('download')
-      await page.getByRole('link', { name: 'Download CSV' }).first().click()
+      await pagesCsv.click()
       expect((await download).suggestedFilename()).toBe(
         'gdgoc-analytics-pages.csv'
       )

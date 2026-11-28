@@ -131,17 +131,25 @@ test.describe('public routes and user interactions', () => {
     await page.goto(`/en/project/${generation}`, {
       waitUntil: 'domcontentloaded',
     })
+    // The list card heading matches the detail heading too, so wait for the
+    // detail URL; a goto during the client navigation aborts with ERR_ABORTED.
     await page.getByRole('heading', { name: 'E2E Project' }).click()
+    await expect(page).toHaveURL(
+      new RegExp(`/en/project/${generation}/[0-9a-f-]+$`)
+    )
     await expect(
-      page.getByRole('heading', { name: /E2E Project/i }).first()
+      page.getByRole('heading', { level: 1, name: /E2E Project/i })
     ).toBeVisible()
 
     await page.goto(`/en/session/${generation}`, {
       waitUntil: 'domcontentloaded',
     })
     await page.getByRole('heading', { name: 'E2E Session' }).click()
+    await expect(page).toHaveURL(
+      new RegExp(`/en/session/${generation}/[0-9a-f-]+$`)
+    )
     await expect(
-      page.getByRole('heading', { name: /E2E Session/i }).first()
+      page.getByRole('heading', { level: 1, name: /E2E Session/i })
     ).toBeVisible()
   })
 

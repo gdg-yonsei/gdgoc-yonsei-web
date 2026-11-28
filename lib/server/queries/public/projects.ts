@@ -23,7 +23,7 @@ import {
 } from '@/lib/site/project-showcase'
 import { publicCachePolicy } from '@/lib/server/cache/policy'
 import { isUuid } from '@/lib/server/queries/public/uuid'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, inArray } from 'drizzle-orm'
 
 async function getSharedProjects() {
   'use cache: remote'
@@ -129,6 +129,48 @@ const getProjectShowcaseForRequest = cache(() => getSharedProjectShowcase())
 
 export function getProjectShowcase() {
   return getProjectShowcaseForRequest()
+}
+
+// 기수 페이지 목록 전용 캐시. 반드시 `connection()` 뒤(요청 시점)에서만 읽는다.
+// prerender에서 읽힌 캐시 값은 Resume Data Cache에 남고, Next 16.4는 만료된 기수 페이지를
+// 이어 그릴 때 이전 요청에서 만료된 태그를 확인하지 않아 빌드 시점 값을 보여 준다.
+// prerender에서 한 번도 읽히지 않은 키는 캐시 핸들러가 태그 만료를 확인해 돌려준다.
+async function getSharedGenerationProjectShowcase(
+  generationName: string
+): Promise<ShowcaseProject[]> {
+  'use cache: remote'
+
+  cacheQuery(
+    publicCachePolicy.projectList,
+    forEachPublicLocale((locale) => [
+      projectListTag(locale),
+      projectGenerationTag(generationName, locale),
+    ])
+  )
+
+  const rows = await db.query.projects.findMany({
+    columns: PROJECT_CARD_COLUMNS,
+    with: PROJECT_RELATIONS,
+    where: inArray(
+      projects.generationId,
+      db
+        .select({ id: generations.id })
+        .from(generations)
+        .where(eq(generations.name, generationName))
+    ),
+    orderBy: desc(projects.updatedAt),
+  })
+
+  return rows.map(toShowcaseProject)
+}
+
+const getGenerationProjectShowcaseForRequest = cache((generationName: string) =>
+  getSharedGenerationProjectShowcase(generationName)
+)
+
+/** 한 기수의 프로젝트 카드. 기수 목록 페이지가 읽는다. */
+export function getGenerationProjectShowcase(generationName: string) {
+  return getGenerationProjectShowcaseForRequest(generationName)
 }
 
 const getProjectByIdForRequest = cache((projectId: string) =>
