@@ -30,6 +30,32 @@ describe('Next.js 16.3 custom cache handler contracts', () => {
   })
 })
 
+describe('Redis entry invalidation tags', () => {
+  const {
+    entryInvalidationTags,
+  } = require('../../../lib/server/cache/handlers/redis-shared.cjs')
+
+  it('checks entry tags even when the request carries path soft tags', () => {
+    // updateTag('project:list:en')가 경로 태그가 붙은 요청에서도 항목을 만료시켜야 한다.
+    expect(
+      entryInvalidationTags(
+        ['_N_T_/en/project/6th'],
+        ['project:list:en', 'project:generation:6th:en']
+      )
+    ).toEqual([
+      'project:list:en',
+      'project:generation:6th:en',
+      '_N_T_/en/project/6th',
+    ])
+  })
+
+  it('handles missing tag lists and drops duplicates and blanks', () => {
+    expect(entryInvalidationTags([], undefined)).toEqual([])
+    expect(entryInvalidationTags(undefined, ['a', 'a', ''])).toEqual(['a'])
+    expect(entryInvalidationTags(['a', 'b'], ['b'])).toEqual(['b', 'a'])
+  })
+})
+
 describe('Redis entry expiry', () => {
   const {
     expireToSetOptions,

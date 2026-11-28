@@ -15,10 +15,7 @@ import {
   projectFilterCopy,
 } from '@/lib/contents/archive-copy'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
-import {
-  getGenerationProjectShowcase,
-  getProjectShowcase,
-} from '@/lib/server/queries/public/projects'
+import { getGenerationProjectShowcase } from '@/lib/server/queries/public/projects'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import {
   createLocalizedMetadata,
@@ -53,13 +50,11 @@ async function generationProjects(generation: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { generation } = await params
   const locale = await getLocale()
-  const [generations, showcase] = await Promise.all([
+  // noindex도 요청 시점 목록으로 정해야 첫 프로젝트가 생긴 기수가 바로 색인된다.
+  const [generations, projects] = await Promise.all([
     getGenerationSummaries(),
-    getProjectShowcase(),
+    generationProjects(generation),
   ])
-  const projects = showcase.filter(
-    (project) => project.generationName === generation
-  )
 
   if (!generations.some(({ name }) => name === generation)) {
     notFound()

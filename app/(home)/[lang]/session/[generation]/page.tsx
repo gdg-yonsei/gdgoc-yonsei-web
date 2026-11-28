@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { connection } from 'next/server'
 import { Suspense } from 'react'
 import JsonLd from '@/app/components/json-ld'
 import EmptyState from '@/app/components/site/empty-state'
@@ -13,9 +14,10 @@ import {
   sessionArchiveCopy,
   sessionFilterCopy,
 } from '@/lib/contents/archive-copy'
-import { getCachedSessionVisibilityBucket } from '@/lib/server/cache/session-visibility'
+import { getSessionVisibilityBucket } from '@/lib/server/cache/policy'
+import { sessionWallClockNow } from '@/lib/format/datetime'
 import { getGenerationSummaries } from '@/lib/server/queries/public/generations'
-import { getSessionArchive } from '@/lib/server/queries/public/sessions'
+import { getGenerationSessionArchive } from '@/lib/server/queries/public/sessions'
 import { getGenerationStaticParams } from '@/lib/server/queries/public/static-params'
 import {
   createLocalizedMetadata,
@@ -38,10 +40,12 @@ export async function generateStaticParams() {
   return getGenerationStaticParams()
 }
 
+// 목록은 요청 시점에만 읽는다(프로젝트 기수 페이지와 같은 이유, lib/server/queries/public/sessions.ts 참고).
+// 공개 기준 버킷도 prerender 값을 이어 쓰지 않도록 요청 시점의 서울 벽시계로 계산한다.
 async function generationSessions(generation: string) {
-  const visibilityBucket = await getCachedSessionVisibilityBucket()
-  const archive = await getSessionArchive(visibilityBucket)
-  return archive.filter((session) => session.generationName === generation)
+  await connection()
+  const visibilityBucket = getSessionVisibilityBucket(sessionWallClockNow())
+  return getGenerationSessionArchive(visibilityBucket, generation)
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
